@@ -1,0 +1,74 @@
+name: FoldGit
+options:
+  minimumXcodeGenVersion: 2.45.0
+  xcodeVersion: "27.1"
+  deploymentTarget:
+    macOS: "26.0"
+  developmentLanguage: en
+  knownRegions: [en, zh-Hans, zh-Hant, ja, ko, ru, fr, es, Base]
+packages:
+  FoldGitShared:
+    path: ../..
+settings:
+  base:
+    ARCHS: arm64
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+targets:
+  FoldGit:
+    productName: FoldGit
+    type: application
+    platform: macOS
+    configFiles:
+      Debug: Configuration/Debug.xcconfig
+      Release: Configuration/Base.xcconfig
+    sources:
+      - path: Sources
+      - path: Resources
+        excludes: [Previews, MaterialFileIcons]
+      # A folder reference keeps the icons as plain SVG files in one bundle subdirectory.
+      - path: Resources/MaterialFileIcons
+        type: folder
+        buildPhase: resources
+      - path: ../../Shared/Resources/Licenses/LICENSE.txt
+        buildPhase: resources
+      - path: ../../Shared/Resources/Branding/AppIcon.icon
+        buildPhase: resources
+    settings:
+      base:
+        CODE_SIGN_ENTITLEMENTS: Configuration/FoldGit.entitlements
+        ENABLE_PREVIEWS: YES
+    dependencies:
+      - package: FoldGitShared
+        product: FoldGitCore
+  FoldGitTests:
+    type: bundle.unit-test
+    platform: macOS
+    configFiles:
+      Debug: Configuration/DebugSigning.xcconfig
+    sources:
+      - path: Tests
+        excludes: [UITests]
+    dependencies:
+      - target: FoldGit
+      - package: FoldGitShared
+        product: FoldGitTestSupport
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dufu.foldgit.tests
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_EMIT_LOC_STRINGS: NO
+schemes:
+  FoldGit:
+    build:
+      targets:
+        FoldGit: all
+        FoldGitTests: [test]
+    test:
+      targets:
+        - name: FoldGitTests
+          parallelizable: false
+      environmentVariables:
+        FOLDGIT_TESTING: "1"
+      gatherCoverageData: true

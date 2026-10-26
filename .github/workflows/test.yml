@@ -1,0 +1,46 @@
+name: Test FoldGit
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  shared-macos:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Validate module boundaries
+        run: python3 Scripts/check-platform-boundaries.py
+      - name: Test shared core
+        run: swift test --force-resolved-versions
+  shared-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: compnerd/gha-setup-swift@main
+        with:
+          swift-version: swift-6.4-release
+          swift-build: 6.4-RELEASE
+      - name: Test shared core
+        run: swift test --force-resolved-versions
+  macos-app:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Validate translations
+        run: python3 Scripts/validate-localizations.py
+      - name: Test macOS application
+        run: >-
+          xcodebuild test -project Platforms/macOS/FoldGit.xcodeproj -scheme FoldGit
+          -destination 'platform=macOS' -derivedDataPath build/macos
+          -onlyUsePackageVersionsFromResolvedFile CODE_SIGNING_ALLOWED=NO
+      - name: Validate compiler-extracted localization keys
+        run: python3 Scripts/validate-localizations.py --extracted-directory build/macos/Build/Intermediates.noindex/FoldGit.build

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Behind by %lld commits</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>Отставание на %lld коммит</string>
+			<key>few</key>
+			<string>Отставание на %lld коммита</string>
+			<key>many</key>
+			<string>Отставание на %lld коммитов</string>
+			<key>other</key>
+			<string>Отставание на %lld коммита</string>
+		</dict>
+	</dict>
+	<key>%lld commits</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>%lld коммит</string>
+			<key>few</key>
+			<string>%lld коммита</string>
+			<key>many</key>
+			<string>%lld коммитов</string>
+			<key>other</key>
+			<string>%lld коммита</string>
+		</dict>
+	</dict>
+	<key>%lld deletions</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>Удалена %lld строка</string>
+			<key>few</key>
+			<string>Удалено %lld строки</string>
+			<key>many</key>
+			<string>Удалено %lld строк</string>
+			<key>other</key>
+			<string>Удалено %lld строки</string>
+		</dict>
+	</dict>
+	<key>%lld files changed</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>Изменён %lld файл</string>
+			<key>few</key>
+			<string>Изменено %lld файла</string>
+			<key>many</key>
+			<string>Изменено %lld файлов</string>
+			<key>other</key>
+			<string>Изменено %lld файла</string>
+		</dict>
+	</dict>
+	<key>%lld insertions</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>Добавлена %lld строка</string>
+			<key>few</key>
+			<string>Добавлено %lld строки</string>
+			<key>many</key>
+			<string>Добавлено %lld строк</string>
+			<key>other</key>
+			<string>Добавлено %lld строки</string>
+		</dict>
+	</dict>
+	<key>%lld untracked files</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>%lld неотслеживаемый файл</string>
+			<key>few</key>
+			<string>%lld неотслеживаемых файла</string>
+			<key>many</key>
+			<string>%lld неотслеживаемых файлов</string>
+			<key>other</key>
+			<string>%lld неотслеживаемого файла</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

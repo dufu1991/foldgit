@@ -14,6 +14,7 @@ window.FOLDGIT_I18N = {
     "hero.lede": "Fold repositories by folder or group, with worktrees tucked under their repository. When AI writes production code, glance at it, then commit with confidence.",
     "hero.meta": "macOS 26 or later · Apple Silicon · About 4 MB · MIT licensed",
     "cta.download": "Download for macOS",
+    "cta.windows": "Download for Windows",
     "cta.source": "View source",
     "cta.star": "Follow on GitHub",
     "cta.manual": "User guide",
@@ -71,8 +72,14 @@ window.FOLDGIT_I18N = {
     "cmp.r5a": "Free, MIT open source",
     "cmp.r5b": "Mostly paid or subscription",
 
-    "win.title": "There is a Windows version — and it needs you.",
+    "win.title": "Windows builds are ready to download.",
     "win.body": "Built with C#, WinUI 3 and .NET 10, it is only a minimal implementation. The author has no Windows machine — contributions are very welcome.",
+    "win.x64": "Download for Windows x64",
+    "win.arm64": "Download for Windows ARM64",
+    "win.x64Certificate": "x64 signing certificate",
+    "win.arm64Certificate": "ARM64 signing certificate",
+    "win.requirements": "v0.1.0 · Windows 11 24H2 or later. Import the signing certificate for your architecture before the first installation.",
+    "win.installGuide": "Installation guide",
     "win.readme": "Windows dev guide",
     "win.parity": "Feature parity checklist",
 

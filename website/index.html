@@ -28,7 +28,7 @@
       root.dataset.scheme = root.dataset.theme || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=7">
 </head>
 <body>
   <div class="backdrop" aria-hidden="true">
@@ -99,10 +99,11 @@
         <h1 data-reveal data-i18n="hero.title">把所有仓库，<br><span class="grad">折进一个窗口。</span></h1>
         <p class="lede" data-reveal data-i18n="hero.lede">按目录或分组收纳仓库，工作树收在所属仓库之下。AI 写的生产代码，看一眼再放心提交。</p>
         <div class="cta-row" data-reveal>
-          <a class="btn btn-primary" href="https://github.com/dufu1991/foldgit/releases/latest">
+          <a class="btn btn-primary" href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-macOS-arm64.dmg">
             <svg viewBox="0 0 24 24" aria-hidden="true" class="filled"><path d="M16.4 12.7c0-2.4 2-3.5 2.1-3.6a4.5 4.5 0 0 0-3.5-1.9c-1.5-.2-2.9.9-3.7.9s-1.9-.9-3.2-.8a4.7 4.7 0 0 0-4 2.4c-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4a10 10 0 0 0 1.4-2.8c-.1 0-2.6-1-2.6-4ZM14 5.6c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.6 2.8-1.4Z"/></svg>
             <span data-i18n="cta.download">下载 macOS 版</span>
           </a>
+          <a class="btn btn-glass" href="#windows" data-i18n="cta.windows">下载 Windows 版</a>
           <a class="btn btn-glass" href="https://github.com/dufu1991/foldgit">
             <span data-i18n="cta.source">查看源码</span>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
@@ -250,8 +251,19 @@
       <div class="windows-card glass" data-reveal>
         <div class="win-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
         <div>
-          <h2 data-i18n="win.title">也有 Windows 版，但它需要你。</h2>
+          <h2 data-i18n="win.title">Windows 版，现已可下载。</h2>
           <p data-i18n="win.body">基于 C#、WinUI 3 和 .NET 10，目前只是最简实现。作者没有 Windows 设备，欢迎感兴趣的你一起参与建设。</p>
+          <div class="cta-row">
+            <div class="download-option">
+              <a class="btn btn-primary" href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-Windows-x64.msix" data-i18n="win.x64">下载 Windows x64 版</a>
+              <a class="download-certificate" href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-Windows-x64.cer" data-i18n="win.x64Certificate">x64 签名证书</a>
+            </div>
+            <div class="download-option">
+              <a class="btn btn-glass" href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-Windows-ARM64.msix" data-i18n="win.arm64">下载 Windows ARM64 版</a>
+              <a class="download-certificate" href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-Windows-ARM64.cer" data-i18n="win.arm64Certificate">ARM64 签名证书</a>
+            </div>
+          </div>
+          <p class="download-note"><span data-i18n="win.requirements">v0.1.0 · Windows 11 24H2 及以上。首次安装请先导入对应架构的签名证书。</span> <a href="manual.html#install-windows" data-i18n="win.installGuide">安装说明</a></p>
           <div class="cta-row">
             <a class="btn btn-glass" href="https://github.com/dufu1991/foldgit/tree/main/Platforms/Windows" data-i18n="win.readme">Windows 开发说明</a>
             <a class="btn btn-glass" href="https://github.com/dufu1991/foldgit/blob/main/docs/WINDOWS_PARITY.md" data-i18n="win.parity">功能对齐清单</a>
@@ -265,7 +277,8 @@
       <img class="final-icon" data-reveal src="assets/icon.webp" data-app-icon alt="" width="96" height="96">
       <h2 data-reveal data-i18n="final.title">看一眼改动，再按下提交。</h2>
       <div class="cta-row center" data-reveal>
-        <a class="btn btn-primary" href="https://github.com/dufu1991/foldgit/releases/latest" data-i18n="cta.download">下载 macOS 版</a>
+        <a class="btn btn-primary" href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-macOS-arm64.dmg" data-i18n="cta.download">下载 macOS 版</a>
+        <a class="btn btn-glass" href="#windows" data-i18n="cta.windows">下载 Windows 版</a>
         <a class="btn btn-glass" href="https://github.com/dufu1991/foldgit" data-i18n="cta.star">在 GitHub 上关注</a>
         <a class="btn btn-glass" href="manual.html" data-i18n="cta.manual">使用手册</a>
       </div>
@@ -277,7 +290,7 @@
     <p class="footer-note" data-i18n="footer.note">截图中的仓库与人名均为演示数据。</p>
   </footer>
 
-  <script src="i18n.js?v=5"></script>
+  <script src="i18n.js?v=7"></script>
   <script src="main.js?v=5"></script>
 </body>
 </html>

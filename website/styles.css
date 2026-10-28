@@ -536,6 +536,12 @@ h3 { font-size: 21px; letter-spacing: -0.015em; }
 .cmp-us img { width: 22px; height: 22px; }
 .cmp-row:not(.cmp-head) > span:nth-child(2)::before { content: "✓"; color: var(--accent); font-weight: 800; margin-right: 8px; }
 
+/* ------------------------------------------------------------------ downloads */
+.download-option { display: grid; justify-items: start; gap: 10px; }
+.download-certificate { font-size: 13px; color: var(--text-2); }
+.download-certificate, .download-note a { text-decoration: underline; text-underline-offset: 3px; }
+.windows-card .download-note { margin: 20px 0; font-size: 14px; }
+
 /* ------------------------------------------------------------------ windows */
 .windows-card {
   border-radius: 30px;

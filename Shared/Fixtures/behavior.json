@@ -1,0 +1,105 @@
+{
+  "icons": [
+    {
+      "path": ".github/FUNDING.yml",
+      "icon": "github-sponsors"
+    },
+    {
+      "path": "src/types.d.ts",
+      "icon": "typescript-def"
+    },
+    {
+      "path": "src/test.test.ts",
+      "icon": "test-ts"
+    },
+    {
+      "path": "project/PACKAGE.JSON",
+      "icon": "nodejs"
+    },
+    {
+      "path": "组件/按钮.vue",
+      "icon": "vue"
+    },
+    {
+      "path": "deleted/file.unknown",
+      "icon": "file"
+    }
+  ],
+  "diffs": [
+    {
+      "raw": "diff --git a/source.txt b/source.txt\nindex aaaa..bbbb 100644\n--- a/source.txt\n+++ b/source.txt\n@@ -1,2 +1,2 @@\n context\n-before\n+after\n",
+      "path": "source.txt",
+      "added": 1,
+      "removed": 1
+    },
+    {
+      "raw": "diff --git a/old.js b/new.ts\nsimilarity index 100%\nrename from old.js\nrename to new.ts\n",
+      "path": "new.ts",
+      "added": 0,
+      "removed": 0
+    }
+  ],
+  "graph": [
+    {
+      "hash": "merge",
+      "parents": [
+        "left",
+        "right"
+      ],
+      "column": 0
+    },
+    {
+      "hash": "left",
+      "parents": [
+        "root"
+      ],
+      "column": 0
+    },
+    {
+      "hash": "right",
+      "parents": [
+        "root"
+      ],
+      "column": 1
+    },
+    {
+      "hash": "root",
+      "parents": [],
+      "column": 0
+    }
+  ],
+  "inline": [
+    {
+      "old": "let x = 1",
+      "new": "let x = 2",
+      "oldSpans": [
+        [
+          8,
+          1
+        ]
+      ],
+      "newSpans": [
+        [
+          8,
+          1
+        ]
+      ]
+    },
+    {
+      "old": "a😀z",
+      "new": "a🐱z",
+      "oldSpans": [
+        [
+          1,
+          2
+        ]
+      ],
+      "newSpans": [
+        [
+          1,
+          2
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+name: Windows native client
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  core:
+    strategy:
+      matrix:
+        runner: [windows-2025, windows-11-arm]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: Platforms/Windows/global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate shared resources and platform boundaries
+        run: |
+          python Scripts/generate-resources.py --check
+          python Scripts/check-platform-boundaries.py
+          python Scripts/validate-windows.py
+      - name: Run real repository behavior suites
+        run: dotnet run --project Platforms/Windows/tests/FoldGit.Core.Tests -c Release
+      - name: Verify workbench navigation and staging workflows
+        run: dotnet run --project Platforms/Windows/tests/FoldGit.Workbench.Tests -c Release
+  application:
+    strategy:
+      matrix:
+        include:
+          - architecture: x64
+            runner: windows-2025
+          - architecture: ARM64
+            runner: windows-11-arm
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: Platforms/Windows/global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build native application and MSIX
+        shell: pwsh
+        run: Platforms/Windows/Packaging/package.ps1 -Architecture ${{ matrix.architecture }} -Unsigned
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FoldGit-Windows-${{ matrix.architecture }}-unsigned
+          path: dist/windows/${{ matrix.architecture }}/

@@ -1,0 +1,11 @@
+<Application x:Class="FoldGit.App.App"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries><XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" /></ResourceDictionary.MergedDictionaries>
+      <x:Double x:Key="PivotHeaderItemFontSize">14</x:Double>
+      <Thickness x:Key="PivotHeaderItemMargin">8,0,8,0</Thickness>
+    </ResourceDictionary>
+  </Application.Resources>
+</Application>

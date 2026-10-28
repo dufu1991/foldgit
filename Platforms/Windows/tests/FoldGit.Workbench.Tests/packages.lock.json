@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0-windows10.0.26100": {
+      "CommunityToolkit.Mvvm": {
+        "type": "Direct",
+        "requested": "[8.4.2, )",
+        "resolved": "8.4.2",
+        "contentHash": "WadCzGEc2U+3e20avRLng4qNtt4zoOGWrdUISqJWrHe3/FSnrYjuM5Sb4yQb09LhkBXrrI4Zt3dLKgRMbItsrg=="
+      },
+      "foldgit.core": {
+        "type": "Project"
+      },
+      "foldgit.platform.windows": {
+        "type": "Project",
+        "dependencies": {
+          "FoldGit.Core": "[1.0.0, )"
+        }
+      }
+    },
+    "net10.0-windows10.0.26100/win-arm64": {},
+    "net10.0-windows10.0.26100/win-x64": {}
+  }
+}

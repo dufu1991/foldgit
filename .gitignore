@@ -107,3 +107,12 @@ dist/
 # Generated icon previews and drafts
 output/
 *.profraw
+
+# Windows and .NET
+**/bin/
+**/obj/
+**/AppPackages/
+.vs/
+*.user
+*.pfx
+*.cer

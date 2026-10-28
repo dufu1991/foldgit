@@ -23,7 +23,7 @@
 - 分支、标签、远程同步和 Stash。
 - 按仓库自动 Fetch、外部应用发现、固定应用和最近应用。
 - 外观、语言、会话恢复和登录启动设置。
-- 八种语言资源、提交消息生成和差异摘要生成。
+- 八种语言资源、手动提交消息和提交模板。
 
 自动迁移保留项目列表、项目分组、自动 Fetch 配置、外部应用偏好、提交模板和已知显示偏好。旧应用的系统登录启动授权不会自动变成新应用的授权。
 
@@ -43,3 +43,7 @@ FoldGit 是由 dufu 独立维护的开源项目，使用独立的应用身份、
 根目录 `Package.swift` 可独立编译和测试 `FoldGitCore`。macOS 工程位置改为 `Platforms/macOS/FoldGit.xcodeproj`，生成入口改为 `Platforms/macOS/project.yml`。平台拆分期间没有恢复旧 Git 历史，后续从 FoldGit 独立仓库的首次提交开始版本管理。
 
 拆分保留现有搜索历史编码与界面偏好。原生日期、图标和文案扩展只存在于 macOS 展示层；后台 Fetch 环境变量改为跨平台传递。项目许可与第三方许可声明保存在 `Shared/Resources/Licenses/LICENSE.txt`。
+
+## Windows 原生客户端
+
+Windows 使用独立的 C# 核心与 WinUI 3 工作台，运行在 .NET 10 上，不通过 Swift 桥接。品牌、文件图标、通用翻译、许可和行为测试样例集中在 Shared。macOS 的全部 Foundation Models 集成、摘要入口与相关测试已移除。Windows 运行与安装验收以 Windows 环境的实际结果为准。

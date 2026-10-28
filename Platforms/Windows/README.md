@@ -1,32 +1,57 @@
-# Windows 客户端接入边界
+# FoldGit for Windows
 
-此目录用于后续 Windows 应用、窗口、设置、系统集成、安装器和签名配置。目前尚未实现 Windows 图形客户端。
+原生 Windows 客户端使用 C#、WinUI 3 和 .NET 10，目标为 Windows 11 24H2 及以上，支持 x64 和 ARM64。Windows 不依赖 Swift，也不包含 AI 功能。
 
-可复用的代码位于根目录的 `Shared`，并通过根目录 `Package.swift` 暴露 `FoldGitCore`。不要复制 macOS 目录中的 SwiftUI 或 AppKit 代码来构建 Windows 界面。
+## 工程与依赖
 
-## 已有共享能力
+- `src/FoldGit.Core`：进程执行、Git 记录解析、差异、提交图、工作区和 Worktree 工作流。
+- `src/FoldGit.Platform.Windows`：Windows 文件身份、Git 检测、文件监控、设置和外部应用。
+- `src/FoldGit.App`：原生 XAML 工作台、MVVM 状态、差异控件、设置与系统集成。
+- `tests/FoldGit.Core.Tests`：不依赖界面的行为测试程序，创建独立临时仓库。
+- `Packaging/package.ps1`：MSIX 构建、签名、校验文件和 App Installer 清单。
 
-- Git 命令构建、异步执行、超时、取消和按仓库排队。
-- 提交、引用、补丁、文件统计和状态解析。
-- 工作区分组、仓库发现、排序和提交图布局。
-- 搜索条件、远程跟踪关系和重复 Fetch 请求合并。
-- 临时仓库测试工具与独立核心测试。
+开发环境需要 Visual Studio 的 WinUI 应用开发工具、Windows SDK、Python 3，以及 `global.json` 指定的 .NET SDK。NuGet 依赖固定版本并保存锁文件。普通构建使用已提交的资源，不需要 Node.js、Pillow 或 Icon Composer。
 
-共享进程执行直接启动 Git，并通过环境变量控制后台认证，不依赖 Unix 的 `env` 命令。Git 必须安装并能通过 `PATH` 找到。
+```powershell
+python Scripts/generate-resources.py --check
+python Scripts/validate-windows.py
+dotnet run --project Platforms/Windows/tests/FoldGit.Core.Tests -c Release
+dotnet build Platforms/Windows/src/FoldGit.App -p:Platform=x64 -p:RuntimeIdentifier=win-x64
+```
 
-## 后续需要实现
+在 Visual Studio 中打开 `FoldGit.slnx`，选择与本机一致的架构，设置 `FoldGit.App` 为启动项目。使用已注册的 MSIX 应用身份调试。应用将第二次启动重定向到现有进程。
 
-- Windows 窗口、导航、差异文本渲染和快捷键。
-- Windows 凭据、外部编辑器与终端发现、登录启动和设置持久化。
-- Windows 文件系统路径策略、打包、签名和更新流程。
-- AI 能力适配。Apple Foundation Models 保留在 macOS 客户端中。
+## Git 与认证
 
-Swift 客户端可直接引用共享包。其他语言的客户端需要额外设计桥接接口，共享包当前没有承诺 C ABI。
+安装 Git for Windows，或者在设置中选择 `git.exe`。检测顺序为显式配置、Git for Windows 注册表、`PATH` 和标准安装目录。错误的显式路径会显示配置错误，不会静默改用另一套 Git。
 
-安装 Swift 后，在仓库根目录运行 `swift test`。CI 已配置 Windows 共享核心测试；本地 macOS 验证不能替代 Windows CI 的实际结果。
+执行器使用参数列表直接启动进程，异步处理输入与两路输出，保留二进制内容，支持超时和取消。标准输出限制为 64 MiB，标准错误限制为 4 MiB。同一 Git 公共目录的操作串行执行，避免关联 Worktree 的应用内写操作互相插入。用户凭据助手、SSH、签名和 Hooks 继续由 Git 管理。后台 Fetch 禁止交互认证，重复 Fetch 请求合并。
 
-应用图标复用 `Shared/Resources/Branding/Images` 的通用 PNG，矢量图层位于同目录的 `AppIcon.icon/Assets`。不要另行维护一份品牌源图。
+## 资源和偏好
 
-打包时应包含 `Shared/Resources/Licenses/LICENSE.txt`。
+品牌、文件图标和许可从 `Shared/Resources` 引用。维护共享翻译后运行 `python Scripts/generate-resources.py`，生成两端原生资源。Windows 运行时使用同源翻译目录处理动态文本和复数；MSIX 的显示信息使用 `.resw` 资源。
 
-Swift 官方安装说明：<https://www.swift.org/install/windows/>。
+Windows 图标已生成并提交。更改共享品牌图后，使用 Pillow 12.1.1 运行 `python Scripts/Branding/generate-windows-icons.py` 更新平台派生资源。
+
+偏好保存在当前用户本地应用数据目录下的 `FoldGit/settings.json`，通过临时文件替换完成保存。包括仓库、逻辑分组、显示偏好、模板、最近应用和待完成 Worktree 流程。语言切换在下次启动时生效。恢复默认设置保留仓库与分组，并备份原设置文件。
+
+## 打包
+
+```powershell
+# 只验证构建。未签名包不能作为正式安装包分发。
+Platforms/Windows/Packaging/package.ps1 -Architecture x64 -Unsigned
+Platforms/Windows/Packaging/package.ps1 -Architecture ARM64 -Unsigned
+
+# 正式包需要可信证书，证书主题必须匹配清单中的固定 Publisher。
+Platforms/Windows/Packaging/package.ps1 -Architecture x64 -CertificateThumbprint YOUR_CERTIFICATE_THUMBPRINT -UpdateUri https://example.com/foldgit/windows/x64
+```
+
+产物保存在 `dist/windows/<architecture>`。固定应用身份为 `dufu.FoldGit`，Publisher 为 `CN=dufu`，初始版本为 `0.1.0.0`。首次正式分发前应配置对应的可信发布证书，后续版本保持相同身份。脚本只生成产物，不上传、不自动发布。
+
+App Installer 在后续启动时检查更新，不配置后台强制更新。应用内关闭流程等待正在执行的操作结束并保存状态。
+
+## 验证边界
+
+macOS 可运行 C# 核心测试、编译 Windows 适配库，并使用官方引用程序集检查界面 C# 类型。WinUI 的 XAML 编译、应用启动、凭据交互和 MSIX 安装必须在 Windows 上验证。
+
+`.github/workflows/windows.yml` 提供 x64 和 ARM64 的行为测试、应用构建和未签名打包任务。尚未运行的 CI 或实机步骤不能视为已通过，验收项见 `docs/WINDOWS_PARITY.md`。

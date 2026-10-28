@@ -27,3 +27,10 @@ for error in errors:
 if errors:
     raise SystemExit(1)
 print(f"Validated platform boundaries for {len(list(CORE.rglob('*.swift')))} shared Swift files")
+
+windows_core = ROOT / "Platforms/Windows/src/FoldGit.Core"
+for path in windows_core.rglob("*.cs"):
+    if {"obj", "bin"} & set(path.parts):
+        continue
+    if re.search(r"using (Microsoft\.UI|Windows\.UI|FoldGit\.Platform)", path.read_text(encoding="utf-8")):
+        raise SystemExit(f"{path.relative_to(ROOT)}: native dependency in C# core")

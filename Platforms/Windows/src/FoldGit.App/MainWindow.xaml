@@ -1,0 +1,138 @@
+<Window x:Class="FoldGit.App.MainWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:controls="using:FoldGit.App.Controls">
+  <Grid x:Name="Root" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid.Resources><SolidColorBrush x:Key="SelectionBrush" Color="{ThemeResource SystemAccentColor}"/></Grid.Resources>
+    <Grid.RowDefinitions><RowDefinition Height="40"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+    <Border x:Name="TitleRegion" Padding="16,0,160,0">
+      <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+        <Image Source="Assets/Square44x44Logo.png" Width="20" Height="20"/><TextBlock Text="FoldGit" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+      </StackPanel>
+    </Border>
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions><ColumnDefinition x:Name="SidebarColumn" Width="260"/><ColumnDefinition Width="1"/><ColumnDefinition x:Name="HistoryColumn" Width="400" MinWidth="320"/><ColumnDefinition Width="5"/><ColumnDefinition Width="*" MinWidth="380"/></Grid.ColumnDefinitions>
+      <Grid x:Name="SidebarPane" Padding="12,0,12,0">
+        <Grid.RowDefinitions><RowDefinition Height="48"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="48"/></Grid.RowDefinitions>
+        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+          <TextBlock x:Name="RepositoriesHeading" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
+          <Button x:Name="AddMenuButton" Grid.Column="1" VerticalAlignment="Center" Background="Transparent" BorderThickness="0"><FontIcon Glyph="&#xE710;" FontSize="16"/>
+            <Button.Flyout><MenuFlyout><MenuFlyoutItem x:Name="AddButton" Click="AddClicked"/><MenuFlyoutItem x:Name="CloneButton" Click="CloneClicked"/></MenuFlyout></Button.Flyout>
+          </Button>
+        </Grid>
+        <AutoSuggestBox x:Name="RepositoryFilter" Grid.Row="1" TextChanged="FilterChanged" Margin="0,4,0,8" QueryIcon="Find"/>
+        <ListView x:Name="RepositoryList" Grid.Row="2" ItemsSource="{Binding RepositoryRows}" SelectionMode="Extended" SelectionChanged="RepositorySelected"
+          CanDragItems="True" AllowDrop="True" CanReorderItems="False" DragItemsStarting="RepositoryDragStarting" Drop="RepositoryDrop" DragOver="RepositoryDragOver" RightTapped="RepositoryRightTapped">
+          <ListView.ItemTemplate><DataTemplate>
+            <Grid Padding="0,6" ToolTipService.ToolTip="{Binding Path}">
+              <Grid.ColumnDefinitions><ColumnDefinition Width="24"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+              <FontIcon Glyph="{Binding Glyph}" FontSize="16"/>
+              <StackPanel Grid.Column="1"><TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"/><TextBlock Text="{Binding State}" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{ThemeResource CaptionTextBlockStyle}"/></StackPanel>
+            </Grid>
+          </DataTemplate></ListView.ItemTemplate>
+        </ListView>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+          <Button x:Name="SettingsButton" Click="SettingsClicked" Background="Transparent" BorderThickness="0"><FontIcon Glyph="&#xE713;" FontSize="16"/></Button>
+          <Button x:Name="OpenButton" Click="OpenClicked" Background="Transparent" BorderThickness="0"><FontIcon Glyph="&#xE8E5;" FontSize="16"/></Button>
+          <Button x:Name="WorktreesButton" Background="Transparent" BorderThickness="0"><FontIcon Glyph="&#xE8B7;" FontSize="16"/>
+            <Button.Flyout><Flyout x:Name="WorktreesFlyout"><Grid Width="380" RowSpacing="8"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+              <StackPanel Orientation="Horizontal" Spacing="8"><Button x:Name="NewWorktreeButton" Click="NewWorktreeClicked"/><Button x:Name="PruneButton" Click="PruneClicked"/></StackPanel>
+              <ListView x:Name="WorktreeList" Grid.Row="1" ItemsSource="{Binding Worktrees}" MaxHeight="420" IsItemClickEnabled="True" ItemClick="WorktreeSelected" RightTapped="WorktreeRightTapped">
+                <ListView.ItemTemplate><DataTemplate><StackPanel Spacing="4" Padding="0,6"><TextBlock Text="{Binding Branch}"/><TextBlock Text="{Binding Path}" TextWrapping="Wrap" Style="{ThemeResource CaptionTextBlockStyle}"/></StackPanel></DataTemplate></ListView.ItemTemplate>
+              </ListView>
+            </Grid></Flyout></Button.Flyout>
+          </Button>
+        </StackPanel>
+      </Grid>
+      <Border Grid.Column="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}"/>
+      <Grid Grid.Column="2">
+        <Grid.RowDefinitions><RowDefinition Height="48"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="44"/></Grid.RowDefinitions>
+        <Grid x:Name="Commands" Padding="8,0" ColumnSpacing="4">
+          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+          <DropDownButton x:Name="BranchSelector" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="Transparent" BorderThickness="0">
+            <DropDownButton.Content><StackPanel Orientation="Horizontal" Spacing="8"><FontIcon Glyph="&#xE8AD;" FontSize="16"/><TextBlock x:Name="CurrentBranchLabel" MaxWidth="120" TextTrimming="CharacterEllipsis"/></StackPanel></DropDownButton.Content>
+            <DropDownButton.Flyout><Flyout x:Name="BranchesFlyout"><StackPanel Width="340" Spacing="8">
+              <TextBox x:Name="BranchFilter" TextChanged="BranchFilterChanged"/>
+              <TextBlock x:Name="BranchesHeading" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+              <ListView x:Name="BranchList" ItemsSource="{Binding LocalBranches}" MaxHeight="320" IsItemClickEnabled="True" ItemClick="BranchSelected" RightTapped="BranchRightTapped">
+                <ListView.ItemTemplate><DataTemplate><Grid Padding="0,4"><Grid.ColumnDefinitions><ColumnDefinition Width="24"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><CheckBox IsChecked="{Binding Current}" IsEnabled="False" MinWidth="0"/><TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/></Grid></DataTemplate></ListView.ItemTemplate>
+              </ListView>
+              <Expander x:Name="RemoteBranchesSection" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"><ListView x:Name="RemoteBranchList" ItemsSource="{Binding RemoteBranches}" MaxHeight="220" DisplayMemberPath="Name" IsItemClickEnabled="True" ItemClick="BranchSelected" RightTapped="BranchRightTapped"/></Expander>
+              <Button x:Name="BranchButton" Click="BranchClicked" HorizontalAlignment="Stretch"/>
+            </StackPanel></Flyout></DropDownButton.Flyout>
+          </DropDownButton>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="0" VerticalAlignment="Center">
+            <Button x:Name="FetchButton" Click="FetchClicked" Background="Transparent" BorderThickness="0" Padding="8"><FontIcon Glyph="&#xE72C;" FontSize="16"/></Button>
+            <Button x:Name="PullButton" Click="PullClicked" Background="Transparent" BorderThickness="0" Padding="8"><FontIcon Glyph="&#xE896;" FontSize="16"/></Button>
+            <Button x:Name="PushButton" Click="PushClicked" Background="Transparent" BorderThickness="0" Padding="8"><FontIcon Glyph="&#xE898;" FontSize="16"/></Button>
+            <Button x:Name="RepositoryMenuButton" Background="Transparent" BorderThickness="0" Padding="8"><FontIcon Glyph="&#xE712;" FontSize="16"/>
+              <Button.Flyout><MenuFlyout><MenuFlyoutItem x:Name="RefreshButton" Click="RefreshClicked"/><MenuFlyoutItem x:Name="TagsButton" Click="TagsClicked"/><MenuFlyoutItem x:Name="StashesButton" Click="StashesClicked"/><MenuFlyoutSeparator/><MenuFlyoutItem x:Name="CompareButton" Click="CompareClicked"/></MenuFlyout></Button.Flyout>
+            </Button>
+          </StackPanel>
+        </Grid>
+        <AutoSuggestBox x:Name="CommitSearch" Grid.Row="1" TextChanged="SearchChanged" QuerySubmitted="SearchSubmitted" SuggestionChosen="SearchChosen" QueryIcon="Find" Margin="12,4,12,8"/>
+        <Button x:Name="ChangesButton" Grid.Row="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Click="ChangesClicked" Margin="8,0,8,4" Padding="12,10" Background="{ThemeResource SubtleFillColorSecondaryBrush}">
+          <StackPanel Orientation="Horizontal" Spacing="12"><FontIcon Glyph="&#xE70F;" FontSize="20" VerticalAlignment="Center"/><StackPanel Spacing="3"><TextBlock x:Name="ChangesLabel" FontWeight="SemiBold"/><TextBlock x:Name="WorkingTreeLabel" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/></StackPanel></StackPanel>
+        </Button>
+        <ListView x:Name="HistoryList" Grid.Row="3" ItemsSource="{Binding History}" SelectionMode="Extended" SelectionChanged="CommitSelected" RightTapped="CommitRightTapped" Loaded="HistoryLoaded">
+          <ListView.ItemContainerStyle><Style TargetType="ListViewItem"><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Padding" Value="8,0"/><Setter Property="Margin" Value="0"/><Setter Property="MinHeight" Value="56"/></Style></ListView.ItemContainerStyle>
+          <ListView.ItemTemplate><DataTemplate><Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+            <controls:GraphCell Row="{Binding}"/>
+            <StackPanel Grid.Column="1" Spacing="3" Margin="0,4"><TextBlock Text="{Binding Commit.Subject}" MaxLines="2" TextWrapping="Wrap"/><StackPanel Orientation="Horizontal" Spacing="8"><TextBlock Text="{Binding Commit.Author}" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/><TextBlock Text="{Binding Commit.ShortHash}" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/></StackPanel><TextBlock Text="{Binding Commit.Decorations}" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/></StackPanel>
+          </Grid></DataTemplate></ListView.ItemTemplate>
+        </ListView>
+        <Grid Grid.Row="4" Padding="12,4" ColumnSpacing="8"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+          <TextBlock x:Name="HistoryCount" VerticalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+          <Button x:Name="MoreButton" Grid.Column="1" Click="MoreClicked" Background="Transparent"/>
+        </Grid>
+      </Grid>
+      <Thumb Grid.Column="3" DragDelta="HistoryResized" Background="{ThemeResource DividerStrokeColorDefaultBrush}"/>
+      <Grid Grid.Column="4">
+        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+        <InfoBar x:Name="MergeBanner" IsClosable="False" Severity="Warning" Margin="12,4"><InfoBar.ActionButton><Button x:Name="ResolveButton" Click="ResolveClicked"/></InfoBar.ActionButton></InfoBar>
+        <TextBlock x:Name="EmptySelection" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+        <Grid x:Name="DetailPane" Grid.Row="1" Visibility="Collapsed">
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+          <StackPanel Padding="16,12" Spacing="8"><StackPanel x:Name="ParentLinks" Orientation="Horizontal" Spacing="8"/><TextBlock Text="{Binding DetailTitle}" TextWrapping="Wrap" IsTextSelectionEnabled="True"/></StackPanel>
+          <controls:DiffViewer x:Name="DiffContent" Grid.Row="1" Margin="12,0"/>
+          <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" Padding="12,8">
+            <Button x:Name="LayoutButton" Click="LayoutClicked"><FontIcon Glyph="&#xE8A9;" FontSize="14"/></Button><Button x:Name="ExpandButton" Click="ExpandClicked"><FontIcon Glyph="&#xE8A3;" FontSize="14"/></Button><Button x:Name="CollapseButton" Click="CollapseClicked"><FontIcon Glyph="&#xE8A4;" FontSize="14"/></Button><TextBlock x:Name="DetailStatistics" VerticalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+          </StackPanel>
+        </Grid>
+        <Grid x:Name="CommitPane" Grid.Row="1" Visibility="Collapsed" SizeChanged="CommitPaneResized">
+          <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="5"/><RowDefinition x:Name="StagedRow" Height="180"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+          <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="12,8" Spacing="8">
+            <TextBlock x:Name="UnstagedHeading" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+            <controls:DiffViewer x:Name="UnstagedDiffContent"/>
+            <ListView x:Name="UnstagedList" ItemsSource="{Binding Untracked}" SelectionMode="Extended" IsItemClickEnabled="True" ItemClick="UntrackedClicked" RightTapped="UnstagedRightTapped">
+              <ListView.ItemTemplate><DataTemplate><Grid Padding="4,8" ColumnSpacing="8"><Grid.ColumnDefinitions><ColumnDefinition Width="24"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><FontIcon Glyph="&#xE8A5;" FontSize="16"/><TextBlock Grid.Column="1" Text="{Binding Path}" TextTrimming="CharacterEllipsis"/><FontIcon Grid.Column="2" Glyph="&#xE710;" FontSize="14"/></Grid></DataTemplate></ListView.ItemTemplate>
+            </ListView>
+          </StackPanel></ScrollViewer>
+          <Thumb Grid.Row="1" DragDelta="StagedResized" DoubleTapped="StagedSizeReset" Background="{ThemeResource DividerStrokeColorDefaultBrush}"/>
+          <Grid Grid.Row="2" Margin="12,8"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+            <TextBlock x:Name="StagedHeading" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+            <controls:DiffViewer x:Name="StagedDiffContent" Grid.Row="1"/>
+          </Grid>
+          <Grid x:Name="ChangesCommands" SizeChanged="ChangesCommandsResized" Grid.Row="3" Padding="12,8" ColumnSpacing="8" RowSpacing="8" BorderThickness="0,1,0,0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" Spacing="4"><Button x:Name="ChangesLayoutButton" Click="LayoutClicked"><FontIcon Glyph="&#xE8A9;" FontSize="14"/></Button><Button x:Name="ChangesExpandButton" Click="ExpandClicked"><FontIcon Glyph="&#xE8A3;" FontSize="14"/></Button><Button x:Name="ChangesCollapseButton" Click="CollapseClicked"><FontIcon Glyph="&#xE8A4;" FontSize="14"/></Button></StackPanel>
+            <StackPanel x:Name="StagingActions" Grid.Column="1" Orientation="Horizontal" Spacing="8"><Button x:Name="StashButton" Click="StashClicked"/><Button x:Name="StageAllButton" Click="StageAllClicked"/><Button x:Name="UnstageAllButton" Click="UnstageAllClicked"/></StackPanel>
+          </Grid>
+          <Grid Grid.Row="4" Padding="12,4,12,12" RowSpacing="8"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+            <TextBox x:Name="MessageEditor" Text="{Binding CommitMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="64" MaxHeight="130"/>
+            <Grid Grid.Row="1" ColumnSpacing="8"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+              <Button x:Name="TemplatesButton" Click="TemplatesClicked"/>
+              <CheckBox Grid.Column="1" x:Name="AmendToggle" IsChecked="{Binding Amend, Mode=TwoWay}" Checked="AmendChanged" HorizontalAlignment="Right"/>
+              <Button Grid.Column="2" x:Name="CommitButton" Style="{ThemeResource AccentButtonStyle}" Click="CommitClicked"/>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Grid>
+    <StackPanel Grid.Row="2" Padding="12,4" Spacing="4">
+      <ProgressBar IsIndeterminate="True" Height="2" x:Name="Progress" Visibility="Collapsed"/>
+      <InfoBar x:Name="ErrorBar" Severity="Error" IsClosable="True"/>
+      <TextBlock Text="{Binding Status}" TextTrimming="CharacterEllipsis" Style="{ThemeResource CaptionTextBlockStyle}"/>
+    </StackPanel>
+  </Grid>
+</Window>

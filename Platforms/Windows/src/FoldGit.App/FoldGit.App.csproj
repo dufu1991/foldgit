@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.26100.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <UseWinUI>true</UseWinUI>
+    <DefaultLanguage>en</DefaultLanguage>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <WindowsPackageType>MSIX</WindowsPackageType>
+    <Platforms>x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifier Condition="'$(Platform)' == 'x64'">win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(Platform)' == 'ARM64'">win-arm64</RuntimeIdentifier>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets/FoldGit.ico</ApplicationIcon>
+    <SelfContained>true</SelfContained>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+    <AppxAutoIncrementPackageRevision>false</AppxAutoIncrementPackageRevision>
+    <AppxBundle>Never</AppxBundle>
+    <GenerateAppInstallerFile>false</GenerateAppInstallerFile>
+    <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(FoldGitCloudDebug)' == 'true' and '$(Configuration)' == 'Debug'">
+    <WindowsPackageType>None</WindowsPackageType>
+    <DefineConstants>$(DefineConstants);FOLDGIT_CLOUD_DEBUG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(FoldGitCloudDebug)' == 'true' and '$(FoldGitCloudCompatibility)' == 'true' and '$(Configuration)' == 'Debug'">
+    <TargetPlatformMinVersion>10.0.20348.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>10.0.20348.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+  <Target Name="RejectReleaseCloudCompatibility" BeforeTargets="PrepareForBuild" Condition="'$(FoldGitCloudDebug)' == 'true' and '$(Configuration)' != 'Debug'">
+    <Error Text="FoldGitCloudDebug is restricted to Debug builds. Release requires Windows 11 24H2." />
+  </Target>
+  <ItemGroup>
+    <ProjectReference Include="../FoldGit.Core/FoldGit.Core.csproj" />
+    <ProjectReference Include="../FoldGit.Platform.Windows/FoldGit.Platform.Windows.csproj" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.5.1" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2705" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.4.0" />
+    <Content Include="../../../../Shared/Resources/FileIcons/MaterialFileIcons/**/*" Link="Assets/FileIcons/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../Shared/Resources/FileIcons/MaterialFileIcons.json" Link="Assets/MaterialFileIcons.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../Shared/Resources/Licenses/LICENSE.txt" Link="Assets/LICENSE.txt" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets/**" CopyToOutputDirectory="PreserveNewest" />
+    <AppxManifest Include="Package.appxmanifest" Condition="'$(WindowsPackageType)' == 'MSIX'" />
+  </ItemGroup>
+  <Target Name="ValidateSharedResources" BeforeTargets="PrepareForBuild" Condition="'$(SkipResourceValidation)' != 'true'">
+    <Exec Command="python &quot;$(MSBuildThisFileDirectory)..\..\..\..\Scripts\generate-resources.py&quot; --check" />
+  </Target>
+</Project>

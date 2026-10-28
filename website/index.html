@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>FoldGit — 把仓库折进一个窗口</title>
+  <meta name="description" content="FoldGit 是原生、轻量的 macOS Git 客户端：按目录或分组折叠仓库，工作树收在所属仓库之下，约 4 MB。">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#eef1fb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0d18" media="(prefers-color-scheme: dark)">
+  <meta property="og:title" content="FoldGit">
+  <meta property="og:description" content="Every repository, folded into one window. A native, lightweight Git client for macOS.">
+  <meta property="og:image" content="assets/screenshots/main-en-light@2x.webp">
+  <link rel="icon" href="assets/favicon.png" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="assets/favicon-dark.png" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
+  <script>
+    // Resolve language and appearance before first paint to avoid a flash.
+    (function () {
+      var root = document.documentElement, store = {};
+      try { store.lang = localStorage.getItem("foldgit.lang"); store.theme = localStorage.getItem("foldgit.theme"); } catch (e) {}
+      var first = (navigator.languages && navigator.languages[0]) || navigator.language || "";
+      var lang = store.lang === "zh" || store.lang === "en" ? store.lang : (first.toLowerCase().indexOf("zh") === 0 ? "zh" : "en");
+      root.dataset.lang = lang;
+      root.lang = lang === "zh" ? "zh-CN" : "en";
+      if (store.theme === "light" || store.theme === "dark") root.dataset.theme = store.theme;
+      root.dataset.mode = root.dataset.theme || "auto";
+      root.dataset.scheme = root.dataset.theme || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css?v=5">
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true">
+    <svg class="bands" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--band-1a)"/><stop offset="1" style="stop-color:var(--band-1b)"/></linearGradient>
+        <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--band-2a)"/><stop offset="1" style="stop-color:var(--band-2b)"/></linearGradient>
+        <linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--band-3a)"/><stop offset="1" style="stop-color:var(--band-3b)"/></linearGradient>
+        <linearGradient id="g4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--band-4a)"/><stop offset="1" style="stop-color:var(--band-4b)"/></linearGradient>
+      </defs>
+      <g class="band band-1">
+        <path fill="url(#g1)" d="M-80 470C260 430 560 330 900 250C1120 198 1300 150 1520 90V1700H-80Z"/>
+        <path class="edge" d="M-80 470C260 430 560 330 900 250C1120 198 1300 150 1520 90"/>
+      </g>
+      <g class="band band-2">
+        <path fill="url(#g2)" d="M-80 640C240 620 520 520 860 450C1100 400 1300 360 1520 300V1700H-80Z"/>
+        <path class="edge" d="M-80 640C240 620 520 520 860 450C1100 400 1300 360 1520 300"/>
+      </g>
+      <g class="band band-4">
+        <path fill="url(#g4)" d="M-80 560C160 600 420 700 720 760C980 812 1240 820 1520 800V1700H-80Z"/>
+        <path class="edge" d="M-80 560C160 600 420 700 720 760C980 812 1240 820 1520 800"/>
+      </g>
+      <g class="band band-3">
+        <path fill="url(#g3)" d="M-80 800C220 790 520 730 840 690C1110 656 1310 620 1520 560V1700H-80Z"/>
+        <path class="edge" d="M-80 800C220 790 520 730 840 690C1110 656 1310 620 1520 560"/>
+      </g>
+    </svg>
+    <div class="grain"></div>
+  </div>
+
+  <header class="nav-wrap">
+    <nav class="nav glass" aria-label="Primary">
+      <a class="brand" href="#top">
+        <img class="brand-icon" src="assets/icon.webp" data-app-icon alt="" width="28" height="28">
+        <span>FoldGit</span>
+      </a>
+      <div class="nav-links">
+        <a href="#fold" data-i18n="nav.fold">折叠</a>
+        <a href="#why" data-i18n="nav.why">理念</a>
+        <a href="#compare" data-i18n="nav.compare">差异</a>
+        <a href="#windows">Windows</a>
+        <a href="manual.html" data-i18n="nav.manual">使用手册</a>
+      </div>
+      <div class="nav-actions">
+        <button class="pill-btn" id="lang-toggle" type="button" aria-label="Switch language / 切换语言">
+          <span class="show-zh">EN</span><span class="show-en">中</span>
+        </button>
+        <button class="pill-btn icon-btn" id="theme-toggle" type="button" aria-label="Toggle appearance">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6Z"/></svg>
+          <svg class="i-auto" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path class="fill" d="M12 3.5a8.5 8.5 0 0 1 0 17Z"/></svg>
+        </button>
+        <a class="pill-btn icon-btn" href="https://github.com/dufu1991/foldgit" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="filled"><path d="M12 1.8a10.2 10.2 0 0 0-3.2 19.9c.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.2-3.4-1.2-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.6 1.1 1.6 1.1.9 1.6 2.4 1.1 3 .8.1-.7.4-1.1.6-1.4-2.3-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .9-.3 2.8 1a9.6 9.6 0 0 1 5.1 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.7.7 1 1.6 1 2.7 0 3.9-2.3 4.7-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10.2 10.2 0 0 0 12 1.8Z"/></svg>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- Hero: the main screenshot is the centerpiece -->
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="hero-icon-wrap" data-reveal>
+          <img class="hero-icon" src="assets/icon.webp" data-app-icon alt="FoldGit" width="112" height="112">
+        </div>
+        <p class="eyebrow" data-reveal data-i18n="hero.eyebrow">开源 · 原生 macOS Git 客户端</p>
+        <h1 data-reveal data-i18n="hero.title">把所有仓库，<br><span class="grad">折进一个窗口。</span></h1>
+        <p class="lede" data-reveal data-i18n="hero.lede">按目录或分组收纳仓库，工作树收在所属仓库之下。AI 写的生产代码，看一眼再放心提交。</p>
+        <div class="cta-row" data-reveal>
+          <a class="btn btn-primary" href="https://github.com/dufu1991/foldgit/releases/latest">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="filled"><path d="M16.4 12.7c0-2.4 2-3.5 2.1-3.6a4.5 4.5 0 0 0-3.5-1.9c-1.5-.2-2.9.9-3.7.9s-1.9-.9-3.2-.8a4.7 4.7 0 0 0-4 2.4c-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4a10 10 0 0 0 1.4-2.8c-.1 0-2.6-1-2.6-4ZM14 5.6c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.6 2.8-1.4Z"/></svg>
+            <span data-i18n="cta.download">下载 macOS 版</span>
+          </a>
+          <a class="btn btn-glass" href="https://github.com/dufu1991/foldgit">
+            <span data-i18n="cta.source">查看源码</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+          </a>
+        </div>
+        <p class="meta" data-reveal data-i18n="hero.meta">macOS 26 及以上 · Apple Silicon · 约 4 MB · MIT 开源</p>
+      </div>
+
+      <div class="stage" id="stage">
+        <div class="stage-glow" aria-hidden="true"></div>
+        <figure class="shot-frame" id="shot-frame">
+          <img id="main-shot" class="shot" alt="" width="1440" height="900" fetchpriority="high" decoding="async">
+        </figure>
+      </div>
+    </section>
+
+    <!-- Fold: scroll-driven story of repositories folding into order -->
+    <section class="fold" id="fold">
+      <div class="fold-sticky">
+        <div class="fold-copy">
+          <p class="kicker" data-i18n="fold.kicker">Fold 是什么意思</p>
+          <ol class="fold-steps" id="fold-steps">
+            <li class="is-active">
+              <h3 data-i18n="fold.s0.title">仓库散落各处</h3>
+              <p data-i18n="fold.s0.body">项目散在不同目录里，多数工具一次只能看一个仓库，切换全靠记忆。</p>
+            </li>
+            <li>
+              <h3 data-i18n="fold.s1.title">按目录或分组折叠</h3>
+              <p data-i18n="fold.s1.body">导入目录自动成组，也能把任意位置的仓库收进同一组。不移动任何文件夹。</p>
+            </li>
+            <li>
+              <h3 data-i18n="fold.s2.title">工作树收在仓库之下</h3>
+              <p data-i18n="fold.s2.body">自动发现工作树，带着分支名折叠在仓库下方。新建、锁定、合并收尾，一处完成。</p>
+            </li>
+            <li>
+              <h3 data-i18n="fold.s3.title">不常用的，再折一层</h3>
+              <p data-i18n="fold.s3.body">偶尔用的仓库再折一层，常用的始终在眼前。配合过滤和排序，几十个仓库也一目了然。</p>
+            </li>
+          </ol>
+        </div>
+
+        <div class="fold-stage glass" id="fold-stage" data-step="0" aria-hidden="true">
+          <div class="fs-toolbar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="fs-search" data-i18n="fold.search">搜索目录或仓库</span>
+          </div>
+          <div class="fs-canvas" id="fs-canvas">
+            <!-- Rows are positioned by main.js for each step. -->
+            <div class="fs-row fs-head" data-id="studio"><i class="chev"></i><i class="ic ic-group"></i><b>Studio</b><em>3</em></div>
+            <div class="fs-row fs-repo" data-id="aurora"><i class="ic ic-repo c1"></i><b>aurora-ui</b><span class="tag">main</span></div>
+            <div class="fs-row fs-repo" data-id="tide"><i class="ic ic-repo c2"></i><b>tide-api</b><span class="tag">main</span></div>
+            <div class="fs-row fs-wt" data-id="tide-wt"><i class="ic ic-wt"></i><b>tide-api-release</b><span class="tag wt">release/1.1</span></div>
+            <div class="fs-row fs-repo" data-id="pebble"><i class="ic ic-repo c3"></i><b>pebble-notes</b><span class="tag">main</span></div>
+            <div class="fs-row fs-head" data-id="oss"><i class="chev"></i><i class="ic ic-dir"></i><b>~/Code/oss</b><em>4</em></div>
+            <div class="fs-row fs-repo" data-id="harbor"><i class="ic ic-repo c4"></i><b>harbor-docs</b><span class="tag">main</span></div>
+            <div class="fs-row fs-repo" data-id="lumen"><i class="ic ic-repo c5"></i><b>lumen-cli</b><span class="tag">dev</span></div>
+            <div class="fs-row fs-repo" data-id="kite"><i class="ic ic-repo c1"></i><b>kite-site</b><span class="tag">main</span></div>
+            <div class="fs-row fs-repo" data-id="moss"><i class="ic ic-repo c3"></i><b>moss-sketches</b><span class="tag">main</span></div>
+            <div class="fs-row fs-more" data-id="infrequent"><i class="chev closed"></i><b data-i18n="fold.infrequent">不常用</b><em>2</em></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why -->
+    <section class="section" id="why">
+      <div class="section-head">
+        <p class="kicker" data-reveal data-i18n="why.kicker">为什么做 FoldGit</p>
+        <h2 data-reveal data-i18n="why.title">IDE 渐渐不必打开了，<br>但代码仍需要有人看过。</h2>
+      </div>
+      <div class="why-grid">
+        <article class="card glass" data-reveal="fold" style="--d:0">
+          <span class="card-num">01</span>
+          <h3 data-i18n="why.1.title">AI 写代码，人来把关</h3>
+          <p data-i18n="why.1.body">代码越来越多由 Agent 生成，看改动常常不必再打开 IDE。但生产代码仍要有人过一遍：改了哪些文件、哪几行、有没有越界。</p>
+        </article>
+        <article class="card glass" data-reveal="fold" style="--d:1">
+          <span class="card-num">02</span>
+          <h3 data-i18n="why.2.title">一个顺眼又轻快的窗口</h3>
+          <p data-i18n="why.2.body">所以需要一个打开即用、专注看清改动的 Git 界面：提交图、差异、暂存、提交，并且符合 macOS 的视觉习惯。</p>
+        </article>
+        <article class="card glass" data-reveal="fold" style="--d:2">
+          <span class="card-num">03</span>
+          <h3 data-i18n="why.3.title">为什么另起炉灶</h3>
+          <p data-i18n="why.3.body">现有 Git 客户端很难同时做到美观、简洁、轻量。方向相近的项目也有，本想参与，但交互和底层都已偏离太远，不适合在原项目里改，于是重新开始。</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Differentiators -->
+    <section class="section" id="compare">
+      <div class="section-head">
+        <p class="kicker" data-reveal data-i18n="cmp.kicker">差异在哪里</p>
+        <h2 data-reveal data-i18n="cmp.title">少一点负担，<br>多一点秩序。</h2>
+      </div>
+      <div class="bento">
+        <article class="tile glass tile-wide" data-reveal="fold" style="--d:0">
+          <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H9l2 2h7.5A2.5 2.5 0 0 1 21 9.5v8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5Z"/><path d="M7 12h10M7 15.5h6"/></svg></div>
+          <h3 data-i18n="d.multi.title">为多项目而生</h3>
+          <p data-i18n="d.multi.body">所有仓库常驻侧边栏，按目录或分组折叠，支持多种排序与过滤；可直接导入本地目录或克隆远程仓库。</p>
+        </article>
+        <article class="tile glass" data-reveal="fold" style="--d:1">
+          <div class="tile-icon"><svg viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="9" r="2"/><path d="M6 7v10M18 11c0 4-6 3-12 6"/></svg></div>
+          <h3 data-i18n="d.wt.title">工作树是一等公民</h3>
+          <p data-i18n="d.wt.body">自动发现，检查分支占用，完成时合并并清理；冲突在原生弹窗里处理。</p>
+        </article>
+        <article class="tile glass" data-reveal="fold" style="--d:2">
+          <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7Z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg></div>
+          <h3 data-i18n="d.size.title">约 4 MB</h3>
+          <p data-i18n="d.size.body">SwiftUI 与 AppKit 原生实现，不含 Electron；同类 Electron 应用常上百 MB。</p>
+        </article>
+        <article class="tile glass" data-reveal="fold" style="--d:0">
+          <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M13 3 5 13.5h6L10 21l8-10.5h-6Z"/></svg></div>
+          <h3 data-i18n="d.perf.title">快，而且不打扰</h3>
+          <p data-i18n="d.perf.body">搜索在后台进行，复用索引、分页返回，新输入即取消旧查询；自动抓取按仓库定时，只下载不合并。</p>
+        </article>
+        <article class="tile glass" data-reveal="fold" style="--d:1">
+          <div class="tile-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M12 4v16M6.5 9h3M14.5 9h3M6.5 13h3M14.5 13h3"/></svg></div>
+          <h3 data-i18n="d.flow.title">直观的操作逻辑</h3>
+          <p data-i18n="d.flow.body">差异随窗口宽度自动切换单栏或双栏，逐块暂存，提交信息模板一键填入，没有多余弹窗。</p>
+        </article>
+        <article class="tile glass tile-full" data-reveal="fold" style="--d:2">
+          <div class="tile-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" class="fillish"/></svg></div>
+          <h3 data-i18n="d.look.title">像 macOS 本身</h3>
+          <p data-i18n="d.look.body">采用 macOS 26 液态玻璃与系统控件，原生支持亮暗色和八种界面语言。</p>
+        </article>
+      </div>
+
+      <div class="compare glass" data-reveal>
+        <div class="cmp-row cmp-head">
+          <span></span>
+          <span class="cmp-us"><img src="assets/icon.webp" data-app-icon alt="" width="22" height="22">FoldGit</span>
+          <span data-i18n="cmp.them">常见 Git 客户端</span>
+        </div>
+        <div class="cmp-row"><span data-i18n="cmp.r1">多仓库</span><span data-i18n="cmp.r1a">目录 / 分组折叠，全部常驻</span><span data-i18n="cmp.r1b">一次打开一个，来回切换</span></div>
+        <div class="cmp-row"><span data-i18n="cmp.r2">工作树</span><span data-i18n="cmp.r2a">自动发现，新建到完成全流程</span><span data-i18n="cmp.r2b">支持有限，常需回到命令行</span></div>
+        <div class="cmp-row"><span data-i18n="cmp.r3">体积</span><span data-i18n="cmp.r3a">约 4 MB，原生</span><span data-i18n="cmp.r3b">Electron 应用常在百 MB 以上</span></div>
+        <div class="cmp-row"><span data-i18n="cmp.r4">界面</span><span data-i18n="cmp.r4a">系统材质与控件，信息克制</span><span data-i18n="cmp.r4b">自绘界面，按钮与面板堆叠</span></div>
+        <div class="cmp-row"><span data-i18n="cmp.r5">价格</span><span data-i18n="cmp.r5a">免费，MIT 开源</span><span data-i18n="cmp.r5b">付费或订阅居多</span></div>
+      </div>
+    </section>
+
+    <!-- Windows -->
+    <section class="section" id="windows">
+      <div class="windows-card glass" data-reveal>
+        <div class="win-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <div>
+          <h2 data-i18n="win.title">也有 Windows 版，但它需要你。</h2>
+          <p data-i18n="win.body">基于 C#、WinUI 3 和 .NET 10，目前只是最简实现。作者没有 Windows 设备，欢迎感兴趣的你一起参与建设。</p>
+          <div class="cta-row">
+            <a class="btn btn-glass" href="https://github.com/dufu1991/foldgit/tree/main/Platforms/Windows" data-i18n="win.readme">Windows 开发说明</a>
+            <a class="btn btn-glass" href="https://github.com/dufu1991/foldgit/blob/main/docs/WINDOWS_PARITY.md" data-i18n="win.parity">功能对齐清单</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="section final">
+      <img class="final-icon" data-reveal src="assets/icon.webp" data-app-icon alt="" width="96" height="96">
+      <h2 data-reveal data-i18n="final.title">看一眼改动，再按下提交。</h2>
+      <div class="cta-row center" data-reveal>
+        <a class="btn btn-primary" href="https://github.com/dufu1991/foldgit/releases/latest" data-i18n="cta.download">下载 macOS 版</a>
+        <a class="btn btn-glass" href="https://github.com/dufu1991/foldgit" data-i18n="cta.star">在 GitHub 上关注</a>
+        <a class="btn btn-glass" href="manual.html" data-i18n="cta.manual">使用手册</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p data-i18n="footer.text">FoldGit 由 dufu 独立维护，采用 MIT 许可证开源。</p>
+    <p class="footer-note" data-i18n="footer.note">截图中的仓库与人名均为演示数据。</p>
+  </footer>
+
+  <script src="i18n.js?v=5"></script>
+  <script src="main.js?v=5"></script>
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>FoldGit 使用手册</title>
+  <meta name="description" content="FoldGit 使用手册：安装、添加仓库、分组、查看与提交改动、分支、工作树和快捷键。">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="assets/favicon.png" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="assets/favicon-dark.png" media="(prefers-color-scheme: dark)">
+  <script>
+    (function () {
+      var root = document.documentElement, store = {};
+      try { store.lang = localStorage.getItem("foldgit.lang"); store.theme = localStorage.getItem("foldgit.theme"); } catch (e) {}
+      var first = (navigator.languages && navigator.languages[0]) || navigator.language || "";
+      var lang = store.lang === "zh" || store.lang === "en" ? store.lang : (first.toLowerCase().indexOf("zh") === 0 ? "zh" : "en");
+      root.dataset.lang = lang;
+      root.lang = lang === "zh" ? "zh-CN" : "en";
+      if (store.theme === "light" || store.theme === "dark") root.dataset.theme = store.theme;
+      root.dataset.mode = root.dataset.theme || "auto";
+      root.dataset.scheme = root.dataset.theme || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css?v=5">
+</head>
+<body class="manual-page">
+  <div class="backdrop" aria-hidden="true">
+    <svg class="bands" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--band-1a)"/><stop offset="1" style="stop-color:var(--band-1b)"/></linearGradient>
+        <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--band-2a)"/><stop offset="1" style="stop-color:var(--band-2b)"/></linearGradient>
+        <linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--band-3a)"/><stop offset="1" style="stop-color:var(--band-3b)"/></linearGradient>
+      </defs>
+      <g class="band band-1">
+        <path fill="url(#g1)" d="M-80 470C260 430 560 330 900 250C1120 198 1300 150 1520 90V1700H-80Z"/>
+        <path class="edge" d="M-80 470C260 430 560 330 900 250C1120 198 1300 150 1520 90"/>
+      </g>
+      <g class="band band-2">
+        <path fill="url(#g2)" d="M-80 640C240 620 520 520 860 450C1100 400 1300 360 1520 300V1700H-80Z"/>
+        <path class="edge" d="M-80 640C240 620 520 520 860 450C1100 400 1300 360 1520 300"/>
+      </g>
+      <g class="band band-3">
+        <path fill="url(#g3)" d="M-80 800C220 790 520 730 840 690C1110 656 1310 620 1520 560V1700H-80Z"/>
+        <path class="edge" d="M-80 800C220 790 520 730 840 690C1110 656 1310 620 1520 560"/>
+      </g>
+    </svg>
+    <div class="grain"></div>
+  </div>
+
+  <header class="nav-wrap">
+    <nav class="nav glass" aria-label="Primary">
+      <a class="brand" href="index.html">
+        <img class="brand-icon" src="assets/icon.webp" data-app-icon alt="" width="28" height="28">
+        <span>FoldGit</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html"><span class="show-zh">首页</span><span class="show-en">Home</span></a>
+        <a href="manual.html" aria-current="page"><span class="show-zh">使用手册</span><span class="show-en">Guide</span></a>
+      </div>
+      <div class="nav-actions">
+        <button class="pill-btn" id="lang-toggle" type="button" aria-label="Switch language / 切换语言">
+          <span class="show-zh">EN</span><span class="show-en">中</span>
+        </button>
+        <button class="pill-btn icon-btn" id="theme-toggle" type="button" aria-label="Toggle appearance">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6Z"/></svg>
+          <svg class="i-auto" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path class="fill" d="M12 3.5a8.5 8.5 0 0 1 0 17Z"/></svg>
+        </button>
+        <a class="pill-btn icon-btn" href="https://github.com/dufu1991/foldgit" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="filled"><path d="M12 1.8a10.2 10.2 0 0 0-3.2 19.9c.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.2-3.4-1.2-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.6 1.1 1.6 1.1.9 1.6 2.4 1.1 3 .8.1-.7.4-1.1.6-1.4-2.3-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .9-.3 2.8 1a9.6 9.6 0 0 1 5.1 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.7.7 1 1.6 1 2.7 0 3.9-2.3 4.7-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10.2 10.2 0 0 0 12 1.8Z"/></svg>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="manual">
+    <header class="manual-head" data-reveal>
+      <p class="kicker"><span class="show-zh">使用手册</span><span class="show-en">User Guide</span></p>
+      <h1 class="manual-title"><span class="show-zh">五分钟上手 FoldGit</span><span class="show-en">FoldGit in five minutes</span></h1>
+      <p class="lede">
+        <span class="show-zh">只讲日常会用到的部分。界面里的按钮名称以简体中文界面为准。</span>
+        <span class="show-en">Only the parts you use every day. Button names follow the English interface.</span>
+      </p>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="toc glass" aria-label="Contents">
+        <a href="#install"><span class="show-zh">安装</span><span class="show-en">Install</span></a>
+        <a href="#add"><span class="show-zh">添加仓库</span><span class="show-en">Add repositories</span></a>
+        <a href="#organize"><span class="show-zh">整理侧边栏</span><span class="show-en">Organize the sidebar</span></a>
+        <a href="#commit"><span class="show-zh">查看与提交改动</span><span class="show-en">Review and commit</span></a>
+        <a href="#history"><span class="show-zh">浏览历史</span><span class="show-en">Browse history</span></a>
+        <a href="#branches"><span class="show-zh">分支与同步</span><span class="show-en">Branches and sync</span></a>
+        <a href="#worktrees"><span class="show-zh">工作树</span><span class="show-en">Worktrees</span></a>
+        <a href="#stash"><span class="show-zh">贮藏</span><span class="show-en">Stash</span></a>
+        <a href="#settings"><span class="show-zh">设置</span><span class="show-en">Settings</span></a>
+        <a href="#shortcuts"><span class="show-zh">快捷键</span><span class="show-en">Shortcuts</span></a>
+      </aside>
+
+      <div class="manual-body">
+        <section class="m-section glass" id="install" data-reveal>
+          <span class="m-num">01</span>
+          <h2><span class="show-zh">安装</span><span class="show-en">Install</span></h2>
+          <div class="show-zh">
+            <ol>
+              <li>在 <a href="https://github.com/dufu1991/foldgit/releases/latest">GitHub Releases</a> 下载 <code>FoldGit-…-macOS-arm64.dmg</code>。</li>
+              <li>打开 DMG，把 FoldGit 拖进「应用程序」。</li>
+              <li>需要 macOS 26 及以上的 Apple Silicon Mac，并已安装 Git。没有 Git 的话，在终端运行 <code>xcode-select --install</code>。</li>
+            </ol>
+            <div class="tip">
+              <p><b>首次打开提示“已损坏”或“无法验证开发者”？</b>FoldGit 暂未使用 Apple 开发者证书签名，macOS 会拦截。在终端执行下面的命令后再打开即可：</p>
+              <pre class="cmd"><code>xattr -dr com.apple.quarantine /Applications/FoldGit.app</code></pre>
+            </div>
+          </div>
+          <div class="show-en">
+            <ol>
+              <li>Download <code>FoldGit-…-macOS-arm64.dmg</code> from <a href="https://github.com/dufu1991/foldgit/releases/latest">GitHub Releases</a>.</li>
+              <li>Open the DMG and drag FoldGit into Applications.</li>
+              <li>Requires an Apple Silicon Mac on macOS 26 or later, with Git installed. If Git is missing, run <code>xcode-select --install</code> in Terminal.</li>
+            </ol>
+            <div class="tip">
+              <p><b>“FoldGit is damaged” or “cannot be verified” on first launch?</b> FoldGit is not yet signed with an Apple Developer certificate, so macOS blocks it. Run this in Terminal, then open it again:</p>
+              <pre class="cmd"><code>xattr -dr com.apple.quarantine /Applications/FoldGit.app</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section class="m-section glass" id="add" data-reveal>
+          <span class="m-num">02</span>
+          <h2><span class="show-zh">添加仓库</span><span class="show-en">Add repositories</span></h2>
+          <div class="show-zh">
+            <p>点击侧边栏顶部的 <b>+</b>：</p>
+            <ul>
+              <li><b>添加本地仓库或目录</b>：选一个仓库，或一个包含多个仓库的目录。选目录时，其中的仓库会自动收成一组。</li>
+              <li><b>克隆远程仓库</b>：填入地址，选好保存位置，克隆完成后自动添加并选中。</li>
+            </ul>
+          </div>
+          <div class="show-en">
+            <p>Click <b>+</b> at the top of the sidebar:</p>
+            <ul>
+              <li><b>Add Local Repository or Directory</b> — pick one repository, or a folder that contains several. A folder becomes a group automatically.</li>
+              <li><b>Clone Remote Repository</b> — enter the URL and choose where to save it. The clone is added and selected when it finishes.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="m-section glass" id="organize" data-reveal>
+          <span class="m-num">03</span>
+          <h2><span class="show-zh">整理侧边栏</span><span class="show-en">Organize the sidebar</span></h2>
+          <div class="show-zh">
+            <ul>
+              <li><b>分组</b>：在 <b>+</b> 菜单中选「新建分组」，或多选仓库后右键「将所选仓库新建为分组」。分组只是整理方式，不会移动文件夹。</li>
+              <li><b>不常用的仓库</b>：右键「设为不活跃」，它会收进分组底部的二级折叠里。</li>
+              <li><b>改名</b>：右键修改「仓库显示名称」，只影响侧边栏，不改文件夹名。</li>
+              <li><b>查找与排序</b>：顶部搜索框按名称过滤；旁边的排序按钮可按名称、最近打开、最近修改或最近添加排序，也可以直接拖动调整顺序。</li>
+            </ul>
+          </div>
+          <div class="show-en">
+            <ul>
+              <li><b>Groups</b> — choose New Group from the <b>+</b> menu, or select several repositories and right-click New Group with Selection. Groups never move folders on disk.</li>
+              <li><b>Rarely used repositories</b> — right-click Mark as Inactive to tuck one into the folded section at the bottom of its group.</li>
+              <li><b>Rename</b> — set a Repository Display Name from the context menu. Only the sidebar label changes.</li>
+              <li><b>Find and sort</b> — the search field filters by name; the sort button orders by name, recently opened, modified or added. You can also drag to reorder.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="m-section glass" id="commit" data-reveal>
+          <span class="m-num">04</span>
+          <h2><span class="show-zh">查看与提交改动</span><span class="show-en">Review and commit</span></h2>
+          <div class="show-zh">
+            <ol>
+              <li>选中仓库，点提交列表顶部的「未提交的更改」。</li>
+              <li>逐个文件查看差异。每个代码块右侧的 <b>+</b> 可以单独暂存这一块，<b>−</b> 取消暂存；也可以用底部的「全部暂存」。</li>
+              <li>在「提交信息」里写好说明，按 <kbd>⌘</kbd><kbd>↩</kbd> 或点「提交」。勾选「修改上次提交」可以改写最近一次提交。</li>
+            </ol>
+            <p class="tip">差异显示默认「自动」：窗口够宽时并排，窄时单栏。也可以在底部手动切换。</p>
+          </div>
+          <div class="show-en">
+            <ol>
+              <li>Select a repository and click Uncommitted Changes at the top of the commit list.</li>
+              <li>Read the diff file by file. The <b>+</b> beside each hunk stages just that hunk, <b>−</b> unstages it; or use Stage All at the bottom.</li>
+              <li>Write a Commit Message and press <kbd>⌘</kbd><kbd>↩</kbd> or click Commit. Tick Amend to rewrite the latest commit.</li>
+            </ol>
+            <p class="tip">Diff layout defaults to Automatic: side by side when the window is wide enough, unified when it is not. You can switch it at the bottom.</p>
+          </div>
+        </section>
+
+        <section class="m-section glass" id="history" data-reveal>
+          <span class="m-num">05</span>
+          <h2><span class="show-zh">浏览历史</span><span class="show-en">Browse history</span></h2>
+          <div class="show-zh">
+            <ul>
+              <li>点击任意提交，右侧显示它改了什么。</li>
+              <li><kbd>⌘</kbd><kbd>F</kbd> 搜索提交，可按作者、邮箱或提交信息查找。</li>
+              <li>搜索框旁的菜单可以在「当前分支」和「全部提交」之间切换。</li>
+              <li>提交列表底部的分支图标用来显示或隐藏提交图。</li>
+            </ul>
+          </div>
+          <div class="show-en">
+            <ul>
+              <li>Click any commit to see what it changed.</li>
+              <li><kbd>⌘</kbd><kbd>F</kbd> searches commits by author, email or message.</li>
+              <li>The menu beside the search field switches between Current Branch and All Commits.</li>
+              <li>The branch icon at the bottom of the list shows or hides the commit graph.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="m-section glass" id="branches" data-reveal>
+          <span class="m-num">06</span>
+          <h2><span class="show-zh">分支与同步</span><span class="show-en">Branches and sync</span></h2>
+          <div class="show-zh">
+            <p>都在窗口顶部的工具栏里：</p>
+            <ul>
+              <li><b>选择分支</b>：切换、合并到当前分支、重命名或删除分支。</li>
+              <li><b>新建分支</b>、<b>查看标签</b>：创建分支，浏览和管理标签。</li>
+              <li><b>比较分支或标签</b>：选两个版本，查看它们之间的全部差异。</li>
+              <li><b>抓取 / 拉取 / 推送</b>：与远程同步。抓取只下载更新，不会合并。</li>
+              <li><b>打开方式</b>：在终端、编辑器或访达中打开当前仓库。</li>
+            </ul>
+          </div>
+          <div class="show-en">
+            <p>Everything lives in the toolbar:</p>
+            <ul>
+              <li><b>Select Branch</b> — switch, merge into the current branch, rename or delete.</li>
+              <li><b>Create New Branch</b> and <b>Show Tags</b> — create branches, browse and manage tags.</li>
+              <li><b>Compare Branches or Tags</b> — pick two revisions and see everything between them.</li>
+              <li><b>Fetch / Pull / Push</b> — sync with the remote. Fetch only downloads; it never merges.</li>
+              <li><b>Open in</b> — open the repository in Terminal, your editor or Finder.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="m-section glass" id="worktrees" data-reveal>
+          <span class="m-num">07</span>
+          <h2><span class="show-zh">工作树</span><span class="show-en">Worktrees</span></h2>
+          <div class="show-zh">
+            <ol>
+              <li>在仓库上右键「启用工作树」。（设置 → 仓库中的全局开关默认已打开。）</li>
+              <li>右键「新建工作树」，选新分支或已有分支。新工作树会折叠显示在仓库下方。</li>
+              <li>做完后右键「完成工作树」：选择目标分支，合并提交，再按需移除目录、删除源分支。</li>
+            </ol>
+            <p class="tip">遇到冲突时，可以在弹窗里比较两侧版本、选择保留哪一边，或用外部编辑器处理后继续。</p>
+          </div>
+          <div class="show-en">
+            <ol>
+              <li>Right-click a repository and choose Enable Worktrees. (The global switch under Settings → Repository is on by default.)</li>
+              <li>Right-click New Worktree and pick a new or existing branch. It appears folded beneath the repository.</li>
+              <li>When you are done, right-click Finish Worktree: choose the target branch, merge, then optionally remove the folder and delete the source branch.</li>
+            </ol>
+            <p class="tip">On conflicts, compare both sides in the sheet, keep one, or resolve in an external editor and continue.</p>
+          </div>
+        </section>
+
+        <section class="m-section glass" id="stash" data-reveal>
+          <span class="m-num">08</span>
+          <h2><span class="show-zh">贮藏</span><span class="show-en">Stash</span></h2>
+          <div class="show-zh">
+            <p>在「未提交的更改」底部点「贮藏更改」，把手上的修改先收起来；之后从工具栏「查看贮藏的更改」中查看并恢复。</p>
+          </div>
+          <div class="show-en">
+            <p>Click Stash All Changes under Uncommitted Changes to set your work aside, then view and restore it from Show Stashed Changes in the toolbar.</p>
+          </div>
+        </section>
+
+        <section class="m-section glass" id="settings" data-reveal>
+          <span class="m-num">09</span>
+          <h2><span class="show-zh">设置</span><span class="show-en">Settings</span></h2>
+          <div class="show-zh">
+            <p>按 <kbd>⌘</kbd><kbd>,</kbd> 打开。常用的几项：</p>
+            <ul>
+              <li><b>界面语言与外观</b>：八种语言，亮色、暗色或跟随系统。改语言后需重启应用。</li>
+              <li><b>自动抓取</b>：为每个仓库单独设置抓取间隔。</li>
+              <li><b>代码显示</b>：差异布局、字号、长行自动换行。</li>
+              <li><b>打开方式</b>：固定常用的编辑器或终端，它们会排在菜单最前面。</li>
+            </ul>
+          </div>
+          <div class="show-en">
+            <p>Press <kbd>⌘</kbd><kbd>,</kbd>. The ones you will likely touch:</p>
+            <ul>
+              <li><b>Language and appearance</b> — eight languages; light, dark or automatic. Restart after changing the language.</li>
+              <li><b>Automatic Fetch</b> — a fetch interval per repository.</li>
+              <li><b>Code Display</b> — diff layout, font size, wrapping long lines.</li>
+              <li><b>Open in</b> — pin your editor or terminal so it comes first in the menu.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="m-section glass" id="shortcuts" data-reveal>
+          <span class="m-num">10</span>
+          <h2><span class="show-zh">快捷键</span><span class="show-en">Shortcuts</span></h2>
+          <dl class="keys">
+            <div><dt><kbd>⌘</kbd><kbd>↩</kbd></dt><dd><span class="show-zh">提交</span><span class="show-en">Commit</span></dd></div>
+            <div><dt><kbd>⌘</kbd><kbd>F</kbd></dt><dd><span class="show-zh">搜索提交</span><span class="show-en">Search commits</span></dd></div>
+            <div><dt><kbd>⌥</kbd><kbd>→</kbd></dt><dd><span class="show-zh">展开全部文件</span><span class="show-en">Expand all files</span></dd></div>
+            <div><dt><kbd>⌥</kbd><kbd>←</kbd></dt><dd><span class="show-zh">折叠全部文件</span><span class="show-en">Collapse all files</span></dd></div>
+            <div><dt><kbd>⌘</kbd><kbd>,</kbd></dt><dd><span class="show-zh">打开设置</span><span class="show-en">Open Settings</span></dd></div>
+          </dl>
+        </section>
+
+        <p class="manual-foot">
+          <span class="show-zh">遇到问题或有建议？欢迎在 <a href="https://github.com/dufu1991/foldgit/issues">GitHub Issues</a> 反馈。</span>
+          <span class="show-en">Found a problem or have an idea? Open an issue on <a href="https://github.com/dufu1991/foldgit/issues">GitHub</a>.</span>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p><span class="show-zh">FoldGit 由 dufu 独立维护，采用 MIT 许可证开源。</span><span class="show-en">FoldGit is independently maintained by dufu and released under the MIT License.</span></p>
+  </footer>
+
+  <script src="main.js?v=5"></script>
+</body>
+</html>

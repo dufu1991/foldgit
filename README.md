@@ -29,7 +29,7 @@ FoldGit is a small, quiet window for exactly that. It keeps all your repositorie
 
 ## Features
 
-- **Fold repositories, not folders.** Every repository stays in the sidebar. Import a folder and its repositories become a group, or create groups that gather repositories from anywhere. Groups never move anything on disk. Rarely used repositories fold one level deeper.
+- **Fold repositories, not folders.** Every repository stays in the sidebar. Import a folder and its repositories become a group, or create groups that gather repositories from anywhere. Groups never move anything on disk. Inactive repositories fold one level deeper.
 - **Worktrees, first-class.** Linked worktrees are discovered automatically and appear under their repository with the branch name. Create, move, lock, remove and prune them, and use *Finish Worktree* to merge into a target branch and clean up. Conflicts are resolved in native sheets.
 - **Review and commit.** Commit graph, unified and side-by-side diffs (switching automatically with the window width), hunk staging, amend, and commit message templates.
 - **Branches, tags and comparison.** Switch, merge, rename and delete branches, manage tags, and compare any two branches or tags.

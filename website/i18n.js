@@ -27,10 +27,10 @@ window.FOLDGIT_I18N = {
     "fold.s1.body": "Import a folder and it becomes a group, or gather repositories from anywhere into one. No folder ever moves.",
     "fold.s2.title": "Worktrees under their repository",
     "fold.s2.body": "Worktrees are found automatically and fold under their repository with the branch name. Create, lock, merge and finish in one place.",
-    "fold.s3.title": "Fold the rarely used, once more",
-    "fold.s3.body": "Fold rarely used repositories one level deeper so the active ones stay in sight. With filtering and sorting, dozens stay readable.",
+    "fold.s3.title": "Fold the inactive, once more",
+    "fold.s3.body": "Fold inactive repositories one level deeper so the active ones stay in sight. With filtering and sorting, dozens stay readable.",
     "fold.search": "Search Directories or Repositories",
-    "fold.infrequent": "Infrequent",
+    "fold.infrequent": "Inactive",
 
     "why.kicker": "Why FoldGit",
     "why.title": "You rarely open the IDE anymore.<br>Code still deserves a human look.",

@@ -319,7 +319,7 @@ public sealed partial class MainWindow
             if (executable is not null) appList.ItemsSource = appList.Items.OfType<ExternalApplication>().Append(new(Path.GetFileNameWithoutExtension(executable), executable, ["{path}"])).ToArray();
         }; applications.Children.Add(addApp);
         var removeApp = new Button { Content = L("Remove Custom Application") }; removeApp.Click += (_, _) => appList.ItemsSource = appList.Items.OfType<ExternalApplication>().Except(appList.SelectedItems.OfType<ExternalApplication>()).ToArray(); applications.Children.Add(removeApp);
-        var about = Tab("About"); about.Children.Add(new TextBlock { Text = "FoldGit 0.1.0", Style = (Style)Application.Current.Resources["TitleTextBlockStyle"] });
+        var about = Tab("About"); about.Children.Add(new TextBlock { Text = "FoldGit 0.1.1", Style = (Style)Application.Current.Resources["TitleTextBlockStyle"] });
         about.Children.Add(new TextBlock { Text = L("Git Client") });
         about.Children.Add(new TextBox { Header = L("Open Source Licenses"), Text = await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Assets", "LICENSE.txt")), IsReadOnly = true, AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MaxHeight = 220 });
         var reset = new CheckBox { Content = L("Restore Defaults") }; about.Children.Add(reset);

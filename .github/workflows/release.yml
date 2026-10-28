@@ -275,6 +275,9 @@ jobs:
           name: FoldGit ${{ needs.version.outputs.version }}
           body_path: notes.md
           generate_release_notes: true
+          draft: false
+          prerelease: false
+          make_latest: "true"
           files: release/*
           fail_on_unmatched_files: true
           overwrite_files: true

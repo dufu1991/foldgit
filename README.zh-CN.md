@@ -58,6 +58,23 @@ FoldGit 就是为此准备的一个轻巧、安静的窗口：所有仓库随手
 
 在 [Releases](https://github.com/dufu1991/foldgit/releases/latest) 下载 Windows x64 或 ARM64 的 EXE，双击安装即可，无需另行下载运行时。
 
+## 支持 FoldGit
+
+FoldGit 由 dufu 独立开发和维护。如果它让你查看代码、管理仓库更轻松，欢迎通过赞助支持后续开发与维护。感谢每一份支持！
+
+- [Buy Me a Coffee](https://www.buymeacoffee.com/dufu1991)
+- [PayPal](https://paypal.me/dufu1991)
+
+海外用户可使用上述链接，国内用户可通过微信或支付宝扫码赞助。点击二维码可查看原图。
+
+<table>
+  <tr><th>微信赞赏</th><th>支付宝收款</th></tr>
+  <tr>
+    <td><a href="website/assets/sponsor/wechat.png"><img src="website/assets/sponsor/wechat.png" width="200" alt="微信赞赏二维码"></a></td>
+    <td><a href="website/assets/sponsor/alipay.png"><img src="website/assets/sponsor/alipay.png" width="200" alt="支付宝收款二维码"></a></td>
+  </tr>
+</table>
+
 ## 开发
 
 ### 目录结构

@@ -7,7 +7,7 @@ index.html        页面结构与中文文案
 i18n.js           英文文案
 styles.css        设计变量、液态玻璃样式、亮暗色与动效
 main.js           语言与外观切换、截图切换、滚动动效、Fold 演示
-assets/           图标与主界面截图（中英 × 亮暗共四套，含 1x 与 2x）
+assets/           图标、赞助二维码与主界面截图（中英 × 亮暗共四套，含 1x 与 2x）
 scripts/          截图用演示仓库生成脚本
 ```
 
@@ -24,6 +24,15 @@ python3 -m http.server 8765 --directory website
 - 导航栏按钮可手动切换并保存在当前浏览器中；切回与浏览器一致的选项时，会清除保存的选择，重新跟随浏览器。
 
 修改 `styles.css`、`main.js` 或 `i18n.js` 后，把两个页面中引用它们的 `?v=` 版本号加一，避免浏览器使用旧缓存。
+
+## 赞助信息
+
+落地页与仓库的中英文 README 共用 `assets/sponsor/` 中的二维码原图。赞助链接和二维码来自 <https://any-tdf.dev/> 右上角的「支持」入口：
+
+- Buy Me a Coffee：<https://www.buymeacoffee.com/dufu1991>。
+- PayPal：<https://paypal.me/dufu1991>。
+- 微信赞赏：`assets/sponsor/wechat.png`，原图为 <https://any-tdf.dev/assets/fund/wp_code.png>。
+- 支付宝收款：`assets/sponsor/alipay.png`，原图为 <https://any-tdf.dev/assets/fund/ap_code.png>。
 
 ## 重新生成截图
 

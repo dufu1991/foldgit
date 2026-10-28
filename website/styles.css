@@ -556,6 +556,22 @@ h3 { font-size: 21px; letter-spacing: -0.015em; }
 .win-mark span { aspect-ratio: 1; border-radius: 6px; background: var(--accent); opacity: 0.85; }
 .win-mark span:nth-child(2), .win-mark span:nth-child(3) { opacity: 0.6; }
 
+/* ------------------------------------------------------------------ support */
+.support { scroll-margin-top: 88px; }
+.support-card { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; border-radius: 28px; padding: 48px; }
+.support-copy { display: grid; gap: 20px; }
+.support-copy h2 { font-size: clamp(28px, 3.2vw, 40px); }
+.support-copy > p:not(.kicker) { color: var(--text-2); }
+.support-links { display: flex; flex-wrap: wrap; gap: 12px; }
+.support-note { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+.support-codes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; text-align: center; }
+.support-codes figure { margin: 0; min-width: 0; }
+.support-codes a { display: block; max-width: 196px; margin: 0 auto; padding: 10px; border-radius: 18px; background: #fff; }
+.support-codes img { width: 100%; height: auto; aspect-ratio: 1; }
+.support-codes figcaption { margin-top: 12px; font-size: 14px; font-weight: 600; }
+.support-codes > p { grid-column: 1 / -1; }
+.support a:focus-visible { outline: 3px solid var(--accent); outline-offset: 5px; }
+
 /* ------------------------------------------------------------------ final + footer */
 .final { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 26px; padding-bottom: 80px; }
 .final-icon { width: 96px; height: 96px; filter: drop-shadow(0 16px 26px rgba(40, 60, 160, 0.35)); }
@@ -669,6 +685,8 @@ kbd {
 
 /* ------------------------------------------------------------------ responsive */
 @media (max-width: 960px) {
+  .support-card { grid-template-columns: 1fr; gap: 32px; }
+  .support-codes { max-width: 440px; width: 100%; justify-self: center; }
   .why-grid, .bento { grid-template-columns: 1fr 1fr; }
   .why-grid .card:last-child { grid-column: span 2; }
 }
@@ -692,6 +710,8 @@ kbd {
   .fold-steps p { font-size: 15px; }
 }
 @media (max-width: 640px) {
+  .support-card { padding: 28px 20px; }
+  .support-codes { gap: 16px; }
   body { font-size: 16px; }
   .hero { padding-top: 116px; }
   .hero-icon { width: 88px; height: 88px; }
@@ -706,6 +726,10 @@ kbd {
   .windows-card { grid-template-columns: 1fr; }
   .win-mark { width: 60px; }
   .btn { height: 46px; padding: 0 20px; font-size: 15px; }
+}
+
+@media (max-width: 380px) {
+  .nav .brand span { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

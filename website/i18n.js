@@ -8,6 +8,7 @@ window.FOLDGIT_I18N = {
     "nav.why": "Why",
     "nav.compare": "Difference",
     "nav.manual": "Guide",
+    "nav.support": "Support",
 
     "hero.eyebrow": "Open source · Native Git client for macOS",
     "hero.title": "Every repository,<br><span class=\"grad\">folded into one window.</span>",
@@ -80,6 +81,14 @@ window.FOLDGIT_I18N = {
     "win.installGuide": "Installation guide",
     "win.readme": "Windows dev guide",
     "win.parity": "Feature parity checklist",
+
+    "support.kicker": "Support open source",
+    "support.title": "Buy the author a coffee.",
+    "support.body": "FoldGit is independently developed and maintained by dufu. If it makes reviewing code and managing repositories easier for you, a donation helps support ongoing development and maintenance.",
+    "support.note": "Use Buy Me a Coffee or PayPal outside China, or scan a QR code with WeChat or Alipay in China. Thank you for your support.",
+    "support.wechat": "WeChat Pay",
+    "support.alipay": "Alipay",
+    "support.scan": "Scan to donate, or click a QR code to view the full image.",
 
     "final.title": "Glance at the changes. Then commit.",
     "footer.text": "FoldGit is independently maintained by dufu and released under the MIT License.",

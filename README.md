@@ -58,6 +58,23 @@ The repository also contains a Windows client built with C#, WinUI 3 and .NET 10
 
 Download the Windows x64 or ARM64 EXE from [Releases](https://github.com/dufu1991/foldgit/releases/latest), then open it to install. Required runtimes are included.
 
+## Support FoldGit
+
+FoldGit is independently developed and maintained by dufu. If it makes reviewing code and managing repositories easier for you, a donation helps support ongoing development and maintenance. Thank you for your support!
+
+- [Buy Me a Coffee](https://www.buymeacoffee.com/dufu1991)
+- [PayPal](https://paypal.me/dufu1991)
+
+You can also scan a QR code with WeChat or Alipay. Click an image to view it at full size.
+
+<table>
+  <tr><th>WeChat Pay</th><th>Alipay</th></tr>
+  <tr>
+    <td><a href="website/assets/sponsor/wechat.png"><img src="website/assets/sponsor/wechat.png" width="200" alt="WeChat Pay donation QR code"></a></td>
+    <td><a href="website/assets/sponsor/alipay.png"><img src="website/assets/sponsor/alipay.png" width="200" alt="Alipay donation QR code"></a></td>
+  </tr>
+</table>
+
 ## Development
 
 ### Repository layout

@@ -22,6 +22,7 @@
 "Allow FoldGit in System Settings to finish enabling launch at login." = "Разрешите запуск FoldGit при входе в Системных настройках.";
 "Amend" = "Изменить последний коммит";
 "Amend Commit with a New Message" = "Изменить сообщение коммита";
+"Amend Last Commit" = "Изменить последний коммит";
 "An error occurred while executing %@" = "Ошибка при выполнении %@";
 "Appearance" = "Оформление";
 "Applications" = "Приложения";
@@ -46,6 +47,7 @@
 "Changes are merged locally. Open the target worktree to review, test, and push." = "Изменения объединены локально. Откройте целевое дерево для проверки, тестирования и отправки.";
 "Check frequently used snippets to show them below the commit message editor." = "Отметьте часто используемые фрагменты, чтобы показывать их под редактором сообщения коммита.";
 "Checkout" = "Переключиться на коммит";
+"Checkout Selected Commit" = "Переключиться на выбранный коммит";
 "Choose" = "Выбрать";
 "Choose Application" = "Выбрать приложение";
 "Choose Clone Location" = "Выберите место для клонирования";
@@ -92,6 +94,7 @@
 "Copied" = "Скопирован";
 "Copy \"%@\"" = "Копировать «%@»";
 "Copy %@" = "Копировать %@";
+"Copy Commit Hash" = "Скопировать хеш коммита";
 "Create" = "Создать";
 "Create & Push" = "Создать и отправить";
 "Create New Branch" = "Создать ветку";
@@ -169,8 +172,10 @@
 "Inactive" = "Неактивные";
 "Incoming Branch Version" = "Версия входящей ветки";
 "Interface Language" = "Язык интерфейса";
+"Jump to HEAD" = "Перейти к HEAD";
 "Keep Running" = "Продолжать работу";
 "Keep Version" = "Выбрать версию";
+"Keyboard Shortcuts" = "Сочетания клавиш";
 "Language" = "Язык";
 "Language changes take full effect after restarting the application." = "Смена языка полностью применяется после перезапуска приложения.";
 "Last Successful Fetch" = "Последнее успешное получение";
@@ -195,6 +200,7 @@
 "Mark as Active" = "Отметить как активный";
 "Mark as Inactive" = "Отметить как неактивный";
 "Merge" = "Слияние";
+"Merge Branch" = "Слить ветку";
 "Merge Complete" = "Слияние завершено";
 "Merge in Progress" = "Выполняется слияние";
 "Merge into \"%@\"" = "Слить в «%@»";
@@ -247,11 +253,14 @@
 "Open Current Repository in Another Application" = "Открыть текущий репозиторий в другом приложении";
 "Open File" = "Открыть файл";
 "Open Login Items" = "Открыть объекты входа";
+"Open Recent" = "Открыть недавние";
+"Open Repository" = "Открыть репозиторий";
 "Open Source Licenses" = "Лицензии открытого ПО";
 "Open Source Worktree" = "Открыть исходное дерево";
 "Open Target Worktree" = "Открыть целевое дерево";
 "Open Worktree" = "Открыть рабочее дерево";
 "Open in" = "Открыть в";
+"Open in Terminal" = "Открыть в терминале";
 "Open the target branch in another worktree before finishing." = "Откройте целевую ветку в другом дереве перед завершением.";
 "Original Project" = "Исходный проект";
 "Other Applications" = "Другие приложения";
@@ -297,6 +306,7 @@
 "Replace File Resolution?" = "Заменить результат разрешения файла?";
 "Repositories" = "Репозитории";
 "Repositories remain in the sidebar and their folders stay unchanged." = "Репозитории останутся в боковой панели, их папки не изменятся.";
+"Repository" = "Репозиторий";
 "Repository Address" = "Адрес репозитория";
 "Repository Display Name" = "Отображаемое имя репозитория";
 "Repository Worktrees" = "Рабочие деревья репозиториев";
@@ -310,6 +320,7 @@
 "Restore Previous Repository and Window" = "Восстанавливать репозиторий и окно";
 "Return to Workflow" = "Вернуться к процессу";
 "Revert" = "Отменить коммит";
+"Revert Selected Commit" = "Отменить выбранный коммит";
 "Revert using mainline %@" = "Отменить коммит с основной линией %@";
 "Review" = "Проверка";
 "Review all default values before restoring settings." = "Перед восстановлением можно просмотреть все значения по умолчанию.";
@@ -390,11 +401,14 @@
 "Use Incoming Version" = "Использовать входящую версию";
 "Use Target Version" = "Использовать целевую версию";
 "Use as Text" = "Использовать как текст";
+"User Guide" = "Руководство пользователя";
 "Version %@" = "Версия %@";
+"View" = "Вид";
 "View Incoming Commits" = "Показать входящие коммиты";
 "When the Last Window Closes" = "При закрытии последнего окна";
 "Windows" = "Окна";
 "Work on another branch in a separate folder while keeping your current changes." = "Работайте с другой веткой в отдельной папке, сохранив текущие изменения.";
+"Working Changes" = "Рабочие изменения";
 "Working Tree" = "Рабочее дерево";
 "Worktree" = "Рабочее дерево";
 "Worktree Actions" = "Действия с рабочим деревом";

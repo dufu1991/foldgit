@@ -22,6 +22,7 @@
 "Allow FoldGit in System Settings to finish enabling launch at login." = "請在系統設定中允許 FoldGit 登入時啟動。";
 "Amend" = "修改上次提交";
 "Amend Commit with a New Message" = "修改提交訊息";
+"Amend Last Commit" = "修改上次提交";
 "An error occurred while executing %@" = "執行 %@ 時發生錯誤。";
 "Appearance" = "外觀";
 "Applications" = "應用程式列表";
@@ -46,6 +47,7 @@
 "Changes are merged locally. Open the target worktree to review, test, and push." = "修改已在本機合併。可以打開目標工作樹檢查、測試並推送。";
 "Check frequently used snippets to show them below the commit message editor." = "勾選常用的快捷輸入，將其顯示在提交訊息編輯框下方。";
 "Checkout" = "簽出";
+"Checkout Selected Commit" = "簽出所選提交";
 "Choose" = "選擇";
 "Choose Application" = "選擇其他應用程式";
 "Choose Clone Location" = "選擇複製位置";
@@ -92,6 +94,7 @@
 "Copied" = "複製";
 "Copy \"%@\"" = "複製「%@」";
 "Copy %@" = "複製 %@";
+"Copy Commit Hash" = "複製提交雜湊";
 "Create" = "建立";
 "Create & Push" = "建立並推送";
 "Create New Branch" = "建立分支";
@@ -169,8 +172,10 @@
 "Inactive" = "不活躍";
 "Incoming Branch Version" = "待合併分支版本";
 "Interface Language" = "介面語言";
+"Jump to HEAD" = "定位至 HEAD";
 "Keep Running" = "繼續執行";
 "Keep Version" = "保留版本";
+"Keyboard Shortcuts" = "快速鍵";
 "Language" = "語言";
 "Language changes take full effect after restarting the application." = "重新啟動應用程式後，語言變更將完整生效。";
 "Last Successful Fetch" = "上次抓取成功";
@@ -195,6 +200,7 @@
 "Mark as Active" = "設為活躍";
 "Mark as Inactive" = "設為不活躍";
 "Merge" = "合併";
+"Merge Branch" = "合併分支";
 "Merge Complete" = "合併完成";
 "Merge in Progress" = "正在合併";
 "Merge into \"%@\"" = "合併至「%@」";
@@ -247,11 +253,14 @@
 "Open Current Repository in Another Application" = "在其他應用程式中開啟目前儲存庫";
 "Open File" = "打開檔案";
 "Open Login Items" = "開啟登入項目設定";
+"Open Recent" = "最近開啟";
+"Open Repository" = "開啟儲存庫";
 "Open Source Licenses" = "開源授權";
 "Open Source Worktree" = "打開來源工作樹";
 "Open Target Worktree" = "打開目標工作樹";
 "Open Worktree" = "打開工作樹";
 "Open in" = "打開方式";
+"Open in Terminal" = "在終端機中開啟";
 "Open the target branch in another worktree before finishing." = "請先在另一個工作樹中打開目標分支，再完成操作。";
 "Original Project" = "原始專案";
 "Other Applications" = "其他應用程式";
@@ -297,6 +306,7 @@
 "Replace File Resolution?" = "取代檔案的解決結果？";
 "Repositories" = "儲存庫";
 "Repositories remain in the sidebar and their folders stay unchanged." = "儲存庫會保留在側邊欄中，磁碟上的檔案夾保持不變。";
+"Repository" = "儲存庫";
 "Repository Address" = "儲存庫位址";
 "Repository Display Name" = "儲存庫顯示名稱";
 "Repository Worktrees" = "各儲存庫工作樹";
@@ -310,6 +320,7 @@
 "Restore Previous Repository and Window" = "恢復上次的儲存庫與視窗狀態";
 "Return to Workflow" = "返回處理流程";
 "Revert" = "還原提交";
+"Revert Selected Commit" = "還原所選提交";
 "Revert using mainline %@" = "以 %@ 為主線還原提交";
 "Review" = "檢查";
 "Review all default values before restoring settings." = "回復前可以查看全部預設值。";
@@ -390,11 +401,14 @@
 "Use Incoming Version" = "使用待合併分支版本";
 "Use Target Version" = "使用目標分支版本";
 "Use as Text" = "作為文字使用";
+"User Guide" = "使用指南";
 "Version %@" = "版本 %@";
+"View" = "顯示";
 "View Incoming Commits" = "檢視待拉取提交";
 "When the Last Window Closes" = "關閉最後一個視窗時";
 "Windows" = "視窗";
 "Work on another branch in a separate folder while keeping your current changes." = "在獨立資料夾中處理其他分支，同時保留目前修改。";
+"Working Changes" = "工作區變更";
 "Working Tree" = "工作區";
 "Worktree" = "工作樹";
 "Worktree Actions" = "工作樹操作";

@@ -168,6 +168,7 @@
               <li><b>添加本地仓库或目录</b>：选一个仓库，或一个包含多个仓库的目录。选目录时，其中的仓库会自动收成一组。</li>
               <li><b>克隆远程仓库</b>：填入地址，选好保存位置，克隆完成后自动添加并选中。</li>
             </ul>
+            <p class="tip">也可以用菜单栏「文件」：「打开仓库」（<kbd>⌘</kbd><kbd>O</kbd>）、「克隆远程仓库」（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>N</kbd>），「最近打开」可直接回到最近使用的仓库。</p>
           </div>
           <div class="show-en">
             <p>Click <b>+</b> at the top of the sidebar:</p>
@@ -175,6 +176,7 @@
               <li><b>Add Local Repository or Directory</b> — pick one repository, or a folder that contains several. A folder becomes a group automatically.</li>
               <li><b>Clone Remote Repository</b> — enter the URL and choose where to save it. The clone is added and selected when it finishes.</li>
             </ul>
+            <p class="tip">The File menu works too: Open Repository (<kbd>⌘</kbd><kbd>O</kbd>), Clone Remote Repository (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>N</kbd>), and Open Recent to jump back to a recently used repository.</p>
           </div>
         </section>
 
@@ -204,19 +206,19 @@
           <h2><span class="show-zh">查看与提交改动</span><span class="show-en">Review and commit</span></h2>
           <div class="show-zh">
             <ol>
-              <li>选中仓库，点提交列表顶部的「未提交的更改」。</li>
-              <li>逐个文件查看差异。每个代码块右侧的 <b>+</b> 可以单独暂存这一块，<b>−</b> 取消暂存；也可以用底部的「全部暂存」。</li>
-              <li>在「提交信息」里写好说明，按 <kbd>⌘</kbd><kbd>↩</kbd> 或点「提交」。勾选「修改上次提交」可以改写最近一次提交。</li>
+              <li>选中仓库，点提交列表顶部的「未提交的更改」，或按 <kbd>⌘</kbd><kbd>1</kbd>。</li>
+              <li>逐个文件查看差异。每个代码块右侧的 <b>+</b> 可以单独暂存这一块，<b>−</b> 取消暂存；也可以用底部的「全部暂存」（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd>）或「全部取消暂存」（<kbd>⌥</kbd><kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd>）。</li>
+              <li>在「提交信息」里写好说明，按 <kbd>⌘</kbd><kbd>↩</kbd> 或点「提交」。勾选「修改上次提交」，或从菜单栏「提交 → 修改上次提交」进入，可以改写最近一次提交。</li>
             </ol>
-            <p class="tip">差异显示默认「自动」：窗口够宽时并排，窄时单栏。也可以在底部手动切换。</p>
+            <p class="tip">差异显示默认「自动」：窗口够宽时并排，窄时单栏。也可以在底部或菜单栏「显示 → 比对布局」中手动切换。</p>
           </div>
           <div class="show-en">
             <ol>
-              <li>Select a repository and click Uncommitted Changes at the top of the commit list.</li>
-              <li>Read the diff file by file. The <b>+</b> beside each hunk stages just that hunk, <b>−</b> unstages it; or use Stage All at the bottom.</li>
-              <li>Write a Commit Message and press <kbd>⌘</kbd><kbd>↩</kbd> or click Commit. Tick Amend to rewrite the latest commit.</li>
+              <li>Select a repository and click Uncommitted Changes at the top of the commit list, or press <kbd>⌘</kbd><kbd>1</kbd>.</li>
+              <li>Read the diff file by file. The <b>+</b> beside each hunk stages just that hunk, <b>−</b> unstages it; or use Stage All (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd>) and Unstage All (<kbd>⌥</kbd><kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd>) at the bottom.</li>
+              <li>Write a Commit Message and press <kbd>⌘</kbd><kbd>↩</kbd> or click Commit. Tick Amend, or choose Commit → Amend Last Commit in the menu bar, to rewrite the latest commit.</li>
             </ol>
-            <p class="tip">Diff layout defaults to Automatic: side by side when the window is wide enough, unified when it is not. You can switch it at the bottom.</p>
+            <p class="tip">Diff layout defaults to Automatic: side by side when the window is wide enough, unified when it is not. You can switch it at the bottom or under View → Diff Layout.</p>
           </div>
         </section>
 
@@ -227,16 +229,20 @@
             <ul>
               <li>点击任意提交，右侧显示它改了什么。</li>
               <li><kbd>⌘</kbd><kbd>F</kbd> 搜索提交，可按作者、邮箱或提交信息查找。</li>
-              <li>搜索框旁的菜单可以在「当前分支」和「全部提交」之间切换。</li>
-              <li>提交列表底部的分支图标用来显示或隐藏提交图。</li>
+              <li>搜索框旁的菜单可以在「当前分支」和「全部提交」之间切换，菜单栏「显示 → 历史范围」同样可以切换。</li>
+              <li>提交列表底部的分支图标用来显示或隐藏提交图，也可以用「显示 → 提交关系图」。</li>
+              <li><kbd>⌘</kbd><kbd>0</kbd> 定位到 HEAD：清空搜索并滚动到当前检出的提交，必要时自动加载更早的历史。</li>
+              <li>选中提交后，<kbd>⇧</kbd><kbd>⌘</kbd><kbd>C</kbd> 复制提交哈希；菜单栏「提交」中还可以检出或还原所选提交。</li>
             </ul>
           </div>
           <div class="show-en">
             <ul>
               <li>Click any commit to see what it changed.</li>
               <li><kbd>⌘</kbd><kbd>F</kbd> searches commits by author, email or message.</li>
-              <li>The menu beside the search field switches between Current Branch and All Commits.</li>
-              <li>The branch icon at the bottom of the list shows or hides the commit graph.</li>
+              <li>The menu beside the search field switches between Current Branch and All Commits, as does View → History Scope.</li>
+              <li>The branch icon at the bottom of the list shows or hides the commit graph, as does View → Commit Graph.</li>
+              <li><kbd>⌘</kbd><kbd>0</kbd> jumps to HEAD: it clears the search and scrolls to the checked-out commit, loading older history if needed.</li>
+              <li>With a commit selected, <kbd>⇧</kbd><kbd>⌘</kbd><kbd>C</kbd> copies its hash; the Commit menu can also check out or revert the selected commit.</li>
             </ul>
           </div>
         </section>
@@ -245,23 +251,25 @@
           <span class="m-num">06</span>
           <h2><span class="show-zh">分支与同步</span><span class="show-en">Branches and sync</span></h2>
           <div class="show-zh">
-            <p>都在窗口顶部的工具栏里：</p>
+            <p>都在窗口顶部的工具栏里，也可以从菜单栏的「仓库」和「分支」中找到：</p>
             <ul>
-              <li><b>选择分支</b>：切换、合并到当前分支、重命名或删除分支。</li>
-              <li><b>新建分支</b>、<b>查看标签</b>：创建分支，浏览和管理标签。</li>
+              <li><b>选择分支</b>（<kbd>⌘</kbd><kbd>B</kbd>）：切换、合并到当前分支、重命名或删除分支。</li>
+              <li><b>合并分支</b>：在菜单栏「分支 → 合并分支」中选一个本地或远程分支，合并到当前分支。</li>
+              <li><b>新建分支</b>（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>B</kbd>）、<b>查看标签</b>：创建分支，浏览和管理标签；<kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd> 新建标签。</li>
               <li><b>比较分支或标签</b>：选两个版本，查看它们之间的全部差异。</li>
-              <li><b>抓取 / 拉取 / 推送</b>：与远程同步。抓取只下载更新，不会合并。</li>
-              <li><b>打开方式</b>：在终端、编辑器或访达中打开当前仓库。</li>
+              <li><b>抓取 / 拉取 / 推送</b>（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd> / <kbd>L</kbd> / <kbd>P</kbd>）：与远程同步。抓取只下载更新，不会合并。<kbd>⌘</kbd><kbd>R</kbd> 刷新仓库状态。</li>
+              <li><b>打开方式</b>：在终端、编辑器或访达中打开当前仓库。<kbd>⌃</kbd><kbd>⌘</kbd><kbd>T</kbd> 在终端中打开，<kbd>⌃</kbd><kbd>⌘</kbd><kbd>O</kbd> 在访达中显示。</li>
             </ul>
           </div>
           <div class="show-en">
-            <p>Everything lives in the toolbar:</p>
+            <p>Everything lives in the toolbar, and in the Repository and Branch menus of the menu bar:</p>
             <ul>
-              <li><b>Select Branch</b> — switch, merge into the current branch, rename or delete.</li>
-              <li><b>Create New Branch</b> and <b>Show Tags</b> — create branches, browse and manage tags.</li>
+              <li><b>Select Branch</b> (<kbd>⌘</kbd><kbd>B</kbd>) — switch, merge into the current branch, rename or delete.</li>
+              <li><b>Merge Branch</b> — choose Branch → Merge Branch, pick a local or remote branch, and merge it into the current one.</li>
+              <li><b>Create New Branch</b> (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>B</kbd>) and <b>Show Tags</b> — create branches, browse and manage tags; <kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd> creates a tag.</li>
               <li><b>Compare Branches or Tags</b> — pick two revisions and see everything between them.</li>
-              <li><b>Fetch / Pull / Push</b> — sync with the remote. Fetch only downloads; it never merges.</li>
-              <li><b>Open in</b> — open the repository in Terminal, your editor or Finder.</li>
+              <li><b>Fetch / Pull / Push</b> (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd> / <kbd>L</kbd> / <kbd>P</kbd>) — sync with the remote. Fetch only downloads; it never merges. <kbd>⌘</kbd><kbd>R</kbd> refreshes the repository.</li>
+              <li><b>Open in</b> — open the repository in Terminal, your editor or Finder. <kbd>⌃</kbd><kbd>⌘</kbd><kbd>T</kbd> opens Terminal, <kbd>⌃</kbd><kbd>⌘</kbd><kbd>O</kbd> shows it in Finder.</li>
             </ul>
           </div>
         </section>
@@ -291,10 +299,10 @@
           <span class="m-num">08</span>
           <h2><span class="show-zh">贮藏</span><span class="show-en">Stash</span></h2>
           <div class="show-zh">
-            <p>在「未提交的更改」底部点「贮藏更改」，把手上的修改先收起来；之后从工具栏「查看贮藏的更改」中查看并恢复。</p>
+            <p>在「未提交的更改」底部点「贮藏更改」（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd>），把手上的修改先收起来；之后从工具栏「查看贮藏的更改」中查看并恢复。</p>
           </div>
           <div class="show-en">
-            <p>Click Stash All Changes under Uncommitted Changes to set your work aside, then view and restore it from Show Stashed Changes in the toolbar.</p>
+            <p>Click Stash All Changes (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd>) under Uncommitted Changes to set your work aside, then view and restore it from Show Stashed Changes in the toolbar.</p>
           </div>
         </section>
 
@@ -324,9 +332,28 @@
         <section class="m-section glass" id="shortcuts" data-reveal>
           <span class="m-num">10</span>
           <h2><span class="show-zh">快捷键</span><span class="show-en">Shortcuts</span></h2>
+          <p><span class="show-zh">macOS 版的常用操作都在菜单栏中，菜单项旁显示对应快捷键；完整列表可在「帮助 → 快捷键」中查看。</span><span class="show-en">On macOS every common action is in the menu bar, with its shortcut beside it. Help → Keyboard Shortcuts shows the full list.</span></p>
           <dl class="keys">
+            <div><dt><kbd>⌘</kbd><kbd>O</kbd></dt><dd><span class="show-zh">打开仓库</span><span class="show-en">Open repository</span></dd></div>
+            <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>N</kbd></dt><dd><span class="show-zh">克隆远程仓库</span><span class="show-en">Clone remote repository</span></dd></div>
+            <div><dt><kbd>⌘</kbd><kbd>R</kbd></dt><dd><span class="show-zh">刷新</span><span class="show-en">Refresh</span></dd></div>
+            <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd></dt><dd><span class="show-zh">抓取</span><span class="show-en">Fetch</span></dd></div>
+            <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd></dt><dd><span class="show-zh">拉取</span><span class="show-en">Pull</span></dd></div>
+            <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>P</kbd></dt><dd><span class="show-zh">推送</span><span class="show-en">Push</span></dd></div>
+            <div><dt><kbd>⌃</kbd><kbd>⌘</kbd><kbd>O</kbd></dt><dd><span class="show-zh">在访达中显示</span><span class="show-en">Show in Finder</span></dd></div>
+            <div><dt><kbd>⌃</kbd><kbd>⌘</kbd><kbd>T</kbd></dt><dd><span class="show-zh">在终端中打开</span><span class="show-en">Open in Terminal</span></dd></div>
+            <div><dt><kbd>⌘</kbd><kbd>B</kbd></dt><dd><span class="show-zh">选择分支</span><span class="show-en">Select branch</span></dd></div>
+            <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>B</kbd></dt><dd><span class="show-zh">新建分支</span><span class="show-en">Create new branch</span></dd></div>
+            <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd></dt><dd><span class="show-zh">新建标签</span><span class="show-en">Create new tag</span></dd></div>
             <div><dt><kbd>⌘</kbd><kbd>↩</kbd></dt><dd><span class="show-zh">提交</span><span class="show-en">Commit</span></dd></div>
+            <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd></dt><dd><span class="show-zh">全部暂存</span><span class="show-en">Stage all</span></dd></div>
+            <div><dt><kbd>⌥</kbd><kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd></dt><dd><span class="show-zh">全部取消暂存</span><span class="show-en">Unstage all</span></dd></div>
+            <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd></dt><dd><span class="show-zh">贮藏更改</span><span class="show-en">Stash all changes</span></dd></div>
+            <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>C</kbd></dt><dd><span class="show-zh">复制提交哈希</span><span class="show-en">Copy commit hash</span></dd></div>
             <div><dt><kbd>⌘</kbd><kbd>F</kbd></dt><dd><span class="show-zh">搜索提交</span><span class="show-en">Search commits</span></dd></div>
+            <div><dt><kbd>⌘</kbd><kbd>1</kbd></dt><dd><span class="show-zh">工作区更改</span><span class="show-en">Working changes</span></dd></div>
+            <div><dt><kbd>⌘</kbd><kbd>0</kbd></dt><dd><span class="show-zh">定位到 HEAD</span><span class="show-en">Jump to HEAD</span></dd></div>
+            <div><dt><kbd>⌃</kbd><kbd>⌘</kbd><kbd>S</kbd></dt><dd><span class="show-zh">显示或隐藏边栏</span><span class="show-en">Show or hide the sidebar</span></dd></div>
             <div><dt><kbd>⌥</kbd><kbd>→</kbd></dt><dd><span class="show-zh">展开全部文件</span><span class="show-en">Expand all files</span></dd></div>
             <div><dt><kbd>⌥</kbd><kbd>←</kbd></dt><dd><span class="show-zh">折叠全部文件</span><span class="show-en">Collapse all files</span></dd></div>
             <div><dt><kbd>⌘</kbd><kbd>,</kbd></dt><dd><span class="show-zh">打开设置</span><span class="show-en">Open Settings</span></dd></div>

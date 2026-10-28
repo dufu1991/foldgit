@@ -14,4 +14,6 @@ extension Commit {
     var authorDateRelative: String {
         date?.formatted(.relative(presentation: .named)) ?? ""
     }
+    /// Merge commits, including octopus merges, revert against their first parent.
+    var revertMainline: Int? { parentHashes.count > 1 ? 1 : nil }
 }

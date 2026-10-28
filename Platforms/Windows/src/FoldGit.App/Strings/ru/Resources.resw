@@ -132,6 +132,9 @@
   <data name="Text_5696b4c8647337b7c8ee05a8" xml:space="preserve">
     <value>Изменить сообщение коммита</value>
   </data>
+  <data name="Text_c94ecadbce99bae7f94cfcfb" xml:space="preserve">
+    <value>Изменить последний коммит</value>
+  </data>
   <data name="Text_bb9c3ca1fcf56ea4eaf9fd6c" xml:space="preserve">
     <value>Ошибка при выполнении {0}</value>
   </data>
@@ -218,6 +221,9 @@
   </data>
   <data name="Text_99e71f48c48f121baddd4def" xml:space="preserve">
     <value>Переключиться на коммит</value>
+  </data>
+  <data name="Text_a9ca63fe145cccd64b8e183c" xml:space="preserve">
+    <value>Переключиться на выбранный коммит</value>
   </data>
   <data name="Text_c7f937836f5d82d53bc50775" xml:space="preserve">
     <value>Выбрать</value>
@@ -359,6 +365,9 @@
   </data>
   <data name="Text_8c12fd1ccd55b393744500cd" xml:space="preserve">
     <value>Копировать {0}</value>
+  </data>
+  <data name="Text_ab480df9b105271e4e11fcea" xml:space="preserve">
+    <value>Скопировать хеш коммита</value>
   </data>
   <data name="Text_4759498ac2a719c619e2c8cf" xml:space="preserve">
     <value>Создать</value>
@@ -606,11 +615,17 @@
   <data name="Text_d1c76800f0871fca0f06e6eb" xml:space="preserve">
     <value>Язык интерфейса</value>
   </data>
+  <data name="Text_d874348942aed4fb5c4563a4" xml:space="preserve">
+    <value>Перейти к HEAD</value>
+  </data>
   <data name="Text_c8e6e5971f22af759bda624d" xml:space="preserve">
     <value>Продолжать работу</value>
   </data>
   <data name="Text_e3761a0d311b787c696e89f7" xml:space="preserve">
     <value>Выбрать версию</value>
+  </data>
+  <data name="Text_59cdaa26dd9dcd4cbcded97a" xml:space="preserve">
+    <value>Сочетания клавиш</value>
   </data>
   <data name="Text_a4fe65264ef7dbb38d104b1e" xml:space="preserve">
     <value>Язык</value>
@@ -686,6 +701,9 @@
   </data>
   <data name="Text_8851aaa7d08ca1ae7e5d6327" xml:space="preserve">
     <value>Слияние</value>
+  </data>
+  <data name="Text_7de5a816f48fa2db23944a45" xml:space="preserve">
+    <value>Слить ветку</value>
   </data>
   <data name="Text_b1a942ad4fcaabc9a985eed6" xml:space="preserve">
     <value>Слияние завершено</value>
@@ -843,6 +861,12 @@
   <data name="Text_d1cbe3d0b25285ea056aeec7" xml:space="preserve">
     <value>Открыть объекты входа</value>
   </data>
+  <data name="Text_d2b9f8f8baec315e5189a2fc" xml:space="preserve">
+    <value>Открыть недавние</value>
+  </data>
+  <data name="Text_2466923190a5c2d425403829" xml:space="preserve">
+    <value>Открыть репозиторий</value>
+  </data>
   <data name="Text_2e6abab7cf7b8d2347dcbf1b" xml:space="preserve">
     <value>Лицензии открытого ПО</value>
   </data>
@@ -857,6 +881,9 @@
   </data>
   <data name="Text_2c8f3f64efd200a85a49bbc8" xml:space="preserve">
     <value>Открыть в</value>
+  </data>
+  <data name="Text_0e9f3aed3ceda81a8cd3c6bb" xml:space="preserve">
+    <value>Открыть в терминале</value>
   </data>
   <data name="Text_07ab08927a968d80214e1036" xml:space="preserve">
     <value>Откройте целевую ветку в другом дереве перед завершением.</value>
@@ -993,6 +1020,9 @@
   <data name="Text_21dbf396d782cdbc702a4d49" xml:space="preserve">
     <value>Репозитории останутся в боковой панели, их папки не изменятся.</value>
   </data>
+  <data name="Text_13d6ff07b8a5d792ec87d5ec" xml:space="preserve">
+    <value>Репозиторий</value>
+  </data>
   <data name="Text_f536aa9b22e2311f23b20e4f" xml:space="preserve">
     <value>Адрес репозитория</value>
   </data>
@@ -1031,6 +1061,9 @@
   </data>
   <data name="Text_0026c505347863ae188a99df" xml:space="preserve">
     <value>Отменить коммит</value>
+  </data>
+  <data name="Text_72b4ec02dc967cd1f9b710a0" xml:space="preserve">
+    <value>Отменить выбранный коммит</value>
   </data>
   <data name="Text_4d20284363cf827c744380b6" xml:space="preserve">
     <value>Отменить коммит с основной линией {0}</value>
@@ -1272,8 +1305,14 @@
   <data name="Text_d946352c8f8acf980ce6099d" xml:space="preserve">
     <value>Использовать как текст</value>
   </data>
+  <data name="Text_d131ef7f9b5e2b457faba856" xml:space="preserve">
+    <value>Руководство пользователя</value>
+  </data>
   <data name="Text_69ea5a45920209ea3090a258" xml:space="preserve">
     <value>Версия {0}</value>
+  </data>
+  <data name="Text_dcc839a4015c4b7dd9db959a" xml:space="preserve">
+    <value>Вид</value>
   </data>
   <data name="Text_a96fdff97286bedf4066a956" xml:space="preserve">
     <value>Показать входящие коммиты</value>
@@ -1286,6 +1325,9 @@
   </data>
   <data name="Text_bd3cfaa28d90627d171fc565" xml:space="preserve">
     <value>Работайте с другой веткой в отдельной папке, сохранив текущие изменения.</value>
+  </data>
+  <data name="Text_7b5d66944b4512ab009f67ea" xml:space="preserve">
+    <value>Рабочие изменения</value>
   </data>
   <data name="Text_bd85643c93f3f3707df4f4fa" xml:space="preserve">
     <value>Рабочее дерево</value>

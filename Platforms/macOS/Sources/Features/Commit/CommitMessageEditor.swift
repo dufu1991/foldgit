@@ -12,6 +12,8 @@ struct CommitMessageEditor: View {
     @Binding var amendCommit: Commit?
     @FocusState private var focused: Bool
     @State private var snippetFocusRequest: UUID?
+    @State private var isCommitting = false
+    @Environment(\.isEnabled) private var isEnabled
     var onCommit: () -> Void
 
     var body: some View {
@@ -47,24 +49,11 @@ struct CommitMessageEditor: View {
                         Label(cachedDiffStat?.deletionsTotal.formatted() ?? "-", systemImage: "minus")
                     }
                     .font(.caption)
-                    Button("Commit") {
-                        Task {
-                            do {
-                                if isAmend {
-                                    try await GitRuntime.run(GitCommit(directory: folder.url, message: commitMessage, amend: true))
-                                } else {
-                                    try await GitRuntime.run(GitCommit(directory: folder.url, message: commitMessage))
-                                }
-                                onCommit()
-                            } catch {
-                                self.error = error
-                            }
-                        }
-                    }
+                    Button("Commit", action: commitChanges)
                     .buttonStyle(.borderedProminent)
-                    .keyboardShortcut(.init(.return))
-                    .disabled(cachedDiffRaw.isEmpty || commitMessage.isEmpty)
+                    .disabled(!canCommit)
                     Toggle("Amend", isOn: $isAmend)
+                        .disabled(isCommitting)
                         .font(.caption)
                         .padding(.trailing, 6)
                 }
@@ -80,6 +69,7 @@ struct CommitMessageEditor: View {
                 .padding(.vertical, 8)
             }
         }
+        .focusedSceneValue(\.editorMenu, menuActions)
         .onReceive(NotificationCenter.default.publisher(for: .didSelectCommitMessageSnippetNotification), perform: { notification in
             if let snippet = notification.object as? String {
                 commitMessage = CommitMessageSnippet.applying(snippet, to: commitMessage)
@@ -99,6 +89,33 @@ struct CommitMessageEditor: View {
             let insertionPoint = NSRange(location: editor.string.utf16.count, length: 0)
             editor.setSelectedRange(insertionPoint)
             editor.scrollRangeToVisible(insertionPoint)
+        }
+    }
+
+    private var canCommit: Bool {
+        isEnabled && !isCommitting && !cachedDiffRaw.isEmpty
+            && !commitMessage.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var menuActions: MenuActions {
+        var actions = MenuActions()
+        actions.isEditingText = focused
+        if canCommit { actions[.commit] = commitChanges }
+        if isEnabled && !isCommitting && amendCommit != nil {
+            actions[.amendCommit] = { isAmend = true; focused = true }
+        }
+        return actions
+    }
+
+    private func commitChanges() {
+        guard canCommit else { return }
+        isCommitting = true
+        Task {
+            defer { isCommitting = false }
+            do {
+                try await GitRuntime.run(GitCommit(directory: folder.url, message: commitMessage, amend: isAmend))
+                onCommit()
+            } catch { self.error = error }
         }
     }
 }

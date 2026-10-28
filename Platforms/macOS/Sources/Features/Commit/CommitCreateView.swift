@@ -117,6 +117,7 @@ struct CommitCreateView: View {
                         onCommit()
                     }
                     .frame(height: 112)
+                    .disabled(isStagingChanges)
             }
             .background(.bar)
         }
@@ -148,6 +149,7 @@ struct CommitCreateView: View {
         }
         .errorSheet($error)
         .environment(\.imageDiffRefreshID, imageDiffRefreshID)
+        .focusedSceneValue(\.stagingMenu, menuActions)
     }
 
     @ViewBuilder
@@ -222,43 +224,53 @@ struct CommitCreateView: View {
 
     @ViewBuilder
     private var stagingActions: some View {
-        Button("Stash All Changes") {
-            Task {
-                do {
-                    try await GitRuntime.run(GitStash(directory: folder.url))
-                    onStash()
-                } catch {
-                    self.error = error
-                }
-            }
-        }
+        Button("Stash All Changes", action: stashChanges)
+        .disabled(isStagingChanges || (!canStage && cachedDiffRaw.isEmpty))
         .fixedSize()
 
-        Button("Stage All") {
-            Task {
-                do {
-                    try await GitRuntime.run(GitAdd(directory: folder.url))
-                    await updateChanges()
-                } catch {
-                    self.error = error
-                }
-            }
-        }
-        .disabled(!canStage)
+        Button("Stage All", action: stageAll)
+        .disabled(!canStage || isStagingChanges)
         .fixedSize()
 
-        Button("Unstage All") {
-            Task {
-                do {
-                    try await GitRuntime.run(GitRestore(directory: folder.url))
-                    await updateChanges()
-                } catch {
-                    self.error = error
-                }
-            }
-        }
-        .disabled(cachedDiffRaw.isEmpty)
+        Button("Unstage All", action: unstageAll)
+        .disabled(cachedDiffRaw.isEmpty || isStagingChanges)
         .fixedSize()
+    }
+
+    private var menuActions: MenuActions {
+        var actions = MenuActions()
+        guard !isStagingChanges else { return actions }
+        if canStage { actions[.stageAll] = stageAll }
+        if !cachedDiffRaw.isEmpty { actions[.unstageAll] = unstageAll }
+        if canStage || !cachedDiffRaw.isEmpty { actions[.stash] = stashChanges }
+        return actions
+    }
+
+    private func stageAll() {
+        updateIndex { try await GitRuntime.run(GitAdd(directory: folder.url)) }
+    }
+
+    private func unstageAll() {
+        updateIndex { try await GitRuntime.run(GitRestore(directory: folder.url)) }
+    }
+
+    private func stashChanges() {
+        updateIndex {
+            try await GitRuntime.run(GitStash(directory: folder.url))
+            onStash()
+        }
+    }
+
+    private func updateIndex(_ operation: @escaping @MainActor () async throws -> Void) {
+        guard !isStagingChanges else { return }
+        isStagingChanges = true
+        Task {
+            defer { isStagingChanges = false }
+            do {
+                try await operation()
+                await updateChanges()
+            } catch { self.error = error }
+        }
     }
 
     private func updateChanges() async {

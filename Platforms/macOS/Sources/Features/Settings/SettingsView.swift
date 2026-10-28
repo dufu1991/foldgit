@@ -441,8 +441,7 @@ struct AboutSettingsPane: View {
     @State private var showsLicense = false
     private let project = URL(string: "https://github.com/dufu1991/foldgit")!
     private var version: String {
-        let info = Bundle.main.infoDictionary
-        return "\(info?["CFBundleShortVersionString"] as? String ?? "") (\(info?["CFBundleVersion"] as? String ?? ""))"
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
     }
 
     var body: some View {

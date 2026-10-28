@@ -8,8 +8,8 @@ struct OpenInMenu: View {
     }
 
     let directory: URL
+    let store: OpenInStore
     let onError: (Error) -> Void
-    @State private var store = OpenInStore()
 
     var body: some View {
         Menu {
@@ -52,16 +52,6 @@ struct OpenInMenu: View {
         }
         .help("Open Current Repository in Another Application")
         .disabled(store.isOpening)
-        .task(id: directory) { await store.reload(for: directory) }
-        .onReceive(NotificationCenter.default.publisher(for: NSApplication.willBecomeActiveNotification)) { _ in
-            Task { await store.reload(for: directory, force: true) }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in
-            store.reloadPreferences()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .settingsDidRestoreDefaults)) { _ in
-            Task { await store.reload(for: directory, force: true) }
-        }
     }
 
     private func applicationLabel(_ application: OpenInApplication) -> some View {
@@ -104,6 +94,22 @@ struct OpenInMenu: View {
                 return
             }
             open(application, rememberApplication: true)
+        }
+    }
+}
+
+extension View {
+    /// Keeps an Open in store current for a repository; the owner shares it between the toolbar and the menu bar.
+    func loadsApplications(_ store: OpenInStore, for directory: URL) -> some View {
+        task(id: directory) { await store.reload(for: directory) }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.willBecomeActiveNotification)) { _ in
+            Task { await store.reload(for: directory, force: true) }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in
+            store.reloadPreferences()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .settingsDidRestoreDefaults)) { _ in
+            Task { await store.reload(for: directory, force: true) }
         }
     }
 }

@@ -24,6 +24,11 @@ struct RepositoryScreen: View {
     @State private var searchFocusRequest = UUID()
     @AppStorage(PreferenceKey.showCommitGraph.rawValue) private var showGraph = true
     @State private var showingSyncError = false
+    @State private var checkoutConfirmation: Commit?
+    @State private var revertConfirmation: Commit?
+    /// Shared by the toolbar's Open in menu and the menu bar so applications are discovered once per repository.
+    @State private var menuApplications = OpenInStore()
+    private static let terminalURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.apple.Terminal")
 
     var body: some View {
         @Bindable var session = session
@@ -135,15 +140,12 @@ struct RepositoryScreen: View {
                 Text("No Results").foregroundStyle(.secondary)
             }
         }
-        .background {
-            Button("Search Commits") { searchFocusRequest = UUID() }
-                .keyboardShortcut("f", modifiers: .command)
-                .hidden()
-        }
+        .focusedSceneValue(\.repositoryMenu, menuContext)
         .onDisappear { logStore.cancelSearch() }
         .task {
             await refreshModels(fetchRemote: true)
         }
+        .loadsApplications(menuApplications, for: folder.url)
         .onChange(of: logStore.logs()) { syncHistorySelection() }
         .onChange(of: logStore.isSearching) { syncHistorySelection() }
         .onChange(of: selectionLogID, {
@@ -169,6 +171,37 @@ struct RepositoryScreen: View {
         .sheet(isPresented: $showing.mergeResolution, onDismiss: {
             Task { await refreshModels() }
         }) { MergeResolutionSheet(directory: folder.url) }
+        .sheet(isPresented: $showing.mergeBranch) {
+            MergeBranchMenuSheet(directory: folder.url, currentBranch: branch?.name) { selected in
+                showing.mergeBranch = false
+                mergeBranch(selected)
+            }
+        }
+        .confirmationDialog("Checkout Selected Commit", isPresented: Binding(
+            get: { checkoutConfirmation != nil }, set: { if !$0 { checkoutConfirmation = nil } }
+        ), titleVisibility: .visible) {
+            if let commit = checkoutConfirmation {
+                Button("Checkout") {
+                    runMenuOperation { try await GitRuntime.run(GitCheckout(directory: folder.url, commitHash: commit.hash)) }
+                }
+            }
+        } message: {
+            if let commit = checkoutConfirmation { Text(verbatim: String(commit.hash.prefix(12)) + " · " + commit.title) }
+        }
+        .confirmationDialog("Revert Selected Commit", isPresented: Binding(
+            get: { revertConfirmation != nil }, set: { if !$0 { revertConfirmation = nil } }
+        ), titleVisibility: .visible) {
+            if let commit = revertConfirmation {
+                Button("Revert") {
+                    runMenuOperation {
+                        try await GitRuntime.run(GitRevert(directory: folder.url,
+                            parentNumber: commit.revertMainline, commit: commit.hash))
+                    }
+                }
+            }
+        } message: {
+            if let commit = revertConfirmation { Text(verbatim: String(commit.hash.prefix(12)) + " · " + commit.title) }
+        }
         .errorSheet($error)
         .errorSheet($session.history.error)
         .sheet(item: $showing.createNewBranchFrom, content: { _ in
@@ -280,7 +313,7 @@ struct RepositoryScreen: View {
             }
             ToolbarSpacer(.fixed, placement: .primaryAction)
             ToolbarItem(placement: .primaryAction) {
-                OpenInMenu(directory: folder.url, onError: { error = $0 })
+                OpenInMenu(directory: folder.url, store: menuApplications, onError: { error = $0 })
             }
         }
         .onChange(of: showing.stashChanged) { _, new in
@@ -315,6 +348,131 @@ struct RepositoryScreen: View {
         subSelectionLogID = nil
         selectionLogID = logs.first?.id
         selectionLog = logs.first
+    }
+
+    private var menuContext: RepositoryMenuContext {
+        var actions = MenuActions()
+        if !isLoading && !isFetching && !showing.isPresented && checkoutConfirmation == nil && revertConfirmation == nil {
+            actions[.refresh] = { Task { await refreshModels() } }
+            actions[.fetch] = fetchChanges
+            actions[.searchCommits] = { searchFocusRequest = UUID() }
+            actions[.showBranches] = { showing.branches = true }
+            actions[.newBranch] = { showing.createNewBranchFrom = branch ?? Branch(name: "HEAD", isCurrent: true) }
+            actions[.showTags] = { showing.tags = true }
+            actions[.showStashes] = { showing.stashChanged = true }
+            actions[.compare] = { showing.compareRevisions = true }
+            if !menuApplications.isOpening { actions[.chooseApplication] = chooseMenuApplication }
+            actions[.showChanges] = {
+                searchText = ""
+                Task {
+                    await logStore.revealWorkingTree()
+                    subSelectionLogID = nil
+                    selectionLogID = Log.notCommitted.id
+                    selectionLog = .notCommitted
+                }
+            }
+            if logStore.snapshot?.headHash != nil {
+                actions[.revealHead] = {
+                    searchText = ""
+                    Task {
+                        if let target = await logStore.revealHead() {
+                            subSelectionLogID = nil
+                            selectionLogID = target
+                        }
+                    }
+                }
+            }
+            if let branch, !branch.isDetached {
+                actions[.renameBranch] = { showing.renameBranch = branch }
+                actions[.mergeBranch] = { showing.mergeBranch = true }
+                actions[.push] = pushChanges
+                if syncState.tracking?.upstream != nil { actions[.pull] = pullChanges }
+            }
+            if logStore.notCommitted?.isEmpty == false {
+                actions[.stash] = { runMenuOperation { try await GitRuntime.run(GitStash(directory: folder.url)) } }
+            }
+            if let terminal = Self.terminalURL {
+                actions[.openTerminal] = {
+                    Task {
+                        do {
+                            _ = try await NSWorkspace.shared.open([folder.url], withApplicationAt: terminal,
+                                                                 configuration: NSWorkspace.OpenConfiguration())
+                        } catch { self.error = error }
+                    }
+                }
+            }
+            if let target = selectedCommit {
+                actions[.copyCommitHash] = {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(target.hash, forType: .string)
+                }
+                actions[.newTag] = { showing.createNewTagAt = target }
+                actions[.checkoutCommit] = { checkoutConfirmation = target }
+                actions[.revertCommit] = { revertConfirmation = target }
+                if target.hash == logStore.snapshot?.headHash && logStore.notCommitted?.diffCached.isEmpty != false {
+                    actions[.amendCommit] = { showing.amendCommitAt = target }
+                }
+            } else if let head = logStore.commits.first(where: { $0.hash == logStore.snapshot?.headHash }) {
+                actions[.newTag] = { showing.createNewTagAt = head }
+            }
+        }
+        return RepositoryMenuContext(actions: actions, directory: folder.url, historyScope: logStore.scope,
+            setHistoryScope: { scope in Task { await logStore.setScope(scope) } },
+            applications: menuApplications.pinned + menuApplications.suggested + menuApplications.others,
+            openApplication: { application in openMenuApplication(application) },
+            isOpeningApplication: menuApplications.isOpening)
+    }
+
+    private func chooseMenuApplication() {
+        let panel = NSOpenPanel()
+        panel.title = String(localized: "Choose Application")
+        panel.allowedContentTypes = [.applicationBundle]
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.begin { response in
+            guard response == .OK, let url = panel.url,
+                  let application = OpenInApplication.read(at: url), application.id != Bundle.main.bundleIdentifier else { return }
+            openMenuApplication(application, remember: true)
+        }
+    }
+
+    private func openMenuApplication(_ application: OpenInApplication, remember: Bool = false) {
+        Task {
+            do {
+                try await menuApplications.open(application, directory: folder.url, rememberApplication: remember)
+            } catch { self.error = error }
+        }
+    }
+
+    private var selectedCommit: Commit? {
+        guard subSelectionLogID == nil, case let .committed(commit) = selectionLog else { return nil }
+        return commit
+    }
+
+    private func runMenuOperation(_ operation: @escaping @MainActor () async throws -> Void) {
+        guard !isLoading, !isFetching else { return }
+        isLoading = true
+        Task {
+            defer { isLoading = false }
+            do { try await operation() } catch { self.error = error }
+            await refreshModels()
+        }
+    }
+
+    private func mergeBranch(_ branch: Branch) {
+        guard !isLoading, !isFetching else { return }
+        isLoading = true
+        Task {
+            defer { isLoading = false }
+            do {
+                try await GitRuntime.run(GitMerge(directory: folder.url, branchName: branch.name))
+            } catch {
+                let state = try? await GitMergeState.read(in: folder.url)
+                if state?.isMerging != true { self.error = error }
+            }
+            await refreshModels()
+            if session.mergeState?.isMerging == true { showing.mergeResolution = true }
+        }
     }
 
     /// Only opening the repository fetches; local operations refresh from local refs.
@@ -446,20 +604,7 @@ struct RepositoryScreen: View {
     }
 
     private func fetchButton() -> some View {
-        Button {
-            isFetching = true
-            Task {
-                defer { isFetching = false }
-                do {
-                    try await RemoteUpdateService.shared.execute(GitFetch(directory: folder.url))
-                    syncState.syncError = nil
-                    await refreshModels()
-                } catch {
-                    syncState.syncError = error.localizedDescription
-                    self.error = error
-                }
-            }
-        } label: {
+        Button(action: fetchChanges) {
             Label {
                 Text("Fetch")
             } icon: {
@@ -476,11 +621,28 @@ struct RepositoryScreen: View {
         .help("Fetch")
     }
 
+    private func fetchChanges() {
+        guard !isFetching, !isLoading else { return }
+        isFetching = true
+        Task {
+            defer { isFetching = false }
+            do {
+                try await RemoteUpdateService.shared.execute(GitFetch(directory: folder.url))
+                syncState.syncError = nil
+                await refreshModels()
+            } catch {
+                syncState.syncError = error.localizedDescription
+                self.error = error
+            }
+        }
+    }
+
     fileprivate func pullButton() -> some View {
         PullToolbarButton(count: pullBehindCount, toolTip: pullDescription, onPull: pullChanges)
     }
 
     private func pullChanges() {
+        guard !isLoading, !isFetching else { return }
         isLoading = true
         Task {
             defer { isLoading = false }
@@ -524,6 +686,7 @@ struct RepositoryScreen: View {
     }
 
     private func pushChanges() {
+        guard !isLoading, !isFetching else { return }
         isLoading = true
         Task {
             defer { isLoading = false }

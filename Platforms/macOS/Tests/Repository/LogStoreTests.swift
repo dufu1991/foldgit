@@ -330,4 +330,48 @@ struct HistoryStoreTests {
         #expect(session.history.commits.first?.hash == incoming)
     }
 
+    @Test func revealHeadClearsSearchAndLoadsPastOtherBranches() async throws {
+        let repository = try await TestRepository.create(commits: 3)
+        defer { repository.remove() }
+        let head = try await repository.git(["rev-parse", "HEAD"])
+        try await repository.git(["switch", "-c", "newer-branch"])
+        for index in 0..<5 {
+            _ = try await GitRuntime.run(arguments: ["git", "commit", "--allow-empty", "-m", "other \(index)"],
+                currentDirectoryURL: repository.url, environment: ["GIT_COMMITTER_DATE": "2030-01-01T00:00:00Z"])
+        }
+        try await repository.git(["switch", "main"])
+        let name = "FoldGit.MenuNavigationTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: name)!
+        defer { defaults.removePersistentDomain(forName: name) }
+        let store = HistoryStore(defaults: defaults)
+        store.directory = repository.url
+        store.number = 2
+        await store.setScope(.allCommits)
+        #expect(!store.commits.contains { $0.hash == head })
+        store.search("missing search result")
+        await store.searchTask?.value
+        #expect(await store.revealHead() == head)
+        #expect(store.error == nil)
+        #expect(store.searchText.isEmpty)
+        #expect(store.scope == .allCommits)
+        #expect(store.commits.contains { $0.hash == head })
+        #expect(store.scrollRequest?.target == head)
+    }
+
+    @Test func revealWorkingTreeRestoresChangesHiddenBySearch() async throws {
+        let repository = try await TestRepository.create()
+        defer { repository.remove() }
+        try repository.write("menu-navigation.txt", "untracked change\n")
+        let store = HistoryStore()
+        store.directory = repository.url
+        await store.refresh()
+        store.search("missing search result")
+        await store.searchTask?.value
+        #expect(!store.logs().contains(.notCommitted))
+        await store.revealWorkingTree()
+        #expect(store.searchText.isEmpty)
+        #expect(store.logs().first == .notCommitted)
+        #expect(store.scrollRequest?.target == Log.notCommitted.id)
+        #expect(store.notCommitted?.status.untrackedFiles == ["menu-navigation.txt"])
+    }
 }

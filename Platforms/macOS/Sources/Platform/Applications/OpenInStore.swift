@@ -46,9 +46,12 @@ import Observation
         return applications.filter { !$0.isFinder && !visible.contains($0.id) }
     }
 
+    /// Assigns only changed values: every UserDefaults write triggers this, and unchanged assignments would still invalidate observers.
     func reloadPreferences() {
-        pinnedIDs = defaults.stringArray(forKey: PreferenceKey.openInPinnedApplications.rawValue) ?? []
-        recentIDs = defaults.stringArray(forKey: PreferenceKey.openInRecentApplications.rawValue) ?? []
+        let pinned = defaults.stringArray(forKey: PreferenceKey.openInPinnedApplications.rawValue) ?? []
+        let recent = defaults.stringArray(forKey: PreferenceKey.openInRecentApplications.rawValue) ?? []
+        if pinned != pinnedIDs { pinnedIDs = pinned }
+        if recent != recentIDs { recentIDs = recent }
     }
 
     func reload(for directory: URL, force: Bool = false) async {

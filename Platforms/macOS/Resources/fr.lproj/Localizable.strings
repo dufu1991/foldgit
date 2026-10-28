@@ -22,6 +22,7 @@
 "Allow FoldGit in System Settings to finish enabling launch at login." = "Autorisez FoldGit dans Réglages Système pour terminer l’activation.";
 "Amend" = "Modifier le dernier commit";
 "Amend Commit with a New Message" = "Modifier le message du commit";
+"Amend Last Commit" = "Modifier le dernier commit";
 "An error occurred while executing %@" = "Une erreur s’est produite lors de l’exécution de %@";
 "Appearance" = "Apparence";
 "Applications" = "Applications";
@@ -46,6 +47,7 @@
 "Changes are merged locally. Open the target worktree to review, test, and push." = "Les modifications sont fusionnées localement. Ouvrez l’arbre cible pour vérifier, tester et pousser.";
 "Check frequently used snippets to show them below the commit message editor." = "Cochez les extraits fréquents pour les afficher sous l’éditeur de message de commit.";
 "Checkout" = "Extraire le commit";
+"Checkout Selected Commit" = "Extraire le commit sélectionné";
 "Choose" = "Choisir";
 "Choose Application" = "Choisir une application";
 "Choose Clone Location" = "Choisir un emplacement de clonage";
@@ -92,6 +94,7 @@
 "Copied" = "Copié";
 "Copy \"%@\"" = "Copier « %@ »";
 "Copy %@" = "Copier %@";
+"Copy Commit Hash" = "Copier le hash du commit";
 "Create" = "Créer";
 "Create & Push" = "Créer et pousser";
 "Create New Branch" = "Créer une branche";
@@ -169,8 +172,10 @@
 "Inactive" = "Inactifs";
 "Incoming Branch Version" = "Version de la branche entrante";
 "Interface Language" = "Langue de l’interface";
+"Jump to HEAD" = "Aller à HEAD";
 "Keep Running" = "Continuer l’exécution";
 "Keep Version" = "Conserver une version";
+"Keyboard Shortcuts" = "Raccourcis clavier";
 "Language" = "Langue";
 "Language changes take full effect after restarting the application." = "La langue sera entièrement appliquée après le redémarrage de l’application.";
 "Last Successful Fetch" = "Dernière récupération réussie";
@@ -195,6 +200,7 @@
 "Mark as Active" = "Marquer comme actif";
 "Mark as Inactive" = "Marquer comme inactif";
 "Merge" = "Fusionner";
+"Merge Branch" = "Fusionner une branche";
 "Merge Complete" = "Fusion terminée";
 "Merge in Progress" = "Fusion en cours";
 "Merge into \"%@\"" = "Fusionner dans « %@ »";
@@ -247,11 +253,14 @@
 "Open Current Repository in Another Application" = "Ouvrir le dépôt actuel dans une autre application";
 "Open File" = "Ouvrir le fichier";
 "Open Login Items" = "Ouvrir les éléments de connexion";
+"Open Recent" = "Ouvrir un élément récent";
+"Open Repository" = "Ouvrir un dépôt";
 "Open Source Licenses" = "Licences open source";
 "Open Source Worktree" = "Ouvrir l’arbre source";
 "Open Target Worktree" = "Ouvrir l’arbre cible";
 "Open Worktree" = "Ouvrir l’arbre de travail";
 "Open in" = "Ouvrir dans";
+"Open in Terminal" = "Ouvrir dans le terminal";
 "Open the target branch in another worktree before finishing." = "Ouvrez la branche cible dans un autre arbre avant de terminer.";
 "Original Project" = "Projet d’origine";
 "Other Applications" = "Autres applications";
@@ -297,6 +306,7 @@
 "Replace File Resolution?" = "Remplacer la résolution du fichier ?";
 "Repositories" = "Dépôts";
 "Repositories remain in the sidebar and their folders stay unchanged." = "Les dépôts restent dans la barre latérale et leurs dossiers restent inchangés.";
+"Repository" = "Dépôt";
 "Repository Address" = "Adresse du dépôt";
 "Repository Display Name" = "Nom affiché du dépôt";
 "Repository Worktrees" = "Arbres de travail des dépôts";
@@ -310,6 +320,7 @@
 "Restore Previous Repository and Window" = "Restaurer le dépôt et la fenêtre précédents";
 "Return to Workflow" = "Revenir au processus";
 "Revert" = "Annuler le commit";
+"Revert Selected Commit" = "Inverser le commit sélectionné";
 "Revert using mainline %@" = "Annuler le commit avec %@ comme parent principal";
 "Review" = "Vérifier";
 "Review all default values before restoring settings." = "Consultez toutes les valeurs par défaut avant de rétablir les réglages.";
@@ -390,11 +401,14 @@
 "Use Incoming Version" = "Utiliser la version entrante";
 "Use Target Version" = "Utiliser la version cible";
 "Use as Text" = "Utiliser comme texte";
+"User Guide" = "Guide utilisateur";
 "Version %@" = "Version %@";
+"View" = "Présentation";
 "View Incoming Commits" = "Voir les commits à récupérer";
 "When the Last Window Closes" = "À la fermeture de la dernière fenêtre";
 "Windows" = "Fenêtres";
 "Work on another branch in a separate folder while keeping your current changes." = "Travaillez sur une autre branche dans un dossier distinct en conservant vos modifications.";
+"Working Changes" = "Modifications de travail";
 "Working Tree" = "Arbre de travail";
 "Worktree" = "Arbre de travail";
 "Worktree Actions" = "Actions de l’arbre de travail";

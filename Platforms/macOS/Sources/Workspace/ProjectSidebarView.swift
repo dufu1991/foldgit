@@ -58,6 +58,7 @@ struct ProjectSidebarView: View {
 
     var body: some View {
         sidebarContent
+        .focusedSceneValue(\.sidebarMenu, menuActions)
         .sheet(item: $finishingWorktree) { target in
             WorktreeCompletionSheet(source: target.url) { source, destination in
                 relocateWorktree(source, nil, fallback: destination)
@@ -609,6 +610,27 @@ struct ProjectSidebarView: View {
         guard let index = updated.firstIndex(where: { !$0.isRepository && $0.identity == identity }) else { return }
         updated[index].setInfrequent(infrequent, repository: repository)
         folders = updated
+    }
+
+    private var menuActions: MenuActions {
+        var actions = MenuActions()
+        guard !isAdding, cloneParent == nil, groupDraft == nil, groupToRename == nil,
+              repositoryToName == nil, creatingWorktree == nil, managingWorktrees == nil,
+              finishingWorktree == nil else { return actions }
+        actions[.openRepository] = chooseDirectory
+        actions[.cloneRepository] = chooseCloneDirectory
+        actions[.newGroup] = { beginNewGroup(with: []) }
+        if let selection, showsWorktreeInformation(for: selection) {
+            actions[.newWorktree] = { creatingWorktree = WorktreeSheetTarget(url: selection) }
+            actions[.manageWorktrees] = {
+                managingWorktrees = WorktreeSheetTarget(url: worktrees.source(for: selection))
+            }
+            if let tree = worktrees.list(for: selection).first(where: { $0.id == RepositoryLocation.canonical(selection) }),
+               !tree.isMain, tree.branch != nil {
+                actions[.finishWorktree] = { finishingWorktree = WorktreeSheetTarget(url: selection) }
+            }
+        }
+        return actions
     }
 
     private func chooseDirectory() {

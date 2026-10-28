@@ -57,7 +57,7 @@ window.FOLDGIT_I18N = {
     "d.flow.title": "Intuitive by default",
     "d.flow.body": "Diffs switch between unified and side by side with the window width, hunks stage one by one, commit templates fill in with a click — no needless dialogs.",
     "d.look.title": "Feels like macOS",
-    "d.look.body": "macOS 26 Liquid Glass and system controls, with native light and dark appearances and eight interface languages.",
+    "d.look.body": "macOS 26 Liquid Glass and system controls, a native menu bar with keyboard shortcuts for everyday actions, light and dark appearances, and eight interface languages.",
     "cmp.them": "Typical Git clients",
     "cmp.r1": "Repositories",
     "cmp.r1a": "Folded by folder or group, all at hand",

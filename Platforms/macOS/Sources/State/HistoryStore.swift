@@ -138,6 +138,32 @@ import Observation
     func refresh() async { invalidateSearchIndex(); await reload(limit: max(number, commits.count)) }
     func update() async { invalidateSearchIndex(); await reload(limit: max(number, commits.count)) }
 
+    func revealWorkingTree() async {
+        cancelSearch()
+        searchText = ""
+        await refresh()
+        guard error == nil else { return }
+        scrollRequest = ScrollRequest(target: Log.notCommitted.id)
+    }
+
+    func revealHead() async -> String? {
+        cancelSearch()
+        searchText = ""
+        await refresh()
+        guard error == nil, let snapshot, let target = snapshot.headHash, let directory else { return nil }
+        if !commits.contains(where: { $0.hash == target }) {
+            let request = generation
+            do {
+                let hashes = try await GitRuntime.run(GitRevisionHashes(directory: directory, revisions: snapshot.revisions(for: scope)))
+                guard request == generation, let index = hashes.firstIndex(of: target) else { return nil }
+                await reload(limit: max(number, index + 1))
+            } catch { self.error = error; return nil }
+        }
+        guard commits.contains(where: { $0.hash == target }) else { return nil }
+        scrollRequest = ScrollRequest(target: target)
+        return target
+    }
+
     private func invalidateSearchIndex() { searchIndex = nil; snapshotIsStale = true; matchingHashes = []; generation += 1 }
 
     private func searchResults(in directory: URL, revisions: [String], text: String, request: Int) async throws -> [String] {

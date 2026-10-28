@@ -15,6 +15,7 @@
 		0626028C32D6EFFF30165F89 /* AmendCommitSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA9BEFA76D9A939E597A339 /* AmendCommitSheet.swift */; };
 		06BA3D9A71E965969318757E /* CommitDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2240D6CF87FC1184FAF49C56 /* CommitDetailView.swift */; };
 		07275A1F2541864CA379C3E7 /* LogStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A6457E51CCA0BC6E6ABC8D /* LogStoreTests.swift */; };
+		090933626B18BDD513DB76B8 /* AppMenuCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D041C1152E99A3A91B1B76B /* AppMenuCommands.swift */; };
 		0994180145887C5973F37C22 /* BarBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC0DFFD8239BB4E1FF1C79E /* BarBackButton.swift */; };
 		0B320A2678BC8E25A9A9957B /* StageFileDiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7539A5EDE82EEC3761E3F2D4 /* StageFileDiffView.swift */; };
 		0C1E72A038BBD30CC8C64FBB /* CommitGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036438CEFCDF343FB19E2565 /* CommitGraphView.swift */; };
@@ -81,6 +82,7 @@
 		8F11A0A6B34315EF14DAA1FF /* StashChangedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAB6861EEC8FBEA2F9EF651 /* StashChangedView.swift */; };
 		91FD8B32BAC871F765CEA014 /* WorktreeCompletionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7EBE5F883F2A5224DA1EDC /* WorktreeCompletionSheet.swift */; };
 		934ECECA2FEA2371F0CF2240 /* BranchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCD1D611B76BBD12A562818 /* BranchTests.swift */; };
+		93731B2664F13F61F289715A /* MergeBranchMenuSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E414C14BC4DCE511156ED7 /* MergeBranchMenuSheet.swift */; };
 		975C75487F8B357B6C16E2EC /* RemoteSyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0E0E40313F30FAE5A8A446 /* RemoteSyncState.swift */; };
 		9AF7B28C1254B0EFB0FA0A84 /* SidebarOrganization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9C969956EEDBF8D69A7662 /* SidebarOrganization.swift */; };
 		9AFFFC46B5F19C3B971250F2 /* WorktreeCompletionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA25F3EBA51AA0199AAB0E07 /* WorktreeCompletionModel.swift */; };
@@ -161,6 +163,7 @@
 		0C1DE5B296F23A1292B793E5 /* AuthorInitialIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorInitialIcon.swift; sourceTree = "<group>"; };
 		0C234A50307068374B39F6B8 /* DiffCommitListContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffCommitListContentView.swift; sourceTree = "<group>"; };
 		0CF9142AE5430CC2B59F08A1 /* ProjectSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectSidebarView.swift; sourceTree = "<group>"; };
+		0D041C1152E99A3A91B1B76B /* AppMenuCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMenuCommands.swift; sourceTree = "<group>"; };
 		0D3ADDB0EF475F15BD3E979B /* CommitDiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitDiffView.swift; sourceTree = "<group>"; };
 		101C3516DC448E5D7D299888 /* CommitRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitRowView.swift; sourceTree = "<group>"; };
 		10BBF0A72C7BB4CA13A363B9 /* EnvironmentValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentValues.swift; sourceTree = "<group>"; };
@@ -192,6 +195,7 @@
 		3A17CD488F08E28242EB62F6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3BCCAFC3AE7FF31B438C7BA8 /* FileChange+Presentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileChange+Presentation.swift"; sourceTree = "<group>"; };
 		3D632F85389C5EDD470B4317 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ru; path = ru.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		41E414C14BC4DCE511156ED7 /* MergeBranchMenuSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergeBranchMenuSheet.swift; sourceTree = "<group>"; };
 		438AC676E92CD6016E388103 /* NativeSearchField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeSearchField.swift; sourceTree = "<group>"; };
 		43BD3997AF08FEF69ADB7113 /* CommitGraphTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitGraphTests.swift; sourceTree = "<group>"; };
 		43F514E1D5BFAB574BA9A51F /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ja; path = ja.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
@@ -358,6 +362,7 @@
 		3E6CB4F864B89C2687850F0D /* App */ = {
 			isa = PBXGroup;
 			children = (
+				0D041C1152E99A3A91B1B76B /* AppMenuCommands.swift */,
 				10BBF0A72C7BB4CA13A363B9 /* EnvironmentValues.swift */,
 				58700D8D35F1C24177B4E02E /* FoldGitApp.swift */,
 				51B0D0A4E0BFD35F8A4FEFC9 /* WindowID.swift */,
@@ -692,6 +697,7 @@
 				6BA9BEFA76D9A939E597A339 /* AmendCommitSheet.swift */,
 				2226C7248E2ED10A6DEB4629 /* CreateNewBranchSheet.swift */,
 				68578483928EAFF5897B23D4 /* CreateNewTagSheet.swift */,
+				41E414C14BC4DCE511156ED7 /* MergeBranchMenuSheet.swift */,
 				F2DCB1E60C8130BD264C2A79 /* RenameBranchSheet.swift */,
 			);
 			path = Dialogs;
@@ -877,6 +883,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0626028C32D6EFFF30165F89 /* AmendCommitSheet.swift in Sources */,
+				090933626B18BDD513DB76B8 /* AppMenuCommands.swift in Sources */,
 				3B52C4DC0959EC593C525993 /* AppPreferences.swift in Sources */,
 				4BAC2009D78D790FCF66C94C /* AuthorInitialIcon.swift in Sources */,
 				C11A8305C1CB539D08FFAFD4 /* AutoFetchInterval+Presentation.swift in Sources */,
@@ -926,6 +933,7 @@
 				ED1B663060CE5E9F9607EA35 /* Language.swift in Sources */,
 				AA4E2EAC8D327618A11AB37D /* LegacyPreferencesMigration.swift in Sources */,
 				382D5C9747BADF7A50EA9194 /* MacRepositoryDiscovery.swift in Sources */,
+				93731B2664F13F61F289715A /* MergeBranchMenuSheet.swift in Sources */,
 				C5912668B4DD58F4992C35BD /* MergeCommitContentView.swift in Sources */,
 				025DF68382A44FA83DF1B43F /* MergeResolutionView.swift in Sources */,
 				1DD1DBF8E42BBC9691675F83 /* NativeSearchField.swift in Sources */,

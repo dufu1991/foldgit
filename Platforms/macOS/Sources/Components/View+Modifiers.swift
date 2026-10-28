@@ -27,16 +27,12 @@ extension View {
                     }
                 }
             }
-            Button(commit.parentHashes.count == 2
+            Button(commit.revertMainline != nil
                    ? String(localized: "Revert using mainline \(String(commit.parentHashes[0].prefix(7)))")
                    : String(localized: "Revert")) {
                 Task {
                     do {
-                        if commit.parentHashes.count == 2 {
-                            try await GitRuntime.run(GitRevert(directory: folder,  parentNumber: 1, commit: commit.hash))
-                        } else {
-                            try await GitRuntime.run(GitRevert(directory: folder, commit: commit.hash))
-                        }
+                        try await GitRuntime.run(GitRevert(directory: folder, parentNumber: commit.revertMainline, commit: commit.hash))
                         isRefresh.wrappedValue = true
                     } catch {
                         bindingError.wrappedValue = error

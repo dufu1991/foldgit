@@ -22,6 +22,7 @@
 "Allow FoldGit in System Settings to finish enabling launch at login." = "시스템 설정에서 FoldGit의 로그인 시 실행을 허용하세요.";
 "Amend" = "마지막 커밋 수정";
 "Amend Commit with a New Message" = "커밋 메시지 변경";
+"Amend Last Commit" = "마지막 커밋 수정";
 "An error occurred while executing %@" = "%@ 실행 중 오류가 발생했습니다.";
 "Appearance" = "모양";
 "Applications" = "앱 목록";
@@ -46,6 +47,7 @@
 "Changes are merged locally. Open the target worktree to review, test, and push." = "변경 사항이 로컬에 병합되었습니다. 대상 워크트리를 열어 검토하고 테스트한 후 푸시하세요.";
 "Check frequently used snippets to show them below the commit message editor." = "자주 사용하는 스니펫을 선택하면 커밋 메시지 편집기 아래에 표시됩니다.";
 "Checkout" = "체크아웃";
+"Checkout Selected Commit" = "선택한 커밋 체크아웃";
 "Choose" = "선택";
 "Choose Application" = "앱 선택";
 "Choose Clone Location" = "복제 위치 선택";
@@ -92,6 +94,7 @@
 "Copied" = "복사됨";
 "Copy \"%@\"" = "“%@” 복사";
 "Copy %@" = "%@ 복사";
+"Copy Commit Hash" = "커밋 해시 복사";
 "Create" = "만들기";
 "Create & Push" = "만들고 푸시";
 "Create New Branch" = "새 브랜치 만들기";
@@ -169,8 +172,10 @@
 "Inactive" = "비활성";
 "Incoming Branch Version" = "병합할 브랜치 버전";
 "Interface Language" = "인터페이스 언어";
+"Jump to HEAD" = "HEAD로 이동";
 "Keep Running" = "계속 실행";
 "Keep Version" = "버전 유지";
+"Keyboard Shortcuts" = "키보드 단축키";
 "Language" = "언어";
 "Language changes take full effect after restarting the application." = "언어 변경 사항은 앱을 다시 시작한 후 완전히 적용됩니다.";
 "Last Successful Fetch" = "마지막 가져오기 성공";
@@ -195,6 +200,7 @@
 "Mark as Active" = "활성으로 설정";
 "Mark as Inactive" = "비활성으로 설정";
 "Merge" = "병합";
+"Merge Branch" = "브랜치 병합";
 "Merge Complete" = "병합 완료";
 "Merge in Progress" = "병합 진행 중";
 "Merge into \"%@\"" = "“%@”에 병합";
@@ -247,11 +253,14 @@
 "Open Current Repository in Another Application" = "현재 저장소를 다른 앱에서 열기";
 "Open File" = "파일 열기";
 "Open Login Items" = "로그인 항목 열기";
+"Open Recent" = "최근 항목 열기";
+"Open Repository" = "저장소 열기";
 "Open Source Licenses" = "오픈 소스 라이선스";
 "Open Source Worktree" = "원본 워크트리 열기";
 "Open Target Worktree" = "대상 워크트리 열기";
 "Open Worktree" = "워크트리 열기";
 "Open in" = "다음으로 열기";
+"Open in Terminal" = "터미널에서 열기";
 "Open the target branch in another worktree before finishing." = "다른 워크트리에서 대상 브랜치를 연 후 완료하세요.";
 "Original Project" = "원본 프로젝트";
 "Other Applications" = "기타 앱";
@@ -297,6 +306,7 @@
 "Replace File Resolution?" = "파일 해결 내용을 바꿀까요?";
 "Repositories" = "저장소";
 "Repositories remain in the sidebar and their folders stay unchanged." = "저장소는 사이드바에 남고 폴더는 변경되지 않습니다.";
+"Repository" = "저장소";
 "Repository Address" = "저장소 주소";
 "Repository Display Name" = "저장소 표시 이름";
 "Repository Worktrees" = "저장소 워크트리";
@@ -310,6 +320,7 @@
 "Restore Previous Repository and Window" = "이전 저장소 및 윈도우 복원";
 "Return to Workflow" = "처리 흐름으로 돌아가기";
 "Revert" = "커밋 되돌리기";
+"Revert Selected Commit" = "선택한 커밋 되돌리기";
 "Revert using mainline %@" = "%@을 기준으로 커밋 되돌리기";
 "Review" = "검토";
 "Review all default values before restoring settings." = "설정을 복원하기 전에 모든 기본값을 확인할 수 있습니다.";
@@ -390,11 +401,14 @@
 "Use Incoming Version" = "들어오는 버전 사용";
 "Use Target Version" = "대상 버전 사용";
 "Use as Text" = "텍스트로 사용";
+"User Guide" = "사용 설명서";
 "Version %@" = "버전 %@";
+"View" = "보기";
 "View Incoming Commits" = "풀 대기 커밋 보기";
 "When the Last Window Closes" = "마지막 윈도우를 닫을 때";
 "Windows" = "윈도우";
 "Work on another branch in a separate folder while keeping your current changes." = "현재 변경 사항을 유지하면서 별도 폴더에서 다른 브랜치로 작업합니다.";
+"Working Changes" = "작업 트리 변경 사항";
 "Working Tree" = "작업 트리";
 "Worktree" = "워크트리";
 "Worktree Actions" = "워크트리 작업";

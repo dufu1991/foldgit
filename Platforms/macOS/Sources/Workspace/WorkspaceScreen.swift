@@ -36,6 +36,10 @@ struct WorkspaceScreen: View {
     @State private var folderIsRefresh = false
     @State private var error: Error?
     @State private var columnVisibility = NavigationSplitViewVisibility.all
+    @State private var expandAllFiles: UUID?
+    @State private var collapseAllFiles: UUID?
+    @AppStorage(PreferenceKey.sidebarDates.rawValue) private var sidebarDatesData = PreferenceDefaults.sidebarDates
+    @State private var sidebarDatesCache = DecodedPreference { SidebarDates.decode($0 ?? Data()) }
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
@@ -48,9 +52,7 @@ struct WorkspaceScreen: View {
             .toolbar {
                 ToolbarSpacer(.flexible)
                 ToolbarItem(id: "workspaceSidebar", placement: .automatic) {
-                    Button("Sidebar", systemImage: "sidebar.left") {
-                        columnVisibility = columnVisibility == .all ? .doubleColumn : .all
-                    }
+                    Button("Sidebar", systemImage: "sidebar.left", action: toggleSidebar)
                     .help(columnVisibility == .all ? String(localized: "Hide Sidebar") : String(localized: "Show Sidebar"))
                 }
             }
@@ -137,6 +139,28 @@ struct WorkspaceScreen: View {
                 preferences: worktreePreferencesCache.value(for: worktreePreferencesData))))
         .environment(\.openWorktree, OpenWorktreeAction { url in selectionFolderURL = url.standardizedFileURL.resolvingSymlinksInPath() })
         .environment(\.folder, selectionFolder?.url)
+        .environment(\.expandAllFiles, expandAllFiles)
+        .environment(\.collapseAllFiles, collapseAllFiles)
+        .focusedSceneValue(\.workspaceMenu, menuContext)
+    }
+
+    private var menuContext: WorkspaceMenuContext {
+        var actions = MenuActions()
+        actions[.toggleSidebar] = toggleSidebar
+        if selectionFolder != nil {
+            actions[.expandAll] = { expandAllFiles = UUID() }
+            actions[.collapseAll] = { collapseAllFiles = UUID() }
+        }
+        let dates = sidebarDatesCache.value(for: sidebarDatesData)
+        let recent = decodedFolders.flatMap(\.repositories)
+            .filter { dates.opened[$0.identity.path] != nil }
+            .sorted { (dates.opened[$0.identity.path] ?? .distantPast) > (dates.opened[$1.identity.path] ?? .distantPast) }
+        return WorkspaceMenuContext(actions: actions, recentRepositories: Array(recent.prefix(10)),
+                                    openRecent: { selectionFolderURL = $0 })
+    }
+
+    private func toggleSidebar() {
+        columnVisibility = columnVisibility == .all ? .doubleColumn : .all
     }
 
     private func persistFolders(_ folders: [WorkspaceEntry]) {

@@ -8,10 +8,13 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[2]
 BRANDING = ROOT / 'Shared/Resources/Branding'
 ICON = BRANDING / 'AppIcon.icon'
-TOOL = Path('/Applications/Icon Composer.app/Contents/Executables/ictool')
+DEVELOPER = Path(subprocess.run(['xcode-select', '--print-path'], check=True,
+                              capture_output=True, text=True).stdout.strip())
+TOOL = DEVELOPER.parent / 'Applications/Icon Composer.app/Contents/Executables/ictool'
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--previews', type=Path, default=ROOT / 'output/FoldGit-icon-final/previews')
+parser.add_argument('--design-generation', choices=['26', '27'], default='27')
 arguments = parser.parse_args()
 arguments.previews.mkdir(parents=True, exist_ok=True)
 (BRANDING / 'Images').mkdir(exist_ok=True)
@@ -20,7 +23,8 @@ for mode in ['Default', 'Dark', 'ClearLight', 'ClearDark', 'TintedLight', 'Tinte
     destination = arguments.previews / f'{mode}.png'
     command = [str(TOOL), str(ICON), '--export-image', '--output-file', str(destination),
                '--platform', 'macOS', '--rendition', mode, '--width', '1024',
-               '--height', '1024', '--scale', '1']
+               '--height', '1024', '--scale', '1',
+               '--design-generation', arguments.design_generation]
     if mode.startswith('Tinted'):
         command += ['--tint-color', '0.72', '--tint-strength', '0.55']
     subprocess.run(command, check=True, capture_output=True)

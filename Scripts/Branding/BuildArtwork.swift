@@ -96,20 +96,33 @@ folder.addLine(to: CGPoint(x: 124, y: 545))
 folder.addCurve(to: CGPoint(x: 180, y: 480), control1: CGPoint(x: 117, y: 501), control2: CGPoint(x: 138, y: 480))
 folder.closeSubpath()
 try save("04-Glass-Folder.svg", svgPath(folder), "#FFFFFF")
-let gridLines = [128, 320, 512, 704, 896].map { coordinate in
+let gridLines = [256, 512, 768].map { coordinate in
     "M\(coordinate) 0 V1024 M0 \(coordinate) H1024"
 }.joined(separator: " ")
-let grid = """
+let base = """
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
   <defs>
     <linearGradient id="wash" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.08"/>
-      <stop offset="1" stop-color="#3166DA" stop-opacity="0.10"/>
+      <stop offset="0" stop-color="#009FF5"/>
+      <stop offset="0.48" stop-color="#0874F2"/>
+      <stop offset="1" stop-color="#233DDB"/>
     </linearGradient>
   </defs>
   <path d="M0 0 H1024 V1024 H0 Z" fill="url(#wash)"/>
-  <path d="\(gridLines)" fill="none" stroke="#FFFFFF" stroke-opacity="0.30" stroke-width="2.4"/>
+</svg>
+"""
+try base.write(to: assets.appendingPathComponent("00-Blueprint-Base.svg"), atomically: true, encoding: .utf8)
+let grid = """
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <path d="\(gridLines)" fill="none" stroke="#FFFFFF" stroke-opacity="0.52" stroke-width="4.2"/>
 </svg>
 """
 try grid.write(to: assets.appendingPathComponent("00-Blueprint-Grid.svg"), atomically: true, encoding: .utf8)
-print("Created five vector layers with three actual Git-shaped apertures.")
+
+let glass = """
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <path fill="#FFFFFF" d="M0 300 C0 100 100 0 300 0 H724 C924 0 1024 100 1024 300 V724 C1024 924 924 1024 724 1024 H300 C100 1024 0 924 0 724 Z"/>
+</svg>
+"""
+try glass.write(to: assets.appendingPathComponent("00-Blueprint-Glass.svg"), atomically: true, encoding: .utf8)
+print("Created seven vector layers with one continuous glass base and three actual Git-shaped apertures.")

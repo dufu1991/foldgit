@@ -28,7 +28,8 @@ $arguments = @('build', $project, '-c', 'Release', "-p:Platform=$Architecture",
 if (-not $Unsigned) {
     $arguments += @('-p:AppxPackageSigningEnabled=true', "-p:PackageCertificateThumbprint=$CertificateThumbprint", "-p:AppxPackageSigningTimestampServerUrl=$TimestampServer")
 }
-dotnet @arguments
+# Keep build diagnostics visible when callers capture the returned package path.
+dotnet @arguments | Out-Host
 if ($LASTEXITCODE -ne 0) { throw 'MSIX build failed.' }
 $package = Get-ChildItem $destination -Filter '*.msix' -Recurse | Select-Object -First 1
 if (-not $package) { throw 'No MSIX package was produced.' }

@@ -22,7 +22,7 @@ for language, catalog in catalogs.items():
         if language.startswith("zh") and re.search(r"[\u3400-\u9fff][A-Za-z0-9]|[A-Za-z0-9][\u3400-\u9fff]", value):
             errors.append(f"{language}: missing space around Latin text or numbers: {key}")
 
-manifest = json.loads((ROOT / "Shared/Resources/FileIcons/MaterialFileIcons.json").read_text())
+manifest = json.loads((ROOT / "Shared/Resources/FileIcons/MaterialFileIcons.json").read_text(encoding="utf-8"))
 icons = set(manifest["fileNames"].values()) | set(manifest["fileExtensions"].values()) | {manifest["defaultIcon"]}
 icons |= {name + ".light" for name in manifest["lightIcons"]}
 for name in icons:
@@ -44,10 +44,10 @@ for path in WINDOWS.rglob("*"):
 for path in (WINDOWS / "src/FoldGit.Core").rglob("*.cs"):
     if {"obj", "bin"} & set(path.parts):
         continue
-    if re.search(r"using (Microsoft\.UI|Windows\.UI|FoldGit\.Platform)", path.read_text()):
+    if re.search(r"using (Microsoft\.UI|Windows\.UI|FoldGit\.Platform)", path.read_text(encoding="utf-8")):
         errors.append(f"Native dependency in core: {path.relative_to(ROOT)}")
 for path in (ROOT / "Platforms/macOS/Sources").rglob("*.swift"):
-    if re.search(r"FoundationModels|IntelligenceClient|systemLanguageModelAvailability", path.read_text()):
+    if re.search(r"FoundationModels|IntelligenceClient|systemLanguageModelAvailability", path.read_text(encoding="utf-8")):
         errors.append(f"Remaining macOS AI integration: {path.relative_to(ROOT)}")
 if errors:
     raise SystemExit("\n".join(sorted(set(errors))))

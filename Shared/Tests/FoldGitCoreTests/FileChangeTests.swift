@@ -89,9 +89,11 @@ struct FileChangeTests {
         try await repository.git(["rm", "-q", "removed.txt"])
         try repository.write("added.txt", "new\n")
         try repository.write("example.swift", "let value = 42\n")
-        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: repository.url.appendingPathComponent("script.sh").path)
         try Data([0, 1, 2, 3]).write(to: repository.url.appendingPathComponent("data.bin"))
-        try await repository.commit("feat: change every kind")
+        // Set the index mode directly, including on filesystems without POSIX permissions.
+        try await repository.git(["add", "--all"])
+        try await repository.git(["update-index", "--chmod=+x", "script.sh"])
+        try await repository.git(["commit", "-m", "feat: change every kind"])
 
         // Commit details keep Git's rename detection; the working tree view uses --no-renames.
         let detail = try await GitRuntime.run(GitShow(directory: repository.url, object: "HEAD"))

@@ -30,7 +30,13 @@ public struct RepositoryCloneRequest: Sendable {
         let scheme = URLComponents(string: remote)?.scheme?.lowercased()
         let isURL = ["https", "http", "ssh", "git", "file"].contains(scheme ?? "")
         let isSCP = remote.range(of: #"^[^\s/:]+@[^\s/:]+:.+$"#, options: .regularExpression) != nil
-        guard isURL || isSCP || remote.hasPrefix("/") else {
+        #if os(Windows)
+        let isLocalPath = remote.hasPrefix("/") || remote.hasPrefix("\\\\") ||
+            remote.range(of: #"^[A-Za-z]:[/\\]"#, options: .regularExpression) != nil
+        #else
+        let isLocalPath = remote.hasPrefix("/")
+        #endif
+        guard isURL || isSCP || isLocalPath else {
             throw GitExecutionError(description: NSLocalizedString("Enter a valid repository address.", comment: ""))
         }
         guard !directoryName.isEmpty, directoryName != ".", directoryName != "..",

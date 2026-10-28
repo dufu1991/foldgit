@@ -84,7 +84,12 @@ struct MergeWorkflowTests {
 
     @Test func manualAndDeletionResolutionsUseIndexStagesAndPreserveUnicodePaths() async throws {
         let repo = try await TestRepository.create()
+        #if os(Windows)
+        // Windows filenames cannot contain tabs; retain Unicode and whitespace coverage.
+        let path = "中文 conflict file.swift"
+        #else
         let path = "中文 conflict\tfile.swift"
+        #endif
         try repo.write(path, "base\n")
         try await repo.commit("base")
         let source = try await linked(repo)

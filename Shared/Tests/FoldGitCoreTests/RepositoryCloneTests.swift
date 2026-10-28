@@ -9,6 +9,15 @@ private actor CloneLines {
 }
 
 struct RepositoryCloneTests {
+    #if os(Windows)
+    @Test(arguments: ["C:/repositories/source.git", #"C:\repositories\source.git"#, #"\\server\share\source.git"#])
+    func windowsAbsolutePathsAreValidCloneSources(remote: String) throws {
+        let request = RepositoryCloneRequest(parent: FileManager.default.temporaryDirectory,
+            remote: remote, directoryName: "FoldGit-clone-\(UUID())")
+        try request.validate()
+    }
+    #endif
+
     @Test func folderNamesSupportHTTPSAndSSHAddresses() {
         for address in ["https://example.com/team/repo.git", "git@example.com:team/repo.git", "ssh://git@example.com/team/repo.git", "https://example.com/team/repo.git/"] {
             #expect(RepositoryCloneRequest.suggestedName(for: address) == "repo")

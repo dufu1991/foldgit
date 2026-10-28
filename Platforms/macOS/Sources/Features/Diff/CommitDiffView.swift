@@ -44,7 +44,6 @@ struct CommitDiffView: View {
         .scrollEdgeEffectStyle(.hard, for: .vertical)
         .safeAreaBar(edge: .bottom, spacing: 0, content: {
             VStack(spacing: 0) {
-                DiffSummaryView(fileDiffs: filesChanges)
                 PixelDivider()
                 ViewThatFits(in: .horizontal) {
                     HStack(spacing: 16) {

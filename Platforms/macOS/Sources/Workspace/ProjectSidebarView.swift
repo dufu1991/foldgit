@@ -171,6 +171,7 @@ struct ProjectSidebarView: View {
             .moveDisabled(!context.organization.canMove)
         }
         .listStyle(.sidebar)
+        .scrollEdgeEffectHidden(true, for: .top)
         .safeAreaInset(edge: .top, spacing: 0) {
             header
         }

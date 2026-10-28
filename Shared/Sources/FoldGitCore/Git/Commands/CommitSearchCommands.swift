@@ -1,6 +1,6 @@
 import Foundation
 
-/// A compact, ordered index of the current branch's reachable history.
+/// A compact, ordered index of the selected reachable history.
 public struct CommitSearchIndex: Sendable {
     public struct Entry: Sendable {
         public let hash: String
@@ -25,10 +25,11 @@ public struct CommitSearchIndex: Sendable {
 
 public struct GitCommitSearchIndex: RepositoryCommand {
     public var directory: URL
-    public init(directory: URL) { self.directory = directory }
+    public var revisions: [String]
+    public init(directory: URL, revisions: [String] = ["HEAD"]) { self.directory = directory; self.revisions = revisions }
     public var isReadOnly: Bool { true }
     public var arguments: [String] {
-        ["git", "log", "--topo-order", "--pretty=format:%H%x00%an%x00%ae%x00%B%x00"]
+        ["git", "log", "--topo-order", "--pretty=format:%H%x00%an%x00%ae%x00%B%x00"] + revisions + ["--"]
     }
 
     public func parse(for output: String) throws -> CommitSearchIndex {

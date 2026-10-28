@@ -12,44 +12,52 @@ struct CommitLogView: View {
     @State private var selectionLogIDs = Set<String>()
 
     var body: some View {
-        List(logStore.logs(), selection: $selectionLogIDs) { log in
-            logsRow(log)
-                .task {
-                    await logStore.logViewTask(log)
+        ScrollViewReader { proxy in
+            List(logStore.logs(), selection: $selectionLogIDs) { log in
+                logsRow(log)
+                    .id(log.id)
+                    .task {
+                        await logStore.logViewTask(log)
+                    }
+            }
+            .onChange(of: selectionLogIDs) { oldValue, newValue in
+                if newValue.count <= 1 {
+                    selectionLogID = newValue.first
+                    subSelectionLogID = nil
+                    syncSelection()
+                    return
                 }
-        }
-        .onChange(of: selectionLogIDs) { oldValue, newValue in
-            if newValue.count <= 1 {
-                selectionLogID = newValue.first
-                subSelectionLogID = nil
-                syncSelection()
-                return
-            }
-            if selectionLogID == nil {
-                subSelectionLogID = nil
-                syncSelection()
-                return
-            }
-            if newValue.count == 2, let selectionLogID, newValue.contains(selectionLogID), let subSelectionLogID, newValue.contains(subSelectionLogID) {
-                return
-            }
-            if newValue.count < 4 {
-                if let added = newValue.first(where: { !oldValue.contains($0) }) {
-                    subSelectionLogID = added
+                if selectionLogID == nil {
+                    subSelectionLogID = nil
+                    syncSelection()
+                    return
+                }
+                if newValue.count == 2, let selectionLogID, newValue.contains(selectionLogID), let subSelectionLogID, newValue.contains(subSelectionLogID) {
+                    return
+                }
+                if newValue.count < 4 {
+                    if let added = newValue.first(where: { !oldValue.contains($0) }) {
+                        subSelectionLogID = added
+                        syncSelection()
+                    }
+                } else {
                     syncSelection()
                 }
-            } else {
+            }
+            .onChange(of: selectionLogID ?? "") {
                 syncSelection()
             }
-        }
-        .onChange(of: selectionLogID ?? "") {
-            syncSelection()
-        }
-        .onChange(of: subSelectionLogID ?? "") {
-            syncSelection()
-        }
-        .task {
-            syncSelection()
+            .onChange(of: subSelectionLogID ?? "") {
+                syncSelection()
+            }
+            .task {
+                syncSelection()
+            }
+            .task(id: logStore.scrollRequest?.id) {
+                guard let request = logStore.scrollRequest else { return }
+                await Task.yield()
+                proxy.scrollTo(request.target, anchor: .center)
+            }
         }
     }
 
@@ -81,7 +89,9 @@ struct CommitLogView: View {
                     .padding(.vertical, 4)
             case .committed(let commit):
                 if let folder {
-                    CommitRowView(commit: commit)
+                    CommitRowView(commit: commit, outsideCurrentBranch: logStore.isOutsideCurrentBranch(commit.id),
+                                  isSelected: selectionLogIDs.contains(commit.id), incoming: logStore.isIncoming(commit.id),
+                                  outgoing: logStore.isOutgoing(commit.id))
                         .commitContextMenu(
                             folder: folder,
                             commit: commit,

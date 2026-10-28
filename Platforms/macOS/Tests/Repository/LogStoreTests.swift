@@ -218,4 +218,116 @@ struct HistoryStoreTests {
         #expect(events.filter { !$0.1 }.count == 1)
     }
 
+
+    @Test func historyScopePersistsPerRepositoryAndSearchUsesTheSelectedScope() async throws {
+        let repository = try await TestRepository.create(commits: 3)
+        let otherRepository = try await TestRepository.create()
+        defer { repository.remove(); otherRepository.remove() }
+        try await repository.git(["switch", "-c", "feature"])
+        try await repository.commit("feat: remote preview searchable")
+        let feature = try await repository.git(["rev-parse", "HEAD"])
+        try await repository.git(["switch", "main"])
+        let name = "FoldGit.HistoryScopeTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: name)!
+        defer { defaults.removePersistentDomain(forName: name) }
+        let store = HistoryStore(defaults: defaults)
+        store.directory = repository.url
+        store.number = 2
+        await store.refresh()
+        #expect(store.scope == .currentBranch)
+        #expect(store.totalCommitsCount == 3)
+        store.search("preview")
+        await store.searchTask?.value
+        #expect(store.commits.isEmpty)
+        await store.setScope(.allCommits)
+        #expect(store.commits.map(\.hash) == [feature])
+        #expect(store.isOutsideCurrentBranch(feature))
+        #expect(!store.isIncoming(feature))
+        store.search("")
+        await store.searchTask?.value
+        #expect(store.totalCommitsCount == 4)
+        await store.loadMore()
+        #expect(store.commits.count == 4)
+        let restored = HistoryStore(defaults: defaults)
+        restored.directory = repository.url
+        #expect(restored.scope == .allCommits)
+        restored.directory = otherRepository.url
+        #expect(restored.scope == .currentBranch)
+        restored.directory = repository.url
+        #expect(restored.scope == .allCommits)
+    }
+
+    @Test func incomingRevealLoadsBeyondFirstPageAndRefreshPreservesTheLoadedHistory() async throws {
+        let remote = try await TestRepository.create()
+        let local = try await TestRepository.create(commits: 0)
+        defer { remote.remove(); local.remove() }
+        try await local.git(["remote", "add", "team", remote.url.path])
+        try await local.git(["fetch", "team"])
+        try await local.git(["reset", "--hard", "team/main"])
+        try await local.git(["branch", "--set-upstream-to=team/main"])
+        try await remote.commit("feat: incoming preview")
+        let incoming = try await remote.git(["rev-parse", "HEAD"])
+        // A later unrelated branch must not hide the incoming target behind pagination.
+        try await local.git(["switch", "-c", "unrelated"])
+        for index in 0..<8 {
+            _ = try await GitRuntime.run(arguments: ["git", "commit", "--allow-empty", "-m", "other \(index)"],
+                                     currentDirectoryURL: local.url,
+                                     environment: ["GIT_COMMITTER_DATE": "2030-01-01T00:00:00Z"])
+        }
+        try await local.git(["switch", "main"])
+        try await local.git(["fetch", "team"])
+        let name = "FoldGit.IncomingRevealTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: name)!
+        defer { defaults.removePersistentDomain(forName: name) }
+        let store = HistoryStore(defaults: defaults)
+        store.directory = local.url
+        store.number = 2
+        await store.refresh()
+        #expect(store.snapshot?.incoming == [incoming])
+        await store.setScope(.allCommits)
+        #expect(!store.commits.contains { $0.hash == incoming })
+        store.search("not found")
+        await store.searchTask?.value
+        let target = await store.revealIncoming()
+        #expect(store.error == nil)
+        #expect(target == incoming)
+        #expect(store.searchText.isEmpty)
+        #expect(store.scope == .allCommits)
+        #expect(store.commits.count > store.number)
+        #expect(store.commits.contains { $0.id == incoming })
+        #expect(store.isIncoming(incoming))
+        #expect(store.scrollRequest?.target == incoming)
+        let loadedCount = store.commits.count
+        await store.refresh()
+        #expect(store.commits.count == loadedCount)
+        try await local.git(["merge", "--ff-only", "team/main"])
+        await store.refresh()
+        #expect(!store.isIncoming(incoming))
+        #expect(!store.isOutsideCurrentBranch(incoming))
+    }
+
+    @Test func openingRepositoryRefreshesFetchedHistoryBeforeFinishing() async throws {
+        let remote = try await TestRepository.create()
+        let local = try await TestRepository.create(commits: 0)
+        defer { remote.remove(); local.remove() }
+        try await local.git(["remote", "add", "team", remote.url.path])
+        try await local.git(["fetch", "team"])
+        try await local.git(["reset", "--hard", "team/main"])
+        try await local.git(["branch", "--set-upstream-to=team/main"])
+        try await remote.commit("feat: fetched on opening")
+        let incoming = try await remote.git(["rev-parse", "HEAD"])
+        let name = "FoldGit.FetchHistoryTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: name)!
+        defer { defaults.removePersistentDomain(forName: name) }
+        let session = RepositorySession()
+        session.history = HistoryStore(defaults: defaults)
+        await session.refresh(in: local.url, fetchRemote: true)
+        #expect(session.error == nil)
+        #expect(session.remote.tracking?.behind == 1)
+        #expect(session.history.isIncoming(incoming))
+        let target = await session.history.revealIncoming()
+        #expect(target == incoming)
+        #expect(session.history.commits.first?.hash == incoming)
+    }
+
 }

@@ -37,10 +37,47 @@ struct RepositoryScreen: View {
                 }
                 .frame(height: 26)
                 if logStore.isSearching { ProgressView().controlSize(.small) }
+                Menu {
+                    Picker("History Scope", selection: Binding(get: { logStore.scope }, set: { scope in
+                        Task { await logStore.setScope(scope) }
+                    })) {
+                        Text("Current Branch").tag(HistoryScope.currentBranch)
+                        Text("All Commits").tag(HistoryScope.allCommits)
+                    }
+                    .pickerStyle(.inline)
+                } label: {
+                    Text(logStore.scope == .currentBranch ? String(localized: "Current Branch") : String(localized: "All Commits"))
+                }
+                .fixedSize()
+                .accessibilityIdentifier("historyScopeMenu")
+                .help("History Scope")
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(.bar)
+            if let tracking = syncState.tracking, tracking.behind > 0 {
+                HStack(spacing: 8) {
+                    Text("Behind by \(tracking.behind) commits")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                    Spacer(minLength: 0)
+                    if logStore.isRevealingIncoming { ProgressView().controlSize(.small) }
+                    Button("View Incoming Commits") {
+                        searchText = ""
+                        Task {
+                            if let target = await logStore.revealIncoming() {
+                                subSelectionLogID = nil
+                                selectionLogID = target
+                            }
+                        }
+                    }
+                    .disabled(logStore.isRevealingIncoming)
+                    .accessibilityIdentifier("viewIncomingCommitsButton")
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(.bar)
+            }
             if showGraph {
                 CommitGraphView(
                     logStore: session.history,
@@ -271,6 +308,9 @@ struct RepositoryScreen: View {
     private func syncHistorySelection() {
         guard !logStore.isSearching else { return }
         let logs = logStore.logs()
+        if let subSelectionLogID, !logs.contains(where: { $0.id == subSelectionLogID }) {
+            self.subSelectionLogID = nil
+        }
         guard !logs.contains(where: { $0.id == selectionLogID }) else { return }
         subSelectionLogID = nil
         selectionLogID = logs.first?.id

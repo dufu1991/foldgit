@@ -1,5 +1,4 @@
 import FoldGitCore
-import FoundationModels
 import SwiftUI
 
 struct StashChangedContentView: View {
@@ -11,12 +10,7 @@ struct StashChangedContentView: View {
     var onTapDropButton: ((Stash) -> Void)?
     @State private var selectionStashID: Int?
     @State private var fileDiffs: [ExpandableModel<FileDiff>] = []
-    @State private var summary = ""
-    @State private var summaryIsResponding = false
     @State private var error: Error?
-    @State private var summaryGenerationError: Error?
-    @State private var generateSummaryTask: Task<(), Never>?
-    @Environment(\.systemLanguageModelAvailability) private var systemLanguageModelAvailability
     
     var body: some View {
         NavigationSplitView {
@@ -67,7 +61,6 @@ struct StashChangedContentView: View {
             }
             .safeAreaBar(edge: .bottom, content: {
                 VStack (spacing: 0) {
-                    DiffSummaryView(fileDiffs: fileDiffs)
                     PixelDivider()
                     ViewThatFits(in: .horizontal) {
                         HStack(spacing: 16) {
@@ -147,27 +140,6 @@ struct StashChangedContentView: View {
         }
     }
     
-    private func generateSummary() async {
-        summary = ""
-        summaryIsResponding = true
-        summaryGenerationError = nil
-        do {
-            let diffRaw = fileDiffs.map { fileDiff in
-                    fileDiff.model.raw
-                }.joined(separator: "\n")
-            if !diffRaw.isEmpty {
-                 let stream = IntelligenceClient().diffSummary(diffRaw)
-                for try await text in stream {
-                    if !Task.isCancelled {
-                        summary = text.content.summary ?? ""
-                    }
-                }
-            }
-        } catch {
-            summaryGenerationError = error
-        }
-        summaryIsResponding = false
-    }
 
 }
 

@@ -27,9 +27,12 @@ import Observation
             history.directory = directory
             remote.folderURL = directory
             remote.branch = branch
+            // Show cached local history immediately, then incorporate any fetched ref updates.
             await history.refresh()
             guard request == generation, !Task.isCancelled else { return }
             await remote.sync(fetchRemote: fetchRemote)
+            guard request == generation, !Task.isCancelled else { return }
+            if fetchRemote { await history.refresh() }
             guard request == generation, !Task.isCancelled else { return }
             error = history.error
         } catch {

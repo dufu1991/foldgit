@@ -4,6 +4,17 @@ public struct CommitGraph: Sendable {
 
     public static let colorCount = 8
 
+    /// Place the working tree immediately before its actual parent, preserving passing lanes.
+    public func positionedHistory(_ commits: [Commit], headHash: String?, showsWorkingTree: Bool) -> [PositionedCommit] {
+        guard showsWorkingTree else { return positionedCommits(commits) }
+        var history = commits
+        let index = headHash.flatMap { head in commits.firstIndex { $0.hash == head } } ?? 0
+        let workingTree = Commit(hash: Log.notCommitted.id, parentHashes: headHash.map { [$0] } ?? [],
+                                 author: "", authorEmail: "", authorDate: "", title: "", body: "", branches: [], tags: [])
+        history.insert(workingTree, at: index)
+        return positionedCommits(history)
+    }
+
     private struct Lane: Equatable {
         let target: String
         let colorIndex: Int

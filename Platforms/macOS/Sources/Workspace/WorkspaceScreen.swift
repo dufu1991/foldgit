@@ -1,6 +1,5 @@
 import AppKit
 import FoldGitCore
-import FoundationModels
 import QuartzCore
 import SwiftUI
 
@@ -35,7 +34,6 @@ struct WorkspaceScreen: View {
     @State private var selectionLog: Log?
     @State private var subSelectionLogID: String?
     @State private var folderIsRefresh = false
-    @State private var systemLanguageModelAvailability = IntelligenceClient().availability
     @State private var error: Error?
     @State private var columnVisibility = NavigationSplitViewVisibility.all
 
@@ -133,16 +131,12 @@ struct WorkspaceScreen: View {
         .onChange(of: selectionFolder, {
             selectionLog = nil
         })
-        .onChange(of: appearsActive) {
-            systemLanguageModelAvailability = IntelligenceClient().availability
-        }
         .errorSheet($error)
         .environment(worktrees)
         .environment(\.worktreeVisibility, worktrees.visibility(for: selectionFolderURL, showInformation: worktrees.showsInformation(for: selectionFolderURL, global: showWorktreeInformation,
                 preferences: worktreePreferencesCache.value(for: worktreePreferencesData))))
         .environment(\.openWorktree, OpenWorktreeAction { url in selectionFolderURL = url.standardizedFileURL.resolvingSymlinksInPath() })
         .environment(\.folder, selectionFolder?.url)
-        .environment(\.systemLanguageModelAvailability, systemLanguageModelAvailability)
     }
 
     private func persistFolders(_ folders: [WorkspaceEntry]) {

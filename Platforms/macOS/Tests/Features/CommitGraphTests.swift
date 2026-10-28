@@ -217,12 +217,11 @@ final class CommitGraphTests: XCTestCase {
 
     @MainActor
     func testGraphRendersAtNarrowAndWideWidthsInBothAppearances() async throws {
-        let rows = CommitGraph().positionedCommits(nestedMerges)
+        let rows = CommitGraph().positionedHistory(nestedMerges, headHash: nestedMerges.first?.hash, showsWorkingTree: true)
         for width in [320.0, 520.0] {
             for dark in [false, true] {
                 let root = ScrollView {
                     CommitGraphContentView(
-                        notCommitted: .constant(NotCommitted(diff: "changed", diffCached: "", status: .init(untrackedFiles: [], unmergedFiles: []))),
                         selectionLogID: .constant("e61f2a8"), subSelectionLogID: .constant("d31b9e4"),
                         logStore: HistoryStore(), showing: .constant(RepositoryPresentation()), isRefresh: .constant(false),
                         commits: rows, viewportWidth: width
@@ -252,4 +251,18 @@ final class CommitGraphTests: XCTestCase {
             }
         }
     }
+
+    @MainActor
+    func testWorkingTreeAttachesToLocalHeadBelowIncomingHistory() throws {
+        let history = [commit("remote", parents: ["head"]), commit("head", parents: ["root"]), commit("root")]
+        let rows = CommitGraph().positionedHistory(history, headHash: "head", showsWorkingTree: true)
+        XCTAssertEqual(rows.map(\.id), ["remote", Log.notCommitted.id, "head", "root"])
+        let workingTree = try XCTUnwrap(rows.first { $0.id == Log.notCommitted.id })
+        XCTAssertEqual(workingTree.commit.parentHashes, ["head"])
+        XCTAssertTrue(workingTree.segments.contains { $0.start == .top && $0.end == .bottom })
+        let head = try XCTUnwrap(rows.first { $0.id == "head" })
+        XCTAssertTrue(head.segments.contains { $0.start == .top && $0.end == .node && $0.fromColumn == workingTree.column })
+        XCTAssertEqual(CommitGraphStyle.textLeading(for: rows[0]), 34)
+    }
+
 }

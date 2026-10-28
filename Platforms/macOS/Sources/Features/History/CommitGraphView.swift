@@ -11,60 +11,61 @@ struct CommitGraphView: View {
     @State private var positionedCommits: [PositionedCommit] = []
 
     var body: some View {
-        GeometryReader { geometry in
-            ScrollView([.horizontal, .vertical]) {
-                VStack(alignment: .leading, spacing: 0) {
-                    CommitGraphContentView(
-                        notCommitted: .constant(logStore.searchText.isEmpty ? logStore.notCommitted : nil),
-                        selectionLogID: $selectionLogID,
-                        subSelectionLogID: $subSelectionLogID,
-                        logStore: logStore,
-                        showing: $showing,
-                        isRefresh: $isRefresh,
-                        commits: positionedCommits,
-                        viewportWidth: geometry.size.width
-                    )
-                    if logStore.canLoadMore {
-                        HStack {
-                            if isLoading {
-                                ProgressView()
-                                    .controlSize(.small)
-                            } else {
-                                Button("More") {
-                                    Task {
-                                        isLoading = true
-                                        await logStore.loadMore()
-                                        isLoading = false
+        ScrollViewReader { proxy in
+            GeometryReader { geometry in
+                ScrollView([.horizontal, .vertical]) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        CommitGraphContentView(
+                            selectionLogID: $selectionLogID,
+                            subSelectionLogID: $subSelectionLogID,
+                            logStore: logStore,
+                            showing: $showing,
+                            isRefresh: $isRefresh,
+                            commits: positionedCommits,
+                            viewportWidth: geometry.size.width
+                        )
+                        if logStore.canLoadMore {
+                            HStack {
+                                if isLoading {
+                                    ProgressView()
+                                        .controlSize(.small)
+                                } else {
+                                    Button("More") {
+                                        Task {
+                                            isLoading = true
+                                            await logStore.loadMore()
+                                            isLoading = false
+                                        }
                                     }
+                                    .buttonStyle(.bordered)
+                                    .controlSize(.small)
                                 }
-                                .buttonStyle(.bordered)
-                                .controlSize(.small)
+                                Spacer()
                             }
-                            Spacer()
+                            .padding()
                         }
-                        .padding()
                     }
+                    .padding(.vertical, 8)
                 }
-                .padding(.vertical, 8)
+            }
+            .task(id: logStore.scrollRequest?.id) {
+                guard let request = logStore.scrollRequest else { return }
+                await Task.yield()
+                proxy.scrollTo(request.target, anchor: .topLeading)
             }
         }
         .background(Color(nsColor: .textBackgroundColor))
         .focusable()
         .focusEffectDisabled()
-        .onChange(of: logStore.commits, initial: true) { _, commits in
-            positionedCommits = CommitGraph().positionedCommits(commits)
-        }
+        .onChange(of: logStore.logs(), initial: true) { rebuildGraph() }
+        .onChange(of: logStore.snapshot?.headHash) { rebuildGraph() }
         .onMoveCommand { direction in
-            guard let selectionLogID else { return }
+            guard let selectionLogID, let index = positionedCommits.firstIndex(where: { $0.id == selectionLogID }) else { return }
             switch direction {
             case .down:
-                if let next = logStore.nextLogID(logID: selectionLogID) {
-                    self.selectionLogID = next
-                }
+                if index + 1 < positionedCommits.count { self.selectionLogID = positionedCommits[index + 1].id }
             case .up:
-                if let previous = logStore.previousLogID(logID: selectionLogID) {
-                    self.selectionLogID = previous
-                }
+                if index > 0 { self.selectionLogID = positionedCommits[index - 1].id }
             case .left, .right:
                 break
             @unknown default:
@@ -72,13 +73,17 @@ struct CommitGraphView: View {
             }
         }
     }
+
+    private func rebuildGraph() {
+        positionedCommits = CommitGraph().positionedHistory(logStore.commits, headHash: logStore.snapshot?.headHash,
+            showsWorkingTree: logStore.searchText.isEmpty && logStore.notCommitted?.isEmpty == false)
+    }
 }
 
 struct CommitGraphContentView: View {
     @Environment(\.worktreeVisibility) private var worktreeVisibility
     @Environment(\.folder) private var folder
     @Environment(\.appearsActive) private var appearsActive
-    @Binding var notCommitted: NotCommitted?
     @Binding var selectionLogID: String?
     @Binding var subSelectionLogID: String?
     var logStore: HistoryStore
@@ -94,54 +99,20 @@ struct CommitGraphContentView: View {
         let workingTreeWidth = max(0, viewportWidth - 16)
         let rowWidth = max(workingTreeWidth, maximumTextLeading + 220 + 10)
         return LazyVStack(alignment: .leading, spacing: 0) {
-            if let notCommitted, !notCommitted.isEmpty {
-                HStack(alignment: .top, spacing: 0) {
-                    ZStack(alignment: .leading) {
-                        if !commits.isEmpty {
-                            Path { path in
-                                let x = CommitGraphStyle.x(column: 0)
-                                path.move(to: CGPoint(x: x, y: CommitGraphStyle.nodeY))
-                                path.addLine(to: CGPoint(x: x, y: CommitGraphStyle.rowHeight))
-                            }
-                            .stroke(Color.orange.opacity(0.6), style: StrokeStyle(lineWidth: 1.5, dash: [3, 3]))
-                        }
-                        Image(systemName: "square.and.pencil")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(.orange)
-                            .frame(width: 24, height: 24)
-                            .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 6))
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 6)
-                                    .strokeBorder(Color.orange.opacity(0.4))
-                            }
-                            .position(x: CommitGraphStyle.x(column: 0), y: CommitGraphStyle.nodeY)
-                    }
-                    .frame(width: CommitGraphStyle.x(column: 0) + CommitGraphStyle.textGap, height: CommitGraphStyle.rowHeight)
-                    .accessibilityHidden(true)
-                    UncommittedChangesLabel(showsIcon: false)
-                        .padding(.top, CommitGraphStyle.titleTop)
-                    Spacer(minLength: 8)
-                }
-                .frame(width: workingTreeWidth, height: CommitGraphStyle.rowHeight)
-                .background {
-                    UncommittedChangesBackground(isSelected: isSelected(Log.notCommitted.id))
-                        .padding(.bottom, 4)
-                }
-                .contentShape(Rectangle())
-                .tapGesture(logID: Log.notCommitted.id, selectionLogID: $selectionLogID, subSelectionLogID: $subSelectionLogID)
-                .accessibilityElement(children: .combine)
-                .accessibilityAddTraits(isSelected(Log.notCommitted.id) ? [.isSelected] : [])
-            }
-
             ForEach(commits) { positioned in
-                if let folder {
+                if positioned.id == Log.notCommitted.id {
+                    workingTreeRow(positioned, rowWidth: rowWidth)
+                        .id(positioned.id)
+                } else if let folder {
                     row(positioned, rowWidth: rowWidth)
+                        .id(positioned.id)
                         .commitContextMenu(
                             folder: folder, commit: positioned.commit, logStore: logStore,
                             isRefresh: $isRefresh, showing: $showing, bindingError: $error
                         )
                 } else {
                     row(positioned, rowWidth: rowWidth)
+                        .id(positioned.id)
                 }
             }
         }
@@ -150,23 +121,52 @@ struct CommitGraphContentView: View {
         .errorSheet($error)
     }
 
+    private func workingTreeRow(_ positioned: PositionedCommit, rowWidth: CGFloat) -> some View {
+        HStack(alignment: .top, spacing: 0) {
+            CommitGraphLaneView(positioned: positioned, showsNode: false)
+                .overlay {
+                    Image(systemName: "square.and.pencil")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.orange)
+                        .frame(width: 24, height: 24)
+                        .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 6))
+                        .overlay { RoundedRectangle(cornerRadius: 6).strokeBorder(Color.orange.opacity(0.4)) }
+                        .position(x: CommitGraphStyle.x(column: positioned.column), y: CommitGraphStyle.nodeY)
+                }
+                .frame(width: CommitGraphStyle.textLeading(for: positioned), height: CommitGraphStyle.rowHeight)
+                .accessibilityHidden(true)
+            UncommittedChangesLabel(showsIcon: false)
+                .padding(.top, CommitGraphStyle.titleTop)
+            Spacer(minLength: 8)
+        }
+        .frame(width: rowWidth, height: CommitGraphStyle.rowHeight)
+        .background {
+            UncommittedChangesBackground(isSelected: isSelected(Log.notCommitted.id))
+                .padding(.bottom, 4)
+        }
+        .contentShape(Rectangle())
+        .tapGesture(logID: Log.notCommitted.id, selectionLogID: $selectionLogID, subSelectionLogID: $subSelectionLogID)
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(isSelected(Log.notCommitted.id) ? [.isSelected] : [])
+    }
+
     private func row(_ positioned: PositionedCommit, rowWidth: CGFloat) -> some View {
         let selected = isSelected(positioned.id)
         let textLeading = CommitGraphStyle.textLeading(for: positioned)
         let textWidth = max(220, viewportWidth - 16 - textLeading - 10)
         return HStack(alignment: .top, spacing: 0) {
-            CommitGraphLaneView(positioned: positioned, isSelected: selected,
-                                connectsWorkingTree: positioned.row == 0 && notCommitted?.isEmpty == false)
+            CommitGraphLaneView(positioned: positioned, isSelected: selected)
                 .frame(width: textLeading, height: CommitGraphStyle.rowHeight)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 3) {
                 Text(positioned.commit.title)
                     .font(.callout)
                     .fontWeight(selected ? .medium : .regular)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(logStore.isOutsideCurrentBranch(positioned.id) && !selected ? .secondary : .primary)
                     .lineLimit(2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 HStack(spacing: 6) {
+                    CommitSyncBadge(incoming: logStore.isIncoming(positioned.id), outgoing: logStore.isOutgoing(positioned.id))
                     Text(positioned.id.prefix(7))
                         .font(.system(size: 10, design: .monospaced))
                         .foregroundStyle(.secondary)
@@ -291,7 +291,7 @@ enum CommitGraphStyle {
 struct CommitGraphLaneView: View {
     let positioned: PositionedCommit
     var isSelected = false
-    var connectsWorkingTree = false
+    var showsNode = true
 
     var body: some View {
         Canvas { context, _ in
@@ -304,12 +304,6 @@ struct CommitGraphLaneView: View {
             }
             context.stroke(guide, with: .color(CommitGraphStyle.color(index: positioned.colorIndex).opacity(isSelected ? 0.6 : 0.35)),
                            style: StrokeStyle(lineWidth: 1, lineCap: .round, dash: [2, 3]))
-            if connectsWorkingTree {
-                let connector = CommitGraphSegment(fromColumn: positioned.column, toColumn: positioned.column,
-                                                   start: .top, end: .node, colorIndex: positioned.colorIndex)
-                context.stroke(CommitGraphStyle.path(for: connector), with: .color(.secondary.opacity(0.5)),
-                               style: StrokeStyle(lineWidth: 1.5, dash: [3, 3]))
-            }
             for segment in positioned.segments {
                 let color = CommitGraphStyle.color(index: segment.colorIndex)
                 context.stroke(CommitGraphStyle.path(for: segment),
@@ -318,6 +312,7 @@ struct CommitGraphLaneView: View {
                                                   lineCap: .round, lineJoin: .round,
                                                   dash: segment.isBoundary ? [2, 3] : []))
             }
+            guard showsNode else { return }
             let center = CGPoint(x: nodeX, y: CommitGraphStyle.nodeY)
             let color = CommitGraphStyle.color(index: positioned.colorIndex)
             if isSelected {
@@ -353,13 +348,12 @@ struct CommitGraphLaneView: View {
     ]
 
     CommitGraphContentView(
-        notCommitted: .constant(NotCommitted(diff: "hi", diffCached: "hello", status: .init(untrackedFiles: [], unmergedFiles: []))),
         selectionLogID: $selectionLogID,
         subSelectionLogID: $subSelectionLogID,
         logStore: logStore,
         showing: $showing,
         isRefresh: $isRefresh,
-        commits: CommitGraph().positionedCommits(sampleCommits)
+        commits: CommitGraph().positionedHistory(sampleCommits, headHash: sampleCommits.first?.hash, showsWorkingTree: true)
     )
     .environment(\.folder, URL(string: "file:///tmp/FoldGit/"))
         .background(Color(NSColor.textBackgroundColor))
@@ -383,13 +377,12 @@ struct CommitGraphLaneView: View {
     ]
 
     CommitGraphContentView(
-        notCommitted: .constant(NotCommitted(diff: "", diffCached: "", status: .init(untrackedFiles: [], unmergedFiles: []))),
         selectionLogID: $selectionLogID,
         subSelectionLogID: $subSelectionLogID,
         logStore: logStore,
         showing: $showing,
         isRefresh: $isRefresh,
-        commits: CommitGraph().positionedCommits(sampleCommits2)
+        commits: CommitGraph().positionedHistory(sampleCommits2, headHash: sampleCommits2.first?.hash, showsWorkingTree: false)
     )
     .environment(\.folder, URL(string: "file:///tmp/FoldGit/"))
         .background(Color(NSColor.textBackgroundColor))
@@ -413,13 +406,12 @@ struct CommitGraphLaneView: View {
     ]
 
     CommitGraphContentView(
-        notCommitted: .constant(NotCommitted(diff: "", diffCached: "", status: .init(untrackedFiles: [], unmergedFiles: []))),
         selectionLogID: $selectionLogID,
         subSelectionLogID: $subSelectionLogID,
         logStore: logStore,
         showing: $showing,
         isRefresh: $isRefresh,
-        commits: CommitGraph().positionedCommits(sampleCommitsInSearch)
+        commits: CommitGraph().positionedHistory(sampleCommitsInSearch, headHash: sampleCommitsInSearch.first?.hash, showsWorkingTree: false)
     )
     .environment(\.folder, URL(string: "file:///tmp/FoldGit/"))
         .background(Color(NSColor.textBackgroundColor))

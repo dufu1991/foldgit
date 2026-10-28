@@ -78,11 +78,12 @@ public struct GitShowShortstat: RepositoryCommand {
 
 public struct GitRevListCount: RepositoryCommand {
     public var directory: URL
-    public var commit = "HEAD"
-    public init(directory: URL, commit: String = "HEAD") { self.directory = directory; self.commit = commit }
+    public var revisions: [String]
+    public init(directory: URL, commit: String = "HEAD") { self.directory = directory; revisions = [commit] }
+    public init(directory: URL, revisions: [String]) { self.directory = directory; self.revisions = revisions }
 
     public var isReadOnly: Bool { true }
-    public var arguments: [String] { ["git", "rev-list", "--count", commit] }
+    public var arguments: [String] { ["git", "rev-list", "--count"] + revisions + ["--"] }
     public func parse(for stdOut: String) -> Int? { Int(stdOut.trimmingCharacters(in: .whitespacesAndNewlines)) }
 }
 

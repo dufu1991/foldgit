@@ -28,8 +28,10 @@ targets:
       - path: Resources
         excludes: [Previews, MaterialFileIcons]
       # A folder reference keeps the icons as plain SVG files in one bundle subdirectory.
-      - path: Resources/MaterialFileIcons
+      - path: ../../Shared/Resources/FileIcons/MaterialFileIcons
         type: folder
+        buildPhase: resources
+      - path: ../../Shared/Resources/FileIcons/MaterialFileIcons.json
         buildPhase: resources
       - path: ../../Shared/Resources/Licenses/LICENSE.txt
         buildPhase: resources
@@ -42,6 +44,16 @@ targets:
     dependencies:
       - package: FoldGitShared
         product: FoldGitCore
+    preBuildScripts:
+      - name: Validate shared resources
+        script: python3 "$SRCROOT/../../Scripts/generate-resources.py" --check
+        basedOnDependencyAnalysis: false
+        inputFiles:
+          - $(SRCROOT)/../../Scripts/generate-resources.py
+          - $(SRCROOT)/../../Shared/Resources/Localization
+          - $(SRCROOT)/../../Scripts/SharedResources.xcfilelist
+        inputFileLists:
+          - $(SRCROOT)/../../Scripts/SharedResources.xcfilelist
   FoldGitTests:
     type: bundle.unit-test
     platform: macOS

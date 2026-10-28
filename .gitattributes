@@ -1,0 +1,6 @@
+# Generated native resources must compare identically on Windows and macOS.
+*.json text eol=lf
+*.strings text eol=lf
+*.stringsdict text eol=lf
+*.resw text eol=lf
+*.xcfilelist text eol=lf

@@ -11,7 +11,7 @@ const version = '5.39.0';
 const integrity = 'sha512-6dUQXJgNBlklaILIOlCZXhSBTsBmLkt11XMoTY7Uyb4ZikelGgZHOY4AdOWBA+SXz51cVWfOVnTHrTwGM91eYw==';
 const archiveURL = `https://registry.npmjs.org/material-icon-theme/-/material-icon-theme-${version}.tgz`;
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const resources = join(root, 'Platforms/macOS/Resources');
+const resources = join(root, 'Shared/Resources/FileIcons');
 const assets = join(resources, 'MaterialFileIcons');
 const temporary = await mkdtemp(join(tmpdir(), 'FoldGit-material-icons-'));
 const writeJSON = async (path, value) => writeFile(path, `${JSON.stringify(value, null, 2)}\n`);

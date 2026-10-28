@@ -15,7 +15,9 @@ jobs:
         with:
           xcode-version: latest-stable
       - name: Validate module boundaries
-        run: python3 Scripts/check-platform-boundaries.py
+        run: |
+          python3 Scripts/check-platform-boundaries.py
+          python3 Scripts/generate-resources.py --check
       - name: Test shared core
         run: swift test --force-resolved-versions
   shared-windows:

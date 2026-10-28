@@ -2,22 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>Behind by %lld commits</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@count@</string>
-		<key>count</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>lld</string>
-			<key>one</key>
-			<string>En retard de %lld commit</string>
-			<key>other</key>
-			<string>En retard de %lld commits</string>
-		</dict>
-	</dict>
 	<key>%lld commits</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -96,6 +80,22 @@
 			<string>%lld fichier non suivi</string>
 			<key>other</key>
 			<string>%lld fichiers non suivis</string>
+		</dict>
+	</dict>
+	<key>Behind by %lld commits</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>En retard de %lld commit</string>
+			<key>other</key>
+			<string>En retard de %lld commits</string>
 		</dict>
 	</dict>
 </dict>

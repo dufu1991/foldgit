@@ -181,6 +181,11 @@ struct CommitCreateView: View {
                 }
             )
             .padding(.top)
+        } else if updateChangesError == nil {
+            ProgressView()
+                .controlSize(.small)
+                .frame(maxWidth: .infinity)
+                .padding(.top, 48)
         }
     }
 
@@ -255,20 +260,21 @@ struct CommitCreateView: View {
     }
 
     private func stashChanges() {
-        updateIndex {
+        // onStash leaves the working changes view, so reloading its diff afterwards is wasted work.
+        updateIndex(refreshing: false) {
             try await GitRuntime.run(GitStash(directory: folder.url))
             onStash()
         }
     }
 
-    private func updateIndex(_ operation: @escaping @MainActor () async throws -> Void) {
+    private func updateIndex(refreshing: Bool = true, _ operation: @escaping @MainActor () async throws -> Void) {
         guard !isStagingChanges else { return }
         isStagingChanges = true
         Task {
             defer { isStagingChanges = false }
             do {
                 try await operation()
-                await updateChanges()
+                if refreshing { await updateChanges() }
             } catch { self.error = error }
         }
     }
@@ -276,23 +282,17 @@ struct CommitCreateView: View {
     private func updateChanges() async {
         updateGeneration += 1
         let request = updateGeneration
+        // The read below queues behind other Git work, such as the fetch that runs when a repository opens.
+        async let fresh = WorktreeSnapshot.read(in: folder.url)
+        if diff == nil, let cached = WorktreeSnapshotCache.snapshot(in: folder.url) {
+            _ = try? await show(cached, request: request)
+        }
         do {
-            let snapshot = try await WorktreeSnapshot.read(in: folder.url)
+            let snapshot = try await fresh
             try Task.checkCancellation()
             guard request == updateGeneration else { return }
-            let newCachedDiff = try Diff(raw: snapshot.staged)
-            let newDiff = try Diff(raw: snapshot.unstaged)
-            let stagedStatistics = DiffStat(diff: newCachedDiff)
-            diffShortStat = GitSummary.describe(DiffStat(diff: newDiff))
-            cachedDiffShortStat = GitSummary.describe(stagedStatistics)
-            status = snapshot.status
-            cachedDiffRaw = snapshot.staged
-            diffRaw = snapshot.unstaged
-            cachedDiff = newCachedDiff
-            cachedExpandableFileDiffs = newCachedDiff.fileDiffs.withExpansionState(from: cachedExpandableFileDiffs, defaultIsExpanded: fileExpansion.isExpanded)
-            diff = newDiff
-            expandableFileDiffs = newDiff.fileDiffs.withExpansionState(from: expandableFileDiffs, defaultIsExpanded: fileExpansion.isExpanded)
-            cachedDiffStat = stagedStatistics
+            WorktreeSnapshotCache.store(snapshot, in: folder.url)
+            guard try await show(snapshot, request: request) else { return }
             updateChangesError = nil
             imageDiffRefreshID = request
             Task {
@@ -305,6 +305,26 @@ struct CommitCreateView: View {
             guard request == updateGeneration, !Task.isCancelled else { return }
             updateChangesError = error
         }
+    }
+
+    /// Parses off the main actor, and only when Git's output changed, so large diffs never stall the window.
+    private func show(_ snapshot: WorktreeSnapshot, request: Int) async throws -> Bool {
+        if diff == nil || cachedDiff == nil || snapshot.unstaged != diffRaw || snapshot.staged != cachedDiffRaw {
+            let changes = try await Task.detached(priority: .userInitiated) { try ParsedChanges(snapshot) }.value
+            guard request == updateGeneration else { return false }
+            diffShortStat = GitSummary.describe(changes.unstagedStatistics)
+            cachedDiffShortStat = GitSummary.describe(changes.stagedStatistics)
+            cachedDiffRaw = snapshot.staged
+            diffRaw = snapshot.unstaged
+            cachedDiff = changes.staged
+            cachedExpandableFileDiffs = changes.staged.fileDiffs.withExpansionState(from: cachedExpandableFileDiffs, defaultIsExpanded: fileExpansion.isExpanded)
+            diff = changes.unstaged
+            expandableFileDiffs = changes.unstaged.fileDiffs.withExpansionState(from: expandableFileDiffs, defaultIsExpanded: fileExpansion.isExpanded)
+            cachedDiffStat = changes.stagedStatistics
+        }
+        guard request == updateGeneration else { return false }
+        status = snapshot.status
+        return true
     }
 
     private func restorePatch(_ newDiff: Diff) {
@@ -327,6 +347,20 @@ struct CommitCreateView: View {
                 self.error = error
             }
         }
+    }
+}
+
+private struct ParsedChanges: Sendable {
+    let staged: Diff
+    let unstaged: Diff
+    let stagedStatistics: DiffStat
+    let unstagedStatistics: DiffStat
+
+    init(_ snapshot: WorktreeSnapshot) throws {
+        staged = try Diff(raw: snapshot.staged)
+        unstaged = try Diff(raw: snapshot.unstaged)
+        stagedStatistics = DiffStat(diff: staged)
+        unstagedStatistics = DiffStat(diff: unstaged)
     }
 }
 

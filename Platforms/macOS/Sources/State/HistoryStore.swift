@@ -196,7 +196,7 @@ import Observation
             let revisions = currentSnapshot.revisions(for: scope)
             let previousChanges = notCommitted
             // Reading the working tree overlaps with the history queries below.
-            async let changesSnapshot = includeWorkingTree ? WorktreeSnapshot.read(in: directory).changes : previousChanges
+            async let worktree = includeWorkingTree ? WorktreeSnapshot.read(in: directory) : nil
             let history: [Commit]
             let count: Int?
             let hashes: [String]
@@ -217,8 +217,10 @@ import Observation
                 history = hashes.isEmpty ? [] : try await GitRuntime.run(GitCommitSearchPage(directory: directory, hashes: Array(hashes.prefix(limit))))
                 count = hashes.count
             }
-            let changes = try await changesSnapshot
+            let worktreeSnapshot = try await worktree
             guard request == generation, !Task.isCancelled else { return }
+            if let worktreeSnapshot { WorktreeSnapshotCache.store(worktreeSnapshot, in: directory) }
+            let changes = worktreeSnapshot?.changes ?? previousChanges
             snapshot = currentSnapshot
             snapshotIsStale = false
             notCommitted = changes
@@ -280,5 +282,25 @@ import Observation
         guard logID != Log.notCommitted.id, let index = commits.firstIndex(where: { $0.id == logID }) else { return nil }
         if index == 0 { return searchText.isEmpty && notCommitted?.isEmpty == false ? Log.notCommitted.id : nil }
         return commits[index - 1].id
+    }
+}
+
+/// The latest working tree read for each recent repository. The changes view shows it at once while its own
+/// read waits in the repository queue, which a fetch started on opening can hold for seconds.
+@MainActor enum WorktreeSnapshotCache {
+    private static let capacity = 8
+    private static var snapshots: [String: WorktreeSnapshot] = [:]
+    private static var recentKeys: [String] = []
+
+    static func snapshot(in directory: URL) -> WorktreeSnapshot? {
+        snapshots[RepositoryLocation.key(for: directory)]
+    }
+
+    static func store(_ snapshot: WorktreeSnapshot, in directory: URL) {
+        let key = RepositoryLocation.key(for: directory)
+        snapshots[key] = snapshot
+        recentKeys.removeAll { $0 == key }
+        recentKeys.append(key)
+        if recentKeys.count > capacity { snapshots[recentKeys.removeFirst()] = nil }
     }
 }

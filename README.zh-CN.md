@@ -42,13 +42,28 @@ FoldGit 就是为此准备的一个轻巧、安静的窗口：所有仓库随手
 
 需要 macOS 26 及以上的 Apple Silicon Mac，并已安装 Git。没有 Git 的话，运行 `xcode-select --install`。
 
+### Homebrew
+
+已安装 [Homebrew](https://brew.sh/) 的用户可以直接运行：
+
+```sh
+brew install --cask dufu1991/tap/foldgit
+```
+
+更新时，先运行 `brew update`，再运行 `brew upgrade --cask dufu1991/tap/foldgit`。
+
+### 下载 DMG
+
 1. 在 [Releases](https://github.com/dufu1991/foldgit/releases/latest) 下载最新的 `FoldGit-macOS-arm64.dmg`。
 2. 打开 DMG，把 FoldGit 拖进「应用程序」。
-3. FoldGit 暂未使用 Apple 开发者证书签名，首次打开时 macOS 可能提示“已损坏”或“无法验证开发者”。在终端执行一次下面的命令，再重新打开即可：
 
-   ```sh
-   xattr -dr com.apple.quarantine /Applications/FoldGit.app
-   ```
+### 首次打开
+
+两种安装方式都可能遇到系统拦截：未使用 Apple Developer ID 签名并完成公证的版本，首次打开时 macOS 可能提示“已损坏”或“无法验证开发者”。确认信任下载的版本后，在终端执行一次下面的命令，再重新打开：
+
+```sh
+xattr -dr com.apple.quarantine /Applications/FoldGit.app
+```
 
 简短的使用手册见 [website/manual.html](website/manual.html)。
 
@@ -163,6 +178,10 @@ python3 Scripts/version.py set 0.2.0  # 设置新版本，并递增 macOS 构建
 ```
 
 提交并推送到 `main` 后，[发布工作流](.github/workflows/release.yml)会为 `v0.2.0` 仅发布三个安装包：macOS Apple Silicon 的 DMG，以及 Windows x64 和 ARM64 各一个 EXE。SHA-256 校验值写入发布说明。附件使用固定文件名，官网下载链接会自动指向最新版本。推送已有标签的版本不会重复发布；如需替换已发布版本的安装包，可手动运行工作流并勾选 *rebuild*。
+
+发版 CI 会在 GitHub Release 发布成功后，自动调用 [Publish Homebrew cask 工作流](.github/workflows/homebrew.yml)。它会下载已发布的 macOS DMG，核对 GitHub 提供的文件大小与 SHA-256 摘要，再将更新后的 `Casks/foldgit.rb` 直接提交到 [tap 仓库](https://github.com/dufu1991/homebrew-tap)。Homebrew 发布失败会让发版 CI 失败；重新构建同一版本时，也会刷新校验值。
+
+首次发版前，先推送 tap 的工作流、脚本、测试和 Cask，再在 FoldGit 仓库的 **Settings → Secrets and variables → Actions** 中添加仓库密钥 `HOMEBREW_TAP_TOKEN`。使用仅授权 `dufu1991/homebrew-tap` 且具有 **Contents 读写权限**的细粒度令牌。自动发布必须配置该令牌，缺失时 CI 会明确报错。失败后可手动运行 **Publish Homebrew cask** 重试，无需重新打包应用。tap 每小时运行的 **Sync FoldGit** 仍保留为补偿机制，使用 tap 自身的 `GITHUB_TOKEN`。
 
 签名所需的 Secrets 均为可选：
 

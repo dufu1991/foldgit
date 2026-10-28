@@ -104,24 +104,34 @@
           <h2><span class="show-zh">安装</span><span class="show-en">Install</span></h2>
           <h3>macOS</h3>
           <div class="show-zh">
+            <p>需要 macOS 26 及以上的 Apple Silicon Mac，并已安装 Git。没有 Git 的话，在终端运行 <code>xcode-select --install</code>。</p>
+            <h4>通过 Homebrew 安装</h4>
+            <p>已安装 <a href="https://brew.sh/">Homebrew</a> 的用户可以直接运行：</p>
+            <pre class="cmd"><code>brew install --cask dufu1991/tap/foldgit</code></pre>
+            <p>更新时，先运行 <code>brew update</code>，再运行 <code>brew upgrade --cask dufu1991/tap/foldgit</code>。</p>
+            <h4>下载 DMG</h4>
             <ol>
               <li>下载 <a href="https://github.com/dufu1991/foldgit/releases/latest/download/FoldGit-macOS-arm64.dmg">最新的 FoldGit macOS 安装包</a>。</li>
               <li>打开 DMG，把 FoldGit 拖进「应用程序」。</li>
-              <li>需要 macOS 26 及以上的 Apple Silicon Mac，并已安装 Git。没有 Git 的话，在终端运行 <code>xcode-select --install</code>。</li>
             </ol>
             <div class="tip">
-              <p><b>首次打开提示“已损坏”或“无法验证开发者”？</b>FoldGit 暂未使用 Apple 开发者证书签名，macOS 会拦截。在终端执行下面的命令后再打开即可：</p>
+              <p><b>首次打开提示“已损坏”或“无法验证开发者”？</b> 两种安装方式都适用：未使用 Apple Developer ID 签名并完成公证的版本可能被 macOS 拦截。确认信任下载的版本后，在终端执行下面的命令，再重新打开：</p>
               <pre class="cmd"><code>xattr -dr com.apple.quarantine /Applications/FoldGit.app</code></pre>
             </div>
           </div>
           <div class="show-en">
+            <p>Requires an Apple Silicon Mac on macOS 26 or later, with Git installed. If Git is missing, run <code>xcode-select --install</code> in Terminal.</p>
+            <h4>Install with Homebrew</h4>
+            <p>With <a href="https://brew.sh/">Homebrew</a> installed:</p>
+            <pre class="cmd"><code>brew install --cask dufu1991/tap/foldgit</code></pre>
+            <p>To update, run <code>brew update</code>, then <code>brew upgrade --cask dufu1991/tap/foldgit</code>.</p>
+            <h4>Download the DMG</h4>
             <ol>
               <li>Download the <a href="https://github.com/dufu1991/foldgit/releases/latest/download/FoldGit-macOS-arm64.dmg">latest FoldGit macOS installer</a>.</li>
               <li>Open the DMG and drag FoldGit into Applications.</li>
-              <li>Requires an Apple Silicon Mac on macOS 26 or later, with Git installed. If Git is missing, run <code>xcode-select --install</code> in Terminal.</li>
             </ol>
             <div class="tip">
-              <p><b>“FoldGit is damaged” or “cannot be verified” on first launch?</b> FoldGit is not yet signed with an Apple Developer certificate, so macOS blocks it. Run this in Terminal, then open it again:</p>
+              <p><b>“FoldGit is damaged” or “cannot be verified” on first launch?</b> For both installation methods, builds without Developer ID signing and notarization may be blocked by macOS. If you trust the downloaded release, run this in Terminal, then open FoldGit again:</p>
               <pre class="cmd"><code>xattr -dr com.apple.quarantine /Applications/FoldGit.app</code></pre>
             </div>
           </div>

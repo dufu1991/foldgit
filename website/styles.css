@@ -537,6 +537,9 @@ h3 { font-size: 21px; letter-spacing: -0.015em; }
 .cmp-row:not(.cmp-head) > span:nth-child(2)::before { content: "✓"; color: var(--accent); font-weight: 800; margin-right: 8px; }
 
 /* ------------------------------------------------------------------ downloads */
+.brew-install { display: grid; gap: 8px; max-width: 100%; min-width: 0; color: var(--text-2); font-size: 14px; }
+.brew-install .cmd { margin: 0; max-width: 100%; min-width: 0; text-align: left; }
+.brew-install > a { justify-self: center; text-decoration: underline; text-underline-offset: 3px; }
 .download-option { display: grid; justify-items: start; gap: 10px; }
 .download-note a { text-decoration: underline; text-underline-offset: 3px; }
 .windows-card .download-note { margin: 20px 0; font-size: 14px; }

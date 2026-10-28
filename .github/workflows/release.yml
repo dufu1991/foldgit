@@ -245,6 +245,12 @@ jobs:
             echo "## Install"
             echo
             echo "**macOS** (Apple Silicon, macOS 26 or later): open \`FoldGit-macOS-arm64.dmg\` and drag FoldGit into Applications."
+            echo "Or install via Homebrew after the tap has synchronized this release:"
+            echo
+            echo '```sh'
+            echo 'brew install --cask dufu1991/tap/foldgit'
+            echo '```'
+            echo
             if [ "$MAC_SIGNED" != "true" ]; then
               echo "This build is not signed with an Apple Developer certificate. If macOS says it is damaged or cannot be verified, run once:"
               echo
@@ -281,3 +287,11 @@ jobs:
           files: release/*
           fail_on_unmatched_files: true
           overwrite_files: true
+
+  homebrew:
+    name: Publish Homebrew cask
+    needs: publish
+    if: always() && needs.publish.result == 'success'
+    uses: ./.github/workflows/homebrew.yml
+    secrets:
+      HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}

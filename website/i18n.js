@@ -14,6 +14,8 @@ window.FOLDGIT_I18N = {
     "hero.title": "Every repository,<br><span class=\"grad\">folded into one window.</span>",
     "hero.lede": "Fold repositories by folder or group, with worktrees tucked under their repository. When AI writes production code, glance at it, then commit with confidence.",
     "hero.meta": "macOS 26 or later · Apple Silicon · About 4 MB · MIT licensed",
+    "brew.title": "Also available via Homebrew",
+    "brew.guide": "Installation and first launch guide ↗",
     "cta.download": "Download for macOS",
     "cta.windows": "Download for Windows",
     "cta.source": "View source",

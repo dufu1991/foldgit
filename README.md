@@ -42,13 +42,28 @@ FoldGit is a small, quiet window for exactly that. It keeps all your repositorie
 
 Requires an Apple Silicon Mac running macOS 26 or later, and Git. If Git is missing, run `xcode-select --install`.
 
+### Homebrew
+
+With [Homebrew](https://brew.sh/) installed:
+
+```sh
+brew install --cask dufu1991/tap/foldgit
+```
+
+To update, run `brew update` followed by `brew upgrade --cask dufu1991/tap/foldgit`.
+
+### Download the DMG
+
 1. Download the latest `FoldGit-macOS-arm64.dmg` from [Releases](https://github.com/dufu1991/foldgit/releases/latest).
 2. Open the DMG and drag FoldGit into Applications.
-3. FoldGit is not yet signed with an Apple Developer certificate, so macOS may say it is damaged or cannot be verified on first launch. Run this once, then open it again:
 
-   ```sh
-   xattr -dr com.apple.quarantine /Applications/FoldGit.app
-   ```
+### First launch
+
+For both installation methods, builds without Apple Developer ID signing and notarization may be blocked by macOS. If you trust the downloaded release, run this once, then open FoldGit again:
+
+```sh
+xattr -dr com.apple.quarantine /Applications/FoldGit.app
+```
 
 A short user guide lives in [website/manual.html](website/manual.html).
 
@@ -163,6 +178,10 @@ python3 Scripts/version.py set 0.2.0  # set a new version and bump the macOS bui
 ```
 
 Commit and push the new version to `main`, and the [release workflow](.github/workflows/release.yml) publishes exactly three installers as release `v0.2.0`: one macOS Apple Silicon DMG and one EXE each for Windows x64 and ARM64. SHA-256 checksums are included in the release notes. Stable asset names let the website download links follow the latest release automatically. Pushing a version that already has a tag does nothing. Run the workflow manually with *rebuild* to replace the assets of an existing release.
+
+The release CI automatically calls [Publish Homebrew cask](.github/workflows/homebrew.yml) after GitHub Release publication succeeds. It downloads the published macOS DMG, verifies its size and SHA-256 against GitHub, and commits the updated `Casks/foldgit.rb` directly to [the tap](https://github.com/dufu1991/homebrew-tap). A Cask publishing failure fails the release CI; rebuilding an existing release also refreshes its checksum.
+
+Before the first release, push the tap’s workflow, script, tests and Cask, then add the repository secret `HOMEBREW_TAP_TOKEN` in **Settings → Secrets and variables → Actions** in FoldGit. Use a fine-grained token restricted to `dufu1991/homebrew-tap` with **Contents: Read and write** access. This token is required for automatic publication; a missing token causes an explicit CI failure. Retry Homebrew publication without rebuilding the app by manually running **Publish Homebrew cask**. The tap’s hourly **Sync FoldGit** workflow remains a recovery path and uses its own `GITHUB_TOKEN`.
 
 Signing secrets are optional:
 

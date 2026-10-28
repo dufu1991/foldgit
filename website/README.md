@@ -25,6 +25,12 @@ python3 -m http.server 8765 --directory website
 
 修改 `styles.css`、`main.js` 或 `i18n.js` 后，把两个页面中引用它们的 `?v=` 版本号加一，避免浏览器使用旧缓存。
 
+## Homebrew 安装入口
+
+首屏提供 `brew install --cask dufu1991/tap/foldgit` 命令，并链接到使用手册的安装部分。中英文文案分别维护在 `index.html` 和 `i18n.js`，手册同时说明更新命令与首次打开步骤。
+
+安装包仍由 FoldGit 的 GitHub Releases 分发，`dufu1991/homebrew-tap` 自动同步最新稳定版的版本号与 SHA-256 校验值。发布流程和发版 CI 所需的跨仓库令牌见项目根目录的中英文 README。
+
 ## 赞助信息
 
 落地页与仓库的中英文 README 共用 `assets/sponsor/` 中的二维码原图。赞助链接和二维码来自 <https://any-tdf.dev/> 右上角的「支持」入口：

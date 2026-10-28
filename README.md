@@ -13,6 +13,7 @@
 </p>
 
 <p align="center">
+  <a href="https://foldgit.com">Website</a> · <a href="https://foldgit.com/manual">User guide</a><br>
   <b>English</b> · <a href="README.zh-CN.md">简体中文</a>
 </p>
 
@@ -31,11 +32,11 @@ FoldGit is a small, quiet window for exactly that. It keeps all your repositorie
 
 - **Fold repositories, not folders.** Every repository stays in the sidebar. Import a folder and its repositories become a group, or create groups that gather repositories from anywhere. Groups never move anything on disk. Inactive repositories fold one level deeper.
 - **Worktrees, first-class.** Linked worktrees are discovered automatically and appear under their repository with the branch name. Create, move, lock, remove and prune them, and use *Finish Worktree* to merge into a target branch and clean up. Conflicts are resolved in native sheets.
-- **Review and commit.** Commit graph, unified and side-by-side diffs (switching automatically with the window width), hunk staging, amend, and commit message templates.
+- **Review and commit.** Commit graph for the current branch or all commits, unified and side-by-side diffs (switching automatically with the window width), hunk staging, amend, revert, and commit message templates.
 - **Branches, tags and comparison.** Switch, merge, rename and delete branches, manage tags, and compare any two branches or tags.
 - **Fast search.** Filter history by author, email or message as you type. Search runs in the background, reuses its index, pages results and cancels stale queries. It works with CJK input methods.
 - **Sidebar that scales.** Filter by folder, repository or custom display name. Sort by name, recently opened, modified or added, or keep a manual order.
-- **Everyday extras.** Stash, per-repository Auto Fetch (download only, never merge), *Open in* your editor or terminal, light and dark appearances, and eight interface languages.
+- **Everyday extras.** Push and pull, stash, per-repository Auto Fetch (download only, never merge), *Open in* your editor or terminal, light and dark appearances, and eight interface languages.
 - **Native and small.** Written in SwiftUI and AppKit, no Electron. The installer is about 4 MB.
 
 ## Install
@@ -59,13 +60,15 @@ To update, run `brew update` followed by `brew upgrade --cask dufu1991/tap/foldg
 
 ### First launch
 
-For both installation methods, builds without Apple Developer ID signing and notarization may be blocked by macOS. If you trust the downloaded release, run this once, then open FoldGit again:
+Releases that are not notarized by Apple carry this command in their release notes. If macOS says FoldGit is damaged or cannot be verified, run it once, then open FoldGit again:
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/FoldGit.app
 ```
 
-A short user guide lives in [website/manual.html](website/manual.html).
+### User guide
+
+See the [user guide](https://foldgit.com/manual) on foldgit.com.
 
 ## Windows
 
@@ -112,16 +115,17 @@ Platforms/
     Resources/                Localizations and Apple asset catalogs
     Configuration/            App identity, signing and export settings
     Tests/                    macOS UI and integration tests
+    Screenshots/              macOS app screenshots
     FoldGit.xcodeproj/        Xcode project
     project.yml               XcodeGen spec
-  Windows/                    WinUI 3 app, C# core, system adapters and MSIX packaging
-Scripts/                      Repository-level validation tools
+  Windows/                    WinUI 3 app, C# core, system adapters and installer packaging
+Scripts/                      Resource generation, validation and packaging tools
 website/                      Landing page and user guide (static)
 .github/                      Build workflows for the core and each platform
-docs/                         Architecture and migration notes
+docs/                         Architecture, migration and release notes
 ```
 
-The shared module does not depend on AppKit, SwiftUI, Foundation Models or macOS preferences. The macOS app consumes it as a local Swift package instead of compiling shared sources into the app target.
+The shared module does not depend on AppKit, SwiftUI or macOS preferences. The macOS app consumes it as a local Swift package instead of compiling shared sources into the app target.
 
 ### Shared core
 
@@ -130,6 +134,7 @@ Use Swift 6.2 or later with Git on `PATH`. From the repository root:
 ```sh
 swift test
 python3 Scripts/check-platform-boundaries.py
+python3 Scripts/validate-windows.py   # Windows inputs that can be checked without the XAML compiler
 ```
 
 CI validates the shared core, the Windows core and the macOS app separately.
@@ -166,35 +171,15 @@ Scripts/package-macos.sh
 
 Output goes to `dist/macos`: `FoldGit.app`, a DMG and ZIP named `macOS-arm64`, and SHA-256 checksums. The local script uses ad hoc signing and does not notarize.
 
-### App identity and releases
+### Releases
 
-The macOS app is `FoldGit`, bundle ID `com.dufu.foldgit`. The Windows package identity is `dufu.FoldGit` with publisher `CN=dufu`. Signing settings live in `Platforms/macOS/Configuration`.
-
-The version lives in three places that must match: `MARKETING_VERSION` in `Platforms/macOS/Configuration/Base.xcconfig`, the Windows `Package.appxmanifest`, and the Windows About text. `Scripts/version.py` keeps them in sync:
-
-```sh
-python3 Scripts/version.py            # print the version and check that all platforms match
-python3 Scripts/version.py set 0.2.0  # set a new version and bump the macOS build number
-```
-
-Commit and push the new version to `main`, and the [release workflow](.github/workflows/release.yml) publishes exactly three installers as release `v0.2.0`: one macOS Apple Silicon DMG and one EXE each for Windows x64 and ARM64. SHA-256 checksums are included in the release notes. Stable asset names let the website download links follow the latest release automatically. Pushing a version that already has a tag does nothing. Run the workflow manually with *rebuild* to replace the assets of an existing release.
-
-The release CI automatically calls [Publish Homebrew cask](.github/workflows/homebrew.yml) after GitHub Release publication succeeds. It downloads the published macOS DMG, verifies its size and SHA-256 against GitHub, and commits the updated `Casks/foldgit.rb` directly to [the tap](https://github.com/dufu1991/homebrew-tap). A Cask publishing failure fails the release CI; rebuilding an existing release also refreshes its checksum.
-
-Before the first release, push the tap’s workflow, script, tests and Cask, then add the repository secret `HOMEBREW_TAP_TOKEN` in **Settings → Secrets and variables → Actions** in FoldGit. Use a fine-grained token restricted to `dufu1991/homebrew-tap` with **Contents: Read and write** access. This token is required for automatic publication; a missing token causes an explicit CI failure. Retry Homebrew publication without rebuilding the app by manually running **Publish Homebrew cask**. The tap’s hourly **Sync FoldGit** workflow remains a recovery path and uses its own `GITHUB_TOKEN`.
-
-Signing secrets are optional:
-
-| Secrets | Without them |
-|---|---|
-| `APPLE_TEAM_ID`, `BUILD_CERTIFICATE_BASE64`, `P12_PASSWORD`, `KEYCHAIN_PASSWORD`, `AC_USERNAME`, `AC_PASSWORD` | The macOS app is ad hoc signed and not notarized; users clear the quarantine flag once. |
-| `WINDOWS_CERTIFICATE_BASE64`, `WINDOWS_CERTIFICATE_PASSWORD` (a trusted code signing PFX) | The EXE installers are unsigned. They include their runtimes and do not require a separate certificate download. |
+Set the version with `python3 Scripts/version.py set <version>` and push to `main`; the [release workflow](.github/workflows/release.yml) publishes the macOS DMG and Windows EXE installers, then updates the Homebrew cask. Versioning, Homebrew publication and optional signing secrets are described in the [release guide](docs/RELEASING.md).
 
 ### Website
 
-`website/` is a static landing page and user guide with no build step. See [website/README.md](website/README.md) for local preview and how screenshots are regenerated from fictional demo repositories.
+`website/` is the static landing page and user guide published at [foldgit.com](https://foldgit.com), with no build step. See [website/README.md](website/README.md) for local preview and how screenshots are regenerated from fictional demo repositories.
 
-More reading: [Architecture](docs/ARCHITECTURE.md), [Migration notes](docs/MIGRATION.md), [Localization guide](docs/LOCALIZATION.md).
+More reading: [Architecture](docs/ARCHITECTURE.md), [Migration notes](docs/MIGRATION.md), [Localization guide](docs/LOCALIZATION.md), [File icons](docs/FILE_ICONS.md), [Windows parity checklist](docs/WINDOWS_PARITY.md), [Release guide](docs/RELEASING.md). Notes under `docs/` are written in Chinese.
 
 ## License
 

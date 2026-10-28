@@ -47,7 +47,7 @@ Windows 界面与状态 → C# FoldGit.Core ← Windows 系统适配
 共享核心测试 → FoldGitCore、FoldGitTestSupport
 ```
 
-核心不能导入 AppKit、SwiftUI、Foundation Models、OSLog 或客户端偏好类型。`Scripts/check-platform-boundaries.py` 检查这条边界，独立 `swift test` 验证核心无需加载原生应用。
+核心不能导入 AppKit、SwiftUI、OSLog 或客户端偏好类型。`Scripts/check-platform-boundaries.py` 检查这条边界，独立 `swift test` 验证核心无需加载原生应用。
 
 日期显示、系统图标名称、搜索帮助文案和本地化统计由 macOS 扩展实现。仓库发现支持注入目录筛选规则，macOS 的应用包过滤由 `MacRepositoryDiscovery` 提供。共享 Git 服务不依赖 `AutoFetchScheduler` 或 `UserDefaults`。
 

@@ -13,6 +13,7 @@
 </p>
 
 <p align="center">
+  <a href="https://foldgit.com">官网</a> · <a href="https://foldgit.com/manual">使用手册</a><br>
   <a href="README.md">English</a> · <b>简体中文</b>
 </p>
 
@@ -31,11 +32,11 @@ FoldGit 就是为此准备的一个轻巧、安静的窗口：所有仓库随手
 
 - **折叠仓库，而不是移动文件夹。** 所有仓库常驻侧边栏。导入一个目录，其中的仓库自动成组；也可以新建分组，把不同位置的仓库收在一起。分组不会移动任何文件夹，不活跃的仓库可以再折一层。
 - **工作树是一等公民。** 自动发现关联工作树，带着分支名显示在所属仓库下方。支持新建、移动、锁定、移除和清理缺失记录；「完成工作树」可合并到目标分支并收尾清理。合并冲突在原生弹窗中处理。
-- **查看与提交。** 提交图，单栏与双栏差异（随窗口宽度自动切换），代码块暂存，修改上次提交，提交信息模板。
+- **查看与提交。** 提交图（可查看当前分支或全部提交），单栏与双栏差异（随窗口宽度自动切换），代码块暂存，修改上次提交，撤销提交，提交信息模板。
 - **分支、标签与比较。** 切换、合并、重命名和删除分支，管理标签，比较任意两个分支或标签。
 - **快速搜索。** 按作者、邮箱或提交信息实时筛选历史。搜索在后台进行，复用索引、分页返回，新输入会取消旧查询，支持中文输入法上屏后触发。
 - **仓库多了也不乱。** 可按目录名、仓库文件夹名或自定义显示名称过滤；可按名称、最近打开、最近修改、最近添加排序，或保留手动顺序。
-- **日常所需。** Stash，按仓库设置的自动抓取（只下载、不合并），在编辑器或终端中打开，亮暗色外观，八种界面语言。
+- **日常所需。** 推送与拉取，Stash，按仓库设置的自动抓取（只下载、不合并），在编辑器或终端中打开，亮暗色外观，八种界面语言。
 - **原生且小巧。** SwiftUI 与 AppKit 原生实现，不含 Electron，安装包约 4 MB。
 
 ## 安装
@@ -59,13 +60,15 @@ brew install --cask dufu1991/tap/foldgit
 
 ### 首次打开
 
-两种安装方式都可能遇到系统拦截：未使用 Apple Developer ID 签名并完成公证的版本，首次打开时 macOS 可能提示“已损坏”或“无法验证开发者”。确认信任下载的版本后，在终端执行一次下面的命令，再重新打开：
+未经 Apple 公证的版本会在发布说明中附上下面的命令。如果 macOS 提示 FoldGit “已损坏”或“无法验证开发者”，在终端执行一次，再重新打开：
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/FoldGit.app
 ```
 
-简短的使用手册见 [website/manual.html](website/manual.html)。
+### 使用手册
+
+见 foldgit.com 上的[使用手册](https://foldgit.com/manual)。
 
 ## Windows 版
 
@@ -112,16 +115,17 @@ Platforms/
     Resources/                本地化与 Apple 资源目录
     Configuration/            应用标识、签名和导出配置
     Tests/                    macOS 界面与系统集成测试
+    Screenshots/              macOS 应用截图
     FoldGit.xcodeproj/        Xcode 工程
     project.yml               macOS 工程生成配置
-  Windows/                    WinUI 3 应用、C# 核心、系统适配与 MSIX 打包
-Scripts/                      仓库级校验工具
+  Windows/                    WinUI 3 应用、C# 核心、系统适配与安装包打包
+Scripts/                      资源生成、校验与打包工具
 website/                      落地页与使用手册（静态页面）
 .github/                      共享核心与平台构建工作流
-docs/                         架构与迁移文档
+docs/                         架构、迁移与发布文档
 ```
 
-共享模块不依赖 AppKit、SwiftUI、Foundation Models 或 macOS 偏好存储。macOS 应用通过本地 Swift Package 依赖引用核心，不把共享源码重复编译到应用模块。
+共享模块不依赖 AppKit、SwiftUI 或 macOS 偏好存储。macOS 应用通过本地 Swift Package 依赖引用核心，不把共享源码重复编译到应用模块。
 
 ### 共享核心
 
@@ -130,6 +134,7 @@ docs/                         架构与迁移文档
 ```sh
 swift test
 python3 Scripts/check-platform-boundaries.py
+python3 Scripts/validate-windows.py   # 校验无需 XAML 编译器即可检查的 Windows 输入
 ```
 
 CI 分别验证共享核心、Windows 共享核心和 macOS 应用。
@@ -166,35 +171,15 @@ Scripts/package-macos.sh
 
 产物位于 `dist/macos`，包含 `FoldGit.app`、以 `macOS-arm64` 命名的 DMG 和 ZIP，以及 SHA-256 校验文件。本地脚本使用 ad hoc 签名，不执行 Apple 公证。
 
-### 应用身份与发布
+### 发布
 
-macOS 应用名为 `FoldGit`，Bundle ID 为 `com.dufu.foldgit`；Windows 包身份为 `dufu.FoldGit`，Publisher 为 `CN=dufu`。签名配置位于 `Platforms/macOS/Configuration`。
-
-版本号分布在三处且必须一致：`Platforms/macOS/Configuration/Base.xcconfig` 中的 `MARKETING_VERSION`、Windows 的 `Package.appxmanifest`，以及 Windows「关于」页的文字。用 `Scripts/version.py` 统一修改：
-
-```sh
-python3 Scripts/version.py            # 显示版本号，并检查各平台是否一致
-python3 Scripts/version.py set 0.2.0  # 设置新版本，并递增 macOS 构建号
-```
-
-提交并推送到 `main` 后，[发布工作流](.github/workflows/release.yml)会为 `v0.2.0` 仅发布三个安装包：macOS Apple Silicon 的 DMG，以及 Windows x64 和 ARM64 各一个 EXE。SHA-256 校验值写入发布说明。附件使用固定文件名，官网下载链接会自动指向最新版本。推送已有标签的版本不会重复发布；如需替换已发布版本的安装包，可手动运行工作流并勾选 *rebuild*。
-
-发版 CI 会在 GitHub Release 发布成功后，自动调用 [Publish Homebrew cask 工作流](.github/workflows/homebrew.yml)。它会下载已发布的 macOS DMG，核对 GitHub 提供的文件大小与 SHA-256 摘要，再将更新后的 `Casks/foldgit.rb` 直接提交到 [tap 仓库](https://github.com/dufu1991/homebrew-tap)。Homebrew 发布失败会让发版 CI 失败；重新构建同一版本时，也会刷新校验值。
-
-首次发版前，先推送 tap 的工作流、脚本、测试和 Cask，再在 FoldGit 仓库的 **Settings → Secrets and variables → Actions** 中添加仓库密钥 `HOMEBREW_TAP_TOKEN`。使用仅授权 `dufu1991/homebrew-tap` 且具有 **Contents 读写权限**的细粒度令牌。自动发布必须配置该令牌，缺失时 CI 会明确报错。失败后可手动运行 **Publish Homebrew cask** 重试，无需重新打包应用。tap 每小时运行的 **Sync FoldGit** 仍保留为补偿机制，使用 tap 自身的 `GITHUB_TOKEN`。
-
-签名所需的 Secrets 均为可选：
-
-| Secrets | 未配置时 |
-|---|---|
-| `APPLE_TEAM_ID`、`BUILD_CERTIFICATE_BASE64`、`P12_PASSWORD`、`KEYCHAIN_PASSWORD`、`AC_USERNAME`、`AC_PASSWORD` | macOS 使用 ad hoc 签名，不经公证；用户首次打开前需清除隔离标记。 |
-| `WINDOWS_CERTIFICATE_BASE64`、`WINDOWS_CERTIFICATE_PASSWORD`（可信代码签名 PFX） | EXE 安装程序不签名，但已包含所需运行时，无需用户另外下载证书。 |
+用 `python3 Scripts/version.py set <版本号>` 设置版本并推送到 `main`，[发布工作流](.github/workflows/release.yml)会发布 macOS DMG 与 Windows EXE 安装包，随后更新 Homebrew Cask。版本号、Homebrew 发布和可选签名 Secrets 见[发布流程](docs/RELEASING.md)。
 
 ### 网站
 
-`website/` 是无需构建的静态落地页与使用手册。本地预览方式，以及如何用虚构演示仓库重新生成截图，见 [website/README.md](website/README.md)。
+`website/` 是无需构建的静态落地页与使用手册，发布在 [foldgit.com](https://foldgit.com)。本地预览方式，以及如何用虚构演示仓库重新生成截图，见 [website/README.md](website/README.md)。
 
-更多文档：[架构说明](docs/ARCHITECTURE.md)、[迁移记录](docs/MIGRATION.md)、[本地化指南](docs/LOCALIZATION.md)。
+更多文档：[架构说明](docs/ARCHITECTURE.md)、[迁移记录](docs/MIGRATION.md)、[本地化指南](docs/LOCALIZATION.md)、[文件图标](docs/FILE_ICONS.md)、[Windows 功能对齐清单](docs/WINDOWS_PARITY.md)、[发布流程](docs/RELEASING.md)。
 
 ## 开源许可
 

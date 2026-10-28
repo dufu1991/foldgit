@@ -566,7 +566,7 @@ h3 { font-size: 21px; letter-spacing: -0.015em; }
 .manual { max-width: 1120px; margin: 0 auto; padding: 128px 16px 40px; }
 .manual-head { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 52px; }
 .manual-title { font-size: clamp(36px, 5.4vw, 60px); font-weight: 800; letter-spacing: -0.03em; }
-.manual-layout { display: grid; grid-template-columns: 220px 1fr; gap: 28px; align-items: start; }
+.manual-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 28px; align-items: start; }
 .toc {
   position: sticky;
   top: 92px;
@@ -585,7 +585,7 @@ h3 { font-size: 21px; letter-spacing: -0.015em; }
 }
 .toc a:hover { background: var(--row-bg); color: var(--text); }
 .toc a.is-current { background: var(--row-sel); color: var(--accent); font-weight: 600; }
-.manual-body { display: grid; gap: 18px; min-width: 0; }
+.manual-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; min-width: 0; }
 .m-section { border-radius: 24px; padding: 28px 30px 30px; scroll-margin-top: 92px; }
 .m-num { font: 700 13px/1 var(--mono); color: var(--accent); letter-spacing: 0.06em; }
 .m-section h2 { font-size: 26px; margin: 10px 0 14px; }
@@ -626,7 +626,7 @@ kbd {
 }
 .m-section div.tip p { font-size: 14.5px; }
 .cmd { margin: 10px 0 0; overflow-x: auto; }
-.cmd code { display: block; width: max-content; min-width: 100%; padding: 10px 12px; font-size: 13px; word-break: normal; user-select: all; }
+.cmd code { display: block; width: max-content; min-width: 100%; padding: 10px 12px; font-size: 13px; white-space: pre; word-break: normal; user-select: all; }
 .keys { margin: 0; display: grid; gap: 4px; }
 .keys > div { display: grid; grid-template-columns: 120px 1fr; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
 .keys > div:last-child { border-bottom: 0; }
@@ -634,7 +634,7 @@ kbd {
 .manual-foot { text-align: center; color: var(--text-3); font-size: 14px; margin-top: 18px; }
 .nav-links a[aria-current="page"] { color: var(--text); background: var(--row-bg); }
 @media (max-width: 860px) {
-  .manual-layout { grid-template-columns: 1fr; }
+  .manual-layout { grid-template-columns: minmax(0, 1fr); }
   .toc { position: static; flex-direction: row; flex-wrap: wrap; gap: 4px; }
   .toc a { padding: 6px 10px; font-size: 13px; }
 }

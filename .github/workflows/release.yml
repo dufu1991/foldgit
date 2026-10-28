@@ -70,7 +70,7 @@ jobs:
         run: |
           Scripts/package-macos.sh "$RUNNER_TEMP/out"
           mkdir -p release
-          cp "$RUNNER_TEMP/out/FoldGit-$VERSION-macOS-arm64.dmg" "$RUNNER_TEMP/out/FoldGit-$VERSION-macOS-arm64.zip" release/
+          cp "$RUNNER_TEMP/out/FoldGit-$VERSION-macOS-arm64.dmg" release/FoldGit-macOS-arm64.dmg
 
       - name: Import Developer ID certificate
         if: env.SIGNED == 'true'
@@ -107,19 +107,17 @@ jobs:
           AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
         run: |
           app="$RUNNER_TEMP/export/FoldGit.app"
-          name="FoldGit-$VERSION-macOS-arm64"
           mkdir -p release
           ditto -c -k --keepParent "$app" "$RUNNER_TEMP/notarize.zip"
           xcrun notarytool submit "$RUNNER_TEMP/notarize.zip" --apple-id "$AC_USERNAME" --password "$AC_PASSWORD" --team-id "$TEAM_ID" --wait
           xcrun stapler staple "$app"
-          ditto -c -k --keepParent "$app" "release/$name.zip"
           mkdir -p "$RUNNER_TEMP/dmg"
           ditto "$app" "$RUNNER_TEMP/dmg/FoldGit.app"
           ln -s /Applications "$RUNNER_TEMP/dmg/Applications"
-          hdiutil create -volname FoldGit -srcfolder "$RUNNER_TEMP/dmg" -fs HFS+ -format UDZO -ov "release/$name.dmg"
-          codesign --sign "Developer ID Application" --timestamp "release/$name.dmg"
-          xcrun notarytool submit "release/$name.dmg" --apple-id "$AC_USERNAME" --password "$AC_PASSWORD" --team-id "$TEAM_ID" --wait
-          xcrun stapler staple "release/$name.dmg"
+          hdiutil create -volname FoldGit -srcfolder "$RUNNER_TEMP/dmg" -fs HFS+ -format UDZO -ov "release/FoldGit-macOS-arm64.dmg"
+          codesign --sign "Developer ID Application" --timestamp "release/FoldGit-macOS-arm64.dmg"
+          xcrun notarytool submit "release/FoldGit-macOS-arm64.dmg" --apple-id "$AC_USERNAME" --password "$AC_PASSWORD" --team-id "$TEAM_ID" --wait
+          xcrun stapler staple "release/FoldGit-macOS-arm64.dmg"
 
       - name: Remove temporary keychain
         if: always() && env.SIGNED == 'true'
@@ -157,39 +155,52 @@ jobs:
         with:
           python-version: '3.12'
 
-      # MSIX must be signed to install. Use the WINDOWS_CERTIFICATE_* secrets when present;
-      # otherwise sign with a throwaway self-signed certificate and ship its public .cer.
+      # Optional Authenticode signing uses the existing certificate secrets.
+      # Without a certificate, publish an unsigned EXE installer.
       - name: Prepare signing certificate
+        if: env.CERTIFICATE != ''
         id: certificate
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          [xml]$manifest = Get-Content Platforms/Windows/src/FoldGit.App/Package.appxmanifest
-          $publisher = $manifest.Package.Identity.Publisher
-          if ($env:CERTIFICATE) {
-            $pfx = Join-Path $env:RUNNER_TEMP 'signing.pfx'
-            [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:CERTIFICATE))
-            $password = ConvertTo-SecureString $env:CERTIFICATE_PASSWORD -AsPlainText -Force
-            $certificate = Import-PfxCertificate -FilePath $pfx -CertStoreLocation Cert:\CurrentUser\My -Password $password |
-              Where-Object HasPrivateKey | Select-Object -First 1
-            Remove-Item $pfx
-          } else {
-            $certificate = New-SelfSignedCertificate -Type Custom -Subject $publisher -KeyUsage DigitalSignature `
-              -FriendlyName 'FoldGit release' -CertStoreLocation Cert:\CurrentUser\My -NotAfter (Get-Date).AddYears(5) `
-              -TextExtension @('2.5.29.37={text}1.3.6.1.5.5.7.3.3', '2.5.29.19={text}')
-          }
-          if ($certificate.Subject -ne $publisher) { throw "Certificate subject $($certificate.Subject) must equal $publisher." }
-          New-Item -ItemType Directory -Force release | Out-Null
-          Export-Certificate -Cert $certificate -FilePath "release/FoldGit-$env:VERSION-Windows-$env:ARCHITECTURE.cer" | Out-Null
+          $pfx = Join-Path $env:RUNNER_TEMP 'signing.pfx'
+          [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:CERTIFICATE))
+          $password = ConvertTo-SecureString $env:CERTIFICATE_PASSWORD -AsPlainText -Force
+          $certificate = Import-PfxCertificate -FilePath $pfx -CertStoreLocation Cert:\CurrentUser\My -Password $password |
+            Where-Object HasPrivateKey | Select-Object -First 1
+          Remove-Item $pfx
           "thumbprint=$($certificate.Thumbprint)" >> $env:GITHUB_OUTPUT
 
-      - name: Build and sign MSIX
+      - name: Install Inno Setup compiler
+        shell: pwsh
+        run: |
+          $setup = Join-Path $env:RUNNER_TEMP 'innosetup-6.7.3.exe'
+          Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $setup
+          if ((Get-AuthenticodeSignature $setup).Status -ne 'Valid') { throw 'Inno Setup signature validation failed.' }
+          $process = Start-Process $setup -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', "/DIR=$env:RUNNER_TEMP/InnoSetup") -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw 'Inno Setup installation failed.' }
+
+      - name: Build Windows installer
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $output = Platforms/Windows/Packaging/package.ps1 -Architecture $env:ARCHITECTURE -CertificateThumbprint '${{ steps.certificate.outputs.thumbprint }}'
-          $package = $output | Select-Object -Last 1
-          Copy-Item $package "release/FoldGit-$env:VERSION-Windows-$env:ARCHITECTURE.msix"
+          $installer = Platforms/Windows/Packaging/installer.ps1 -Architecture $env:ARCHITECTURE -CertificateThumbprint '${{ steps.certificate.outputs.thumbprint }}' -CompilerPath "$env:RUNNER_TEMP/InnoSetup/ISCC.exe"
+          New-Item -ItemType Directory -Force release | Out-Null
+          Copy-Item $installer "release/FoldGit-Windows-$env:ARCHITECTURE.exe"
+
+      - name: Verify installation and application startup
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $install = Join-Path $env:RUNNER_TEMP 'FoldGit-installed'
+          $setup = Start-Process "release/FoldGit-Windows-$env:ARCHITECTURE.exe" -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/DIR=$install") -Wait -PassThru
+          if ($setup.ExitCode -ne 0) { throw "Installer failed with exit code $($setup.ExitCode)." }
+          $app = Start-Process "$install/FoldGit.App.exe" -PassThru
+          Start-Sleep -Seconds 5
+          if ($app.HasExited) { throw "Installed application exited with code $($app.ExitCode)." }
+          Stop-Process -Id $app.Id
+          $uninstall = Start-Process "$install/unins000.exe" -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART') -Wait -PassThru
+          if ($uninstall.ExitCode -ne 0) { throw "Uninstaller failed with exit code $($uninstall.ExitCode)." }
 
       - name: Remove signing certificate
         if: always() && steps.certificate.outputs.thumbprint != ''
@@ -220,13 +231,20 @@ jobs:
           path: release
           merge-multiple: true
 
-      - name: Write checksums and release notes
+      - name: Validate assets and write release notes
         run: |
-          (cd release && shasum -a 256 * > SHA256SUMS.txt)
+          test -f release/FoldGit-macOS-arm64.dmg
+          expected=1
+          if [ "${{ needs.version.outputs.windows }}" = "true" ]; then
+            test -f release/FoldGit-Windows-x64.exe
+            test -f release/FoldGit-Windows-ARM64.exe
+            expected=3
+          fi
+          test "$(find release -type f | wc -l | tr -d ' ')" = "$expected"
           {
             echo "## Install"
             echo
-            echo "**macOS** (Apple Silicon, macOS 26 or later): open \`FoldGit-$VERSION-macOS-arm64.dmg\` and drag FoldGit into Applications."
+            echo "**macOS** (Apple Silicon, macOS 26 or later): open \`FoldGit-macOS-arm64.dmg\` and drag FoldGit into Applications."
             if [ "$MAC_SIGNED" != "true" ]; then
               echo "This build is not signed with an Apple Developer certificate. If macOS says it is damaged or cannot be verified, run once:"
               echo
@@ -234,18 +252,19 @@ jobs:
               echo 'xattr -dr com.apple.quarantine /Applications/FoldGit.app'
               echo '```'
             fi
-            if ls release/*.msix > /dev/null 2>&1; then
+            if ls release/*.exe > /dev/null 2>&1; then
               echo
-              echo "**Windows** (Windows 11 24H2 or later): the Windows client is a minimal implementation; contributions are welcome."
-              echo "Download the \`.msix\` and \`.cer\` for your architecture (x64 or ARM64)."
+              echo "**Windows** (Windows 11 24H2 or later): download the x64 or ARM64 EXE installer for your device and open it. The installer includes the .NET and Windows App SDK runtimes."
               if [ "$WINDOWS_TRUSTED" != "true" ]; then
-                echo "The package is signed with a self-signed certificate. Trust it once in an administrator PowerShell, then open the \`.msix\`:"
-                echo
-                echo '```powershell'
-                echo "Import-Certificate -FilePath .\\FoldGit-$VERSION-Windows-x64.cer -CertStoreLocation Cert:\\LocalMachine\\TrustedPeople"
-                echo '```'
+                echo "The Windows installer is not Authenticode signed. No separate signing certificate is required."
               fi
             fi
+            echo
+            echo "## SHA-256"
+            echo
+            echo '```text'
+            (cd release && shasum -a 256 *)
+            echo '```'
           } > notes.md
           cat notes.md
 
@@ -259,3 +278,4 @@ jobs:
           files: release/*
           fail_on_unmatched_files: true
           overwrite_files: true
+

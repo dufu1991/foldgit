@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="Shared/Resources/Branding/Images/FoldGit.png" width="128" height="128" alt="FoldGit">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="Shared/Resources/Branding/Images/FoldGit-dark.png">
+    <img src="Shared/Resources/Branding/Images/FoldGit.png" width="128" height="128" alt="FoldGit">
+  </picture>
 </p>
 
 <h1 align="center">FoldGit</h1>

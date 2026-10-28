@@ -42,7 +42,7 @@ FoldGit is a small, quiet window for exactly that. It keeps all your repositorie
 
 Requires an Apple Silicon Mac running macOS 26 or later, and Git. If Git is missing, run `xcode-select --install`.
 
-1. Download the latest `FoldGit-…-macOS-arm64.dmg` from [Releases](https://github.com/dufu1991/foldgit/releases/latest).
+1. Download the latest `FoldGit-macOS-arm64.dmg` from [Releases](https://github.com/dufu1991/foldgit/releases/latest).
 2. Open the DMG and drag FoldGit into Applications.
 3. FoldGit is not yet signed with an Apple Developer certificate, so macOS may say it is damaged or cannot be verified on first launch. Run this once, then open it again:
 
@@ -55,6 +55,8 @@ A short user guide lives in [website/manual.html](website/manual.html).
 ## Windows
 
 The repository also contains a Windows client built with C#, WinUI 3 and .NET 10 (Windows 11 24H2 or later, x64 and ARM64). It is only a minimal implementation, and the author has no Windows machine to polish it on. Contributions are very welcome: see the [Windows guide](Platforms/Windows/README.md) and the [feature parity checklist](docs/WINDOWS_PARITY.md).
+
+Download the Windows x64 or ARM64 EXE from [Releases](https://github.com/dufu1991/foldgit/releases/latest), then open it to install. Required runtimes are included.
 
 ## Development
 
@@ -143,14 +145,14 @@ python3 Scripts/version.py            # print the version and check that all pla
 python3 Scripts/version.py set 0.2.0  # set a new version and bump the macOS build number
 ```
 
-Commit and push the new version to `main`, and the [release workflow](.github/workflows/release.yml) builds the macOS DMG and ZIP and the Windows x64 and ARM64 MSIX, then publishes them as release `v0.2.0` with checksums. Pushing a version that already has a tag does nothing. Run the workflow manually with *rebuild* to replace the assets of an existing release.
+Commit and push the new version to `main`, and the [release workflow](.github/workflows/release.yml) publishes exactly three installers as release `v0.2.0`: one macOS Apple Silicon DMG and one EXE each for Windows x64 and ARM64. SHA-256 checksums are included in the release notes. Stable asset names let the website download links follow the latest release automatically. Pushing a version that already has a tag does nothing. Run the workflow manually with *rebuild* to replace the assets of an existing release.
 
 Signing secrets are optional:
 
 | Secrets | Without them |
 |---|---|
 | `APPLE_TEAM_ID`, `BUILD_CERTIFICATE_BASE64`, `P12_PASSWORD`, `KEYCHAIN_PASSWORD`, `AC_USERNAME`, `AC_PASSWORD` | The macOS app is ad hoc signed and not notarized; users clear the quarantine flag once. |
-| `WINDOWS_CERTIFICATE_BASE64`, `WINDOWS_CERTIFICATE_PASSWORD` (a PFX whose subject is `CN=dufu`) | Each MSIX is signed with a throwaway self-signed certificate, published next to it as a `.cer` for users to trust. |
+| `WINDOWS_CERTIFICATE_BASE64`, `WINDOWS_CERTIFICATE_PASSWORD` (a trusted code signing PFX) | The EXE installers are unsigned. They include their runtimes and do not require a separate certificate download. |
 
 ### Website
 

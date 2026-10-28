@@ -42,7 +42,7 @@ FoldGit 就是为此准备的一个轻巧、安静的窗口：所有仓库随手
 
 需要 macOS 26 及以上的 Apple Silicon Mac，并已安装 Git。没有 Git 的话，运行 `xcode-select --install`。
 
-1. 在 [Releases](https://github.com/dufu1991/foldgit/releases/latest) 下载最新的 `FoldGit-…-macOS-arm64.dmg`。
+1. 在 [Releases](https://github.com/dufu1991/foldgit/releases/latest) 下载最新的 `FoldGit-macOS-arm64.dmg`。
 2. 打开 DMG，把 FoldGit 拖进「应用程序」。
 3. FoldGit 暂未使用 Apple 开发者证书签名，首次打开时 macOS 可能提示“已损坏”或“无法验证开发者”。在终端执行一次下面的命令，再重新打开即可：
 
@@ -55,6 +55,8 @@ FoldGit 就是为此准备的一个轻巧、安静的窗口：所有仓库随手
 ## Windows 版
 
 仓库中还包含一个基于 C#、WinUI 3 和 .NET 10 的 Windows 客户端（Windows 11 24H2 及以上，x64 与 ARM64）。它目前只是最简实现，作者没有 Windows 设备，无法继续打磨。非常欢迎感兴趣的你参与建设：开发步骤见 [Windows 说明](Platforms/Windows/README.md)，实机验收项见 [功能对齐清单](docs/WINDOWS_PARITY.md)。
+
+在 [Releases](https://github.com/dufu1991/foldgit/releases/latest) 下载 Windows x64 或 ARM64 的 EXE，双击安装即可，无需另行下载运行时。
 
 ## 开发
 
@@ -143,14 +145,14 @@ python3 Scripts/version.py            # 显示版本号，并检查各平台是�
 python3 Scripts/version.py set 0.2.0  # 设置新版本，并递增 macOS 构建号
 ```
 
-提交并推送到 `main` 后，[发布工作流](.github/workflows/release.yml)会构建 macOS 的 DMG 与 ZIP、Windows 的 x64 与 ARM64 MSIX，附上校验文件，发布为 `v0.2.0`。推送已有标签的版本不会重复发布；如需替换已发布版本的安装包，可手动运行工作流并勾选 *rebuild*。
+提交并推送到 `main` 后，[发布工作流](.github/workflows/release.yml)会为 `v0.2.0` 仅发布三个安装包：macOS Apple Silicon 的 DMG，以及 Windows x64 和 ARM64 各一个 EXE。SHA-256 校验值写入发布说明。附件使用固定文件名，官网下载链接会自动指向最新版本。推送已有标签的版本不会重复发布；如需替换已发布版本的安装包，可手动运行工作流并勾选 *rebuild*。
 
 签名所需的 Secrets 均为可选：
 
 | Secrets | 未配置时 |
 |---|---|
 | `APPLE_TEAM_ID`、`BUILD_CERTIFICATE_BASE64`、`P12_PASSWORD`、`KEYCHAIN_PASSWORD`、`AC_USERNAME`、`AC_PASSWORD` | macOS 使用 ad hoc 签名，不经公证；用户首次打开前需清除隔离标记。 |
-| `WINDOWS_CERTIFICATE_BASE64`、`WINDOWS_CERTIFICATE_PASSWORD`（主题为 `CN=dufu` 的 PFX） | 每个 MSIX 使用临时自签名证书签名，并附上对应的 `.cer`，供用户信任后安装。 |
+| `WINDOWS_CERTIFICATE_BASE64`、`WINDOWS_CERTIFICATE_PASSWORD`（可信代码签名 PFX） | EXE 安装程序不签名，但已包含所需运行时，无需用户另外下载证书。 |
 
 ### 网站
 

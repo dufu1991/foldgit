@@ -21,7 +21,7 @@
       root.dataset.scheme = root.dataset.theme || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=8">
 </head>
 <body class="manual-page">
   <div class="backdrop" aria-hidden="true">
@@ -105,7 +105,7 @@
           <h3>macOS</h3>
           <div class="show-zh">
             <ol>
-              <li>下载 <a href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-macOS-arm64.dmg">FoldGit v0.1.0 的 macOS 安装包</a>。</li>
+              <li>下载 <a href="https://github.com/dufu1991/foldgit/releases/latest/download/FoldGit-macOS-arm64.dmg">最新的 FoldGit macOS 安装包</a>。</li>
               <li>打开 DMG，把 FoldGit 拖进「应用程序」。</li>
               <li>需要 macOS 26 及以上的 Apple Silicon Mac，并已安装 Git。没有 Git 的话，在终端运行 <code>xcode-select --install</code>。</li>
             </ol>
@@ -116,7 +116,7 @@
           </div>
           <div class="show-en">
             <ol>
-              <li>Download the <a href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-macOS-arm64.dmg">FoldGit v0.1.0 macOS installer</a>.</li>
+              <li>Download the <a href="https://github.com/dufu1991/foldgit/releases/latest/download/FoldGit-macOS-arm64.dmg">latest FoldGit macOS installer</a>.</li>
               <li>Open the DMG and drag FoldGit into Applications.</li>
               <li>Requires an Apple Silicon Mac on macOS 26 or later, with Git installed. If Git is missing, run <code>xcode-select --install</code> in Terminal.</li>
             </ol>
@@ -132,28 +132,21 @@
           <div class="show-zh">
             <p>需要 Windows 11 24H2 及以上版本，并已安装 Git。Windows 客户端目前为最简实现。</p>
             <ol>
-              <li>选择设备架构，并下载对应的安装包和签名证书。大多数 Intel 和 AMD 电脑使用 x64，搭载 Snapdragon 等 ARM 处理器的电脑使用 ARM64。</li>
-              <li>以管理员身份打开 PowerShell，在下载目录执行下方命令，导入对应架构的自签名证书。</li>
-              <li>双击同一架构的 MSIX 安装包，按提示安装。</li>
+              <li>选择设备架构。Intel 和 AMD 电脑通常使用 x64，搭载 Snapdragon 等 ARM 处理器的电脑使用 ARM64。</li>
+              <li>下载并双击 EXE 安装程序，按提示安装。安装程序已包含所需运行时，无需导入证书。</li>
+              <li>安装后从开始菜单打开 FoldGit。可在 Windows 设置中卸载。</li>
             </ol>
-            <p>x64：<a href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-Windows-x64.msix">下载安装包</a> · <a href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-Windows-x64.cer">下载证书</a></p>
-            <p>ARM64：<a href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-Windows-ARM64.msix">下载安装包</a> · <a href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-Windows-ARM64.cer">下载证书</a></p>
+            <p><a href="https://github.com/dufu1991/foldgit/releases/latest/download/FoldGit-Windows-x64.exe">下载 Windows x64 版</a> · <a href="https://github.com/dufu1991/foldgit/releases/latest/download/FoldGit-Windows-ARM64.exe">下载 Windows ARM64 版</a></p>
           </div>
           <div class="show-en">
             <p>Requires Windows 11 24H2 or later and Git. The Windows client is currently a minimal implementation.</p>
             <ol>
-              <li>Download the installer and signing certificate for your architecture. Most Intel and AMD PCs use x64; PCs with Snapdragon or other ARM processors use ARM64.</li>
-              <li>Open PowerShell as administrator in your download folder and run the matching command below to import the self-signed certificate.</li>
-              <li>Open the MSIX installer for the same architecture and follow the installation prompts.</li>
+              <li>Choose your architecture. Most Intel and AMD PCs use x64; PCs with Snapdragon or other ARM processors use ARM64.</li>
+              <li>Download and open the EXE installer. Follow the prompts. Required runtimes are included and no certificate import is needed.</li>
+              <li>Open FoldGit from the Start menu. Uninstall it through Windows Settings.</li>
             </ol>
-            <p>x64: <a href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-Windows-x64.msix">Download installer</a> · <a href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-Windows-x64.cer">Download certificate</a></p>
-            <p>ARM64: <a href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-Windows-ARM64.msix">Download installer</a> · <a href="https://github.com/dufu1991/foldgit/releases/download/v0.1.0/FoldGit-0.1.0-Windows-ARM64.cer">Download certificate</a></p>
+            <p><a href="https://github.com/dufu1991/foldgit/releases/latest/download/FoldGit-Windows-x64.exe">Download for Windows x64</a> · <a href="https://github.com/dufu1991/foldgit/releases/latest/download/FoldGit-Windows-ARM64.exe">Download for Windows ARM64</a></p>
           </div>
-          <pre class="cmd"><code># x64
-Import-Certificate -FilePath .\FoldGit-0.1.0-Windows-x64.cer -CertStoreLocation Cert:\LocalMachine\TrustedPeople
-
-# ARM64
-Import-Certificate -FilePath .\FoldGit-0.1.0-Windows-ARM64.cer -CertStoreLocation Cert:\LocalMachine\TrustedPeople</code></pre>
         </section>
 
         <section class="m-section glass" id="add" data-reveal>

@@ -37,6 +37,19 @@ Windows 图标已生成并提交。更改共享品牌图后，使用 Pillow 12.1
 
 ## 打包
 
+正式 Release 每个架构只发布一个 EXE 安装程序，支持 x64 和 ARM64。安装程序包含 .NET 和 Windows App SDK 运行时，安装到当前用户目录，并提供开始菜单入口与卸载程序，无需用户导入证书。
+
+本地打包需先安装 Inno Setup 6：
+
+```powershell
+Platforms/Windows/Packaging/installer.ps1 -Architecture x64
+Platforms/Windows/Packaging/installer.ps1 -Architecture ARM64
+```
+
+EXE 产物保存在 `dist/windows/<architecture>/installer`。配置可信代码签名证书后，可通过 `-CertificateThumbprint` 同时签名应用与安装程序。CI 会验证安装、启动和卸载。发布附件使用固定文件名，官网下载链接通过 `releases/latest/download` 获取最新版本。
+
+MSIX 仍可用于开发调试与构建验证：
+
 ```powershell
 # 只验证构建。未签名包不能作为正式安装包分发。
 Platforms/Windows/Packaging/package.ps1 -Architecture x64 -Unsigned

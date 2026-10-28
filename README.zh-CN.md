@@ -13,8 +13,7 @@
 </p>
 
 <p align="center">
-  <a href="https://foldgit.com">官网</a> · <a href="https://foldgit.com/manual">使用手册</a><br>
-  <a href="README.md">English</a> · <b>简体中文</b>
+  <a href="https://foldgit.com">官网</a> · <a href="https://foldgit.com/manual">使用手册</a> · <a href="README.md">English</a>
 </p>
 
 <picture>

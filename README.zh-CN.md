@@ -134,9 +134,23 @@ Scripts/package-macos.sh
 
 ### 应用身份与发布
 
-macOS 应用名为 `FoldGit`，Bundle ID 为 `com.dufu.foldgit`，当前版本为 `0.1.0`。签名配置位于 `Platforms/macOS/Configuration`。
+macOS 应用名为 `FoldGit`，Bundle ID 为 `com.dufu.foldgit`；Windows 包身份为 `dufu.FoldGit`，Publisher 为 `CN=dufu`。签名配置位于 `Platforms/macOS/Configuration`。
 
-发布工作流需要 `APPLE_TEAM_ID`、`BUILD_CERTIFICATE_BASE64`、`P12_PASSWORD`、`KEYCHAIN_PASSWORD`、`AC_USERNAME` 和 `AC_PASSWORD`，用于 Developer ID 签名、公证和票据装订，并创建草稿 Release。
+版本号分布在三处且必须一致：`Platforms/macOS/Configuration/Base.xcconfig` 中的 `MARKETING_VERSION`、Windows 的 `Package.appxmanifest`，以及 Windows「关于」页的文字。用 `Scripts/version.py` 统一修改：
+
+```sh
+python3 Scripts/version.py            # 显示版本号，并检查各平台是否一致
+python3 Scripts/version.py set 0.2.0  # 设置新版本，并递增 macOS 构建号
+```
+
+提交并推送到 `main` 后，[发布工作流](.github/workflows/release.yml)会构建 macOS 的 DMG 与 ZIP、Windows 的 x64 与 ARM64 MSIX，附上校验文件，发布为 `v0.2.0`。推送已有标签的版本不会重复发布；如需替换已发布版本的安装包，可手动运行工作流并勾选 *rebuild*。
+
+签名所需的 Secrets 均为可选：
+
+| Secrets | 未配置时 |
+|---|---|
+| `APPLE_TEAM_ID`、`BUILD_CERTIFICATE_BASE64`、`P12_PASSWORD`、`KEYCHAIN_PASSWORD`、`AC_USERNAME`、`AC_PASSWORD` | macOS 使用 ad hoc 签名，不经公证；用户首次打开前需清除隔离标记。 |
+| `WINDOWS_CERTIFICATE_BASE64`、`WINDOWS_CERTIFICATE_PASSWORD`（主题为 `CN=dufu` 的 PFX） | 每个 MSIX 使用临时自签名证书签名，并附上对应的 `.cer`，供用户信任后安装。 |
 
 ### 网站
 

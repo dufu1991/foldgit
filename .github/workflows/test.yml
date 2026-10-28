@@ -18,6 +18,7 @@ jobs:
         run: |
           python3 Scripts/check-platform-boundaries.py
           python3 Scripts/generate-resources.py --check
+          python3 Scripts/version.py
       - name: Test shared core
         run: swift test --force-resolved-versions
   shared-windows:

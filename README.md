@@ -134,9 +134,23 @@ Output goes to `dist/macos`: `FoldGit.app`, a DMG and ZIP named `macOS-arm64`, a
 
 ### App identity and releases
 
-The macOS app is `FoldGit`, bundle ID `com.dufu.foldgit`, version `0.1.0`. Signing settings live in `Platforms/macOS/Configuration`.
+The macOS app is `FoldGit`, bundle ID `com.dufu.foldgit`. The Windows package identity is `dufu.FoldGit` with publisher `CN=dufu`. Signing settings live in `Platforms/macOS/Configuration`.
 
-The release workflow uses `APPLE_TEAM_ID`, `BUILD_CERTIFICATE_BASE64`, `P12_PASSWORD`, `KEYCHAIN_PASSWORD`, `AC_USERNAME` and `AC_PASSWORD` for Developer ID signing, notarization and stapling, and creates a draft release.
+The version lives in three places that must match: `MARKETING_VERSION` in `Platforms/macOS/Configuration/Base.xcconfig`, the Windows `Package.appxmanifest`, and the Windows About text. `Scripts/version.py` keeps them in sync:
+
+```sh
+python3 Scripts/version.py            # print the version and check that all platforms match
+python3 Scripts/version.py set 0.2.0  # set a new version and bump the macOS build number
+```
+
+Commit and push the new version to `main`, and the [release workflow](.github/workflows/release.yml) builds the macOS DMG and ZIP and the Windows x64 and ARM64 MSIX, then publishes them as release `v0.2.0` with checksums. Pushing a version that already has a tag does nothing. Run the workflow manually with *rebuild* to replace the assets of an existing release.
+
+Signing secrets are optional:
+
+| Secrets | Without them |
+|---|---|
+| `APPLE_TEAM_ID`, `BUILD_CERTIFICATE_BASE64`, `P12_PASSWORD`, `KEYCHAIN_PASSWORD`, `AC_USERNAME`, `AC_PASSWORD` | The macOS app is ad hoc signed and not notarized; users clear the quarantine flag once. |
+| `WINDOWS_CERTIFICATE_BASE64`, `WINDOWS_CERTIFICATE_PASSWORD` (a PFX whose subject is `CN=dufu`) | Each MSIX is signed with a throwaway self-signed certificate, published next to it as a `.cer` for users to trust. |
 
 ### Website
 

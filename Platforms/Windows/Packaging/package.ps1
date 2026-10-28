@@ -26,7 +26,8 @@ $arguments = @('build', $project, '-c', 'Release', "-p:Platform=$Architecture",
     "-p:RuntimeIdentifier=win-$($Architecture.ToLowerInvariant())", '-p:GenerateAppxPackageOnBuild=true',
     '-p:UapAppxPackageBuildMode=SideloadOnly', "-p:AppxPackageDir=$destination", '-p:ContinuousIntegrationBuild=true')
 if (-not $Unsigned) {
-    $arguments += @('-p:AppxPackageSigningEnabled=true', "-p:PackageCertificateThumbprint=$CertificateThumbprint", "-p:AppxPackageSigningTimestampServerUrl=$TimestampServer")
+    $arguments += @('-p:AppxPackageSigningEnabled=true', "-p:PackageCertificateThumbprint=$CertificateThumbprint",
+        "-p:AppxPackageSigningTimestampServerUrl=$TimestampServer", '-p:AppxPackageSigningTimestampDigestAlgorithm=SHA256')
 }
 # Keep build diagnostics visible when callers capture the returned package path.
 dotnet @arguments | Out-Host

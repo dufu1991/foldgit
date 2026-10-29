@@ -30,6 +30,8 @@
 
   --row-bg: rgba(255, 255, 255, 0.55);
   --row-sel: rgba(61, 107, 255, 0.14);
+  --shot-wallpaper: url("assets/wallpapers/landscape-light.webp");
+  --shot-shadow: 0 18px 48px -8px rgba(8, 28, 60, 0.42), 0 2px 8px rgba(8, 28, 60, 0.18);
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.32, 0.5, 1);
@@ -69,6 +71,8 @@
     --btn-primary-fg: #0d1020;
     --row-bg: rgba(255, 255, 255, 0.06);
     --row-sel: rgba(123, 155, 255, 0.2);
+    --shot-wallpaper: url("assets/wallpapers/landscape-dark.webp");
+    --shot-shadow: 0 18px 48px -8px rgba(0, 7, 24, 0.7), 0 2px 8px rgba(0, 7, 24, 0.4);
     color-scheme: dark;
   }
 }
@@ -100,6 +104,8 @@
   --btn-primary-fg: #0d1020;
   --row-bg: rgba(255, 255, 255, 0.06);
   --row-sel: rgba(123, 155, 255, 0.2);
+  --shot-wallpaper: url("assets/wallpapers/landscape-dark.webp");
+  --shot-shadow: 0 18px 48px -8px rgba(0, 7, 24, 0.7), 0 2px 8px rgba(0, 7, 24, 0.4);
   color-scheme: dark;
 }
 
@@ -304,8 +310,14 @@ h1 { font-size: clamp(42px, 7.4vw, 88px); font-weight: 800; letter-spacing: -0.0
 .stage {
   position: relative;
   width: min(1600px, 100%);
+  height: calc(var(--stage-content-height, 70svh) + 100svh);
   margin-top: 52px;
-  perspective: 1800px;
+}
+.stage-sticky {
+  position: sticky;
+  top: 92px;
+  width: min(100%, calc((100svh - 190px) * 1.749196));
+  margin-inline: auto;
 }
 .stage-glow {
   position: absolute;
@@ -315,25 +327,36 @@ h1 { font-size: clamp(42px, 7.4vw, 88px); font-weight: 800; letter-spacing: -0.0
   filter: blur(70px);
   opacity: 0.16;
 }
+.screenshot-wallpaper {
+  display: block;
+  /* 128 px of wallpaper around a 1920 × 988 window at the export size. */
+  padding: 5.8823529412%;
+  border-radius: clamp(16px, 2.4vw, 30px);
+  background: var(--shot-wallpaper) center / cover no-repeat;
+  overflow: hidden;
+}
+.screenshot-wallpaper img {
+  width: 100%;
+  height: auto;
+  border-radius: clamp(6px, 1.2vw, 18px);
+  box-shadow: var(--shot-shadow);
+}
 .shot-frame {
   position: relative;
   margin: 0;
-  padding: clamp(6px, 1.2vw, 14px);
-  border-radius: clamp(16px, 2.4vw, 30px);
-  background: var(--glass-fill);
-  border: 1px solid var(--glass-border);
-  box-shadow: inset 0 1px 0 var(--glass-edge), 0 40px 120px -40px rgba(20, 30, 90, 0.55);
-  -webkit-backdrop-filter: blur(24px) saturate(170%);
-  backdrop-filter: blur(24px) saturate(170%);
-  transform-origin: 50% 0%;
-  transform: translateY(var(--shot-y, 0px)) rotateX(var(--shot-tilt, 0deg)) scale(var(--shot-scale, 1));
-  will-change: transform;
+  perspective: clamp(600px, 100vw, 1800px);
+  box-shadow: 0 40px 120px -40px rgba(20, 30, 90, 0.4);
+}
+.shot-window {
+  opacity: var(--window-opacity, 0);
+  transform-origin: 50% 100%;
+  transform: translate3d(0, var(--window-y, 38%), var(--window-z, -180px)) rotateX(var(--window-tilt, 62deg)) scale(var(--window-scale, 0.86));
+  will-change: transform, opacity;
 }
 .shot {
   width: 100%;
   height: auto;
   aspect-ratio: 1920 / 988;
-  border-radius: clamp(10px, 1.4vw, 18px);
   opacity: 0;
   transition: opacity 0.9s var(--ease-out);
 }
@@ -677,8 +700,7 @@ kbd {
 .keys > div:last-child { border-bottom: 0; }
 .keys dd { margin: 0; color: var(--text-2); }
 .manual-shot { margin: 24px 0 0; }
-.manual-shot a { display: block; }
-.manual-shot img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 12px; }
+.manual-shot a { border-radius: 14px; }
 .manual-shot figcaption { margin-top: 10px; color: var(--text-3); font-size: 13px; line-height: 1.6; }
 .manual-shot .manual-shot-dark { display: none; }
 html[data-scheme="dark"] .manual-shot .manual-shot-light { display: none; }
@@ -772,4 +794,7 @@ html[data-scheme="dark"] .manual-shot .manual-shot-dark { display: block; }
   *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; transition-delay: 0s !important; }
   [data-reveal] { opacity: 1; transform: none; filter: none; }
   html { scroll-behavior: auto; }
+  .stage { height: auto; }
+  .stage-sticky { position: relative; top: auto; width: 100%; }
+  .shot-window { transform: none; opacity: 1; will-change: auto; }
 }

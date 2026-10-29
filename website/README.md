@@ -10,8 +10,8 @@ changelog.html    更新日志页面，条目由脚本生成
 i18n.js           英文文案
 styles.css        设计变量、液态玻璃样式、亮暗色与动效
 main.js           语言与外观切换、截图切换、滚动动效、Fold 演示
-assets/           图标、赞助二维码与两种场景的截图（中英 × 亮暗，含 1x 与 2x）
-scripts/          截图用演示仓库生成脚本
+assets/           图标、赞助二维码、原始截图、亮暗壁纸与 README 展示图
+scripts/          演示仓库生成与展示图导出脚本
 ```
 
 ## 本地预览
@@ -33,6 +33,24 @@ python3 -m http.server 8765 --directory website
 `manual.html` 的中英文内容使用 `show-zh` 和 `show-en` 成对维护。章节按仓库整理、目录树与差异、暂存与提交、历史、同步和工作树等日常流程编排；操作名称应对照对应语言的实际界面。
 
 首页的审查与暂存说明链接到 `manual.html#review`。手册复用 `assets/screenshots/main-*` 的真实截图，通过网站的 `data-lang` 和 `data-scheme` 切换语言与亮暗色，点击可查看原图。更新章节时同步维护目录锚点、快捷键和两种语言，避免把目录展开与差异展开混为同一操作。
+
+## 展示图壁纸
+
+首页和手册通过 `styles.css` 的 `.screenshot-wallpaper` 为真实应用截图添加壁纸、四周留白和窗口阴影。`assets/wallpapers/landscape-light.webp` 用于亮色，`landscape-dark.webp` 用于暗色，随网站外观一起切换。原始截图仍保存在 `assets/screenshots/`，手册点击后打开原图。
+
+首页展示区先呈现完整壁纸，滚动进入固定展示区后，软件窗口从下方以 3D 倾角逐渐出现，随后展开并落稳。展示区按视口高度适配，窗口展开后保留一段滚动距离供阅读。启用系统的减少动态效果设置时，直接展示静态截图；手册和 README 保持静态构图。
+
+中英文 README 使用 `assets/showcases/` 的静态展示图，通过 `<picture>` 跟随阅读器亮暗色。Open Graph 预览复用英文亮色展示图。导出脚本直接渲染网站共用的 CSS，不重绘应用界面。画布为 2176 × 1244，窗口为 1920 × 988，四周各留 128 像素；按 2 倍分辨率导出 WebP。
+
+替换原始截图、壁纸或调整展示样式后，重新导出全部两种场景、中英文和亮暗色组合：
+
+```sh
+npm install --prefix /tmp/foldgit-showcase-tools playwright sharp
+/tmp/foldgit-showcase-tools/node_modules/.bin/playwright install chromium
+NODE_PATH=/tmp/foldgit-showcase-tools/node_modules node website/scripts/render-showcases.mjs
+```
+
+已有 Chromium 时，可通过 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` 指定可执行文件。导出依赖只用于更新静态素材，网站部署仍无需构建。
 
 ## 更新日志
 
@@ -81,7 +99,7 @@ python3 Scripts/changelog.py --release 0.2.0  # 输出指定版本的双语 Rele
 5. FoldGit 场景切换到列表与单栏差异，展开 `StageFileDiffView.swift`，滚动到包含增删行的代码片段。不要修改或暂存真实工作目录的文件。
 6. 分别切换中文、英文与亮暗色，捕获主窗口。语言切换后重启同一个应用；每次都确认运行路径和构建版本。移开鼠标，避免截图包含悬浮提示。若使用 Computer Use 布置界面，必须先停止其窗口控制服务，再用系统截图工具捕获，逐图确认左上角是真实的红黄绿按钮，不含紫色共享指示器。
 7. 使用 `cwebp -q 90 -m 6` 导出 `assets/screenshots/<main|foldgit>-<zh|en>-<light|dark>.webp`（1920 × 988）和同名 `@2x.webp`（3840 × 1976）。只缩放与压缩，不修饰实际界面。
-8. 同步 `Platforms/macOS/Screenshots/Screenshot2-1.png` 与 `Screenshot2-2.png`，分别保留中文亮暗色主图原图。README 引用同一组 WebP 素材，网站两种场景均跟随语言和外观切换。
+8. 同步 `Platforms/macOS/Screenshots/Screenshot2-1.png` 与 `Screenshot2-2.png`，分别保留中文亮暗色主图原图。运行 `scripts/render-showcases.mjs` 更新 README 展示图，网站两种场景均跟随语言和外观切换。
 9. 退出应用，执行 `defaults import com.dufu.foldgit <备份.plist>`。该命令会保留新增键，需删除仅由截图会话新增的偏好键，再逐项核对恢复结果。重新打开原路径的最新构建，恢复原仓库列表。
 
 当前截图基于 2026 年 10 月 29 日的工作目录，包含目录树审查、文件暂存动画，以及无背景的打开文件箭头。落地页截图路径带缓存版本参数；替换同名图片时同步更新 `main.js` 和 Open Graph 图片的版本参数。

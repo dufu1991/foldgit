@@ -17,8 +17,8 @@
 </p>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="website/assets/screenshots/main-zh-dark@2x.webp">
-  <img src="website/assets/screenshots/main-zh-light@2x.webp" alt="FoldGit 的 macOS 界面：仓库分组、提交关系图、目录树、暂存区与展开的并排差异">
+  <source media="(prefers-color-scheme: dark)" srcset="website/assets/showcases/main-zh-dark@2x.webp">
+  <img src="website/assets/showcases/main-zh-light@2x.webp" alt="FoldGit 的 macOS 界面：仓库分组、提交关系图、目录树、暂存区与展开的并排差异">
 </picture>
 
 ## 为什么做 FoldGit
@@ -42,8 +42,8 @@ FoldGit 就是为此准备的一个轻巧、安静的窗口：所有仓库随手
 使用展开的单栏差异视图，审查 FoldGit 自身的开发改动：
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="website/assets/screenshots/foldgit-zh-dark@2x.webp">
-  <img src="website/assets/screenshots/foldgit-zh-light@2x.webp" alt="FoldGit 审查自身 Swift 代码改动，单栏差异保持展开">
+  <source media="(prefers-color-scheme: dark)" srcset="website/assets/showcases/foldgit-zh-dark@2x.webp">
+  <img src="website/assets/showcases/foldgit-zh-light@2x.webp" alt="FoldGit 审查自身 Swift 代码改动，单栏差异保持展开">
 </picture>
 
 ## 安装

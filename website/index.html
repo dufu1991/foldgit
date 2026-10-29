@@ -10,7 +10,7 @@
   <meta name="theme-color" content="#0b0d18" media="(prefers-color-scheme: dark)">
   <meta property="og:title" content="FoldGit">
   <meta property="og:description" content="Every repository, folded into one window. A native, lightweight Git client for macOS.">
-  <meta property="og:image" content="assets/screenshots/main-en-light@2x.webp?v=20261029-2">
+  <meta property="og:image" content="assets/showcases/main-en-light@2x.webp?v=20261029-3">
   <link rel="icon" href="assets/favicon.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="assets/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" href="assets/favicon.png">
@@ -28,7 +28,7 @@
       root.dataset.scheme = root.dataset.theme || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="styles.css?v=15">
 </head>
 <body>
   <div class="backdrop" aria-hidden="true">
@@ -119,13 +119,17 @@
       </div>
 
       <div class="stage" id="stage">
-        <div class="stage-glow" aria-hidden="true"></div>
-        <figure class="shot-frame" id="shot-frame">
-          <img id="main-shot" class="shot" alt="" width="1920" height="988" fetchpriority="high" decoding="async">
-        </figure>
-        <div class="shot-switch">
-          <button type="button" data-screenshot="main" aria-pressed="true" data-i18n="shot.main">目录树与并排对比</button>
-          <button type="button" data-screenshot="foldgit" aria-pressed="false" data-i18n="shot.foldgit">审查 FoldGit 自身的改动</button>
+        <div class="stage-sticky" id="stage-sticky">
+          <div class="stage-glow" aria-hidden="true"></div>
+          <figure class="shot-frame screenshot-wallpaper" id="shot-frame">
+            <div class="shot-window">
+              <img id="main-shot" class="shot" alt="" width="1920" height="988" fetchpriority="high" decoding="async">
+            </div>
+          </figure>
+          <div class="shot-switch">
+            <button type="button" data-screenshot="main" aria-pressed="true" data-i18n="shot.main">目录树与并排对比</button>
+            <button type="button" data-screenshot="foldgit" aria-pressed="false" data-i18n="shot.foldgit">审查 FoldGit 自身的改动</button>
+          </div>
         </div>
       </div>
     </section>
@@ -334,6 +338,6 @@
   </footer>
 
   <script src="i18n.js?v=12"></script>
-  <script src="main.js?v=7"></script>
+  <script src="main.js?v=9"></script>
 </body>
 </html>

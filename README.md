@@ -17,8 +17,8 @@
 </p>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="website/assets/screenshots/main-en-dark@2x.webp">
-  <img src="website/assets/screenshots/main-en-light@2x.webp" alt="FoldGit on macOS: grouped repositories, commit graph, directory trees, staging and expanded side-by-side diffs">
+  <source media="(prefers-color-scheme: dark)" srcset="website/assets/showcases/main-en-dark@2x.webp">
+  <img src="website/assets/showcases/main-en-light@2x.webp" alt="FoldGit on macOS: grouped repositories, commit graph, directory trees, staging and expanded side-by-side diffs">
 </picture>
 
 ## Why FoldGit
@@ -42,8 +42,8 @@ FoldGit is a small, quiet window for exactly that. It keeps all your repositorie
 Reviewing FoldGit’s own development changes in the expanded unified diff view:
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="website/assets/screenshots/foldgit-en-dark@2x.webp">
-  <img src="website/assets/screenshots/foldgit-en-light@2x.webp" alt="FoldGit reviewing its own Swift code changes with an expanded unified diff">
+  <source media="(prefers-color-scheme: dark)" srcset="website/assets/showcases/foldgit-en-dark@2x.webp">
+  <img src="website/assets/showcases/foldgit-en-light@2x.webp" alt="FoldGit reviewing its own Swift code changes with an expanded unified diff">
 </picture>
 
 ## Install

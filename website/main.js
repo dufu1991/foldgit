@@ -4,7 +4,8 @@
   var root = document.documentElement;
   var dict = window.FOLDGIT_I18N || { en: {}, zh: {} };
   var darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
-  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var reduceMotion = motionQuery.matches;
 
   function store(key, value) {
     try { localStorage.setItem(key, value); } catch (e) {}
@@ -224,11 +225,14 @@
 
   // ---------------------------------------------------------------- scroll loop
   var shotFrame = document.getElementById("shot-frame");
+  const shotStage = document.getElementById("stage");
+  const shotSticky = document.getElementById("stage-sticky");
+  let stageContentHeight = 0;
   var nav = document.querySelector(".nav");
   var smoothY = window.scrollY;
   var ticking = false;
 
-  function frame() {
+  const frame = () => {
     var target = window.scrollY;
     // Critically damped follow gives the scroll-linked motion a soft, non-linear feel.
     smoothY += (target - smoothY) * (reduceMotion ? 1 : 0.14);
@@ -236,13 +240,25 @@
 
     var vh = window.innerHeight;
     var max = Math.max(1, document.documentElement.scrollHeight - vh);
-    root.style.setProperty("--scroll", (smoothY / max).toFixed(4));
+    root.style.setProperty("--scroll", (reduceMotion ? 0 : smoothY / max).toFixed(4));
 
-    if (shotFrame) {
-      var p = easeInOut(clamp(smoothY / (vh * 0.75), 0, 1));
-      shotFrame.style.setProperty("--shot-tilt", (24 * (1 - p)).toFixed(2) + "deg");
-      shotFrame.style.setProperty("--shot-scale", (0.9 + 0.1 * p).toFixed(4));
-      shotFrame.style.setProperty("--shot-y", (-30 * p).toFixed(1) + "px");
+    if (shotFrame && shotStage && shotSticky) {
+      if (stageContentHeight !== shotSticky.offsetHeight) {
+        stageContentHeight = shotSticky.offsetHeight;
+        shotStage.style.setProperty("--stage-content-height", stageContentHeight + "px");
+      }
+      // Hold the wallpaper in view before the window rises and unfolds into place.
+      const top = shotStage.getBoundingClientRect().top + target - smoothY;
+      const distance = Math.max(1, shotStage.offsetHeight - stageContentHeight);
+      const stickyTop = parseFloat(getComputedStyle(shotSticky).top) || 0;
+      const progress = clamp((stickyTop - top) / distance, 0, 1);
+      const unfold = reduceMotion ? 1 : easeInOut(clamp((progress - 0.12) / 0.68, 0, 1));
+      const opacity = reduceMotion ? 1 : clamp((progress - 0.12) / 0.18, 0, 1);
+      shotFrame.style.setProperty("--window-opacity", opacity.toFixed(4));
+      shotFrame.style.setProperty("--window-y", ((1 - unfold) * shotFrame.clientHeight * 0.38).toFixed(2) + "px");
+      shotFrame.style.setProperty("--window-z", (-180 * (1 - unfold)).toFixed(2) + "px");
+      shotFrame.style.setProperty("--window-tilt", (62 * (1 - unfold)).toFixed(2) + "deg");
+      shotFrame.style.setProperty("--window-scale", (0.86 + 0.14 * unfold).toFixed(4));
     }
     nav.classList.toggle("is-compact", target > 40);
 
@@ -258,12 +274,16 @@
     } else {
       ticking = false;
     }
-  }
-  function kick() {
+  };
+  const kick = () => {
     if (!ticking) { ticking = true; requestAnimationFrame(frame); }
-  }
+  };
   window.addEventListener("scroll", kick, { passive: true });
   window.addEventListener("resize", function () { var s = foldStep; foldStep = -1; setFoldStep(s < 0 ? 0 : s); kick(); });
+  motionQuery.addEventListener("change", () => {
+    reduceMotion = motionQuery.matches;
+    kick();
+  });
 
   // ---------------------------------------------------------------- manual contents
   var tocLinks = Array.prototype.slice.call(document.querySelectorAll(".toc a"));

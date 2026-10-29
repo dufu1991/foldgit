@@ -95,19 +95,10 @@
   // ---------------------------------------------------------------- screenshot
   var shot = document.getElementById("main-shot");
   var currentShot = "";
-  var screenshotScene = "main";
-  var screenshotButtons = document.querySelectorAll("[data-screenshot]");
-  screenshotButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      screenshotScene = button.dataset.screenshot;
-      screenshotButtons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
-      updateShot();
-    });
-  });
 
   const updateShot = () => {
     if (!shot) return;
-    var base = "assets/screenshots/" + screenshotScene + "-" + lang() + "-" + scheme();
+    var base = "assets/screenshots/main-" + lang() + "-" + scheme();
     if (base === currentShot) return;
     var first = currentShot === "";
     currentShot = base;
@@ -118,7 +109,7 @@
       if (base !== currentShot) return;
       shot.srcset = next.srcset;
       shot.src = next.src;
-      shot.alt = (dict[lang()] || {})["shot." + screenshotScene + ".alt"] || "";
+      shot.alt = dict[lang()]["shot.main.alt"];
       shot.classList.remove("is-swapping");
       shot.classList.add("is-loaded");
     };

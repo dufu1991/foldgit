@@ -39,13 +39,6 @@ FoldGit is a small, quiet window for exactly that. It keeps all your repositorie
 - **Everyday extras.** Push and pull, stash, per-repository Auto Fetch (download only, never merge), *Open in* your editor or terminal, light and dark appearances, and eight interface languages.
 - **Native and small.** Written in SwiftUI and AppKit, no Electron. The installer is about 4 MB.
 
-Reviewing FoldGit’s own development changes in the expanded unified diff view:
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="website/assets/showcases/foldgit-en-dark@2x.webp">
-  <img src="website/assets/showcases/foldgit-en-light@2x.webp" alt="FoldGit reviewing its own Swift code changes with an expanded unified diff">
-</picture>
-
 ## Install
 
 Requires an Apple Silicon Mac running macOS 26 or later, and Git. If Git is missing, run `xcode-select --install`.
@@ -184,7 +177,7 @@ Set the version with `python3 Scripts/version.py set <version>` and push to `mai
 
 ### Website
 
-`website/` is the static landing page and user guide published at [foldgit.com](https://foldgit.com), with no build step. See [website/README.md](website/README.md) for local preview and how screenshots are captured from demo repositories and FoldGit itself.
+`website/` is the static landing page and user guide published at [foldgit.com](https://foldgit.com), with no build step. See [website/README.md](website/README.md) for local preview and how screenshots are captured from demo repositories.
 
 More reading: [Architecture](docs/ARCHITECTURE.md), [Migration notes](docs/MIGRATION.md), [Localization guide](docs/LOCALIZATION.md), [File icons](docs/FILE_ICONS.md), [Windows parity checklist](docs/WINDOWS_PARITY.md), [Release guide](docs/RELEASING.md). Notes under `docs/` are written in Chinese.
 

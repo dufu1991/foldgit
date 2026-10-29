@@ -36,25 +36,23 @@ const page = await browser.newPage({
 });
 await page.goto(pathToFileURL(document).href);
 
-for (const scene of ["main", "foldgit"]) {
-  for (const language of ["zh", "en"]) {
-    for (const scheme of ["light", "dark"]) {
-      const name = `${scene}-${language}-${scheme}@2x.webp`;
-      const source = pathToFileURL(path.join(website, "assets/screenshots", name)).href;
-      await page.evaluate(async ({ source, scheme }) => {
-        document.documentElement.dataset.theme = scheme;
-        const image = document.querySelector("figure img");
-        image.src = source;
-        await image.decode();
-        const wallpaper = new Image();
-        wallpaper.src = getComputedStyle(document.querySelector("figure"))
-          .backgroundImage.slice(5, -2);
-        await wallpaper.decode();
-      }, { source, scheme });
-      const png = await page.locator("figure").screenshot();
-      await sharp(png).webp({ quality: 90, effort: 6 }).toFile(path.join(destination, name));
-      console.log(`Exported assets/showcases/${name}`);
-    }
+for (const language of ["zh", "en"]) {
+  for (const scheme of ["light", "dark"]) {
+    const name = `main-${language}-${scheme}@2x.webp`;
+    const source = pathToFileURL(path.join(website, "assets/screenshots", name)).href;
+    await page.evaluate(async ({ source, scheme }) => {
+      document.documentElement.dataset.theme = scheme;
+      const image = document.querySelector("figure img");
+      image.src = source;
+      await image.decode();
+      const wallpaper = new Image();
+      wallpaper.src = getComputedStyle(document.querySelector("figure"))
+        .backgroundImage.slice(5, -2);
+      await wallpaper.decode();
+    }, { source, scheme });
+    const png = await page.locator("figure").screenshot();
+    await sharp(png).webp({ quality: 90, effort: 6 }).toFile(path.join(destination, name));
+    console.log(`Exported assets/showcases/${name}`);
   }
 }
 

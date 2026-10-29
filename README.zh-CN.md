@@ -39,13 +39,6 @@ FoldGit 就是为此准备的一个轻巧、安静的窗口：所有仓库随手
 - **日常所需。** 推送与拉取，Stash，按仓库设置的自动获取（只下载、不合并），在编辑器或终端中打开，亮暗色外观，八种界面语言。
 - **原生且小巧。** SwiftUI 与 AppKit 原生实现，不含 Electron，安装包约 4 MB。
 
-使用展开的单栏差异视图，审查 FoldGit 自身的开发改动：
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="website/assets/showcases/foldgit-zh-dark@2x.webp">
-  <img src="website/assets/showcases/foldgit-zh-light@2x.webp" alt="FoldGit 审查自身 Swift 代码改动，单栏差异保持展开">
-</picture>
-
 ## 安装
 
 需要 macOS 26 及以上的 Apple Silicon Mac，并已安装 Git。没有 Git 的话，运行 `xcode-select --install`。
@@ -184,7 +177,7 @@ Scripts/package-macos.sh
 
 ### 网站
 
-`website/` 是无需构建的静态落地页与使用手册，发布在 [foldgit.com](https://foldgit.com)。本地预览方式，以及如何用演示仓库与 FoldGit 自身重新截图，见 [website/README.md](website/README.md)。
+`website/` 是无需构建的静态落地页与使用手册，发布在 [foldgit.com](https://foldgit.com)。本地预览方式，以及如何用演示仓库重新截图，见 [website/README.md](website/README.md)。
 
 更多文档：[架构说明](docs/ARCHITECTURE.md)、[迁移记录](docs/MIGRATION.md)、[本地化指南](docs/LOCALIZATION.md)、[文件图标](docs/FILE_ICONS.md)、[Windows 功能对齐清单](docs/WINDOWS_PARITY.md)、[发布流程](docs/RELEASING.md)。
 

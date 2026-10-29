@@ -21,10 +21,7 @@ window.FOLDGIT_I18N = {
     "cta.source": "View source",
     "cta.star": "Follow on GitHub",
     "cta.manual": "User guide",
-    "shot.main": "Directory trees and side-by-side diffs",
-    "shot.foldgit": "Review FoldGit’s own changes",
     "shot.main.alt": "FoldGit on macOS: grouped demo repositories, a commit graph, directory trees, staged changes and an expanded side-by-side Swift diff",
-    "shot.foldgit.alt": "FoldGit reviewing its own development changes with an expanded unified Swift diff",
 
     "fold.kicker": "What “Fold” means",
     "fold.s0.title": "Repositories everywhere",
@@ -98,12 +95,11 @@ window.FOLDGIT_I18N = {
 
     "final.title": "Glance at the changes. Then commit.",
     "footer.text": "FoldGit is independently maintained by dufu and released under the MIT License.",
-    "footer.note": "Captured from the real macOS app, showing demo repositories and FoldGit’s own development changes."
+    "footer.note": "Captured from the real macOS app, showing demo repositories."
   },
   zh: {
     "meta.title": "FoldGit — 把仓库折进一个窗口",
     "meta.description": "FoldGit 是原生、轻量的 macOS Git 客户端：按目录或分组折叠仓库，工作树收在所属仓库之下，约 4 MB。",
-    "shot.main.alt": "FoldGit 的 macOS 真实界面：分组演示仓库、提交关系图、文件目录树、暂存区与展开的 Swift 并排差异",
-    "shot.foldgit.alt": "FoldGit 审查自身开发改动的真实界面，Swift 单栏差异保持展开"
+    "shot.main.alt": "FoldGit 的 macOS 真实界面：分组演示仓库、提交关系图、文件目录树、暂存区与展开的 Swift 并排差异"
   }
 };

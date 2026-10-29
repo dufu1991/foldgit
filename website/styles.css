@@ -362,10 +362,6 @@ h1 { font-size: clamp(42px, 7.4vw, 88px); font-weight: 800; letter-spacing: -0.0
 }
 .shot.is-loaded { opacity: 1; }
 .shot.is-swapping { opacity: 0; transition-duration: 0.25s; }
-.shot-switch { position: relative; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-.shot-switch button { padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--text-2); font: inherit; font-size: 14px; cursor: pointer; }
-.shot-switch button[aria-pressed="true"] { background: var(--row-sel); border-color: var(--accent); color: var(--text); }
-.shot-switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 /* ------------------------------------------------------------------ sections */
 .section { padding: 120px 16px; max-width: 1180px; margin: 0 auto; }

@@ -9,7 +9,7 @@ changelog.json    各版本的中英文更新文案，网页与 Release 共用
 changelog.html    更新日志页面，条目由脚本生成
 i18n.js           英文文案
 styles.css        设计变量、液态玻璃样式、亮暗色与动效
-main.js           语言与外观切换、截图切换、滚动动效、Fold 演示
+main.js           语言与外观切换、截图同步、滚动动效、Fold 演示
 assets/           图标、赞助二维码、原始截图、亮暗壁纸与 README 展示图
 scripts/          演示仓库生成与展示图导出脚本
 ```
@@ -42,7 +42,7 @@ python3 -m http.server 8765 --directory website
 
 中英文 README 使用 `assets/showcases/` 的静态展示图，通过 `<picture>` 跟随阅读器亮暗色。Open Graph 预览复用英文亮色展示图。导出脚本直接渲染网站共用的 CSS，不重绘应用界面。画布为 2176 × 1244，窗口为 1920 × 988，四周各留 128 像素；按 2 倍分辨率导出 WebP。
 
-替换原始截图、壁纸或调整展示样式后，重新导出全部两种场景、中英文和亮暗色组合：
+替换原始截图、壁纸或调整展示样式后，重新导出主界面的中英文和亮暗色组合：
 
 ```sh
 npm install --prefix /tmp/foldgit-showcase-tools playwright sharp
@@ -83,7 +83,7 @@ python3 Scripts/changelog.py --release 0.2.0  # 输出指定版本的双语 Rele
 
 ## 重新生成截图
 
-截图取自最新成功构建的真实 macOS 界面，不重绘控件或修改截图文案。演示项目使用虚构数据；FoldGit 场景使用本仓库的临时副本，保留真实历史与当前 macOS 代码改动，避免截图素材自身的变更出现在文件列表里。
+截图取自最新成功构建的真实 macOS 界面，不重绘控件或修改截图文案。演示项目使用虚构数据。
 
 1. 生成演示仓库：
 
@@ -96,10 +96,9 @@ python3 Scripts/changelog.py --release 0.2.0  # 输出指定版本的双语 Rele
 2. 用 `defaults export com.dufu.foldgit <备份.plist>` 备份偏好。关闭所有 FoldGit 实例，使用 `Platforms/macOS/Configuration/LocalSigning.xcconfig` 的固定 Apple Development 签名，在原有 Debug 应用路径构建当前代码。不得复制应用或修改 Bundle ID。
 3. 临时设置演示仓库列表：`aurora-ui`、`tide-api` 和 `pebble-notes` 放入 Studio 分组，将 `pebble-notes` 标为不活跃；FoldGit 临时副本与 `harbor-docs` 放入 Open Source 分组。
 4. 使用 1920 × 988 的窗口，历史列宽 320，确保英文底部选项完整显示在一行。保留目录树、暂存区与展开的 `Badge.swift` 并排差异，折叠暂存区的 Tests 目录。提交框只填写演示文案，不执行提交。
-5. FoldGit 场景切换到列表与单栏差异，展开 `StageFileDiffView.swift`，滚动到包含增删行的代码片段。不要修改或暂存真实工作目录的文件。
-6. 分别切换中文、英文与亮暗色，捕获主窗口。语言切换后重启同一个应用；每次都确认运行路径和构建版本。移开鼠标，避免截图包含悬浮提示。若使用 Computer Use 布置界面，必须先停止其窗口控制服务，再用系统截图工具捕获，逐图确认左上角是真实的红黄绿按钮，不含紫色共享指示器。
-7. 使用 `cwebp -q 90 -m 6` 导出 `assets/screenshots/<main|foldgit>-<zh|en>-<light|dark>.webp`（1920 × 988）和同名 `@2x.webp`（3840 × 1976）。只缩放与压缩，不修饰实际界面。
-8. 同步 `Platforms/macOS/Screenshots/Screenshot2-1.png` 与 `Screenshot2-2.png`，分别保留中文亮暗色主图原图。运行 `scripts/render-showcases.mjs` 更新 README 展示图，网站两种场景均跟随语言和外观切换。
-9. 退出应用，执行 `defaults import com.dufu.foldgit <备份.plist>`。该命令会保留新增键，需删除仅由截图会话新增的偏好键，再逐项核对恢复结果。重新打开原路径的最新构建，恢复原仓库列表。
+5. 分别切换中文、英文与亮暗色，捕获主窗口。语言切换后重启同一个应用；每次都确认运行路径和构建版本。移开鼠标，避免截图包含悬浮提示。若使用 Computer Use 布置界面，必须先停止其窗口控制服务，再用系统截图工具捕获，逐图确认左上角是真实的红黄绿按钮，不含紫色共享指示器。
+6. 使用 `cwebp -q 90 -m 6` 导出 `assets/screenshots/main-<zh|en>-<light|dark>.webp`（1920 × 988）和同名 `@2x.webp`（3840 × 1976）。只缩放与压缩，不修饰实际界面。
+7. 同步 `Platforms/macOS/Screenshots/Screenshot2-1.png` 与 `Screenshot2-2.png`，分别保留中文亮暗色主图原图。运行 `scripts/render-showcases.mjs` 更新 README 展示图，网站截图跟随语言和外观切换。
+8. 退出应用，执行 `defaults import com.dufu.foldgit <备份.plist>`。该命令会保留新增键，需删除仅由截图会话新增的偏好键，再逐项核对恢复结果。重新打开原路径的最新构建，恢复原仓库列表。
 
 当前截图基于 2026 年 10 月 29 日的工作目录，包含目录树审查、文件暂存动画，以及无背景的打开文件箭头。落地页截图路径带缓存版本参数；替换同名图片时同步更新 `main.js` 和 Open Graph 图片的版本参数。

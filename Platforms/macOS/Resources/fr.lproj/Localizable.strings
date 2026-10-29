@@ -2,6 +2,7 @@
 
 "%@, %@" = "%@, %@";
 "%lld pt" = "%lld pt";
+"A New Version of FoldGit Is Available" = "Une nouvelle version de FoldGit est disponible";
 "A native Git client for macOS." = "Un client Git natif pour macOS.";
 "Abort Merge" = "Abandonner la fusion";
 "Abort Merge?" = "Abandonner la fusion ?";
@@ -46,6 +47,8 @@
 "Canceling Clone" = "Annulation du clonage";
 "Changed File Display" = "Affichage des fichiers modifiés";
 "Changes are merged locally. Open the target worktree to review, test, and push." = "Les modifications sont fusionnées localement. Ouvrez le worktree cible pour vérifier, tester et pousser.";
+"Check for Updates" = "Rechercher des mises à jour";
+"Check for Updates at Launch" = "Rechercher des mises à jour au lancement";
 "Check frequently used snippets to show them below the commit message editor." = "Cochez les extraits fréquents pour les afficher sous l’éditeur de message de commit.";
 "Checkout" = "Extraire le commit";
 "Checkout Selected Commit" = "Extraire le commit sélectionné";
@@ -121,6 +124,7 @@
 "Display Name" = "Nom affiché";
 "Dissolve Group" = "Dissoudre le groupe";
 "Done" = "Terminé";
+"Download" = "Télécharger";
 "Drop" = "Supprimer la remise";
 "Edit" = "Modifier";
 "Enable Worktrees" = "Activer les worktrees";
@@ -159,6 +163,8 @@
 "Fit" = "Ajuster";
 "Fit Images to the Preview Area" = "Ajuster les images à la zone d’aperçu";
 "Fix lint warnings" = "Corriger les avertissements du linter";
+"FoldGit %@ is available. You are using %@." = "FoldGit %@ est disponible. Vous utilisez la version %@.";
+"FoldGit Is Up to Date" = "FoldGit est à jour";
 "Folder Name" = "Nom du dossier";
 "Forward" = "Suivant";
 "From:" = "Depuis :";
@@ -397,6 +403,7 @@
 "Toolbar" = "Barre d’outils";
 "Toolbar Display" = "Affichage de la barre d’outils";
 "Tweaks" = "Ajustements";
+"Unable to Check for Updates" = "Impossible de rechercher des mises à jour";
 "Uncommitted Changes" = "Modifications non commitées";
 "Ungrouped" = "Sans groupe";
 "Unified" = "Unifiée";
@@ -425,6 +432,7 @@
 "Worktrees" = "Worktrees";
 "Worktrees share repository history and branches. Each folder has its own files and staging area." = "Les worktrees partagent l’historique et les branches. Chaque dossier possède ses fichiers et son index.";
 "Wrap Long Lines" = "Renvoyer les lignes longues";
+"You are using the latest version, %@." = "Vous utilisez la dernière version, %@.";
 "Your language choice has been saved. Restart FoldGit to update the interface and menus." = "La langue choisie a été enregistrée. Redémarrez FoldGit pour mettre à jour l’interface et les menus.";
 "Zoom In" = "Agrandir";
 "Zoom Out" = "Réduire";

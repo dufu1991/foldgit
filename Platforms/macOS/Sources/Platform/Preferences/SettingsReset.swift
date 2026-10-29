@@ -35,6 +35,7 @@ enum SettingsReset {
                 Item(id: "language", title: String(localized: "Interface Language"), value: automatic, keys: [.interfaceLanguage]),
                 Item(id: "login", title: String(localized: "Launch at Login"), value: on),
                 Item(id: "session", title: String(localized: "Restore Previous Repository and Window"), value: on, keys: [.restoreSession]),
+                Item(id: "updates", title: String(localized: "Check for Updates at Launch"), value: on, keys: [.checkForUpdatesAtLaunch]),
                 Item(id: "quit", title: String(localized: "Quit When the Last Window Closes"), value: off, keys: [.quitAfterLastWindow]),
             ]),
             Group(id: "appearance", title: String(localized: "Appearance"), items: [

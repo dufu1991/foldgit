@@ -31,5 +31,6 @@ enum PreferenceKey: String, CaseIterable {
     case repositoryWorktreeVisibility
     case codeFontSize
     case wrapLongLines
+    case checkForUpdatesAtLaunch
 }
 

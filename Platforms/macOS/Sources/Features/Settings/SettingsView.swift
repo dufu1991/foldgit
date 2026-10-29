@@ -108,6 +108,7 @@ struct GeneralSettingsPane: View {
     var languageSession = InterfaceLanguageSession.shared
     @AppStorage(PreferenceKey.interfaceLanguage.rawValue) private var language = InterfaceLanguage.automatic
     @AppStorage(PreferenceKey.restoreSession.rawValue) private var restoreSession = true
+    @AppStorage(PreferenceKey.checkForUpdatesAtLaunch.rawValue) private var checkForUpdatesAtLaunch = true
     @AppStorage(PreferenceKey.quitAfterLastWindow.rawValue) private var quitAfterLastWindow = false
     @State private var loginStatus = SMAppService.mainApp.status
     @State private var changingLoginItem = false
@@ -153,6 +154,8 @@ struct GeneralSettingsPane: View {
                 }
                 Toggle("Restore Previous Repository and Window", isOn: $restoreSession)
                     .accessibilityIdentifier("restoreSessionToggle")
+                Toggle("Check for Updates at Launch", isOn: $checkForUpdatesAtLaunch)
+                    .accessibilityIdentifier("checkForUpdatesAtLaunchToggle")
             }
             Section {
                 Toggle("Quit When the Last Window Closes", isOn: $quitAfterLastWindow)

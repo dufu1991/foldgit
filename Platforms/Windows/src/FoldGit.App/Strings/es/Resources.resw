@@ -42,6 +42,9 @@
   <data name="Text_5965971091a0aa30ada96adc" xml:space="preserve">
     <value>{0} archivos sin seguimiento</value>
   </data>
+  <data name="Text_0fe10860c13b461a63bcbf69" xml:space="preserve">
+    <value>Hay una nueva versión de FoldGit</value>
+  </data>
   <data name="Text_ae7e5f3ca30f0be2b253f58a" xml:space="preserve">
     <value>Un cliente Git nativo para macOS.</value>
   </data>
@@ -182,6 +185,12 @@
   </data>
   <data name="Text_da9fc80016b0ff1af0d679e5" xml:space="preserve">
     <value>Los cambios se han fusionado localmente. Abre el worktree de destino para revisar, probar y enviar.</value>
+  </data>
+  <data name="Text_9ed79ee9b2129b5dc855c5dc" xml:space="preserve">
+    <value>Buscar actualizaciones</value>
+  </data>
+  <data name="Text_2431f04103810e7ba0dc9657" xml:space="preserve">
+    <value>Buscar actualizaciones al abrir</value>
   </data>
   <data name="Text_57e4d74626635008f6a0ced2" xml:space="preserve">
     <value>Marca los fragmentos frecuentes para mostrarlos debajo del editor de mensajes de commit.</value>
@@ -411,6 +420,9 @@
   <data name="Text_11a6767d5674c7e45f7e00dc" xml:space="preserve">
     <value>Listo</value>
   </data>
+  <data name="Text_d6eafe82359100423c93c5ce" xml:space="preserve">
+    <value>Descargar</value>
+  </data>
   <data name="Text_c8af9ae37a48273f981bc82a" xml:space="preserve">
     <value>Eliminar stash</value>
   </data>
@@ -524,6 +536,12 @@
   </data>
   <data name="Text_9d43ab6a344241408767a916" xml:space="preserve">
     <value>Corregir advertencias del linter</value>
+  </data>
+  <data name="Text_bc638c6f0012832c0fd365ac" xml:space="preserve">
+    <value>FoldGit {0} está disponible. Estás usando la versión {1}.</value>
+  </data>
+  <data name="Text_2ea2e95e98eeeff6636ba799" xml:space="preserve">
+    <value>FoldGit está actualizado</value>
   </data>
   <data name="Text_67a5454cfa4113b2e0387a12" xml:space="preserve">
     <value>Nombre de la carpeta</value>
@@ -1257,6 +1275,9 @@
   <data name="Text_ec45bbdcf18b7ed139160270" xml:space="preserve">
     <value>Pequeños ajustes</value>
   </data>
+  <data name="Text_feba9d1b63f852d749daa0d4" xml:space="preserve">
+    <value>No se pueden buscar actualizaciones</value>
+  </data>
   <data name="Text_0d0b4290628654ca57e79767" xml:space="preserve">
     <value>Cambios sin confirmar</value>
   </data>
@@ -1340,6 +1361,9 @@
   </data>
   <data name="Text_2bbd34b89e44145f8a225a19" xml:space="preserve">
     <value>Ajustar líneas largas</value>
+  </data>
+  <data name="Text_a96faa4ba71adb2c184a3a38" xml:space="preserve">
+    <value>Estás usando la versión más reciente, {0}.</value>
   </data>
   <data name="Text_658506bb99d62c552f611cd9" xml:space="preserve">
     <value>Se ha guardado el idioma elegido. Reinicia FoldGit para actualizar la interfaz y los menús.</value>

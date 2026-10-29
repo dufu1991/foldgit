@@ -27,6 +27,9 @@
   <data name="Text_5965971091a0aa30ada96adc" xml:space="preserve">
     <value>{0} 個未追蹤檔案</value>
   </data>
+  <data name="Text_0fe10860c13b461a63bcbf69" xml:space="preserve">
+    <value>FoldGit 有新版本</value>
+  </data>
   <data name="Text_ae7e5f3ca30f0be2b253f58a" xml:space="preserve">
     <value>macOS 原生 Git 用戶端。</value>
   </data>
@@ -164,6 +167,12 @@
   </data>
   <data name="Text_da9fc80016b0ff1af0d679e5" xml:space="preserve">
     <value>變更已在本機合併。可以打開目標工作樹檢查、測試並推送。</value>
+  </data>
+  <data name="Text_9ed79ee9b2129b5dc855c5dc" xml:space="preserve">
+    <value>檢查更新</value>
+  </data>
+  <data name="Text_2431f04103810e7ba0dc9657" xml:space="preserve">
+    <value>啟動時檢查更新</value>
   </data>
   <data name="Text_57e4d74626635008f6a0ced2" xml:space="preserve">
     <value>勾選常用的快捷輸入，將其顯示在提交訊息編輯框下方。</value>
@@ -393,6 +402,9 @@
   <data name="Text_11a6767d5674c7e45f7e00dc" xml:space="preserve">
     <value>完成</value>
   </data>
+  <data name="Text_d6eafe82359100423c93c5ce" xml:space="preserve">
+    <value>下載</value>
+  </data>
   <data name="Text_c8af9ae37a48273f981bc82a" xml:space="preserve">
     <value>刪除儲藏</value>
   </data>
@@ -506,6 +518,12 @@
   </data>
   <data name="Text_9d43ab6a344241408767a916" xml:space="preserve">
     <value>修正程式碼檢查警告</value>
+  </data>
+  <data name="Text_bc638c6f0012832c0fd365ac" xml:space="preserve">
+    <value>FoldGit {0} 已發佈，目前版本為 {1}。</value>
+  </data>
+  <data name="Text_2ea2e95e98eeeff6636ba799" xml:space="preserve">
+    <value>FoldGit 已是最新版本</value>
   </data>
   <data name="Text_67a5454cfa4113b2e0387a12" xml:space="preserve">
     <value>資料夾名稱</value>
@@ -1239,6 +1257,9 @@
   <data name="Text_ec45bbdcf18b7ed139160270" xml:space="preserve">
     <value>細節調整</value>
   </data>
+  <data name="Text_feba9d1b63f852d749daa0d4" xml:space="preserve">
+    <value>無法檢查更新</value>
+  </data>
   <data name="Text_0d0b4290628654ca57e79767" xml:space="preserve">
     <value>未提交的變更</value>
   </data>
@@ -1322,6 +1343,9 @@
   </data>
   <data name="Text_2bbd34b89e44145f8a225a19" xml:space="preserve">
     <value>長行自動換行</value>
+  </data>
+  <data name="Text_a96faa4ba71adb2c184a3a38" xml:space="preserve">
+    <value>目前使用的是最新版本 {0}。</value>
   </data>
   <data name="Text_658506bb99d62c552f611cd9" xml:space="preserve">
     <value>語言選擇已儲存。重新啟動 FoldGit 後，介面與選單將使用所選語言。</value>

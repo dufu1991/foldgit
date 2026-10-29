@@ -72,6 +72,9 @@
   <data name="Text_5965971091a0aa30ada96adc" xml:space="preserve">
     <value>{0} неотслеживаемого файла</value>
   </data>
+  <data name="Text_0fe10860c13b461a63bcbf69" xml:space="preserve">
+    <value>Доступна новая версия FoldGit</value>
+  </data>
   <data name="Text_ae7e5f3ca30f0be2b253f58a" xml:space="preserve">
     <value>Нативный клиент Git для macOS.</value>
   </data>
@@ -218,6 +221,12 @@
   </data>
   <data name="Text_da9fc80016b0ff1af0d679e5" xml:space="preserve">
     <value>Изменения объединены локально. Откройте целевой worktree для проверки, тестирования и отправки.</value>
+  </data>
+  <data name="Text_9ed79ee9b2129b5dc855c5dc" xml:space="preserve">
+    <value>Проверить обновления</value>
+  </data>
+  <data name="Text_2431f04103810e7ba0dc9657" xml:space="preserve">
+    <value>Проверять обновления при запуске</value>
   </data>
   <data name="Text_57e4d74626635008f6a0ced2" xml:space="preserve">
     <value>Отметьте часто используемые фрагменты, чтобы показывать их под редактором сообщения коммита.</value>
@@ -447,6 +456,9 @@
   <data name="Text_11a6767d5674c7e45f7e00dc" xml:space="preserve">
     <value>Готово</value>
   </data>
+  <data name="Text_d6eafe82359100423c93c5ce" xml:space="preserve">
+    <value>Скачать</value>
+  </data>
   <data name="Text_c8af9ae37a48273f981bc82a" xml:space="preserve">
     <value>Удалить из stash</value>
   </data>
@@ -560,6 +572,12 @@
   </data>
   <data name="Text_9d43ab6a344241408767a916" xml:space="preserve">
     <value>Исправить предупреждения линтера</value>
+  </data>
+  <data name="Text_bc638c6f0012832c0fd365ac" xml:space="preserve">
+    <value>Доступна версия FoldGit {0}. Установлена версия {1}.</value>
+  </data>
+  <data name="Text_2ea2e95e98eeeff6636ba799" xml:space="preserve">
+    <value>У вас последняя версия FoldGit</value>
   </data>
   <data name="Text_67a5454cfa4113b2e0387a12" xml:space="preserve">
     <value>Имя папки</value>
@@ -1293,6 +1311,9 @@
   <data name="Text_ec45bbdcf18b7ed139160270" xml:space="preserve">
     <value>Небольшие доработки</value>
   </data>
+  <data name="Text_feba9d1b63f852d749daa0d4" xml:space="preserve">
+    <value>Не удалось проверить обновления</value>
+  </data>
   <data name="Text_0d0b4290628654ca57e79767" xml:space="preserve">
     <value>Незакоммиченные изменения</value>
   </data>
@@ -1376,6 +1397,9 @@
   </data>
   <data name="Text_2bbd34b89e44145f8a225a19" xml:space="preserve">
     <value>Переносить длинные строки</value>
+  </data>
+  <data name="Text_a96faa4ba71adb2c184a3a38" xml:space="preserve">
+    <value>Используется последняя версия, {0}.</value>
   </data>
   <data name="Text_658506bb99d62c552f611cd9" xml:space="preserve">
     <value>Выбранный язык сохранён. Перезапустите FoldGit, чтобы изменить язык интерфейса и меню.</value>

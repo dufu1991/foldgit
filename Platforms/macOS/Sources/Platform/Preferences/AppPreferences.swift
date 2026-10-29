@@ -138,6 +138,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             object: nil
         )
         NSApp.windows.compactMap(\.toolbar).forEach(Self.configureToolbarSeparators)
+        UpdateChecker.shared.checkAtLaunch()
         Task { @MainActor in
             await Task.yield()
             Self.maximizeStartupWindows()

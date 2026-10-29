@@ -27,6 +27,9 @@
   <data name="Text_5965971091a0aa30ada96adc" xml:space="preserve">
     <value>未追跡ファイル {0} 件</value>
   </data>
+  <data name="Text_0fe10860c13b461a63bcbf69" xml:space="preserve">
+    <value>FoldGit の新しいバージョンがあります</value>
+  </data>
   <data name="Text_ae7e5f3ca30f0be2b253f58a" xml:space="preserve">
     <value>macOS 用のネイティブ Git クライアント。</value>
   </data>
@@ -164,6 +167,12 @@
   </data>
   <data name="Text_da9fc80016b0ff1af0d679e5" xml:space="preserve">
     <value>変更をローカルでマージしました。対象ワークツリーを開いて確認、テスト、プッシュを行えます。</value>
+  </data>
+  <data name="Text_9ed79ee9b2129b5dc855c5dc" xml:space="preserve">
+    <value>アップデートを確認</value>
+  </data>
+  <data name="Text_2431f04103810e7ba0dc9657" xml:space="preserve">
+    <value>起動時にアップデートを確認</value>
   </data>
   <data name="Text_57e4d74626635008f6a0ced2" xml:space="preserve">
     <value>よく使うスニペットを選択すると、コミットメッセージエディタの下に表示されます。</value>
@@ -393,6 +402,9 @@
   <data name="Text_11a6767d5674c7e45f7e00dc" xml:space="preserve">
     <value>完了</value>
   </data>
+  <data name="Text_d6eafe82359100423c93c5ce" xml:space="preserve">
+    <value>ダウンロード</value>
+  </data>
   <data name="Text_c8af9ae37a48273f981bc82a" xml:space="preserve">
     <value>スタッシュを削除</value>
   </data>
@@ -506,6 +518,12 @@
   </data>
   <data name="Text_9d43ab6a344241408767a916" xml:space="preserve">
     <value>コード検査の警告を修正</value>
+  </data>
+  <data name="Text_bc638c6f0012832c0fd365ac" xml:space="preserve">
+    <value>FoldGit {0} が利用可能です。現在のバージョンは {1} です。</value>
+  </data>
+  <data name="Text_2ea2e95e98eeeff6636ba799" xml:space="preserve">
+    <value>FoldGit は最新です</value>
   </data>
   <data name="Text_67a5454cfa4113b2e0387a12" xml:space="preserve">
     <value>フォルダ名</value>
@@ -1239,6 +1257,9 @@
   <data name="Text_ec45bbdcf18b7ed139160270" xml:space="preserve">
     <value>細かな調整</value>
   </data>
+  <data name="Text_feba9d1b63f852d749daa0d4" xml:space="preserve">
+    <value>アップデートを確認できません</value>
+  </data>
   <data name="Text_0d0b4290628654ca57e79767" xml:space="preserve">
     <value>未コミットの変更</value>
   </data>
@@ -1322,6 +1343,9 @@
   </data>
   <data name="Text_2bbd34b89e44145f8a225a19" xml:space="preserve">
     <value>長い行を折り返す</value>
+  </data>
+  <data name="Text_a96faa4ba71adb2c184a3a38" xml:space="preserve">
+    <value>最新バージョン {0} を使用しています。</value>
   </data>
   <data name="Text_658506bb99d62c552f611cd9" xml:space="preserve">
     <value>言語の選択を保存しました。FoldGit を再起動すると、インターフェースとメニューに選択した言語が適用されます。</value>

@@ -105,6 +105,7 @@
 		AB572CD2691D117718ACC536 /* CommitDetailBottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473FE9B4B44ADCF733619C53 /* CommitDetailBottomBar.swift */; };
 		ADF5F0A0B0ED54CECD675CDD /* ErrorTextSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8A31AA794BA60698159577 /* ErrorTextSheet.swift */; };
 		AE6B1DECC43EF39EAC8BC2F9 /* CommitCreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD60D56F87A6236FCBED9C1 /* CommitCreateView.swift */; };
+		AF29B3F5564819065391072A /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7396794AB166C2B2A067C9E2 /* UpdateChecker.swift */; };
 		B0A909A8B2C9CC7533FAC34B /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 90C62C7AC32EE03DEBA1007C /* AppIcon.icon */; };
 		B286EAEC8499F48EDC9D2E75 /* FileChangePresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8581DC81D7536F2B6AEA298 /* FileChangePresentationTests.swift */; };
 		B31F66FA002FF621729C9723 /* AppPreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941DAE8BD9B70AB0E1251B0E /* AppPreferencesTests.swift */; };
@@ -116,6 +117,7 @@
 		B994F15D0409C02B99A7614F /* FileDiffHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01119C4093E5A463F5FEBA8F /* FileDiffHeaderView.swift */; };
 		BC7C21DBCD979CBD86ACF5E5 /* ProjectAutoFetchMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2175F10CFF3C429B9C83392 /* ProjectAutoFetchMenu.swift */; };
 		BE60229EAE36FA1B6686E281 /* CommitGraphTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BD3997AF08FEF69ADB7113 /* CommitGraphTests.swift */; };
+		C0DB8989140698D302B2273F /* AppVersionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258DB4228558578C64DD3F94 /* AppVersionTests.swift */; };
 		C11A8305C1CB539D08FFAFD4 /* AutoFetchInterval+Presentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE66FCC71B2C378ED99EF908 /* AutoFetchInterval+Presentation.swift */; };
 		C28F277E5D6E830E8B3E2883 /* CommitMessageSnippetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927C054ED732FEC054AF47C6 /* CommitMessageSnippetView.swift */; };
 		C5912668B4DD58F4992C35BD /* MergeCommitContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B3DF44B9783DDE36D5616F1 /* MergeCommitContentView.swift */; };
@@ -182,6 +184,7 @@
 		21710012778DDF7F0CD8923B /* Status+Presentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Status+Presentation.swift"; sourceTree = "<group>"; };
 		2226C7248E2ED10A6DEB4629 /* CreateNewBranchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewBranchSheet.swift; sourceTree = "<group>"; };
 		2240D6CF87FC1184FAF49C56 /* CommitDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitDetailView.swift; sourceTree = "<group>"; };
+		258DB4228558578C64DD3F94 /* AppVersionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersionTests.swift; sourceTree = "<group>"; };
 		260F55F63BD0DDDC6E02A4D4 /* SyntaxHighlighterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxHighlighterTests.swift; sourceTree = "<group>"; };
 		26485A72355BD2E51194EDBA /* StashChangedContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashChangedContentView.swift; sourceTree = "<group>"; };
 		27CF4DCFC7D57B953A079BB1 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.stringsdict"; sourceTree = "<group>"; };
@@ -231,6 +234,7 @@
 		6E78CCC62737C9EDFBD0B0D9 /* ProjectAutoFetchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectAutoFetchTests.swift; sourceTree = "<group>"; };
 		71F0A77F16CD0DA490EF4A80 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		72E942305BA5C07F75A9555A /* MacRepositoryDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacRepositoryDiscovery.swift; sourceTree = "<group>"; };
+		7396794AB166C2B2A067C9E2 /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
 		7539A5EDE82EEC3761E3F2D4 /* StageFileDiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageFileDiffView.swift; sourceTree = "<group>"; };
 		7545AA5BB2C8FA0660870FA7 /* DiffLayoutPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffLayoutPicker.swift; sourceTree = "<group>"; };
 		77BB1F4086626D1CCD8F4492 /* WorktreeStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorktreeStoreTests.swift; sourceTree = "<group>"; };
@@ -401,6 +405,7 @@
 			isa = PBXGroup;
 			children = (
 				941DAE8BD9B70AB0E1251B0E /* AppPreferencesTests.swift */,
+				258DB4228558578C64DD3F94 /* AppVersionTests.swift */,
 				FA4B46CF31ECF72B92745FE0 /* ChangeFileTreeTests.swift */,
 				43BD3997AF08FEF69ADB7113 /* CommitGraphTests.swift */,
 				A8581DC81D7536F2B6AEA298 /* FileChangePresentationTests.swift */,
@@ -438,6 +443,7 @@
 				769729818749BA77ECC9DE69 /* FileSystem */,
 				00D8CF942A22EFBA6969AD01 /* Notifications */,
 				E55E1F542A561A23F7C25156 /* Preferences */,
+				A0A0275882DC2B7F89F3EBFB /* Updates */,
 			);
 			path = Platform;
 			sourceTree = "<group>";
@@ -529,6 +535,14 @@
 				F0C0A995F81DAF74514D5ED6 /* Rendering */,
 			);
 			path = Diff;
+			sourceTree = "<group>";
+		};
+		A0A0275882DC2B7F89F3EBFB /* Updates */ = {
+			isa = PBXGroup;
+			children = (
+				7396794AB166C2B2A067C9E2 /* UpdateChecker.swift */,
+			);
+			path = Updates;
 			sourceTree = "<group>";
 		};
 		A37A8F7DBD1064695A8F747C /* Packages */ = {
@@ -989,6 +1003,7 @@
 				A4EFD86D5E73A0E0E5B04D0F /* TagsContentView.swift in Sources */,
 				34C14F1A1F2590FCD0A6C6AC /* TagsView.swift in Sources */,
 				0C5F368211AB87D107E46E87 /* UnstagedView.swift in Sources */,
+				AF29B3F5564819065391072A /* UpdateChecker.swift in Sources */,
 				223A05C4DCB0CA3C4E1FA782 /* View+Modifiers.swift in Sources */,
 				D6169080E501AC788D4EAC6E /* WindowID.swift in Sources */,
 				8E4A8ABB102C6712427FAFAA /* WorkspaceEntry+Presentation.swift in Sources */,
@@ -1005,6 +1020,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B31F66FA002FF621729C9723 /* AppPreferencesTests.swift in Sources */,
+				C0DB8989140698D302B2273F /* AppVersionTests.swift in Sources */,
 				934ECECA2FEA2371F0CF2240 /* BranchTests.swift in Sources */,
 				6DB2AA6262F3DB3E8E2BDF3B /* ChangeFileTreeTests.swift in Sources */,
 				BE60229EAE36FA1B6686E281 /* CommitGraphTests.swift in Sources */,

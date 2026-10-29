@@ -9,6 +9,7 @@ struct CommitCreateView: View {
     @Environment(\.collapseAllFiles) private var collapseAllFilesID: UUID?
     @Environment(\.openSettings) var openSettings: OpenSettingsAction
     @Environment(\.appearsActive) private var appearsActive
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var folder: WorkspaceEntry
     @State private var cachedDiffShortStat = ""
@@ -62,6 +63,7 @@ struct CommitCreateView: View {
     @State private var isUnstagedExpanded = true
     @State private var isUntrackedExpanded = false
     @State private var expandedUntrackedImages: Set<String> = []
+    @State private var stageFlights = StageFlightCoordinator()
     @Binding var isRefresh: Bool
     var onCommit: () -> Void
     var onStash: () -> Void
@@ -87,6 +89,9 @@ struct CommitCreateView: View {
                     .scrollEdgeEffectStyle(.hard, for: .vertical)
                     .frame(maxHeight: .infinity)
                     .accessibilityIdentifier("unstagedChangesPane")
+                    .onGeometryChange(for: CGRect.self) { $0.frame(in: .named(StageFlightCoordinator.coordinateSpace)) } action: {
+                        stageFlights.paneFrames[.unstaged] = $0
+                    }
 
                     PaneResizeHandle(height: $stagedPaneHeight, current: stagedHeight, defaultHeight: 180,
                                      isEnabled: !cachedExpandableFileDiffs.isEmpty)
@@ -94,6 +99,18 @@ struct CommitCreateView: View {
                         .frame(height: stagedHeight, alignment: .top)
                         .clipped()
                         .accessibilityIdentifier("stagedChangesPane")
+                        .onGeometryChange(for: CGRect.self) { $0.frame(in: .named(StageFlightCoordinator.coordinateSpace)) } action: {
+                            stageFlights.paneFrames[.staged] = $0
+                        }
+                }
+            }
+            .coordinateSpace(.named(StageFlightCoordinator.coordinateSpace))
+            .overlay {
+                ZStack {
+                    ForEach(stageFlights.flights) { flight in
+                        StageFlightGhost(flight: flight)
+                            .transition(.opacity)
+                    }
                 }
             }
 
@@ -144,6 +161,14 @@ struct CommitCreateView: View {
                 }
             }
         })
+        .onChange(of: isStagingChanges) { _, isStaging in
+            // Refreshed rows replace the ones that left; a failed update brings them back undimmed.
+            if !isStaging { stageFlights.indexDidUpdate() }
+        }
+        .onChange(of: reduceMotion, initial: true) { _, reduceMotion in
+            stageFlights.reduceMotion = reduceMotion
+        }
+        .environment(\.stageFlights, stageFlights)
         .onChange(of: appearsActive, { oldValue, newValue in
             if newValue {
                 Task {
@@ -198,6 +223,7 @@ struct CommitCreateView: View {
                 onSelectDirectory: isStagingChanges ? nil : { stageDirectory($0, staging: true) }
             )
             .padding(.top)
+            .environment(\.stageFlightPane, .unstaged)
         } else if updateChangesError == nil {
             ProgressView()
                 .controlSize(.small)
@@ -228,6 +254,7 @@ struct CommitCreateView: View {
                 isExpanded: $isStagedExpanded,
                 onSelectDirectory: isStagingChanges ? nil : { stageDirectory($0, staging: false) }
             )
+            .environment(\.stageFlightPane, .staged)
         }
     }
 

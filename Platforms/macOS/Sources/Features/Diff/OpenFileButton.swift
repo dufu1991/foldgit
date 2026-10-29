@@ -23,9 +23,10 @@ struct OpenFileButton: View {
             Image(systemName: "arrow.up.right")
                 .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(.secondary)
-                .frame(width: 16, height: 16)
+                .frame(width: 22, height: 22)
+                .contentShape(Rectangle())
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.plain)
         .controlSize(.small)
         .help("Open \(fileURL?.absoluteString ?? "")")
         .disabled(fileURL == nil)

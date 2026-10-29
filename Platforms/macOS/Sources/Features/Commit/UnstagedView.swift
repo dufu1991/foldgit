@@ -101,14 +101,22 @@ struct UnstagedView: View {
     }
 
     private func untrackedFileRow(_ file: String, treeDepth: Int?, imageExpansion: Binding<Bool>? = nil) -> some View {
+        UntrackedFileRow(path: file, onSelect: onSelectUntrackedFile) { stage in
+            untrackedFileRowContent(file, treeDepth: treeDepth, imageExpansion: imageExpansion, stage: stage)
+        }
+    }
+
+    private func untrackedFileRowContent(_ file: String, treeDepth: Int?, imageExpansion: Binding<Bool>?,
+                                         stage: @escaping () -> Void) -> some View {
         HStack {
             Button {
-                onSelectUntrackedFile?(file)
+                stage()
             } label: {
                 Image(systemName: "plus")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(.secondary)
                     .frame(width: 22, height: 22)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .controlSize(.small)
@@ -146,6 +154,24 @@ struct UnstagedView: View {
             .help(file)
     }
 
+}
+
+/// Keeps the untracked row's frame so staging it can launch a flight from where it sits.
+private struct UntrackedFileRow<Content: View>: View {
+    @Environment(\.stageFlights) private var stageFlights
+    @State private var frame = StageFlightFrame()
+    var path: String
+    var onSelect: ((String) -> Void)?
+    @ViewBuilder var content: (_ stage: @escaping () -> Void) -> Content
+
+    var body: some View {
+        content {
+            guard let onSelect else { return }
+            stageFlights?.launch(StageFlightItem(path: path, title: path, change: nil), from: frame.rect, leaving: .unstaged)
+            onSelect(path)
+        }
+        .stageFlightRow(path: path, frame: frame)
+    }
 }
 
 #Preview {

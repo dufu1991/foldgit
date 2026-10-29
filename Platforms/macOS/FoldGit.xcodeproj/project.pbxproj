@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00BB4FB108DCB5C2BAB360A9 /* StageFlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5118CAD4E6118A55F8AA68E /* StageFlight.swift */; };
 		025DF68382A44FA83DF1B43F /* MergeResolutionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDB8943D8272E71C7DDA8B2F /* MergeResolutionView.swift */; };
 		02894B1FF102891719AC17FE /* DiffCommitListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6BDD89B30158A8724D6DAD /* DiffCommitListView.swift */; };
 		046C10363427A1B9298D9B95 /* SideBySideChunkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB881C9018CB257E288F100F /* SideBySideChunkView.swift */; };
@@ -261,6 +262,7 @@
 		A24960101C66846B0FE010F3 /* CommitDetailHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitDetailHeaderView.swift; sourceTree = "<group>"; };
 		A326434D816F9691E8604A8E /* BranchesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchesView.swift; sourceTree = "<group>"; };
 		A33F5BB567308DE852A49E7B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		A5118CAD4E6118A55F8AA68E /* StageFlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageFlight.swift; sourceTree = "<group>"; };
 		A8581DC81D7536F2B6AEA298 /* FileChangePresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileChangePresentationTests.swift; sourceTree = "<group>"; };
 		A9A1DCDDFF5D5CB6EB6DA8D7 /* RepositoryOperationTestsMacPathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryOperationTestsMacPathTests.swift; sourceTree = "<group>"; };
 		AA25F3EBA51AA0199AAB0E07 /* WorktreeCompletionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorktreeCompletionModel.swift; sourceTree = "<group>"; };
@@ -362,6 +364,7 @@
 				2B3DF44B9783DDE36D5616F1 /* MergeCommitContentView.swift */,
 				FDB8943D8272E71C7DDA8B2F /* MergeResolutionView.swift */,
 				673C5AF17F780FCD726A2E83 /* StagedView.swift */,
+				A5118CAD4E6118A55F8AA68E /* StageFlight.swift */,
 				FC32E2C145777A906857B571 /* UnstagedView.swift */,
 			);
 			path = Commit;
@@ -975,6 +978,7 @@
 				9AF7B28C1254B0EFB0FA0A84 /* SidebarOrganization.swift in Sources */,
 				0B320A2678BC8E25A9A9957B /* StageFileDiffView.swift in Sources */,
 				5DCF8482A2B3922047631B41 /* StageFileDiffsView.swift in Sources */,
+				00BB4FB108DCB5C2BAB360A9 /* StageFlight.swift in Sources */,
 				3DA09229E1C9553BFF6C7189 /* StagedView.swift in Sources */,
 				6419874E4B6423D205E7935F /* StashChangedContentView.swift in Sources */,
 				A544DD92906AE32A4E5EF961 /* StashChangedDetailContentView.swift in Sources */,

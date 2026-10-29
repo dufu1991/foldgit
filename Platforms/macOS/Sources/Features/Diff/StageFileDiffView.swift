@@ -34,6 +34,7 @@ struct StageFileDiffView: View {
                                         .font(.system(size: 11, weight: .medium))
                                         .foregroundStyle(.secondary)
                                         .frame(width: 22, height: 22)
+                                        .contentShape(Rectangle())
                                 }
                                 .buttonStyle(.plain)
                                 .controlSize(.small)
@@ -56,6 +57,7 @@ struct StageFileDiffView: View {
                                     .font(.system(size: 11, weight: .medium))
                                     .foregroundStyle(.secondary)
                                     .frame(width: 22, height: 22)
+                                    .contentShape(Rectangle())
                             }
                             .buttonStyle(.plain)
                             .controlSize(.small)
@@ -79,10 +81,9 @@ struct StageFileDiffView: View {
                 fileDiff: fileDiff,
                 leadingActionImageSystemName: selectButtonImageSystemName,
                 leadingActionHelp: selectFileButtonHelp,
-                treeDepth: treeDepth
-            ) {
-                onSelectFileDiff?(fileDiff)
-            }
+                treeDepth: treeDepth,
+                onLeadingAction: onSelectFileDiff.map { action in { action(fileDiff) } }
+            )
         } footer: {
             if expandableFileDiff.isExpanded { FileDiffDivider() }
         }

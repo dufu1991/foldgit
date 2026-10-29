@@ -31,6 +31,7 @@ struct ChangeFileTreeRows<FileContent: View>: View {
                         .font(.system(size: 11, weight: .medium))
                         .foregroundStyle(.secondary)
                         .frame(width: 22, height: 22)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .controlSize(.small)
@@ -74,6 +75,7 @@ struct ChangeFileTreeRows<FileContent: View>: View {
             .accessibilityIdentifier("changeDirectory-" + row.path)
         }
         .padding(.leading, CGFloat(row.depth) * 16 + 3)
+        .stageFlightRow(path: row.path)
     }
 }
 

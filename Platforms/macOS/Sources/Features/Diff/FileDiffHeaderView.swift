@@ -2,6 +2,9 @@ import FoldGitCore
 import SwiftUI
 
 struct FileDiffHeaderView: View {
+    @Environment(\.stageFlights) private var stageFlights
+    @Environment(\.stageFlightPane) private var stageFlightPane
+    @State private var frame = StageFlightFrame()
     @Binding var isExpanded: Bool
     var fileDiff: FileDiff
     var leadingActionImageSystemName: String?
@@ -26,6 +29,7 @@ struct FileDiffHeaderView: View {
                     .padding(.trailing, 2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Color(NSColor.textBackgroundColor).opacity(0.9), in: RoundedRectangle(cornerRadius: 8))
+                    .stageFlightRow(path: fileDiff.changeTreePath, frame: frame)
             } else {
                 headerContent
                     .padding(.leading, CGFloat(treeDepth ?? 0) * 16 + 3)
@@ -40,12 +44,21 @@ struct FileDiffHeaderView: View {
         HStack(spacing: 4) {
             if let leadingActionImageSystemName {
                 Button {
-                    onLeadingAction?()
+                    if let onLeadingAction {
+                        if let stageFlightPane {
+                            stageFlights?.launch(StageFlightItem(path: fileDiff.changeTreePath,
+                                                                 title: fileDiff.filePathDisplay,
+                                                                 change: fileDiff.change),
+                                                 from: frame.rect, leaving: stageFlightPane)
+                        }
+                        onLeadingAction()
+                    }
                 } label: {
                     Image(systemName: leadingActionImageSystemName)
                         .font(.system(size: 11, weight: .medium))
                         .foregroundStyle(.secondary)
                         .frame(width: 22, height: 22)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .controlSize(.small)

@@ -32,9 +32,11 @@ python3 Scripts/changelog.py --check
 
 ## Homebrew
 
-发版 CI 会在 GitHub Release 发布成功后，自动调用 [Publish Homebrew cask 工作流](../.github/workflows/homebrew.yml)。它会下载已发布的 macOS DMG，核对 GitHub 提供的文件大小与 SHA-256 摘要，再将更新后的 `Casks/foldgit.rb` 直接提交到 [tap 仓库](https://github.com/dufu1991/homebrew-tap)。Homebrew 发布失败会让发版 CI 失败；重新构建同一版本时，也会刷新校验值。
+GitHub Release 发布成功后，[tap 仓库](https://github.com/dufu1991/homebrew-tap)的 [Sync FoldGit 工作流](https://github.com/dufu1991/homebrew-tap/actions/workflows/foldgit.yml)会自动同步 Homebrew。该任务每 15 分钟检查最新稳定 Release，下载 macOS DMG，核对 GitHub 提供的文件大小与 SHA-256 摘要，再提交更新后的 `Casks/foldgit.rb`。同一版本重新构建后，也会刷新校验值；版本和校验值未变时不会创建提交。
 
-自动发布依赖 FoldGit 仓库的 Actions 密钥 `HOMEBREW_TAP_TOKEN`（**Settings → Secrets and variables → Actions**）。使用仅授权 `dufu1991/homebrew-tap` 且具有 **Contents 读写权限**的细粒度令牌，缺失时 CI 会明确报错。失败后可手动运行 **Publish Homebrew cask** 重试，无需重新打包应用。tap 每小时运行的 **Sync FoldGit** 仍保留为补偿机制，使用 tap 自身的 `GITHUB_TOKEN`。
+同步任务在 tap 仓库内使用 GitHub 自动提供的 `GITHUB_TOKEN`，仅需该仓库的 Contents 读写权限，无须在 FoldGit 配置个人令牌或跨仓库 Secret。应用发版与 Homebrew 同步各自记录运行结果，发布摘要提供同步任务入口。
+
+同步由定时任务触发，并非即时更新；GitHub 调度繁忙时可能延迟。需要立即同步或重试时，在 tap 仓库的 **Actions → Sync FoldGit → Run workflow** 手动运行，无需重新打包应用或增加版本号。
 
 ## 签名 Secrets
 

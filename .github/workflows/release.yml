@@ -267,10 +267,11 @@ jobs:
           fail_on_unmatched_files: true
           overwrite_files: true
 
-  homebrew:
-    name: Publish Homebrew cask
-    needs: publish
-    if: always() && needs.publish.result == 'success'
-    uses: ./.github/workflows/homebrew.yml
-    secrets:
-      HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+      - name: Summarize Homebrew synchronization
+        run: |
+          {
+            echo '### Homebrew'
+            echo 'The tap checks the latest stable release every 15 minutes and verifies the macOS package before updating the Cask. GitHub scheduling may delay a run.'
+            echo 'No personal access token is required in FoldGit.'
+            echo '[View or manually run Sync FoldGit](https://github.com/dufu1991/homebrew-tap/actions/workflows/foldgit.yml)'
+          } >> "$GITHUB_STEP_SUMMARY"

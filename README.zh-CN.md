@@ -180,7 +180,7 @@ Scripts/package-macos.sh
 
 ### 发布
 
-用 `python3 Scripts/version.py set <版本号>` 设置版本并推送到 `main`，[发布工作流](.github/workflows/release.yml)会发布 macOS DMG 与 Windows EXE 安装包。Homebrew tap 每小时自动检查新版本，使用自身的 `GITHUB_TOKEN` 更新 Cask，无须配置个人令牌；GitHub 调度繁忙时可能延迟。版本号、Homebrew 同步和可选签名 Secrets 见[发布流程](docs/RELEASING.md)。
+用 `python3 Scripts/version.py set <版本号>` 设置版本并推送到 `main`，[发布工作流](.github/workflows/release.yml)会发布 macOS DMG 与 Windows EXE 安装包。Homebrew tap 每 6 小时自动检查新版本，使用自身的 `GITHUB_TOKEN` 更新 Cask，无须配置个人令牌；GitHub 调度繁忙时可能延迟。版本号、Homebrew 同步和可选签名 Secrets 见[发布流程](docs/RELEASING.md)。
 
 ### 网站
 

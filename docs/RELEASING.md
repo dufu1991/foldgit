@@ -32,7 +32,7 @@ python3 Scripts/changelog.py --check
 
 ## Homebrew
 
-GitHub Release 发布成功后，[tap 仓库](https://github.com/dufu1991/homebrew-tap)的 [Sync FoldGit 工作流](https://github.com/dufu1991/homebrew-tap/actions/workflows/foldgit.yml)会自动同步 Homebrew。该任务每小时检查最新稳定 Release，下载 macOS DMG，核对 GitHub 提供的文件大小与 SHA-256 摘要，再提交更新后的 `Casks/foldgit.rb`。同一版本重新构建后，也会刷新校验值；版本和校验值未变时不会创建提交。
+GitHub Release 发布成功后，[tap 仓库](https://github.com/dufu1991/homebrew-tap)的 [Sync FoldGit 工作流](https://github.com/dufu1991/homebrew-tap/actions/workflows/foldgit.yml)会自动同步 Homebrew。该任务每 6 小时检查最新稳定 Release，下载 macOS DMG，核对 GitHub 提供的文件大小与 SHA-256 摘要，再提交更新后的 `Casks/foldgit.rb`。同一版本重新构建后，也会刷新校验值；版本和校验值未变时不会创建提交。
 
 同步任务在 tap 仓库内使用 GitHub 自动提供的 `GITHUB_TOKEN`，仅需该仓库的 Contents 读写权限，无须在 FoldGit 配置个人令牌或跨仓库 Secret。应用发版与 Homebrew 同步各自记录运行结果，发布摘要提供同步任务入口。
 

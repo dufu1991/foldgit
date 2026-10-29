@@ -271,7 +271,7 @@ jobs:
         run: |
           {
             echo '### Homebrew'
-            echo 'The tap checks the latest stable release every hour and verifies the macOS package before updating the Cask. GitHub scheduling may delay a run.'
+            echo 'The tap checks the latest stable release every 6 hours and verifies the macOS package before updating the Cask. GitHub scheduling may delay a run.'
             echo 'No personal access token is required in FoldGit.'
             echo '[View or manually run Sync FoldGit](https://github.com/dufu1991/homebrew-tap/actions/workflows/foldgit.yml)'
           } >> "$GITHUB_STEP_SUMMARY"

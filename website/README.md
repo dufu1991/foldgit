@@ -52,7 +52,7 @@ python3 Scripts/changelog.py --release 0.2.0  # 输出指定版本的双语 Rele
 
 首屏提供 `brew install --cask dufu1991/tap/foldgit` 命令，并链接到使用手册的安装部分。中英文文案分别维护在 `index.html` 和 `i18n.js`，手册同时说明更新命令与首次打开步骤。
 
-安装包仍由 FoldGit 的 GitHub Releases 分发，`dufu1991/homebrew-tap` 每小时自动检查最新稳定版，校验安装包后同步版本号与 SHA-256 校验值。同步使用 tap 自身的 `GITHUB_TOKEN`，无须配置个人令牌；GitHub 调度繁忙时可能延迟。发布流程与手动重试入口见项目根目录的中英文 README。
+安装包仍由 FoldGit 的 GitHub Releases 分发，`dufu1991/homebrew-tap` 每 6 小时自动检查最新稳定版，校验安装包后同步版本号与 SHA-256 校验值。同步使用 tap 自身的 `GITHUB_TOKEN`，无须配置个人令牌；GitHub 调度繁忙时可能延迟。发布流程与手动重试入口见项目根目录的中英文 README。
 
 ## 赞助信息
 

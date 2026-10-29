@@ -56,5 +56,11 @@ for (const language of ["zh", "en"]) {
   }
 }
 
+const card = await browser.newPage({ viewport: { width: 1200, height: 630 } });
+await card.goto(pathToFileURL(path.join(website, "scripts/og-card.html")).href);
+await card.evaluate(() => Promise.all([...document.images].map((image) => image.decode())));
+await card.screenshot({ path: path.join(website, "assets/og.png") });
+console.log("Exported assets/og.png");
+
 await browser.close();
 await rm(temporary, { recursive: true });

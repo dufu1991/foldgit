@@ -4,7 +4,10 @@
 set -euo pipefail
 
 out="${1:?usage: make-demo-repos.sh <output-dir>}"
-rm -rf "$out"
+if [ -e "$out" ]; then
+  echo "Output directory already exists: $out" >&2
+  exit 1
+fi
 mkdir -p "$out"
 out="$(cd "$out" && pwd)"
 
@@ -237,6 +240,15 @@ public enum Theme {
 }
 EOF
 git add Sources/AuroraUI/Theme.swift
+write Tests/AuroraUITests/ThemeTests.swift <<'EOF'
+import Testing
+@testable import AuroraUI
+
+@Test func sharedSpacingIsPositive() {
+    #expect(Theme.spacing > 0)
+}
+EOF
+git add Tests/AuroraUITests/ThemeTests.swift
 write Sources/AuroraUI/GlassCard.swift <<'EOF'
 import SwiftUI
 
@@ -275,6 +287,25 @@ A small set of SwiftUI components for calm, glassy interfaces.
 - `GlassCard` — translucent container with a hairline border
 - `FloatingToolbar` — capsule toolbar that floats above content
 - `Badge` — compact status label
+EOF
+write Sources/AuroraUI/Badge.swift <<'EOF'
+import SwiftUI
+
+public struct Badge: View {
+    let text: String
+
+    public init(_ text: String) { self.text = text }
+
+    public var body: some View {
+        Text(text)
+            .font(.caption.weight(.semibold))
+            .padding(.horizontal, Theme.spacing)
+            .padding(.vertical, 4)
+            .background(Theme.accent.opacity(0.15), in: .capsule)
+            .foregroundStyle(Theme.accent)
+            .accessibilityLabel(text)
+    }
+}
 EOF
 
 # ---------------------------------------------------------------- tide-api

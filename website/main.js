@@ -94,28 +94,38 @@
   // ---------------------------------------------------------------- screenshot
   var shot = document.getElementById("main-shot");
   var currentShot = "";
+  var screenshotScene = "main";
+  var screenshotButtons = document.querySelectorAll("[data-screenshot]");
+  screenshotButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      screenshotScene = button.dataset.screenshot;
+      screenshotButtons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+      updateShot();
+    });
+  });
 
-  function updateShot() {
+  const updateShot = () => {
     if (!shot) return;
-    var base = "assets/screenshots/main-" + lang() + "-" + scheme();
+    var base = "assets/screenshots/" + screenshotScene + "-" + lang() + "-" + scheme();
     if (base === currentShot) return;
     var first = currentShot === "";
     currentShot = base;
     var next = new Image();
-    next.srcset = base + ".webp 1x, " + base + "@2x.webp 2x";
-    next.src = base + ".webp";
-    var swap = function () {
+    next.srcset = base + ".webp?v=20261029-2 1x, " + base + "@2x.webp?v=20261029-2 2x";
+    next.src = base + ".webp?v=20261029-2";
+    var swap = () => {
+      if (base !== currentShot) return;
       shot.srcset = next.srcset;
       shot.src = next.src;
-      shot.alt = (dict[lang()] || {})["shot.alt"] || "";
+      shot.alt = (dict[lang()] || {})["shot." + screenshotScene + ".alt"] || "";
       shot.classList.remove("is-swapping");
       shot.classList.add("is-loaded");
     };
     if (first) { swap(); return; }
     shot.classList.add("is-swapping");
     var ready = next.decode ? next.decode() : Promise.resolve();
-    ready.catch(function () {}).then(function () { setTimeout(swap, 180); });
-  }
+    ready.catch(() => {}).then(() => { setTimeout(swap, 180); });
+  };
 
   // ---------------------------------------------------------------- reveal
   var revealTargets = document.querySelectorAll("[data-reveal]");

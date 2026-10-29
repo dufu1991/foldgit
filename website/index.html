@@ -10,7 +10,7 @@
   <meta name="theme-color" content="#0b0d18" media="(prefers-color-scheme: dark)">
   <meta property="og:title" content="FoldGit">
   <meta property="og:description" content="Every repository, folded into one window. A native, lightweight Git client for macOS.">
-  <meta property="og:image" content="assets/screenshots/main-en-light@2x.webp">
+  <meta property="og:image" content="assets/screenshots/main-en-light@2x.webp?v=20261029-2">
   <link rel="icon" href="assets/favicon.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="assets/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" href="assets/favicon.png">
@@ -28,7 +28,7 @@
       root.dataset.scheme = root.dataset.theme || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="styles.css?v=12">
 </head>
 <body>
   <div class="backdrop" aria-hidden="true">
@@ -121,8 +121,12 @@
       <div class="stage" id="stage">
         <div class="stage-glow" aria-hidden="true"></div>
         <figure class="shot-frame" id="shot-frame">
-          <img id="main-shot" class="shot" alt="" width="1440" height="900" fetchpriority="high" decoding="async">
+          <img id="main-shot" class="shot" alt="" width="1920" height="988" fetchpriority="high" decoding="async">
         </figure>
+        <div class="shot-switch">
+          <button type="button" data-screenshot="main" aria-pressed="true" data-i18n="shot.main">目录树与并排对比</button>
+          <button type="button" data-screenshot="foldgit" aria-pressed="false" data-i18n="shot.foldgit">审查 FoldGit 自身的改动</button>
+        </div>
       </div>
     </section>
 
@@ -154,7 +158,7 @@
         <div class="fold-stage glass" id="fold-stage" data-step="0" aria-hidden="true">
           <div class="fs-toolbar">
             <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-            <span class="fs-search" data-i18n="fold.search">搜索目录或仓库</span>
+            <span class="fs-search" data-i18n="fold.search">搜索仓库</span>
           </div>
           <div class="fs-canvas" id="fs-canvas">
             <!-- Rows are positioned by main.js for each step. -->
@@ -189,7 +193,7 @@
         <article class="card glass" data-reveal="fold" style="--d:1">
           <span class="card-num">02</span>
           <h3 data-i18n="why.2.title">一个顺眼又轻快的窗口</h3>
-          <p data-i18n="why.2.body">所以需要一个打开即用、专注看清改动的 Git 界面：提交图、差异、暂存、提交，并且符合 macOS 的视觉习惯。</p>
+          <p data-i18n="why.2.body">所以需要一个打开即用、专注看清改动的 Git 界面：从提交图和文件目录树定位变化，展开差异，选择暂存，再提交。每一步都符合 macOS 的视觉习惯。</p>
         </article>
         <article class="card glass" data-reveal="fold" style="--d:2">
           <span class="card-num">03</span>
@@ -228,8 +232,9 @@
         </article>
         <article class="tile glass" data-reveal="fold" style="--d:1">
           <div class="tile-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M12 4v16M6.5 9h3M14.5 9h3M6.5 13h3M14.5 13h3"/></svg></div>
-          <h3 data-i18n="d.flow.title">直观的操作逻辑</h3>
-          <p data-i18n="d.flow.body">差异随窗口宽度自动切换单栏或双栏，逐块暂存，提交信息模板一键填入，没有多余弹窗。</p>
+          <h3 data-i18n="d.flow.title">按改动组织提交</h3>
+          <p data-i18n="d.flow.body">用目录树浏览改动，目录与差异各自展开。按目录、文件或代码块暂存，把确认过的改动组成一次提交。</p>
+          <a class="tile-link" href="manual.html#review" data-i18n="d.flow.guide">查看审查与暂存说明 ↗</a>
         </article>
         <article class="tile glass tile-full" data-reveal="fold" style="--d:2">
           <div class="tile-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" class="fillish"/></svg></div>
@@ -325,10 +330,10 @@
       <a href="changelog.html"><span class="show-zh">更新日志</span><span class="show-en">Changelog</span></a>
     </nav>
     <p data-i18n="footer.text">FoldGit 由 dufu 独立维护，采用 MIT 许可证开源。</p>
-    <p class="footer-note" data-i18n="footer.note">截图中的仓库与人名均为演示数据。</p>
+    <p class="footer-note" data-i18n="footer.note">截图来自真实 macOS 界面，展示演示仓库与 FoldGit 自身的开发改动。</p>
   </footer>
 
-  <script src="i18n.js?v=10"></script>
-  <script src="main.js?v=5"></script>
+  <script src="i18n.js?v=12"></script>
+  <script src="main.js?v=7"></script>
 </body>
 </html>

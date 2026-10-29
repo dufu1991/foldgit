@@ -303,7 +303,7 @@ h1 { font-size: clamp(42px, 7.4vw, 88px); font-weight: 800; letter-spacing: -0.0
 
 .stage {
   position: relative;
-  width: min(1240px, 100%);
+  width: min(1600px, 100%);
   margin-top: 52px;
   perspective: 1800px;
 }
@@ -332,13 +332,17 @@ h1 { font-size: clamp(42px, 7.4vw, 88px); font-weight: 800; letter-spacing: -0.0
 .shot {
   width: 100%;
   height: auto;
-  aspect-ratio: 1440 / 900;
+  aspect-ratio: 1920 / 988;
   border-radius: clamp(10px, 1.4vw, 18px);
   opacity: 0;
   transition: opacity 0.9s var(--ease-out);
 }
 .shot.is-loaded { opacity: 1; }
 .shot.is-swapping { opacity: 0; transition-duration: 0.25s; }
+.shot-switch { position: relative; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.shot-switch button { padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--text-2); font: inherit; font-size: 14px; cursor: pointer; }
+.shot-switch button[aria-pressed="true"] { background: var(--row-sel); border-color: var(--accent); color: var(--text); }
+.shot-switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 /* ------------------------------------------------------------------ sections */
 .section { padding: 120px 16px; max-width: 1180px; margin: 0 auto; }
@@ -598,6 +602,9 @@ h3 { font-size: 21px; letter-spacing: -0.015em; }
 .release-link { display: inline-block; margin-top: 26px; color: var(--accent); font-size: 14px; font-weight: 600; }
 .release-link:hover { text-decoration: underline; text-underline-offset: 4px; }
 
+.tile-link { display: inline-block; margin-top: 16px; color: var(--accent); font-size: 14px; font-weight: 600; }
+.tile-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+
 /* ------------------------------------------------------------------ manual */
 .manual { max-width: 1120px; margin: 0 auto; padding: 128px 16px 40px; }
 .manual-head { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 52px; }
@@ -625,6 +632,8 @@ h3 { font-size: 21px; letter-spacing: -0.015em; }
 .m-section { border-radius: 24px; padding: 28px 30px 30px; scroll-margin-top: 92px; }
 .m-num { font: 700 13px/1 var(--mono); color: var(--accent); letter-spacing: 0.06em; }
 .m-section h2 { font-size: 26px; margin: 10px 0 14px; }
+.m-section h3 { font-size: 19px; margin: 24px 0 12px; }
+.m-section h4 { font-size: 16px; margin: 20px 0 10px; }
 .m-section p, .m-section li { color: var(--text-2); font-size: 16px; }
 .m-section b { color: var(--text); font-weight: 600; }
 .m-section a, .manual-foot a { color: var(--accent); }
@@ -667,6 +676,13 @@ kbd {
 .keys > div { display: grid; grid-template-columns: 120px 1fr; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
 .keys > div:last-child { border-bottom: 0; }
 .keys dd { margin: 0; color: var(--text-2); }
+.manual-shot { margin: 24px 0 0; }
+.manual-shot a { display: block; }
+.manual-shot img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 12px; }
+.manual-shot figcaption { margin-top: 10px; color: var(--text-3); font-size: 13px; line-height: 1.6; }
+.manual-shot .manual-shot-dark { display: none; }
+html[data-scheme="dark"] .manual-shot .manual-shot-light { display: none; }
+html[data-scheme="dark"] .manual-shot .manual-shot-dark { display: block; }
 .manual-foot { text-align: center; color: var(--text-3); font-size: 14px; margin-top: 18px; }
 .nav-links a[aria-current="page"] { color: var(--text); background: var(--row-bg); }
 @media (max-width: 860px) {

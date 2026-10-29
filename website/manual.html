@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>FoldGit 使用手册</title>
-  <meta name="description" content="FoldGit 使用手册：安装、添加仓库、分组、查看与提交改动、分支、工作树和快捷键。">
+  <meta name="description" content="FoldGit 使用手册：安装、仓库分组、目录树与差异查看、按目录或代码块暂存、提交、分支和工作树。">
   <meta name="color-scheme" content="light dark">
   <link rel="icon" href="assets/favicon.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="assets/favicon-dark.png" media="(prefers-color-scheme: dark)">
@@ -21,7 +21,19 @@
       root.dataset.scheme = root.dataset.theme || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=10">
+  <script>
+    window.FOLDGIT_I18N = {
+      zh: {
+        "meta.title": "FoldGit 使用手册",
+        "meta.description": "FoldGit 使用手册：安装、仓库分组、目录树与差异查看、按目录或代码块暂存、提交、分支和工作树。"
+      },
+      en: {
+        "meta.title": "FoldGit User Guide",
+        "meta.description": "The FoldGit user guide: installation, repository groups, directory trees, diffs, staging by directory or hunk, commits, branches and worktrees."
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="styles.css?v=12">
 </head>
 <body class="manual-page">
   <div class="backdrop" aria-hidden="true">
@@ -76,10 +88,10 @@
   <main class="manual">
     <header class="manual-head" data-reveal>
       <p class="kicker"><span class="show-zh">使用手册</span><span class="show-en">User Guide</span></p>
-      <h1 class="manual-title"><span class="show-zh">五分钟上手 FoldGit</span><span class="show-en">FoldGit in five minutes</span></h1>
+      <h1 class="manual-title"><span class="show-zh">从仓库整理到代码提交</span><span class="show-en">From repositories to reviewed commits</span></h1>
       <p class="lede">
-        <span class="show-zh">只讲日常会用到的部分。界面里的按钮名称以简体中文界面为准。</span>
-        <span class="show-en">Only the parts you use every day. Button names follow the English interface.</span>
+        <span class="show-zh">按日常工作流程介绍操作与设置。下文操作及截图以 macOS 版为准，Windows 安装见对应章节。</span>
+        <span class="show-en">A guide to everyday workflows and settings in the macOS app. Windows installation is covered separately. Button names follow the English interface.</span>
       </p>
     </header>
 
@@ -89,7 +101,8 @@
         <a href="#install-windows"><span class="show-zh">安装 Windows 版</span><span class="show-en">Install on Windows</span></a>
         <a href="#add"><span class="show-zh">添加仓库</span><span class="show-en">Add repositories</span></a>
         <a href="#organize"><span class="show-zh">整理侧边栏</span><span class="show-en">Organize the sidebar</span></a>
-        <a href="#commit"><span class="show-zh">查看与提交改动</span><span class="show-en">Review and commit</span></a>
+        <a href="#review"><span class="show-zh">目录树与差异</span><span class="show-en">Trees and diffs</span></a>
+        <a href="#commit"><span class="show-zh">暂存与提交</span><span class="show-en">Stage and commit</span></a>
         <a href="#history"><span class="show-zh">浏览历史</span><span class="show-en">Browse history</span></a>
         <a href="#branches"><span class="show-zh">分支与同步</span><span class="show-en">Branches and sync</span></a>
         <a href="#worktrees"><span class="show-zh">工作树</span><span class="show-en">Worktrees</span></a>
@@ -186,48 +199,123 @@
           <div class="show-zh">
             <ul>
               <li><b>分组</b>：在 <b>+</b> 菜单中选「新建分组」，或多选仓库后右键「将所选仓库新建为分组」。分组只是整理方式，不会移动文件夹。</li>
-              <li><b>不活跃的仓库</b>：右键「设为不活跃」，它会收进分组底部的二级折叠里。</li>
+              <li><b>不活跃的仓库</b>：右键「设为不活跃」，它会收进分组底部的二级折叠里。点击分组或「不活跃」标题即可展开或收起，右侧数字显示仓库数量。</li>
               <li><b>改名</b>：右键修改「仓库显示名称」，只影响侧边栏，不改文件夹名。</li>
-              <li><b>查找与排序</b>：顶部搜索框按名称过滤；旁边的排序按钮可按名称、最近打开、最近修改或最近添加排序，也可以直接拖动调整顺序。</li>
+              <li><b>查找与排序</b>：在「搜索仓库」中按目录、仓库或显示名称过滤；旁边的排序按钮可按名称、最近打开、最近修改或最近添加排序，也可以直接拖动调整顺序。</li>
             </ul>
           </div>
           <div class="show-en">
             <ul>
               <li><b>Groups</b> — choose New Group from the <b>+</b> menu, or select several repositories and right-click New Group with Selection. Groups never move folders on disk.</li>
-              <li><b>Inactive repositories</b> — right-click Mark as Inactive to tuck one into the folded section at the bottom of its group.</li>
+              <li><b>Inactive repositories</b> — right-click Mark as Inactive to tuck one into the folded section at the bottom of its group. Click a group or Inactive heading to expand or collapse it; the count shows how many repositories it contains.</li>
               <li><b>Rename</b> — set a Repository Display Name from the context menu. Only the sidebar label changes.</li>
-              <li><b>Find and sort</b> — the search field filters by name; the sort button orders by name, recently opened, modified or added. You can also drag to reorder.</li>
+              <li><b>Find and sort</b> — Search Repositories filters by folder, repository or display name. The sort button orders by name, recently opened, modified or added. You can also drag to reorder.</li>
             </ul>
           </div>
         </section>
 
-        <section class="m-section glass" id="commit" data-reveal>
+        <section class="m-section glass" id="review" data-reveal>
           <span class="m-num">04</span>
-          <h2><span class="show-zh">查看与提交改动</span><span class="show-en">Review and commit</span></h2>
+          <h2><span class="show-zh">目录树与差异</span><span class="show-en">Trees and diffs</span></h2>
           <div class="show-zh">
-            <ol>
-              <li>选中仓库，点提交列表顶部的「未提交的更改」，或按 <kbd>⌘</kbd><kbd>1</kbd>。</li>
-              <li>逐个文件查看差异。每个代码块右侧的 <b>+</b> 可以单独暂存这一块，<b>−</b> 取消暂存；也可以用底部的「全部暂存」（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd>）或「全部取消暂存」（<kbd>⌥</kbd><kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd>）。</li>
-              <li>在「提交信息」里写好说明，按 <kbd>⌘</kbd><kbd>↩</kbd> 或点「提交」。勾选「修改上次提交」，或从菜单栏「提交 → 修改上次提交」进入，可以改写最近一次提交。</li>
-            </ol>
-            <p class="tip">差异显示默认「自动」：窗口够宽时并排，窄时单栏。也可以在底部或菜单栏「显示 → 差异布局」中手动切换。</p>
+            <p>选中仓库，点击提交列表顶部的「未提交的更改」，或按 <kbd>⌘</kbd><kbd>1</kbd>。右侧分别显示「未暂存的更改」和「已暂存的更改」。先确认涉及哪些文件，再展开需要审查的代码。</p>
           </div>
           <div class="show-en">
+            <p>Select a repository and click Uncommitted Changes at the top of the commit list, or press <kbd>⌘</kbd><kbd>1</kbd>. The detail pane separates Unstaged Changes from Staged Changes. Start with the affected files, then expand the code you want to review.</p>
+          </div>
+          <h3><span class="show-zh">目录展开与差异展开，各自控制</span><span class="show-en">Control folders and diffs independently</span></h3>
+          <div class="show-zh">
+            <ul>
+              <li><b>列表与目录树</b>：底部的「更改文件显示」可切换「列表」和「目录树」。默认使用目录树，目录展开，文件差异折叠。列表显示文件路径，目录树按文件夹组织改动。</li>
+              <li><b>查看一个目录或文件</b>：点击目录行展开或收起子项；点击文件名展开或收起该文件的差异。收起目录会保留其中各文件的差异展开状态。</li>
+              <li><b>批量操作</b>：「展开目录／折叠目录」控制文件夹结构；「展开差异／折叠差异」控制代码内容，两组操作互不联动。「展开差异」不会自动打开已折叠的目录。</li>
+              <li><b>快捷键与菜单</b>：<kbd>⌥</kbd><kbd>→</kbd> 展开差异，<kbd>⌥</kbd><kbd>←</kbd> 折叠差异。菜单栏「显示」中也提供这些操作；目录展开选项在目录树模式下出现。</li>
+              <li><b>打开文件</b>：文件行右侧的 <b>↗</b> 用系统默认应用打开当前工作目录中的文件。</li>
+            </ul>
+          </div>
+          <div class="show-en">
+            <ul>
+              <li><b>List and Directory Tree</b> — use Changed File Display at the bottom to switch between them. Directory Tree is the default, with folders expanded and file diffs collapsed. List shows file paths; Directory Tree groups changes by folder.</li>
+              <li><b>Inspect a folder or file</b> — click a folder row to show or hide its children, or a filename to expand or collapse its diff. Collapsing a folder preserves the expansion state of its file diffs.</li>
+              <li><b>Bulk controls</b> — Expand Directories and Collapse Directories control the folder structure; Expand Diffs and Collapse Diffs control code content independently. Expand Diffs does not open collapsed folders.</li>
+              <li><b>Shortcuts and menus</b> — <kbd>⌥</kbd><kbd>→</kbd> expands diffs and <kbd>⌥</kbd><kbd>←</kbd> collapses them. The View menu offers the same actions; directory controls appear in Directory Tree mode.</li>
+              <li><b>Open a file</b> — the <b>↗</b> on a file row opens the file from the current working directory in its default application.</li>
+            </ul>
+          </div>
+          <h3><span class="show-zh">选择差异布局</span><span class="show-en">Choose a diff layout</span></h3>
+          <div class="show-zh">
+            <p>「自动」会根据差异区域的可用宽度切换单栏或并排显示，也可手动选择「单栏」或「并排」。并排视图分别标明「修改前」和「修改后」，用红绿背景标出删除与新增，并突出行内变化。底部控件、菜单栏「显示 → 差异布局」和「设置 → 历史与差异」共用同一选择。</p>
+            <p class="tip">窗口较窄或代码行较长时，可切换单栏，或在「设置 → 历史与差异」中开启「长行自动换行」。</p>
+          </div>
+          <div class="show-en">
+            <p>Automatic switches between unified and side-by-side layouts based on the space available to the diff pane. You can also choose Unified or Side by Side explicitly. The side-by-side view labels Before and After, marks deletions and additions in red and green, and highlights changes within a line. The bottom controls, View → Diff Layout and Settings → History and Diffs share the same selection.</p>
+            <p class="tip">For a narrow window or long code lines, choose Unified or enable Wrap Long Lines under Settings → History and Diffs.</p>
+          </div>
+          <figure class="manual-shot show-zh">
+            <a class="manual-shot-light" href="assets/screenshots/main-zh-light@2x.webp?v=20261029-2" target="_blank" rel="noopener noreferrer">
+              <img src="assets/screenshots/main-zh-light.webp?v=20261029-2" srcset="assets/screenshots/main-zh-light.webp?v=20261029-2 1x, assets/screenshots/main-zh-light@2x.webp?v=20261029-2 2x" width="1920" height="988" alt="FoldGit 的 macOS 界面：目录树、展开的并排差异和暂存区" loading="lazy" decoding="async">
+            </a>
+            <a class="manual-shot-dark" href="assets/screenshots/main-zh-dark@2x.webp?v=20261029-2" target="_blank" rel="noopener noreferrer">
+              <img src="assets/screenshots/main-zh-dark.webp?v=20261029-2" srcset="assets/screenshots/main-zh-dark.webp?v=20261029-2 1x, assets/screenshots/main-zh-dark@2x.webp?v=20261029-2 2x" width="1920" height="988" alt="FoldGit 的 macOS 界面：目录树、展开的并排差异和暂存区" loading="lazy" decoding="async">
+            </a>
+            <figcaption>演示仓库中的目录树、并排差异与暂存区。点击图片查看大图。</figcaption>
+          </figure>
+          <figure class="manual-shot show-en">
+            <a class="manual-shot-light" href="assets/screenshots/main-en-light@2x.webp?v=20261029-2" target="_blank" rel="noopener noreferrer">
+              <img src="assets/screenshots/main-en-light.webp?v=20261029-2" srcset="assets/screenshots/main-en-light.webp?v=20261029-2 1x, assets/screenshots/main-en-light@2x.webp?v=20261029-2 2x" width="1920" height="988" alt="FoldGit on macOS with directory trees, an expanded side-by-side diff and staging panes" loading="lazy" decoding="async">
+            </a>
+            <a class="manual-shot-dark" href="assets/screenshots/main-en-dark@2x.webp?v=20261029-2" target="_blank" rel="noopener noreferrer">
+              <img src="assets/screenshots/main-en-dark.webp?v=20261029-2" srcset="assets/screenshots/main-en-dark.webp?v=20261029-2 1x, assets/screenshots/main-en-dark@2x.webp?v=20261029-2 2x" width="1920" height="988" alt="FoldGit on macOS with directory trees, an expanded side-by-side diff and staging panes" loading="lazy" decoding="async">
+            </a>
+            <figcaption>Directory trees, side-by-side diffs and staging in a demo repository. Click the image to view it at full size.</figcaption>
+          </figure>
+        </section>
+
+        <section class="m-section glass" id="commit" data-reveal>
+          <span class="m-num">05</span>
+          <h2><span class="show-zh">暂存与提交</span><span class="show-en">Stage and commit</span></h2>
+          <div class="show-zh">
+            <p>「已暂存的更改」决定下一次提交包含的内容。可以按目录、文件或代码块逐步选择，也可以一次处理全部改动。</p>
+            <ul>
+              <li><b>按目录</b>：在目录树模式下，点击目录左侧的 <b>+</b>，暂存该目录及子目录的更改，包括未跟踪文件。已暂存区目录左侧的 <b>−</b> 取消该目录下的暂存，保留本地文件与修改。</li>
+              <li><b>按文件</b>：文件名左侧的 <b>+</b> 暂存整个文件，<b>−</b> 取消整个文件的暂存。未跟踪文件默认收在「未跟踪的文件」中，展开后也可以逐个暂存。</li>
+              <li><b>按代码块</b>：展开文本差异后，代码块右侧的 <b>+</b> 只暂存该块，<b>−</b> 取消该块的暂存。部分暂存后，同一个文件可能同时出现在两个区域。</li>
+              <li><b>全部处理</b>：「全部暂存」（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd>）和「全部取消暂存」（<kbd>⌥</kbd><kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd>）分别操作所有未暂存或已暂存的更改。</li>
+            </ul>
+            <p class="tip">按文件暂存或取消暂存时，文件名会移向另一区域，并高亮对应位置，便于跟踪改动。系统开启「减少动态效果」时，不播放飞移动画。有已暂存文件时，可拖动两个区域之间的分隔线调整暂存区高度，双击分隔线恢复默认高度。</p>
+            <h3>确认后提交</h3>
             <ol>
-              <li>Select a repository and click Uncommitted Changes at the top of the commit list, or press <kbd>⌘</kbd><kbd>1</kbd>.</li>
-              <li>Read the diff file by file. The <b>+</b> beside each hunk stages just that hunk, <b>−</b> unstages it; or use Stage All (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd>) and Unstage All (<kbd>⌥</kbd><kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd>) at the bottom.</li>
-              <li>Write a Commit Message and press <kbd>⌘</kbd><kbd>↩</kbd> or click Commit. Tick Amend, or choose Commit → Amend Last Commit in the menu bar, to rewrite the latest commit.</li>
+              <li>检查「已暂存的更改」，展开文件确认本次要提交的内容。</li>
+              <li>在「提交信息」中填写说明。底部的提交快捷输入按钮可插入常用前缀，也可以在「设置 → 提交信息」中维护自己的条目。</li>
+              <li>按 <kbd>⌘</kbd><kbd>↩</kbd> 或点击「提交」。未暂存的改动会继续留在工作区。</li>
+              <li>需要改写最近一次提交时，勾选「修改上次提交」，或选择菜单栏「提交 → 修改上次提交」。</li>
             </ol>
-            <p class="tip">Diff layout defaults to Automatic: side by side when the window is wide enough, unified when it is not. You can switch it at the bottom or under View → Diff Layout.</p>
+          </div>
+          <div class="show-en">
+            <p>Staged Changes determines what goes into the next commit. Select changes by directory, file or hunk, or handle everything at once.</p>
+            <ul>
+              <li><b>By directory</b> — in Directory Tree mode, click <b>+</b> beside a folder to stage changes beneath it, including subfolders and untracked files. The <b>−</b> beside a staged folder unstages its changes while keeping local files and edits.</li>
+              <li><b>By file</b> — <b>+</b> beside a filename stages the whole file; <b>−</b> unstages it. Expand Untracked Files to stage new files individually.</li>
+              <li><b>By hunk</b> — expand a text diff and use <b>+</b> on the right of a hunk to stage just that block, or <b>−</b> to unstage it. A partly staged file can appear in both panes.</li>
+              <li><b>All changes</b> — Stage All (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd>) and Unstage All (<kbd>⌥</kbd><kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd>) act on all unstaged or staged changes respectively.</li>
+            </ul>
+            <p class="tip">When you stage or unstage a file, its name moves toward the other pane and highlights the destination, making the change easier to follow. The flight animation is skipped when Reduce Motion is enabled in macOS. With staged files present, drag the divider between the panes to adjust the staged pane’s height, or double-click it to restore the default height.</p>
+            <h3>Review, then commit</h3>
+            <ol>
+              <li>Check Staged Changes and expand the files to confirm what belongs in this commit.</li>
+              <li>Write a Commit Message. The snippet buttons below insert common prefixes; manage your own entries under Settings → Commit Messages.</li>
+              <li>Press <kbd>⌘</kbd><kbd>↩</kbd> or click Commit. Unstaged edits remain in the working tree.</li>
+              <li>To rewrite the latest commit, tick Amend or choose Commit → Amend Last Commit in the menu bar.</li>
+            </ol>
           </div>
         </section>
 
         <section class="m-section glass" id="history" data-reveal>
-          <span class="m-num">05</span>
+          <span class="m-num">06</span>
           <h2><span class="show-zh">浏览历史</span><span class="show-en">Browse history</span></h2>
           <div class="show-zh">
             <ul>
-              <li>点击任意提交，右侧显示它改了什么。</li>
+              <li>点击任意提交，右侧显示该次提交的更改。历史提交也支持「列表／目录树」、目录与差异独立展开，包括合并提交的更改文件；文件显示方式与工作区共用。</li>
               <li><kbd>⌘</kbd><kbd>F</kbd> 搜索提交，可按作者、邮箱或提交信息查找。</li>
               <li>搜索框旁的菜单可以在「当前分支」和「全部提交」之间切换，菜单栏「显示 → 历史范围」同样可以切换。</li>
               <li>提交列表底部的分支图标用来显示或隐藏提交图，也可以用「显示 → 提交关系图」。</li>
@@ -237,7 +325,7 @@
           </div>
           <div class="show-en">
             <ul>
-              <li>Click any commit to see what it changed.</li>
+              <li>Click any commit to see what it changed. Historical commits also support List and Directory Tree with independent folder and diff expansion, including the changed files of merge commits. The file display choice is shared with the working changes view.</li>
               <li><kbd>⌘</kbd><kbd>F</kbd> searches commits by author, email or message.</li>
               <li>The menu beside the search field switches between Current Branch and All Commits, as does View → History Scope.</li>
               <li>The branch icon at the bottom of the list shows or hides the commit graph, as does View → Commit Graph.</li>
@@ -248,15 +336,15 @@
         </section>
 
         <section class="m-section glass" id="branches" data-reveal>
-          <span class="m-num">06</span>
+          <span class="m-num">07</span>
           <h2><span class="show-zh">分支与同步</span><span class="show-en">Branches and sync</span></h2>
           <div class="show-zh">
             <p>都在窗口顶部的工具栏里，也可以从菜单栏的「仓库」和「分支」中找到：</p>
             <ul>
-              <li><b>选择分支</b>（<kbd>⌘</kbd><kbd>B</kbd>）：切换、合并到当前分支、重命名或删除分支。</li>
+              <li><b>分支</b>（<kbd>⌘</kbd><kbd>B</kbd>）：切换、合并到当前分支、重命名或删除分支。</li>
               <li><b>合并分支</b>：在菜单栏「分支 → 合并分支」中选一个本地或远程分支，合并到当前分支。</li>
-              <li><b>新建分支</b>（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>B</kbd>）、<b>显示标签</b>：创建分支，浏览和管理标签；<kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd> 新建标签。</li>
-              <li><b>比较分支或标签</b>：选两个版本，查看它们之间的全部差异。</li>
+              <li><b>新建分支</b>（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>B</kbd>）、<b>标签</b>：创建分支，浏览和管理标签；<kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd> 新建标签。</li>
+              <li><b>比较</b>：选两个版本，查看它们之间的全部差异。</li>
               <li><b>获取 / 拉取 / 推送</b>（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd> / <kbd>L</kbd> / <kbd>P</kbd>）：与远程同步。获取只下载更新，不会合并。<kbd>⌘</kbd><kbd>R</kbd> 刷新仓库状态。</li>
               <li><b>打开方式</b>：在终端、编辑器或访达中打开当前仓库。<kbd>⌃</kbd><kbd>⌘</kbd><kbd>T</kbd> 在终端中打开，<kbd>⌃</kbd><kbd>⌘</kbd><kbd>O</kbd> 在访达中显示。</li>
             </ul>
@@ -264,10 +352,10 @@
           <div class="show-en">
             <p>Everything lives in the toolbar, and in the Repository and Branch menus of the menu bar:</p>
             <ul>
-              <li><b>Select Branch</b> (<kbd>⌘</kbd><kbd>B</kbd>) — switch, merge into the current branch, rename or delete.</li>
+              <li><b>Branch</b> (<kbd>⌘</kbd><kbd>B</kbd>) — switch, merge into the current branch, rename or delete.</li>
               <li><b>Merge Branch</b> — choose Branch → Merge Branch, pick a local or remote branch, and merge it into the current one.</li>
-              <li><b>New Branch</b> (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>B</kbd>) and <b>Show Tags</b> — create branches, browse and manage tags; <kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd> creates a tag.</li>
-              <li><b>Compare Branches or Tags</b> — pick two revisions and see everything between them.</li>
+              <li><b>New Branch</b> (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>B</kbd>) and <b>Tags</b> — create branches, browse and manage tags; <kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd> creates a tag.</li>
+              <li><b>Compare</b> — pick two revisions and see everything between them.</li>
               <li><b>Fetch / Pull / Push</b> (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd> / <kbd>L</kbd> / <kbd>P</kbd>) — sync with the remote. Fetch only downloads; it never merges. <kbd>⌘</kbd><kbd>R</kbd> refreshes the repository.</li>
               <li><b>Open in</b> — open the repository in Terminal, your editor or Finder. <kbd>⌃</kbd><kbd>⌘</kbd><kbd>T</kbd> opens Terminal, <kbd>⌃</kbd><kbd>⌘</kbd><kbd>O</kbd> shows it in Finder.</li>
             </ul>
@@ -275,7 +363,7 @@
         </section>
 
         <section class="m-section glass" id="worktrees" data-reveal>
-          <span class="m-num">07</span>
+          <span class="m-num">08</span>
           <h2><span class="show-zh">工作树</span><span class="show-en">Worktrees</span></h2>
           <div class="show-zh">
             <ol>
@@ -287,7 +375,7 @@
           </div>
           <div class="show-en">
             <ol>
-              <li>Right-click a repository and choose Enable Worktrees. (The global switch under Settings → Repository is on by default.)</li>
+              <li>Right-click a repository and choose Enable Worktrees. (The global switch under Settings → Repositories is on by default.)</li>
               <li>Right-click New Worktree and pick a new or existing branch. It appears folded beneath the repository.</li>
               <li>When you are done, right-click Finish Worktree: choose the target branch, merge, then optionally remove the folder and delete the source branch.</li>
             </ol>
@@ -296,7 +384,7 @@
         </section>
 
         <section class="m-section glass" id="stash" data-reveal>
-          <span class="m-num">08</span>
+          <span class="m-num">09</span>
           <h2><span class="show-zh">贮藏</span><span class="show-en">Stash</span></h2>
           <div class="show-zh">
             <p>在「未提交的更改」底部点「贮藏全部更改」（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd>），把手上的修改先收起来；之后从工具栏「贮藏」中查看并恢复。</p>
@@ -307,30 +395,38 @@
         </section>
 
         <section class="m-section glass" id="settings" data-reveal>
-          <span class="m-num">09</span>
+          <span class="m-num">10</span>
           <h2><span class="show-zh">设置</span><span class="show-en">Settings</span></h2>
           <div class="show-zh">
             <p>按 <kbd>⌘</kbd><kbd>,</kbd> 打开。常用的几项：</p>
             <ul>
-              <li><b>界面语言与外观</b>：八种语言，亮色、暗色或跟随系统。改语言后需重启应用。</li>
-              <li><b>自动获取</b>：为每个仓库单独设置获取间隔。</li>
-              <li><b>代码显示</b>：差异布局、字号、长行自动换行。</li>
-              <li><b>打开方式</b>：固定常用的编辑器或终端，它们会排在菜单最前面。</li>
+              <li><b>通用</b>：选择界面语言，设置登录时启动、恢复上次的仓库和窗口状态、启动时检查更新，以及关闭最后一个窗口时是否退出。语言更改后需重启应用。</li>
+              <li><b>检查更新</b>：启动时默认检查新版本，仅发现新版本时提示。也可从「FoldGit → 检查更新」手动检查；点击「下载」会打开 GitHub 发布页，选择对应安装包更新。通过 Homebrew 安装的用户可继续使用上方的升级命令。</li>
+              <li><b>外观</b>：选择浅色、深色或自动跟随系统；工具栏可显示「仅图标」或「图标和文字」。</li>
+              <li><b>历史与差异</b>：控制提交关系图、差异布局、代码字号和长行自动换行。「文件默认展开方式」默认设为「折叠」，可改为「展开」；它作用于新打开的差异，手动展开或收起的文件会保留原状态。</li>
+              <li><b>提交信息</b>：维护提交快捷输入条目，插入常用前缀或文案。</li>
+              <li><b>仓库</b>：启用工作树信息，为每个仓库单独设置自动获取间隔。自动获取只下载远程更新，不合并。</li>
+              <li><b>外部应用</b>：固定常用的编辑器或终端，它们会排在「打开方式」菜单最前面。</li>
+              <li><b>恢复默认</b>：在「通用」中点击「恢复默认设置」，先查看将被重置的选项，再确认恢复。</li>
             </ul>
           </div>
           <div class="show-en">
             <p>Press <kbd>⌘</kbd><kbd>,</kbd>. The ones you will likely touch:</p>
             <ul>
-              <li><b>Language and appearance</b> — eight languages; light, dark or automatic. Restart after changing the language.</li>
-              <li><b>Automatic Fetch</b> — a fetch interval per repository.</li>
-              <li><b>Code Display</b> — diff layout, font size, wrapping long lines.</li>
-              <li><b>Open in</b> — pin your editor or terminal so it comes first in the menu.</li>
+              <li><b>General</b> — choose the interface language, launch at login, restore the previous repository and window, check for updates at launch, and choose whether closing the last window quits the app. Restart after changing the language.</li>
+              <li><b>Check for Updates</b> — launch checks are enabled by default and only notify you when a newer version is available. To check manually, choose FoldGit → Check for Updates. Download opens the GitHub release page so you can choose an installer. Homebrew users can continue using the upgrade command above.</li>
+              <li><b>Appearance</b> — choose Light, Dark or Automatic, and set Toolbar Display to Icons Only or Icons and Text.</li>
+              <li><b>History and Diffs</b> — configure the commit graph, diff layout, code font size and line wrapping. Default File Expansion starts at Collapsed; choose Expanded to open new diffs with their contents visible. Files you expand or collapse manually keep their state.</li>
+              <li><b>Commit Messages</b> — manage snippets for common prefixes or text.</li>
+              <li><b>Repositories</b> — enable worktree information and choose an automatic fetch interval per repository. Fetch downloads remote updates without merging them.</li>
+              <li><b>External Applications</b> — pin an editor or terminal to place it first in the Open in menu.</li>
+              <li><b>Restore Defaults</b> — under General, review the settings that will be reset before confirming.</li>
             </ul>
           </div>
         </section>
 
         <section class="m-section glass" id="shortcuts" data-reveal>
-          <span class="m-num">10</span>
+          <span class="m-num">11</span>
           <h2><span class="show-zh">快捷键</span><span class="show-en">Shortcuts</span></h2>
           <p><span class="show-zh">macOS 版的常用操作都在菜单栏中，菜单项旁显示对应快捷键；完整列表可在「帮助 → 快捷键」中查看。</span><span class="show-en">On macOS every common action is in the menu bar, with its shortcut beside it. Help → Keyboard Shortcuts shows the full list.</span></p>
           <dl class="keys">
@@ -351,11 +447,11 @@
             <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd></dt><dd><span class="show-zh">贮藏更改</span><span class="show-en">Stash all changes</span></dd></div>
             <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>C</kbd></dt><dd><span class="show-zh">复制提交哈希</span><span class="show-en">Copy commit hash</span></dd></div>
             <div><dt><kbd>⌘</kbd><kbd>F</kbd></dt><dd><span class="show-zh">搜索提交</span><span class="show-en">Search commits</span></dd></div>
-            <div><dt><kbd>⌘</kbd><kbd>1</kbd></dt><dd><span class="show-zh">工作区更改</span><span class="show-en">Working changes</span></dd></div>
+            <div><dt><kbd>⌘</kbd><kbd>1</kbd></dt><dd><span class="show-zh">未提交的更改</span><span class="show-en">Uncommitted changes</span></dd></div>
             <div><dt><kbd>⌘</kbd><kbd>0</kbd></dt><dd><span class="show-zh">定位到 HEAD</span><span class="show-en">Jump to HEAD</span></dd></div>
             <div><dt><kbd>⌃</kbd><kbd>⌘</kbd><kbd>S</kbd></dt><dd><span class="show-zh">显示或隐藏边栏</span><span class="show-en">Show or hide the sidebar</span></dd></div>
-            <div><dt><kbd>⌥</kbd><kbd>→</kbd></dt><dd><span class="show-zh">展开全部文件</span><span class="show-en">Expand all files</span></dd></div>
-            <div><dt><kbd>⌥</kbd><kbd>←</kbd></dt><dd><span class="show-zh">折叠全部文件</span><span class="show-en">Collapse all files</span></dd></div>
+            <div><dt><kbd>⌥</kbd><kbd>→</kbd></dt><dd><span class="show-zh">展开差异</span><span class="show-en">Expand diffs</span></dd></div>
+            <div><dt><kbd>⌥</kbd><kbd>←</kbd></dt><dd><span class="show-zh">折叠差异</span><span class="show-en">Collapse diffs</span></dd></div>
             <div><dt><kbd>⌘</kbd><kbd>,</kbd></dt><dd><span class="show-zh">打开设置</span><span class="show-en">Open Settings</span></dd></div>
           </dl>
         </section>
@@ -375,6 +471,6 @@
     <p><span class="show-zh">FoldGit 由 dufu 独立维护，采用 MIT 许可证开源。</span><span class="show-en">FoldGit is independently maintained by dufu and released under the MIT License.</span></p>
   </footer>
 
-  <script src="main.js?v=5"></script>
+  <script src="main.js?v=7"></script>
 </body>
 </html>

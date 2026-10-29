@@ -21,7 +21,10 @@ window.FOLDGIT_I18N = {
     "cta.source": "View source",
     "cta.star": "Follow on GitHub",
     "cta.manual": "User guide",
-    "shot.alt": "FoldGit main window: grouped repositories in the sidebar, a commit graph, and staged and unstaged changes",
+    "shot.main": "Directory trees and side-by-side diffs",
+    "shot.foldgit": "Review FoldGit’s own changes",
+    "shot.main.alt": "FoldGit on macOS: grouped demo repositories, a commit graph, directory trees, staged changes and an expanded side-by-side Swift diff",
+    "shot.foldgit.alt": "FoldGit reviewing its own development changes with an expanded unified Swift diff",
 
     "fold.kicker": "What “Fold” means",
     "fold.s0.title": "Repositories everywhere",
@@ -32,7 +35,7 @@ window.FOLDGIT_I18N = {
     "fold.s2.body": "Worktrees are found automatically and fold under their repository with the branch name. Create, lock, merge and finish in one place.",
     "fold.s3.title": "Fold the inactive, once more",
     "fold.s3.body": "Fold inactive repositories one level deeper so the active ones stay in sight. With filtering and sorting, dozens stay readable.",
-    "fold.search": "Search Directories or Repositories",
+    "fold.search": "Search Repositories",
     "fold.infrequent": "Inactive",
 
     "why.kicker": "Why FoldGit",
@@ -40,7 +43,7 @@ window.FOLDGIT_I18N = {
     "why.1.title": "AI writes, humans review",
     "why.1.body": "More code now comes from agents, and reviewing it rarely needs an IDE. Production code still deserves a human pass: which files, which lines, anything out of bounds.",
     "why.2.title": "A window that is easy on the eyes",
-    "why.2.body": "So you need a Git window that opens instantly and focuses on seeing changes — graph, diffs, staging, commits — in the visual language of macOS.",
+    "why.2.body": "So you need a Git window that opens quickly: locate changes in the graph and file tree, expand the diff, choose what to stage, then commit. Each step feels at home on macOS.",
     "why.3.title": "Why start over",
     "why.3.body": "Few Git clients are beautiful, simple and light at once. Similar projects exist and contributing was the first idea, but their interaction and internals had drifted too far to fix from within. So FoldGit started fresh.",
 
@@ -54,8 +57,9 @@ window.FOLDGIT_I18N = {
     "d.size.body": "Native SwiftUI and AppKit, no Electron. Electron Git clients often exceed 100 MB.",
     "d.perf.title": "Fast, and quiet",
     "d.perf.body": "Search runs in the background, reuses its index and pages results; new input cancels old queries. Auto Fetch runs per repository and never merges.",
-    "d.flow.title": "Intuitive by default",
-    "d.flow.body": "Diffs switch between unified and side by side with the window width, hunks stage one by one, commit templates fill in with a click — no needless dialogs.",
+    "d.flow.title": "Shape each commit",
+    "d.flow.body": "Browse changes in a directory tree, with folders and diffs expanded independently. Stage by directory, file or hunk to commit only what you have reviewed.",
+    "d.flow.guide": "Read the review and staging guide ↗",
     "d.look.title": "Feels like macOS",
     "d.look.body": "macOS 26 Liquid Glass and system controls, a native menu bar with keyboard shortcuts for everyday actions, light and dark appearances, and eight interface languages.",
     "cmp.them": "Typical Git clients",
@@ -94,11 +98,12 @@ window.FOLDGIT_I18N = {
 
     "final.title": "Glance at the changes. Then commit.",
     "footer.text": "FoldGit is independently maintained by dufu and released under the MIT License.",
-    "footer.note": "Repositories and names in the screenshot are demo data."
+    "footer.note": "Captured from the real macOS app, showing demo repositories and FoldGit’s own development changes."
   },
   zh: {
     "meta.title": "FoldGit — 把仓库折进一个窗口",
     "meta.description": "FoldGit 是原生、轻量的 macOS Git 客户端：按目录或分组折叠仓库，工作树收在所属仓库之下，约 4 MB。",
-    "shot.alt": "FoldGit 主界面：侧边栏中分组的仓库、提交图，以及已暂存和未暂存的更改"
+    "shot.main.alt": "FoldGit 的 macOS 真实界面：分组演示仓库、提交关系图、文件目录树、暂存区与展开的 Swift 并排差异",
+    "shot.foldgit.alt": "FoldGit 审查自身开发改动的真实界面，Swift 单栏差异保持展开"
   }
 };

@@ -19,6 +19,8 @@ jobs:
           python3 Scripts/check-platform-boundaries.py
           python3 Scripts/generate-resources.py --check
           python3 Scripts/version.py
+          python3 Scripts/changelog.py --check
+          python3 -m unittest discover -s Scripts/tests -p 'test_changelog.py'
       - name: Test shared core
         run: swift test --force-resolved-versions
   shared-windows:

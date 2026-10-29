@@ -1,0 +1,30 @@
+[
+  {
+    "version": "0.1.1",
+    "date": "2026-10-28",
+    "zh": [
+      "新增 macOS 原生菜单与快捷键，快速操作仓库、分支和提交。",
+      "加快 macOS 仓库切换与工作区改动加载，减少等待。",
+      "优化应用图标的液态玻璃折射、蓝色背景与网格对比度。"
+    ],
+    "en": [
+      "Add native macOS menus and shortcuts for repositories, branches and commits.",
+      "Improve repository switching and working change loading on macOS.",
+      "Refine the app icon with glass refraction, deeper blue and clearer grid lines."
+    ]
+  },
+  {
+    "version": "0.1.0",
+    "date": "2026-10-28",
+    "zh": [
+      "首次发布，支持按目录或分组管理多个仓库与工作树。",
+      "支持提交历史、差异查看、暂存、提交及分支同步。",
+      "提供 macOS 原生应用与 Windows x64、ARM64 安装包。"
+    ],
+    "en": [
+      "First release with repositories and worktrees organized by folder or group.",
+      "Browse history and diffs, stage and commit changes, and sync branches.",
+      "Available as a native macOS app and Windows x64 and ARM64 installers."
+    ]
+  }
+]

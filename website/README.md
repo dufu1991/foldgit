@@ -1,9 +1,12 @@
 # FoldGit 落地页
 
-纯静态单页，无需构建，可直接部署到 GitHub Pages 等静态托管。
+纯静态网站，无需构建，可直接部署到 GitHub Pages 等静态托管。
 
 ```text
 index.html        页面结构与中文文案
+manual.html       使用手册
+changelog.json    各版本的中英文更新文案，网页与 Release 共用
+changelog.html    更新日志页面，条目由脚本生成
 i18n.js           英文文案
 styles.css        设计变量、液态玻璃样式、亮暗色与动效
 main.js           语言与外观切换、截图切换、滚动动效、Fold 演示
@@ -23,7 +26,21 @@ python3 -m http.server 8765 --directory website
 - 亮暗色默认跟随浏览器，图标、截图和网站图标随之切换。
 - 导航栏按钮可手动切换并保存在当前浏览器中；切回与浏览器一致的选项时，会清除保存的选择，重新跟随浏览器。
 
-修改 `styles.css`、`main.js` 或 `i18n.js` 后，把两个页面中引用它们的 `?v=` 版本号加一，避免浏览器使用旧缓存。
+修改 `styles.css`、`main.js` 或 `i18n.js` 后，把所有页面中引用它们的 `?v=` 版本号加一，避免浏览器使用旧缓存。
+
+## 更新日志
+
+首页与使用手册的页脚提供更新日志入口。日志按版本倒序排列，跟随网站的中英文、亮暗色设置。
+
+每次升级版本，在 `changelog.json` 顶部添加版本号、发布日期及对应的 `zh`、`en` 短句列表。条目只描述该版本的实际变化，不重复安装步骤或旧版本文案。然后在仓库根目录运行：
+
+```sh
+python3 Scripts/changelog.py --write  # 同步静态网页
+python3 Scripts/changelog.py --check  # 检查版本、双语与网页是否同步
+python3 Scripts/changelog.py --release 0.1.1  # 输出指定版本的双语 Release 文案
+```
+
+网页条目由脚本更新，页面框架和样式仍在 `changelog.html`、`styles.css` 中维护。生成后的页面随源码提交，部署时无需脚本或额外请求数据。发版工作流从同一份数据读取对应版本的中文与英文，缺少条目或页面未同步时停止发布。
 
 ## Homebrew 安装入口
 

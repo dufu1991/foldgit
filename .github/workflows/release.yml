@@ -7,6 +7,7 @@ on:
     paths:
       - Platforms/macOS/Configuration/Base.xcconfig
       - Platforms/Windows/src/FoldGit.App/Package.appxmanifest
+      - website/changelog.json
   workflow_dispatch:
     inputs:
       rebuild:
@@ -35,6 +36,7 @@ jobs:
           REBUILD: ${{ inputs.rebuild }}
         run: |
           version="$(python3 Scripts/version.py)"
+          python3 Scripts/changelog.py --check
           echo "version=$version" >> "$GITHUB_OUTPUT"
           if git rev-parse -q --verify "refs/tags/v$version" > /dev/null && [ "$REBUILD" != "true" ]; then
             echo "::notice::v$version is already released. Bump the version to publish a new release."
@@ -223,9 +225,8 @@ jobs:
       contents: write
     env:
       VERSION: ${{ needs.version.outputs.version }}
-      MAC_SIGNED: ${{ secrets.APPLE_TEAM_ID != '' && secrets.BUILD_CERTIFICATE_BASE64 != '' }}
-      WINDOWS_TRUSTED: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 != '' }}
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           path: release
@@ -241,37 +242,15 @@ jobs:
             expected=3
           fi
           test "$(find release -type f | wc -l | tr -d ' ')" = "$expected"
+          python3 Scripts/changelog.py --release "$VERSION" > notes.md
           {
-            echo "## Install"
             echo
-            echo "**macOS** (Apple Silicon, macOS 26 or later): open \`FoldGit-macOS-arm64.dmg\` and drag FoldGit into Applications."
-            echo "Or install via Homebrew after the tap has synchronized this release:"
-            echo
-            echo '```sh'
-            echo 'brew install --cask dufu1991/tap/foldgit'
-            echo '```'
-            echo
-            if [ "$MAC_SIGNED" != "true" ]; then
-              echo "This build is not signed with an Apple Developer certificate. If macOS says it is damaged or cannot be verified, run once:"
-              echo
-              echo '```sh'
-              echo 'xattr -dr com.apple.quarantine /Applications/FoldGit.app'
-              echo '```'
-            fi
-            if ls release/*.exe > /dev/null 2>&1; then
-              echo
-              echo "**Windows** (Windows 11 24H2 or later): download the x64 or ARM64 EXE installer for your device and open it. The installer includes the .NET and Windows App SDK runtimes."
-              if [ "$WINDOWS_TRUSTED" != "true" ]; then
-                echo "The Windows installer is not Authenticode signed. No separate signing certificate is required."
-              fi
-            fi
-            echo
-            echo "## SHA-256"
+            echo '## SHA-256'
             echo
             echo '```text'
             (cd release && shasum -a 256 *)
             echo '```'
-          } > notes.md
+          } >> notes.md
           cat notes.md
 
       - uses: softprops/action-gh-release@v2
@@ -280,7 +259,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           name: FoldGit ${{ needs.version.outputs.version }}
           body_path: notes.md
-          generate_release_notes: true
+          generate_release_notes: false
           draft: false
           prerelease: false
           make_latest: "true"

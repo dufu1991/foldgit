@@ -13,11 +13,22 @@ python3 Scripts/version.py            # 显示版本号，并检查各平台是�
 python3 Scripts/version.py set 0.2.0  # 设置新版本，并递增 macOS 构建号
 ```
 
+版本号变化时，Agent 必须按 [AGENTS.md](../AGENTS.md) 自动维护 `website/changelog.json`：以最近发布标签为基线，将用户可感知的实际变化整理为简洁、含义对应的中文与英文条目，并填写发布日期。然后生成落地页的更新日志页面，一并提交：
+
+```sh
+python3 Scripts/changelog.py --write
+python3 Scripts/changelog.py --check
+```
+
+更新日志入口在网站页脚，文案跟随网站语言。发版 CI 在构建前检查当前版本条目、双语及静态页面是否齐全，发布时用 `python3 Scripts/changelog.py --release "$VERSION"` 读取该版本的两种文案，作为 GitHub Release 的更新内容。直接展示中英文条目，不添加“更新内容”或“What's new”标题，也不用 GitHub 自动生成的提交列表；SHA-256 附在条目之后。更正日志后推送也会触发版本检查，已发布版本仍须勾选 *rebuild* 才会替换 Release。
+
+安装说明仅保留在首次发布中。后续 Release 不重复安装链接、安装步骤或签名提示，完整指南统一维护在官网使用手册；若安装方式、兼容性或升级要求有变化，在该版本的中英文条目中说明。
+
 ## 发布工作流
 
 提交并推送到 `main` 后，[发布工作流](../.github/workflows/release.yml)会为 `v0.2.0` 仅发布三个安装包：macOS Apple Silicon 的 DMG，以及 Windows x64 和 ARM64 各一个 Inno Setup EXE。SHA-256 校验值写入发布说明。附件使用固定文件名，官网下载链接会自动指向最新版本。推送已有标签的版本不会重复发布；如需替换已发布版本的安装包，可手动运行工作流并勾选 *rebuild*。
 
-未配置 Apple 签名 Secrets 时，发布说明会附上清除隔离标记的命令。
+未配置 Apple 签名 Secrets 时，首次打开应用的处理方式见官网使用手册，后续 Release 不重复说明。
 
 ## Homebrew
 

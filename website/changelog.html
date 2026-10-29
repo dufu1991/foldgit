@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>FoldGit 更新日志</title>
+  <meta name="description" content="了解 FoldGit 每个版本的新增功能、体验改进与问题修复。">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="assets/favicon.png" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="assets/favicon-dark.png" media="(prefers-color-scheme: dark)">
+  <script>
+    (() => {
+      var root = document.documentElement, store = {};
+      try { store.lang = localStorage.getItem("foldgit.lang"); store.theme = localStorage.getItem("foldgit.theme"); } catch (e) {}
+      var first = (navigator.languages && navigator.languages[0]) || navigator.language || "";
+      var lang = store.lang === "zh" || store.lang === "en" ? store.lang : (first.toLowerCase().indexOf("zh") === 0 ? "zh" : "en");
+      root.dataset.lang = lang;
+      root.lang = lang === "zh" ? "zh-CN" : "en";
+      if (store.theme === "light" || store.theme === "dark") root.dataset.theme = store.theme;
+      root.dataset.mode = root.dataset.theme || "auto";
+      root.dataset.scheme = root.dataset.theme || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    })();
+  </script>
+  <script>
+    window.FOLDGIT_I18N = {
+      zh: {
+        "meta.title": "FoldGit 更新日志",
+        "meta.description": "了解 FoldGit 每个版本的新增功能、体验改进与问题修复。"
+      },
+      en: {
+        "meta.title": "FoldGit Changelog",
+        "meta.description": "New features, improvements and fixes in each FoldGit release."
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="styles.css?v=10">
+</head>
+<body class="manual-page">
+  <div class="backdrop" aria-hidden="true">
+    <svg class="bands" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--band-1a)"/><stop offset="1" style="stop-color:var(--band-1b)"/></linearGradient>
+        <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--band-2a)"/><stop offset="1" style="stop-color:var(--band-2b)"/></linearGradient>
+        <linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--band-3a)"/><stop offset="1" style="stop-color:var(--band-3b)"/></linearGradient>
+      </defs>
+      <g class="band band-1">
+        <path fill="url(#g1)" d="M-80 470C260 430 560 330 900 250C1120 198 1300 150 1520 90V1700H-80Z"/>
+        <path class="edge" d="M-80 470C260 430 560 330 900 250C1120 198 1300 150 1520 90"/>
+      </g>
+      <g class="band band-2">
+        <path fill="url(#g2)" d="M-80 640C240 620 520 520 860 450C1100 400 1300 360 1520 300V1700H-80Z"/>
+        <path class="edge" d="M-80 640C240 620 520 520 860 450C1100 400 1300 360 1520 300"/>
+      </g>
+      <g class="band band-3">
+        <path fill="url(#g3)" d="M-80 800C220 790 520 730 840 690C1110 656 1310 620 1520 560V1700H-80Z"/>
+        <path class="edge" d="M-80 800C220 790 520 730 840 690C1110 656 1310 620 1520 560"/>
+      </g>
+    </svg>
+    <div class="grain"></div>
+  </div>
+
+  <header class="nav-wrap">
+    <nav class="nav glass" aria-label="Primary">
+      <a class="brand" href="index.html">
+        <img class="brand-icon" src="assets/icon.webp" data-app-icon alt="" width="28" height="28">
+        <span>FoldGit</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html"><span class="show-zh">首页</span><span class="show-en">Home</span></a>
+        <a href="manual.html"><span class="show-zh">使用手册</span><span class="show-en">Guide</span></a>
+        <a href="changelog.html" aria-current="page"><span class="show-zh">更新日志</span><span class="show-en">Changelog</span></a>
+      </div>
+      <div class="nav-actions">
+        <button class="pill-btn" id="lang-toggle" type="button" aria-label="Switch language / 切换语言">
+          <span class="show-zh">EN</span><span class="show-en">中</span>
+        </button>
+        <button class="pill-btn icon-btn" id="theme-toggle" type="button" aria-label="Toggle appearance">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6Z"/></svg>
+          <svg class="i-auto" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path class="fill" d="M12 3.5a8.5 8.5 0 0 1 0 17Z"/></svg>
+        </button>
+        <a class="pill-btn icon-btn" href="https://github.com/dufu1991/foldgit" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="filled"><path d="M12 1.8a10.2 10.2 0 0 0-3.2 19.9c.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.2-3.4-1.2-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.6 1.1 1.6 1.1.9 1.6 2.4 1.1 3 .8.1-.7.4-1.1.6-1.4-2.3-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .9-.3 2.8 1a9.6 9.6 0 0 1 5.1 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.7.7 1 1.6 1 2.7 0 3.9-2.3 4.7-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10.2 10.2 0 0 0 12 1.8Z"/></svg>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="manual changelog">
+    <header class="manual-head">
+      <p class="kicker">FoldGit</p>
+      <h1 class="manual-title"><span class="show-zh">更新日志</span><span class="show-en">Changelog</span></h1>
+      <p class="lede"><span class="show-zh">每个版本，都让日常操作更顺手。</span><span class="show-en">Small updates for a smoother everyday workflow.</span></p>
+    </header>
+
+    <div class="release-list">
+    <!-- changelog:start -->
+    <article class="release glass" id="v0.1.1" aria-labelledby="title-0.1.1">
+      <header class="release-head">
+        <h2 id="title-0.1.1"><a href="#v0.1.1">0.1.1</a></h2>
+        <span class="release-latest"><span class="show-zh">最新版本</span><span class="show-en">Latest</span></span>
+        <time datetime="2026-10-28">2026-10-28</time>
+      </header>
+      <ul class="show-zh" lang="zh-CN">
+        <li>新增 macOS 原生菜单与快捷键，快速操作仓库、分支和提交。</li>
+        <li>加快 macOS 仓库切换与工作区改动加载，减少等待。</li>
+        <li>优化应用图标的液态玻璃折射、蓝色背景与网格对比度。</li>
+      </ul>
+      <ul class="show-en" lang="en">
+        <li>Add native macOS menus and shortcuts for repositories, branches and commits.</li>
+        <li>Improve repository switching and working change loading on macOS.</li>
+        <li>Refine the app icon with glass refraction, deeper blue and clearer grid lines.</li>
+      </ul>
+      <a class="release-link" href="https://github.com/dufu1991/foldgit/releases/tag/v0.1.1">
+        <span class="show-zh">下载此版本</span><span class="show-en">Download this release</span><span aria-hidden="true"> ↗</span>
+      </a>
+    </article>
+
+    <article class="release glass" id="v0.1.0" aria-labelledby="title-0.1.0">
+      <header class="release-head">
+        <h2 id="title-0.1.0"><a href="#v0.1.0">0.1.0</a></h2>
+        <time datetime="2026-10-28">2026-10-28</time>
+      </header>
+      <ul class="show-zh" lang="zh-CN">
+        <li>首次发布，支持按目录或分组管理多个仓库与工作树。</li>
+        <li>支持提交历史、差异查看、暂存、提交及分支同步。</li>
+        <li>提供 macOS 原生应用与 Windows x64、ARM64 安装包。</li>
+      </ul>
+      <ul class="show-en" lang="en">
+        <li>First release with repositories and worktrees organized by folder or group.</li>
+        <li>Browse history and diffs, stage and commit changes, and sync branches.</li>
+        <li>Available as a native macOS app and Windows x64 and ARM64 installers.</li>
+      </ul>
+      <a class="release-link" href="https://github.com/dufu1991/foldgit/releases/tag/v0.1.0">
+        <span class="show-zh">下载此版本</span><span class="show-en">Download this release</span><span aria-hidden="true"> ↗</span>
+      </a>
+    </article>
+    <!-- changelog:end -->
+    </div>
+  </main>
+
+  <footer class="footer">
+    <nav class="footer-links" aria-label="Footer">
+      <a href="index.html"><span class="show-zh">首页</span><span class="show-en">Home</span></a>
+      <a href="manual.html"><span class="show-zh">使用手册</span><span class="show-en">Guide</span></a>
+      <a href="https://github.com/dufu1991/foldgit/releases">GitHub Releases</a>
+    </nav>
+    <p><span class="show-zh">FoldGit 由 dufu 独立维护，采用 MIT 许可证开源。</span><span class="show-en">FoldGit is independently maintained by dufu and released under the MIT License.</span></p>
+  </footer>
+
+  <script src="main.js?v=5"></script>
+</body>
+</html>

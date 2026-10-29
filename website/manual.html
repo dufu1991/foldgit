@@ -21,7 +21,7 @@
       root.dataset.scheme = root.dataset.theme || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=9">
+  <link rel="stylesheet" href="styles.css?v=10">
 </head>
 <body class="manual-page">
   <div class="backdrop" aria-hidden="true">
@@ -210,7 +210,7 @@
               <li>逐个文件查看差异。每个代码块右侧的 <b>+</b> 可以单独暂存这一块，<b>−</b> 取消暂存；也可以用底部的「全部暂存」（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd>）或「全部取消暂存」（<kbd>⌥</kbd><kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd>）。</li>
               <li>在「提交信息」里写好说明，按 <kbd>⌘</kbd><kbd>↩</kbd> 或点「提交」。勾选「修改上次提交」，或从菜单栏「提交 → 修改上次提交」进入，可以改写最近一次提交。</li>
             </ol>
-            <p class="tip">差异显示默认「自动」：窗口够宽时并排，窄时单栏。也可以在底部或菜单栏「显示 → 比对布局」中手动切换。</p>
+            <p class="tip">差异显示默认「自动」：窗口够宽时并排，窄时单栏。也可以在底部或菜单栏「显示 → 差异布局」中手动切换。</p>
           </div>
           <div class="show-en">
             <ol>
@@ -255,9 +255,9 @@
             <ul>
               <li><b>选择分支</b>（<kbd>⌘</kbd><kbd>B</kbd>）：切换、合并到当前分支、重命名或删除分支。</li>
               <li><b>合并分支</b>：在菜单栏「分支 → 合并分支」中选一个本地或远程分支，合并到当前分支。</li>
-              <li><b>新建分支</b>（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>B</kbd>）、<b>查看标签</b>：创建分支，浏览和管理标签；<kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd> 新建标签。</li>
+              <li><b>新建分支</b>（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>B</kbd>）、<b>显示标签</b>：创建分支，浏览和管理标签；<kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd> 新建标签。</li>
               <li><b>比较分支或标签</b>：选两个版本，查看它们之间的全部差异。</li>
-              <li><b>抓取 / 拉取 / 推送</b>（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd> / <kbd>L</kbd> / <kbd>P</kbd>）：与远程同步。抓取只下载更新，不会合并。<kbd>⌘</kbd><kbd>R</kbd> 刷新仓库状态。</li>
+              <li><b>获取 / 拉取 / 推送</b>（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd> / <kbd>L</kbd> / <kbd>P</kbd>）：与远程同步。获取只下载更新，不会合并。<kbd>⌘</kbd><kbd>R</kbd> 刷新仓库状态。</li>
               <li><b>打开方式</b>：在终端、编辑器或访达中打开当前仓库。<kbd>⌃</kbd><kbd>⌘</kbd><kbd>T</kbd> 在终端中打开，<kbd>⌃</kbd><kbd>⌘</kbd><kbd>O</kbd> 在访达中显示。</li>
             </ul>
           </div>
@@ -266,7 +266,7 @@
             <ul>
               <li><b>Select Branch</b> (<kbd>⌘</kbd><kbd>B</kbd>) — switch, merge into the current branch, rename or delete.</li>
               <li><b>Merge Branch</b> — choose Branch → Merge Branch, pick a local or remote branch, and merge it into the current one.</li>
-              <li><b>Create New Branch</b> (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>B</kbd>) and <b>Show Tags</b> — create branches, browse and manage tags; <kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd> creates a tag.</li>
+              <li><b>New Branch</b> (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>B</kbd>) and <b>Show Tags</b> — create branches, browse and manage tags; <kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd> creates a tag.</li>
               <li><b>Compare Branches or Tags</b> — pick two revisions and see everything between them.</li>
               <li><b>Fetch / Pull / Push</b> (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd> / <kbd>L</kbd> / <kbd>P</kbd>) — sync with the remote. Fetch only downloads; it never merges. <kbd>⌘</kbd><kbd>R</kbd> refreshes the repository.</li>
               <li><b>Open in</b> — open the repository in Terminal, your editor or Finder. <kbd>⌃</kbd><kbd>⌘</kbd><kbd>T</kbd> opens Terminal, <kbd>⌃</kbd><kbd>⌘</kbd><kbd>O</kbd> shows it in Finder.</li>
@@ -299,10 +299,10 @@
           <span class="m-num">08</span>
           <h2><span class="show-zh">贮藏</span><span class="show-en">Stash</span></h2>
           <div class="show-zh">
-            <p>在「未提交的更改」底部点「贮藏更改」（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd>），把手上的修改先收起来；之后从工具栏「查看贮藏的更改」中查看并恢复。</p>
+            <p>在「未提交的更改」底部点「贮藏全部更改」（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd>），把手上的修改先收起来；之后从工具栏「贮藏」中查看并恢复。</p>
           </div>
           <div class="show-en">
-            <p>Click Stash All Changes (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd>) under Uncommitted Changes to set your work aside, then view and restore it from Show Stashed Changes in the toolbar.</p>
+            <p>Click Stash All Changes (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd>) under Uncommitted Changes to set your work aside, then view and restore it from Stashes in the toolbar.</p>
           </div>
         </section>
 
@@ -313,7 +313,7 @@
             <p>按 <kbd>⌘</kbd><kbd>,</kbd> 打开。常用的几项：</p>
             <ul>
               <li><b>界面语言与外观</b>：八种语言，亮色、暗色或跟随系统。改语言后需重启应用。</li>
-              <li><b>自动抓取</b>：为每个仓库单独设置抓取间隔。</li>
+              <li><b>自动获取</b>：为每个仓库单独设置获取间隔。</li>
               <li><b>代码显示</b>：差异布局、字号、长行自动换行。</li>
               <li><b>打开方式</b>：固定常用的编辑器或终端，它们会排在菜单最前面。</li>
             </ul>
@@ -337,7 +337,7 @@
             <div><dt><kbd>⌘</kbd><kbd>O</kbd></dt><dd><span class="show-zh">打开仓库</span><span class="show-en">Open repository</span></dd></div>
             <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>N</kbd></dt><dd><span class="show-zh">克隆远程仓库</span><span class="show-en">Clone remote repository</span></dd></div>
             <div><dt><kbd>⌘</kbd><kbd>R</kbd></dt><dd><span class="show-zh">刷新</span><span class="show-en">Refresh</span></dd></div>
-            <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd></dt><dd><span class="show-zh">抓取</span><span class="show-en">Fetch</span></dd></div>
+            <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd></dt><dd><span class="show-zh">获取</span><span class="show-en">Fetch</span></dd></div>
             <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd></dt><dd><span class="show-zh">拉取</span><span class="show-en">Pull</span></dd></div>
             <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>P</kbd></dt><dd><span class="show-zh">推送</span><span class="show-en">Push</span></dd></div>
             <div><dt><kbd>⌃</kbd><kbd>⌘</kbd><kbd>O</kbd></dt><dd><span class="show-zh">在访达中显示</span><span class="show-en">Show in Finder</span></dd></div>
@@ -369,6 +369,9 @@
   </main>
 
   <footer class="footer">
+    <nav class="footer-links" aria-label="Footer">
+      <a href="changelog.html"><span class="show-zh">更新日志</span><span class="show-en">Changelog</span></a>
+    </nav>
     <p><span class="show-zh">FoldGit 由 dufu 独立维护，采用 MIT 许可证开源。</span><span class="show-en">FoldGit is independently maintained by dufu and released under the MIT License.</span></p>
   </footer>
 

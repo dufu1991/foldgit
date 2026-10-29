@@ -580,6 +580,23 @@ h3 { font-size: 21px; letter-spacing: -0.015em; }
 .final-icon { width: 96px; height: 96px; filter: drop-shadow(0 16px 26px rgba(40, 60, 160, 0.35)); }
 .footer { text-align: center; padding: 40px 16px 56px; color: var(--text-3); font-size: 14px; display: grid; gap: 6px; }
 .footer-note { font-size: 12.5px; }
+.footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 12px; color: var(--text-2); }
+.footer-links a:hover { color: var(--accent); }
+.footer-links a:focus-visible, .release a:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; border-radius: 4px; }
+
+/* ------------------------------------------------------------------ changelog */
+.manual.changelog { max-width: 840px; }
+.release-list { display: grid; gap: 24px; }
+.release { padding: clamp(24px, 5vw, 40px); border-radius: 26px; scroll-margin-top: 100px; }
+.release-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 24px; }
+.release-head h2 { font-size: 30px; font-variant-numeric: tabular-nums; }
+.release-head time { margin-left: auto; color: var(--text-3); font-size: 14px; font-variant-numeric: tabular-nums; }
+.release-latest { padding: 4px 10px; border-radius: 20px; background: var(--row-sel); color: var(--accent); font-size: 12px; font-weight: 600; }
+.release ul { margin: 0; padding-left: 20px; color: var(--text-2); font-size: 16px; }
+.release li + li { margin-top: 10px; }
+.release li::marker { color: var(--accent); }
+.release-link { display: inline-block; margin-top: 26px; color: var(--accent); font-size: 14px; font-weight: 600; }
+.release-link:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 /* ------------------------------------------------------------------ manual */
 .manual { max-width: 1120px; margin: 0 auto; padding: 128px 16px 40px; }

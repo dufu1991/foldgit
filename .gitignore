@@ -116,3 +116,6 @@ output/
 *.user
 *.pfx
 *.cer
+
+# Python tooling
+__pycache__/

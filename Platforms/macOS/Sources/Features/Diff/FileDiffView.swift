@@ -4,6 +4,7 @@ import SwiftUI
 struct FileDiffView: View {
     @Environment(\.imageDiffContext) private var imageDiffContext
     @Binding var expandableFileDiff: ExpandableModel<FileDiff>
+    var treeDepth: Int? = nil
 
     var body: some View {
         Section {
@@ -25,10 +26,11 @@ struct FileDiffView: View {
         } header: {
             FileDiffHeaderView(
                 isExpanded: $expandableFileDiff.isExpanded,
-                fileDiff: expandableFileDiff.model
+                fileDiff: expandableFileDiff.model,
+                treeDepth: treeDepth
             )
         } footer: {
-            FileDiffDivider()
+            if expandableFileDiff.isExpanded { FileDiffDivider() }
         }
     }
 

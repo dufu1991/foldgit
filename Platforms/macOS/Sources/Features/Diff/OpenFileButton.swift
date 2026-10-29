@@ -21,8 +21,9 @@ struct OpenFileButton: View {
             }
         } label: {
             Image(systemName: "arrow.up.right")
+                .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(.secondary)
-                .frame(width: 12, height: 12)
+                .frame(width: 16, height: 16)
         }
         .buttonStyle(.bordered)
         .controlSize(.small)

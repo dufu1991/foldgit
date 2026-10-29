@@ -6,7 +6,11 @@ struct StagedView: View {
     var status: String
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
-    @State private var isExpanded = true
+    var layout = ChangeFileLayout.list
+    var tree = ChangeFileTree()
+    @Binding var collapsedDirectories: Set<String>
+    @Binding var isExpanded: Bool
+    var onSelectDirectory: ((String) -> Void)? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -30,7 +34,12 @@ struct StagedView: View {
                             selectFileButtonHelp: String(localized: "Unstage This File"),
                             selectButtonHelp: String(localized: "Unstage This Hunk"),
                             onSelectFileDiff: onSelectFileDiff,
-                            onSelectChunk: onSelectChunk
+                            onSelectChunk: onSelectChunk,
+                            layout: layout,
+                            tree: tree,
+                            collapsedDirectories: $collapsedDirectories,
+                            onSelectDirectory: onSelectDirectory,
+                            selectDirectoryButtonHelp: String(localized: "Unstage This Directory")
                         )
                         .environment(\.imageDiffContext, .staged)
                         .padding(.leading, 4)

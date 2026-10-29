@@ -13,6 +13,7 @@ enum PreferenceKey: String, CaseIterable {
     case searchTokenHisrtory
     case diffLayout
     case diffFileExpansion
+    case changeFileLayout
     case toolbarLabelStyle
     case projectAutoFetch
     case openInPinnedApplications

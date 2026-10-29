@@ -36,7 +36,7 @@ struct RepositoryScreen: View {
             // Shares the toolbar edge with the detail column, whose scroll view draws its line there.
             Divider()
             HStack(spacing: 8) {
-                NativeSearchField(text: $searchText, placeholder: String(localized: "Search Author, Email, or Message"),
+                NativeSearchField(text: $searchText, placeholder: String(localized: "Search Commits"),
                                   accessibilityIdentifier: "commitSearchField", focusRequest: searchFocusRequest) { text, composing in
                     logStore.search(text, isComposing: composing)
                 }
@@ -67,7 +67,7 @@ struct RepositoryScreen: View {
                         .foregroundStyle(.secondary)
                     Spacer(minLength: 0)
                     if logStore.isRevealingIncoming { ProgressView().controlSize(.small) }
-                    Button("View Incoming Commits") {
+                    Button("Show") {
                         searchText = ""
                         Task {
                             if let target = await logStore.revealIncoming() {
@@ -76,6 +76,7 @@ struct RepositoryScreen: View {
                             }
                         }
                     }
+                    .help("View Incoming Commits")
                     .disabled(logStore.isRevealingIncoming)
                     .accessibilityIdentifier("viewIncomingCommitsButton")
                 }
@@ -105,7 +106,7 @@ struct RepositoryScreen: View {
         .safeAreaInset(edge: .top, spacing: 0) {
             if session.mergeState?.isMerging == true {
                 VStack(alignment: .leading, spacing: 8) {
-                    Label("Merge in Progress", systemImage: "arrow.triangle.merge").font(.callout.weight(.medium))
+                    Label("Merge in Progress", systemImage: "arrow.trianglehead.merge").font(.callout.weight(.medium))
                     Button("Resolve Merge") { showing.mergeResolution = true }
                 }
                 .padding(12).frame(maxWidth: .infinity, alignment: .leading).background(.bar)
@@ -121,7 +122,7 @@ struct RepositoryScreen: View {
             }
             .overlay(alignment: .trailing, content: {
                 Toggle(isOn: $showGraph) {
-                    Label("Commit Graph", systemImage: "arrow.triangle.branch")
+                    Label("Commit Graph", systemImage: "arrow.trianglehead.branch")
                         .labelStyle(.iconOnly)
                         .font(.system(size: 14, weight: .medium))
                         .frame(width: 20, height: 20)
@@ -167,6 +168,9 @@ struct RepositoryScreen: View {
         })
         .onReceive(NotificationCenter.default.publisher(for: .repositoryMergeDidChange)) { _ in
             Task { await refreshModels() }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .settingsDidRestoreDefaults)) { _ in
+            Task { await logStore.setScope(.currentBranch) }
         }
         .sheet(isPresented: $showing.mergeResolution, onDismiss: {
             Task { await refreshModels() }
@@ -488,10 +492,10 @@ struct RepositoryScreen: View {
             showing.branches.toggle()
         } label: {
             Label {
-                Text("Select Branch")
+                Text("Branch")
             } icon: {
                 HStack(spacing: 8) {
-                    Image(systemName: "arrow.trianglehead.branch")
+                    Image.gitBranch
                         .foregroundStyle(Color.accentColor)
                     Text(branch?.name ?? String(localized: "Branches"))
                         .font(.body.weight(.semibold))
@@ -563,16 +567,16 @@ struct RepositoryScreen: View {
         Button {
             showing.createNewBranchFrom = branch
         } label: {
-            Label("Create New Branch", systemImage: "plus")
+            Label("New Branch", systemImage: "plus")
         }
-        .help("Create New Branch")
+        .help("New Branch")
     }
 
     fileprivate func tagButton() -> some View {
         Button {
             showing.tags.toggle()
         } label: {
-            Label("Show Tags", systemImage: "tag")
+            Label("Tags", systemImage: "tag")
         }
         .help("Show Tags")
         .popover(isPresented: $showing.tags) {
@@ -589,16 +593,16 @@ struct RepositoryScreen: View {
         Button {
             showing.stashChanged.toggle()
         } label: {
-            Label("Show Stashed Changes", systemImage: "tray")
+            Label("Stashes", systemImage: "tray")
         }
-        .help("Show Stashed Changes")
+        .help("Show Stashes")
     }
 
     fileprivate func compareButton() -> some View {
         Button {
             showing.compareRevisions = true
         } label: {
-            Label("Compare Branches or Tags", systemImage: "arrow.left.arrow.right")
+            Label("Compare", systemImage: "arrow.left.arrow.right")
         }
         .help("Compare Branches or Tags")
     }

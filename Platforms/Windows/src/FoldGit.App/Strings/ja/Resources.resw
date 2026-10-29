@@ -90,14 +90,14 @@
   <data name="Text_c94ecadbce99bae7f94cfcfb" xml:space="preserve">
     <value>直前のコミットを修正</value>
   </data>
-  <data name="Text_bb9c3ca1fcf56ea4eaf9fd6c" xml:space="preserve">
+  <data name="Text_24da7b5eb1cdcba0e665e1b6" xml:space="preserve">
     <value>{0} の実行中にエラーが発生しました。</value>
   </data>
   <data name="Text_3907fa7f80722a6fc58cd8c1" xml:space="preserve">
     <value>外観</value>
   </data>
   <data name="Text_98e33b0f3104fcf1b812ba2c" xml:space="preserve">
-    <value>アプリ一覧</value>
+    <value>アプリ</value>
   </data>
   <data name="Text_868cdc6ea50ad80ee6876d2f" xml:space="preserve">
     <value>新しく開く差分に適用されます。手動で展開または折りたたんだファイルの状態は保持されます。</value>
@@ -158,6 +158,9 @@
   </data>
   <data name="Text_6717f40f497e0510e95e83c7" xml:space="preserve">
     <value>クローンをキャンセル中</value>
+  </data>
+  <data name="Text_b585b9ae2b811e9c591c9d00" xml:space="preserve">
+    <value>変更ファイルの表示</value>
   </data>
   <data name="Text_da9fc80016b0ff1af0d679e5" xml:space="preserve">
     <value>変更をローカルでマージしました。対象ワークツリーを開いて確認、テスト、プッシュを行えます。</value>
@@ -240,8 +243,17 @@
   <data name="Text_ffe95143bc990ee850df6607" xml:space="preserve">
     <value>すべてのファイルを折りたたむ</value>
   </data>
+  <data name="Text_624e3d714b392ee74e912c9d" xml:space="preserve">
+    <value>差分を折りたたむ</value>
+  </data>
+  <data name="Text_a1feb1d2c82679bc386b27a4" xml:space="preserve">
+    <value>ディレクトリを折りたたむ</value>
+  </data>
   <data name="Text_45fb3894186e30b7cc38da32" xml:space="preserve">
     <value>ファイルを折りたたむ</value>
+  </data>
+  <data name="Text_7995322f8f50d43b0bd75061" xml:space="preserve">
+    <value>フォルダを折りたたむ</value>
   </data>
   <data name="Text_b322b65227bc3ec948893e32" xml:space="preserve">
     <value>折りたたみ</value>
@@ -315,17 +327,17 @@
   <data name="Text_ab480df9b105271e4e11fcea" xml:space="preserve">
     <value>コミットハッシュをコピー</value>
   </data>
+  <data name="Text_04a05d81cc5c997a10f7ab9e" xml:space="preserve">
+    <value>差分内の変更ファイルを読み取れません。</value>
+  </data>
+  <data name="Text_aaa1d8c5ca48d2a3cf8eb0db" xml:space="preserve">
+    <value>差分を読み取れません。</value>
+  </data>
   <data name="Text_4759498ac2a719c619e2c8cf" xml:space="preserve">
     <value>作成</value>
   </data>
   <data name="Text_cb68879d74579d38a6f412e4" xml:space="preserve">
     <value>作成してプッシュ</value>
-  </data>
-  <data name="Text_bf815ec6a83fe388ec634585" xml:space="preserve">
-    <value>ブランチを作成</value>
-  </data>
-  <data name="Text_ad41f17a7f5ed0d23b3734a0" xml:space="preserve">
-    <value>タグを作成</value>
   </data>
   <data name="Text_e0d1b68224bf0b31ef16b206" xml:space="preserve">
     <value>現在</value>
@@ -368,6 +380,9 @@
   </data>
   <data name="Text_33bb7b7370aad4f9d3f0a923" xml:space="preserve">
     <value>差分レイアウト</value>
+  </data>
+  <data name="Text_25523ba32c7136d9f0713a70" xml:space="preserve">
+    <value>ディレクトリツリー</value>
   </data>
   <data name="Text_18d67c992b71ce69eb924554" xml:space="preserve">
     <value>表示名</value>
@@ -420,8 +435,17 @@
   <data name="Text_7cf0d193cccdfabb97454557" xml:space="preserve">
     <value>すべてのファイルを展開</value>
   </data>
+  <data name="Text_f99cd7ddd3e0dbf63d0b8833" xml:space="preserve">
+    <value>差分を展開</value>
+  </data>
+  <data name="Text_f9203a91288857a2eb29c982" xml:space="preserve">
+    <value>ディレクトリを展開</value>
+  </data>
   <data name="Text_483d3ba8580a6642298c1c50" xml:space="preserve">
     <value>ファイルを展開</value>
+  </data>
+  <data name="Text_ce65cc8bc111022d3861c6ae" xml:space="preserve">
+    <value>フォルダを展開</value>
   </data>
   <data name="Text_e72d5d8d0b167d21b4e4a89e" xml:space="preserve">
     <value>展開</value>
@@ -489,6 +513,9 @@
   <data name="Text_f1c65e14817efef2b77973a4" xml:space="preserve">
     <value>進む</value>
   </data>
+  <data name="Text_dc45d36f35e84e07f49bc9d0" xml:space="preserve">
+    <value>起点：</value>
+  </data>
   <data name="Text_c910d474dcd724bff83ddede" xml:space="preserve">
     <value>一般</value>
   </data>
@@ -510,6 +537,9 @@
   <data name="Text_5d2e701ca0f1ef2dad59d311" xml:space="preserve">
     <value>Git が無効なワークツリー情報を返しました。</value>
   </data>
+  <data name="Text_9248ca516a7c79c6fee27c8d" xml:space="preserve">
+    <value>Git から出力がありません。</value>
+  </data>
   <data name="Text_71f9f4866eacd0c07a930f1c" xml:space="preserve">
     <value>Git が見つかりません。Git for Windows をインストールするか git.exe を選択してください。</value>
   </data>
@@ -527,9 +557,6 @@
   </data>
   <data name="Text_9709a3b2e51f0ef313f5ad19" xml:space="preserve">
     <value>サイドバーを非表示</value>
-  </data>
-  <data name="Text_0e769600933790607b2a13b3" xml:space="preserve">
-    <value>検索履歴</value>
   </data>
   <data name="Text_e6a07707b0fbc950b433139a" xml:space="preserve">
     <value>履歴の範囲</value>
@@ -603,6 +630,12 @@
   <data name="Text_54d16531eb769f15a910c862" xml:space="preserve">
     <value>リンクされたワークツリー</value>
   </data>
+  <data name="Text_6f202f54a7b2d8fe42aa804e" xml:space="preserve">
+    <value>リスト</value>
+  </data>
+  <data name="Text_3f06cd334f4811b2130b13a8" xml:space="preserve">
+    <value>さらに読み込む</value>
+  </data>
   <data name="Text_322b540df1e8e7eaf9b0fec3" xml:space="preserve">
     <value>アプリを読み込み中</value>
   </data>
@@ -673,7 +706,7 @@
     <value>変更</value>
   </data>
   <data name="Text_d47d7cb0e4f8fd2be5ee0782" xml:space="preserve">
-    <value>さらに読み込む</value>
+    <value>その他</value>
   </data>
   <data name="Text_6ecc3df6bffdd06c58cd4f6e" xml:space="preserve">
     <value>移動</value>
@@ -690,8 +723,11 @@
   <data name="Text_5c1f4b6143af38d55c58ea29" xml:space="preserve">
     <value>リポジトリに名前を付ける</value>
   </data>
+  <data name="Text_2683cad48a14dc3f79c167e4" xml:space="preserve">
+    <value>名前：</value>
+  </data>
   <data name="Text_cd5ce4449ea9f8c537b990f5" xml:space="preserve">
-    <value>新しいブランチ</value>
+    <value>新規ブランチ</value>
   </data>
   <data name="Text_493c780b4823eec50aa921b4" xml:space="preserve">
     <value>新しいブランチ名</value>
@@ -704,6 +740,9 @@
   </data>
   <data name="Text_1fac73e86cf4db8ba24f1b6b" xml:space="preserve">
     <value>選択項目で新規グループを作成</value>
+  </data>
+  <data name="Text_82148b3da229440cdb35bd4e" xml:space="preserve">
+    <value>新規タグ</value>
   </data>
   <data name="Text_61fced6671058e6b666a63e2" xml:space="preserve">
     <value>新しいワークツリー</value>
@@ -731,9 +770,6 @@
   </data>
   <data name="Text_145b487f5ed6096d9f048af5" xml:space="preserve">
     <value>コミットがありません</value>
-  </data>
-  <data name="Text_06bff09c7e200917cbe975e0" xml:space="preserve">
-    <value>コミット履歴がありません</value>
   </data>
   <data name="Text_4e47ec927670bb96ab007a75" xml:space="preserve">
     <value>内容がありません</value>
@@ -834,20 +870,8 @@
   <data name="Text_07ab08927a968d80214e1036" xml:space="preserve">
     <value>別のワークツリーで対象ブランチを開いてから完了してください。</value>
   </data>
-  <data name="Text_8e5c518bc240ced7f0082d36" xml:space="preserve">
-    <value>元のプロジェクト</value>
-  </data>
   <data name="Text_189a8567d84bfbdd8629aab5" xml:space="preserve">
     <value>その他のアプリ</value>
-  </data>
-  <data name="Text_27eb74726f093262742ca114" xml:space="preserve">
-    <value>ファイル差分の先頭行を解析できません。</value>
-  </data>
-  <data name="Text_8591c33061180da3a98de9c3" xml:space="preserve">
-    <value>ファイル差分の変更先ファイルのマーカーを解析できません。</value>
-  </data>
-  <data name="Text_b1e214809bc313c13f0d340f" xml:space="preserve">
-    <value>Git の出力が空のため解析できません。</value>
   </data>
   <data name="Text_30d2d6bd3576a41f3616e71d" xml:space="preserve">
     <value>アプリを固定</value>
@@ -907,7 +931,7 @@
     <value>更新</value>
   </data>
   <data name="Text_6c77419207d3a4089520ef72" xml:space="preserve">
-    <value>アプリ一覧を更新</value>
+    <value>アプリを更新</value>
   </data>
   <data name="Text_db010f388106692884f127c8" xml:space="preserve">
     <value>リポジトリを再読み込み</value>
@@ -1026,14 +1050,11 @@
   <data name="Text_23a1309d6a7c1e827442065c" xml:space="preserve">
     <value>保存先</value>
   </data>
-  <data name="Text_f61d313e4bc27b6e5f427f2f" xml:space="preserve">
-    <value>作成者、メール、コミットメッセージを検索</value>
-  </data>
   <data name="Text_3a93f31e545c049a2864a25b" xml:space="preserve">
     <value>コミットを検索</value>
   </data>
-  <data name="Text_263673f6564548b254a7dd2a" xml:space="preserve">
-    <value>フォルダやリポジトリを検索</value>
+  <data name="Text_d416f4340be478fabb6757d5" xml:space="preserve">
+    <value>リポジトリを検索</value>
   </data>
   <data name="Text_1ce37f395d7aa7aaa8076d0f" xml:space="preserve">
     <value>ブランチを選択</value>
@@ -1056,6 +1077,9 @@
   <data name="Text_74a883a037bc227f91891ab6" xml:space="preserve">
     <value>設定</value>
   </data>
+  <data name="Text_0df6f1cad36c49da768a6efd" xml:space="preserve">
+    <value>表示</value>
+  </data>
   <data name="Text_590180ed4faa710883dfa079" xml:space="preserve">
     <value>コミットグラフを表示</value>
   </data>
@@ -1065,7 +1089,7 @@
   <data name="Text_04efae3fc7825d3a016a59f5" xml:space="preserve">
     <value>サイドバーを表示</value>
   </data>
-  <data name="Text_d54b67e82cfc26c3277e9d86" xml:space="preserve">
+  <data name="Text_2da0f3d2589892ba011473c0" xml:space="preserve">
     <value>スタッシュを表示</value>
   </data>
   <data name="Text_a81279506a9593595764ef25" xml:space="preserve">
@@ -1104,11 +1128,14 @@
   <data name="Text_d1ce47c82d3285bba8b89d87" xml:space="preserve">
     <value>すべてステージ</value>
   </data>
+  <data name="Text_9efa12c7103ca805a98eb2f5" xml:space="preserve">
+    <value>このディレクトリをステージ</value>
+  </data>
   <data name="Text_4a990090e7099391b64119f1" xml:space="preserve">
     <value>このファイルをステージ</value>
   </data>
   <data name="Text_3d09e333faa5e0b38016821d" xml:space="preserve">
-    <value>この変更ブロックをステージ</value>
+    <value>このハンクをステージ</value>
   </data>
   <data name="Text_9146f6965705db924aa1619e" xml:space="preserve">
     <value>コミット画面で残りの変更をステージしてから続行してください。</value>
@@ -1125,20 +1152,20 @@
   <data name="Text_9b1a2b61aa956a9af54b18b2" xml:space="preserve">
     <value>すべての変更をスタッシュ</value>
   </data>
-  <data name="Text_fd40083287af8b989fb242b3" xml:space="preserve">
+  <data name="Text_3601420ab6a0cf864306d9d8" xml:space="preserve">
     <value>スタッシュした変更</value>
   </data>
-  <data name="Text_eb388bc6fa1bdf4bd521a53c" xml:space="preserve">
+  <data name="Text_e45b6015e5311ca73cb415a2" xml:space="preserve">
+    <value>スタッシュ</value>
+  </data>
+  <data name="Text_ce23ab1e75dc0ad7dcbfc55e" xml:space="preserve">
     <value>コミットを入れ替え</value>
   </data>
-  <data name="Text_61f24ced9ac719e37f48e3f9" xml:space="preserve">
+  <data name="Text_de245f1d6203f04adab03041" xml:space="preserve">
     <value>比較元と比較先を入れ替え</value>
   </data>
   <data name="Text_0cfdb0c8e363449c2b4919ee" xml:space="preserve">
     <value>同期エラー</value>
-  </data>
-  <data name="Text_1503916a2ab2b0fd6768d345" xml:space="preserve">
-    <value>タグを作成</value>
   </data>
   <data name="Text_4a32b016fa3839ad18caaf9b" xml:space="preserve">
     <value>タグ名：</value>
@@ -1227,11 +1254,14 @@
   <data name="Text_76ebb3e1241d665cb7cc2ee7" xml:space="preserve">
     <value>すべてステージ解除</value>
   </data>
+  <data name="Text_eca58eb8a8fcfb0c75dab5d5" xml:space="preserve">
+    <value>このディレクトリのステージを解除</value>
+  </data>
   <data name="Text_8110d1d98b7c3dad099a29ad" xml:space="preserve">
     <value>このファイルのステージを解除</value>
   </data>
   <data name="Text_7cfd897cde30a6e4b09f2a9a" xml:space="preserve">
-    <value>この変更ブロックのステージを解除</value>
+    <value>このハンクのステージを解除</value>
   </data>
   <data name="Text_65306913af4d162981e9ab7a" xml:space="preserve">
     <value>未ステージの変更</value>
@@ -1247,9 +1277,6 @@
   </data>
   <data name="Text_3cc572f22838566564c488c8" xml:space="preserve">
     <value>対象ブランチの内容を採用</value>
-  </data>
-  <data name="Text_d946352c8f8acf980ce6099d" xml:space="preserve">
-    <value>テキストとして使用</value>
   </data>
   <data name="Text_d131ef7f9b5e2b457faba856" xml:space="preserve">
     <value>ユーザーガイド</value>
@@ -1271,9 +1298,6 @@
   </data>
   <data name="Text_bd3cfaa28d90627d171fc565" xml:space="preserve">
     <value>現在の変更を保持したまま、別のフォルダで他のブランチを操作します。</value>
-  </data>
-  <data name="Text_7b5d66944b4512ab009f67ea" xml:space="preserve">
-    <value>作業ツリーの変更</value>
   </data>
   <data name="Text_bd85643c93f3f3707df4f4fa" xml:space="preserve">
     <value>作業ツリー</value>

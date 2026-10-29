@@ -8,29 +8,43 @@ struct StageFileDiffsView: View {
     var selectButtonHelp: String
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
-    @Environment(\.expandAllFiles) private var expandAllFilesID: UUID?
-    @Environment(\.collapseAllFiles) private var collapseAllFilesID: UUID?
+    var layout = ChangeFileLayout.list
+    var tree = ChangeFileTree()
+    @Binding var collapsedDirectories: Set<String>
+    var onSelectDirectory: ((String) -> Void)? = nil
+    var selectDirectoryButtonHelp = String(localized: "Stage This Directory")
 
     var body: some View {
+        let index = ExpandableFileDiffIndex(expandableFileDiffs)
         LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
-            ForEach($expandableFileDiffs, id: \.model.id) { $fileDiff in
-                StageFileDiffView(
-                    expandableFileDiff: $fileDiff,
-                    selectButtonImageSystemName: selectButtonImageSystemName,
-                    selectFileButtonHelp: selectFileButtonHelp,
-                    selectButtonHelp: selectButtonHelp,
-                    onSelectFileDiff: onSelectFileDiff,
-                    onSelectChunk: onSelectChunk
-                )
+            if layout == .tree {
+                ChangeFileTreeRows(tree: tree, collapsedDirectories: $collapsedDirectories,
+                                   actionImageSystemName: selectButtonImageSystemName,
+                                   actionHelp: selectDirectoryButtonHelp,
+                                   onSelectDirectory: onSelectDirectory) { row in
+                    if let id = row.fileID, let offset = index.offset(of: id) {
+                        fileView(index.files[offset], sourceIndex: offset, treeDepth: row.depth)
+                    }
+                }
+            } else {
+                ForEach(Array(index.files.enumerated()), id: \.element.model.id) { offset, file in
+                    fileView(file, sourceIndex: offset)
+                }
             }
-            .font(Font.system(.body, design: .monospaced))
         }
+        .font(Font.system(.body, design: .monospaced))
         .frame(maxWidth: .infinity, alignment: .leading)
-        .onChange(of: expandAllFilesID) { _, _ in
-            expandableFileDiffs = expandableFileDiffs.map { ExpandableModel(isExpanded: true, model: $0.model)}
-        }
-        .onChange(of: collapseAllFilesID) { _, _ in
-            expandableFileDiffs = expandableFileDiffs.map { ExpandableModel(isExpanded: false, model: $0.model)}
-        }
+    }
+
+    private func fileView(_ original: ExpandableModel<FileDiff>, sourceIndex: Int, treeDepth: Int? = nil) -> some View {
+        StageFileDiffView(
+            expandableFileDiff: $expandableFileDiffs.element(original, near: sourceIndex),
+            selectButtonImageSystemName: selectButtonImageSystemName,
+            selectFileButtonHelp: selectFileButtonHelp,
+            selectButtonHelp: selectButtonHelp,
+            onSelectFileDiff: onSelectFileDiff,
+            onSelectChunk: onSelectChunk,
+            treeDepth: treeDepth
+        )
     }
 }

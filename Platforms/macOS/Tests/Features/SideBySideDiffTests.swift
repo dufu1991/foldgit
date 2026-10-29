@@ -326,7 +326,8 @@ final class SideBySideDiffTests: XCTestCase {
                 expandableFileDiffs: .constant(files),
                 selectButtonImageSystemName: "minus.circle",
                 selectFileButtonHelp: "Unstage This File",
-                selectButtonHelp: "Unstage This Hunk"
+                selectButtonHelp: "Unstage This Hunk",
+                collapsedDirectories: .constant([])
             )
         }
         .defaultAppStorage(preferences)

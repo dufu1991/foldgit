@@ -25,4 +25,10 @@ extension Array where Element: Hashable & Identifiable {
     }
 }
 
+extension Array {
+    public func settingExpansion<Model>(_ isExpanded: Bool) -> Self where Element == ExpandableModel<Model> {
+        map { ExpandableModel(isExpanded: isExpanded, model: $0.model) }
+    }
+}
+
 extension ExpandableModel: Sendable where Model: Sendable {}

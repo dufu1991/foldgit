@@ -100,17 +100,18 @@ struct AppPreferencesTests {
     }
 
     @MainActor
-    @Test func diffFileExpansionDefaultsToExpandedAndPersistsTheSelectedMode() {
+    @Test func diffFileExpansionDefaultsToCollapsedAndPersistsTheSelectedMode() {
         withDefaults { defaults, _ in
             let key = PreferenceKey.diffFileExpansion.rawValue
-            let preference = AppStorage(wrappedValue: DiffFileExpansion.expanded, key, store: defaults)
-            #expect(preference.wrappedValue.isExpanded)
-            preference.wrappedValue = .collapsed
-            #expect(defaults.string(forKey: key) == "collapsed")
-            let restored = AppStorage(wrappedValue: DiffFileExpansion.expanded, key, store: defaults)
-            #expect(!restored.wrappedValue.isExpanded)
-            restored.wrappedValue = .expanded
+            let preference = AppStorage(wrappedValue: AppPreferences.defaultDiffFileExpansion, key, store: defaults)
+            #expect(!preference.wrappedValue.isExpanded)
+            preference.wrappedValue = .expanded
             #expect(defaults.string(forKey: key) == "expanded")
+            let restored = AppStorage(wrappedValue: AppPreferences.defaultDiffFileExpansion, key, store: defaults)
+            #expect(restored.wrappedValue.isExpanded)
+            restored.wrappedValue = .collapsed
+            #expect(!restored.wrappedValue.isExpanded)
+            #expect(defaults.string(forKey: key) == "collapsed")
         }
     }
 

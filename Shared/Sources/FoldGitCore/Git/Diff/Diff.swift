@@ -146,7 +146,7 @@ public struct FileDiff: Identifiable, Hashable, Sendable {
         let splited = raw.split(separator: "\n", omittingEmptySubsequences: false).map { String($0) }
         let firstLine = splited.first
         guard let firstLine else {
-            throw GenericError(errorDescription: NSLocalizedString("Parse error for first line in FileDiff", comment: ""))
+            throw GenericError(errorDescription: NSLocalizedString("Couldn't read the diff.", comment: ""))
         }
         header = firstLine
         let fromFileIndex = splited.firstIndex { $0.hasPrefix("--- ") }
@@ -162,7 +162,7 @@ public struct FileDiff: Identifiable, Hashable, Sendable {
         extendedHeaderLines = splited[1..<fromFileIndex].map { String($0) }
         let toFileIndex = splited.indices.first { $0 > fromFileIndex && splited[$0].hasPrefix("+++ ") }
         guard let toFileIndex else {
-            throw GenericError(errorDescription: NSLocalizedString("Parse error for toFileIndex in FileDiff", comment: ""))
+            throw GenericError(errorDescription: NSLocalizedString("Couldn't read the changed file in the diff.", comment: ""))
         }
         fromFileToFileLines = splited[fromFileIndex...toFileIndex].map { String($0) }
         chunks = Self.extractChunks(from: splited).map { Chunk(raw: $0) }

@@ -30,7 +30,7 @@ struct CommitGraphView: View {
                                     ProgressView()
                                         .controlSize(.small)
                                 } else {
-                                    Button("More") {
+                                    Button("Load More") {
                                         Task {
                                             isLoading = true
                                             await logStore.loadMore()
@@ -126,11 +126,11 @@ struct CommitGraphContentView: View {
             CommitGraphLaneView(positioned: positioned, showsNode: false)
                 .overlay {
                     Image(systemName: "square.and.pencil")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.system(size: 11, weight: .medium))
                         .foregroundStyle(.orange)
-                        .frame(width: 24, height: 24)
-                        .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 6))
-                        .overlay { RoundedRectangle(cornerRadius: 6).strokeBorder(Color.orange.opacity(0.4)) }
+                        .frame(width: 20, height: 20)
+                        .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 5))
+                        .overlay { RoundedRectangle(cornerRadius: 5).strokeBorder(Color.orange.opacity(0.4)) }
                         .position(x: CommitGraphStyle.x(column: positioned.column), y: CommitGraphStyle.nodeY)
                 }
                 .frame(width: CommitGraphStyle.textLeading(for: positioned), height: CommitGraphStyle.rowHeight)
@@ -185,7 +185,7 @@ struct CommitGraphContentView: View {
                             .help(positioned.commit.authorDateDisplay)
                     }
                     if let name = worktreeVisibility.decorations(positioned.commit.branches).first {
-                        Label(name, systemImage: "arrow.triangle.branch")
+                        Label(name, image: "git.branch")
                             .font(.system(size: 10, weight: .medium))
                             .foregroundStyle(CommitGraphStyle.color(index: positioned.colorIndex))
                             .lineLimit(1)

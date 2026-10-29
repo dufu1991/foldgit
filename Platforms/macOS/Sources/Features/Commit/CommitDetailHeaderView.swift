@@ -39,7 +39,7 @@ struct CommitDetailHeaderView: View {
                     Divider()
                         .frame(height: 10)
                     HStack {
-                        Image(systemName: "arrow.triangle.pull")
+                        Image(systemName: "arrow.trianglehead.pull")
                         NavigationLink(mergedIn.hash.prefix(5), value: mergedIn.hash)
                             .foregroundColor(.accentColor)
                     }
@@ -59,7 +59,7 @@ struct CommitDetailHeaderView: View {
                         .frame(height: 10)
                     HStack(spacing: 14) {
                         ForEach(visibleBranches, id: \.self) { branch in
-                            Label(branch, systemImage: "arrow.triangle.branch")
+                            Label(branch, image: "git.branch")
                                 .foregroundColor(.secondary)
                         }
                     }

@@ -18,12 +18,13 @@ struct TagsContentView: View {
         VStack(spacing: 0) {
             HStack(spacing: 4) {
                 Image(systemName: "line.3.horizontal.decrease")
+                    .foregroundStyle(.secondary)
                 TextField(text: $filterText) {
                     Text("Filter")
                 }
                 if isFetching {
                     ProgressView()
-                        .scaleEffect(0.4)
+                        .controlSize(.small)
                         .frame(width: 29, height: 17)
                         .padding(.leading)
                 } else {

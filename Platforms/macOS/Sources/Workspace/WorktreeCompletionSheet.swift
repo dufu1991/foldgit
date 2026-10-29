@@ -25,7 +25,7 @@ struct WorktreeCompletionSheet: View {
             HStack(spacing: 16) {
                 Label("Review", systemImage: "doc.text.magnifyingglass")
                 Image(systemName: "chevron.right").foregroundStyle(.tertiary)
-                Label("Merge", systemImage: "arrow.triangle.merge")
+                Label("Merge", systemImage: "arrow.trianglehead.merge")
                 Image(systemName: "chevron.right").foregroundStyle(.tertiary)
                 Label("Cleanup", systemImage: "checkmark.circle")
             }

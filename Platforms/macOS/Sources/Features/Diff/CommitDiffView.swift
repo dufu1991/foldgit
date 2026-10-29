@@ -2,7 +2,7 @@ import FoldGitCore
 import SwiftUI
 
 struct CommitDiffView: View {
-    @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = DiffFileExpansion.expanded
+    @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = AppPreferences.defaultDiffFileExpansion
     @Environment(\.folder) private var folder
     var selectionLogID: String
     var subSelectionLogID: String
@@ -85,9 +85,9 @@ struct CommitDiffView: View {
 
     private var displayControls: some View {
         DiffDisplayControls(onExpandAll: {
-            filesChanges = filesChanges.map { ExpandableModel(isExpanded: true, model: $0.model) }
+            filesChanges = filesChanges.settingExpansion(true)
         }, onCollapseAll: {
-            filesChanges = filesChanges.map { ExpandableModel(isExpanded: false, model: $0.model) }
+            filesChanges = filesChanges.settingExpansion(false)
         })
     }
 
@@ -101,7 +101,7 @@ struct CommitDiffView: View {
             Text(title(for: commitSecond))
                 .lineLimit(1)
                 .help(title(for: commitSecond))
-            Button("Swap the Commits") {
+            Button("Swap Commits") {
                 let first = commitFirst
                 commitFirst = commitSecond
                 commitSecond = first

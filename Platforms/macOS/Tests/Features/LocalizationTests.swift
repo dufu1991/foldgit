@@ -88,8 +88,8 @@ struct LocalizationTests {
     @Test func behindCommitCountsUseLocalizedPluralRules() throws {
         let expectations = [
             "en": [1: "Behind by 1 commit", 4: "Behind by 4 commits"],
-            "zh-Hans": [0: "落后 0 次提交", 4: "落后 4 次提交"],
-            "zh-Hant": [4: "落後 4 次提交"],
+            "zh-Hans": [0: "落后 0 个提交", 4: "落后 4 个提交"],
+            "zh-Hant": [4: "落後 4 個提交"],
             "ru": [1: "Отставание на 1 коммит", 2: "Отставание на 2 коммита", 5: "Отставание на 5 коммитов"],
         ]
         for (language, counts) in expectations {

@@ -20,8 +20,8 @@ struct DiffCommitListView: View {
                     if commits.count > 1 {
                         Text("\(commits.count) commits")
                         Text(commits.first!.authorDateDisplayShort)
-                        Image(systemName: "minus")
-                            .rotationEffect(.init(degrees: 90))
+                        Image(systemName: "arrow.right")
+                            .imageScale(.small)
                             .foregroundStyle(.tertiary)
                         Text(commits.last!.authorDateDisplayShort)
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]) {

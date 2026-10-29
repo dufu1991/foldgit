@@ -91,6 +91,7 @@ struct WorkspaceScreen: View {
                             folderIsRefresh = true
                         }
                     )
+                    .id(selectionFolder.url)
                 case .committed(let commit):
                     CommitDetailStackView(commit: commit, folder: selectionFolder)
                 case nil:

@@ -8,8 +8,15 @@ struct UnstagedView: View {
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
     var onSelectUntrackedFile: ((String) -> Void)?
-    @State private var isExpanded = true
-    @State private var isUntrackedExpanded = false
+    var layout = ChangeFileLayout.list
+    var tree = ChangeFileTree()
+    var untrackedTree = ChangeFileTree()
+    @Binding var collapsedDirectories: Set<String>
+    @Binding var collapsedUntrackedDirectories: Set<String>
+    @Binding var isExpanded: Bool
+    @Binding var isUntrackedExpanded: Bool
+    @Binding var expandedUntrackedImages: Set<String>
+    var onSelectDirectory: ((String) -> Void)? = nil
 
     var body: some View {
         DisclosureGroup(isExpanded: $isExpanded) {
@@ -29,7 +36,11 @@ struct UnstagedView: View {
                 selectFileButtonHelp: String(localized: "Stage This File"),
                 selectButtonHelp: String(localized: "Stage This Hunk"),
                 onSelectFileDiff: onSelectFileDiff,
-                onSelectChunk: onSelectChunk
+                onSelectChunk: onSelectChunk,
+                layout: layout,
+                tree: tree,
+                collapsedDirectories: $collapsedDirectories,
+                onSelectDirectory: onSelectDirectory
             )
             .environment(\.imageDiffContext, .unstaged)
             .padding(.leading, 4)
@@ -37,15 +48,16 @@ struct UnstagedView: View {
 
             if !untrackedFiles.isEmpty {
                 DisclosureGroup(isExpanded: $isUntrackedExpanded) {
-                    ForEach(untrackedFiles, id: \.self) { file in
-                        if DiffImage.supports(path: file) {
-                            DisclosureGroup {
-                                ImageDiffView(untrackedPath: file)
-                            } label: {
-                                untrackedFileRow(file)
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        if layout == .tree {
+                            ChangeFileTreeRows(tree: untrackedTree, collapsedDirectories: $collapsedUntrackedDirectories,
+                                               onSelectDirectory: onSelectDirectory) { row in
+                                untrackedFile(row.path, treeDepth: row.depth)
                             }
                         } else {
-                            untrackedFileRow(file)
+                            ForEach(untrackedFiles, id: \.self) { file in
+                                untrackedFile(file)
+                            }
                         }
                     }
                 } label: {
@@ -70,25 +82,68 @@ struct UnstagedView: View {
         .padding(.horizontal)
     }
 
-    private func untrackedFileRow(_ file: String) -> some View {
+    @ViewBuilder
+    private func untrackedFile(_ file: String, treeDepth: Int? = nil) -> some View {
+        if DiffImage.supports(path: file) {
+            let expansion = Binding(
+                get: { expandedUntrackedImages.contains(file) },
+                set: { expanded in
+                    if expanded { expandedUntrackedImages.insert(file) } else { expandedUntrackedImages.remove(file) }
+                }
+            )
+            VStack(alignment: .leading, spacing: 0) {
+                untrackedFileRow(file, treeDepth: treeDepth, imageExpansion: expansion)
+                if expansion.wrappedValue { ImageDiffView(untrackedPath: file) }
+            }
+        } else {
+            untrackedFileRow(file, treeDepth: treeDepth)
+        }
+    }
+
+    private func untrackedFileRow(_ file: String, treeDepth: Int?, imageExpansion: Binding<Bool>? = nil) -> some View {
         HStack {
             Button {
                 onSelectUntrackedFile?(file)
             } label: {
                 Image(systemName: "plus")
+                    .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(.secondary)
-                    .frame(width: 16, height: 16)
+                    .frame(width: 22, height: 22)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.plain)
             .controlSize(.small)
             .help("Stage This File")
             .accessibilityLabel(Text("Stage This File"))
             .disabled(onSelectUntrackedFile == nil)
-            Text(file)
-                .fontWeight(.bold)
+            if let imageExpansion {
+                Button {
+                    imageExpansion.wrappedValue.toggle()
+                } label: {
+                    untrackedFileName(file, treeDepth: treeDepth)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .textSelection(.disabled)
+                .accessibilityLabel(Text(verbatim: file))
+                .accessibilityValue(imageExpansion.wrappedValue ? Text("Expanded") : Text("Collapsed"))
+                .accessibilityHint(imageExpansion.wrappedValue ? Text("Collapse File") : Text("Expand File"))
+                .accessibilityIdentifier("untrackedFileExpansion-" + file)
+            } else {
+                untrackedFileName(file, treeDepth: treeDepth)
+            }
             OpenFileButton(filePath: file)
-            Spacer()
         }
+        .padding(.leading, CGFloat(treeDepth ?? 0) * 16)
+    }
+
+    private func untrackedFileName(_ file: String, treeDepth: Int?) -> some View {
+        Text(verbatim: treeDepth == nil ? file : (file as NSString).lastPathComponent)
+            .fontWeight(.bold)
+            .lineLimit(1)
+            .truncationMode(.middle)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(minHeight: 22)
+            .help(file)
     }
 
 }
@@ -152,7 +207,12 @@ struct UnstagedView: View {
             },
             onSelectUntrackedFile: { f in
                 print(f)
-            }
+            },
+            collapsedDirectories: .constant([]),
+            collapsedUntrackedDirectories: .constant([]),
+            isExpanded: .constant(true),
+            isUntrackedExpanded: .constant(false),
+            expandedUntrackedImages: .constant([])
         )
     }
 }

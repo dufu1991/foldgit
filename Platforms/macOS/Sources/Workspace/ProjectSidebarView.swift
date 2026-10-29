@@ -193,7 +193,7 @@ struct ProjectSidebarView: View {
 
     private var header: some View {
         HStack(spacing: 8) {
-            NativeSearchField(text: $search, placeholder: String(localized: "Search Directories or Repositories"),
+            NativeSearchField(text: $search, placeholder: String(localized: "Search Repositories"),
                               accessibilityIdentifier: "sidebarSearchField")
                 .frame(height: 26)
             Menu {
@@ -256,7 +256,8 @@ struct ProjectSidebarView: View {
         let organization = context.organization
         let frequent = organization.sorted(folder.frequentRepositories)
         let infrequent = organization.sorted(folder.infrequentRepositories)
-        return DisclosureGroup(isExpanded: expansion(for: folder, isSearching: organization.isSearching)) {
+        let isExpanded = expansion(for: folder, isSearching: organization.isSearching)
+        return DisclosureGroup(isExpanded: isExpanded) {
             if children.isEmpty {
                 Text("No Repositories").font(.callout).foregroundStyle(.secondary)
             }
@@ -267,7 +268,8 @@ struct ProjectSidebarView: View {
                 moveRepositories(frequent, in: folder, from: source, to: destination)
             } : nil)
             if !infrequent.isEmpty {
-                DisclosureGroup(isExpanded: infrequentExpansion(for: folder, isSearching: organization.isSearching)) {
+                let isInfrequentExpanded = infrequentExpansion(for: folder, isSearching: organization.isSearching)
+                DisclosureGroup(isExpanded: isInfrequentExpanded) {
                     ForEach(infrequent, id: \.url.absoluteString) { repository in
                         repositoryRow(repository, context: context, groupURL: folder.url, isInfrequent: true)
                     }
@@ -275,22 +277,39 @@ struct ProjectSidebarView: View {
                         moveRepositories(infrequent, in: folder, from: source, to: destination)
                     } : nil)
                 } label: {
-                    HStack {
-                        Label("Inactive", systemImage: "archivebox")
-                        Spacer(minLength: 4)
-                        Text(infrequent.count, format: .number).monospacedDigit()
+                    Button {
+                        isInfrequentExpanded.wrappedValue.toggle()
+                    } label: {
+                        HStack {
+                            Label("Inactive", systemImage: "archivebox")
+                            Spacer(minLength: 4)
+                            Text(infrequent.count, format: .number).monospacedDigit()
+                        }
+                        .contentShape(Rectangle())
                     }
+                    .buttonStyle(.plain)
                     .foregroundStyle(.secondary)
+                    .accessibilityLabel(Text("Inactive"))
+                    .accessibilityValue(isInfrequentExpanded.wrappedValue ? Text("Expanded") : Text("Collapsed"))
+                    .accessibilityIdentifier("sidebarInactiveDisclosure-" + folder.identity.absoluteString)
                 }
             }
         } label: {
-            HStack {
-                Label(folder.displayName, systemImage: folder.symbol)
-                Spacer(minLength: 4)
-                Text(children.count, format: .number).monospacedDigit().foregroundStyle(.secondary)
+            Button {
+                isExpanded.wrappedValue.toggle()
+            } label: {
+                HStack {
+                    Label(folder.displayName, systemImage: folder.symbol)
+                    Spacer(minLength: 4)
+                    Text(children.count, format: .number).monospacedDigit().foregroundStyle(.secondary)
+                }
+                .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
             .help(folder.displayName)
-            .contentShape(Rectangle())
+            .accessibilityLabel(Text(verbatim: folder.displayName))
+            .accessibilityValue(isExpanded.wrappedValue ? Text("Expanded") : Text("Collapsed"))
+            .accessibilityIdentifier("sidebarGroupDisclosure-" + folder.identity.absoluteString)
             .contextMenu {
                 Button("Rename Group", systemImage: "pencil") { groupToRename = GroupNamingTarget(group: folder) }
                 Button("Manage Repositories", systemImage: "folder.badge.gearshape") {
@@ -409,12 +428,12 @@ struct ProjectSidebarView: View {
                 Image(systemName: "lock.fill").font(.caption2).foregroundStyle(.secondary).help("Locked Worktree")
             }
             if showWorktreeInformation && (tree?.isPrunable == true || worktrees.errors[folder.identity] != nil) {
-                Image(systemName: "exclamationmark.triangle").font(.caption).foregroundStyle(.orange)
+                Image(systemName: "exclamationmark.triangle").font(.caption2).foregroundStyle(.orange)
                     .help(worktrees.errors[folder.identity] ?? String(localized: "Missing Worktree"))
             }
             if isSaved && interval != .off {
                 Image(systemName: fetchError == nil ? "clock.arrow.circlepath" : "exclamationmark.triangle")
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundStyle(fetchError == nil ? Color.secondary : .orange)
                     .help(fetchError ?? interval.title)
             }

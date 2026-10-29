@@ -1,7 +1,12 @@
 import FoldGitCore
+import SwiftUI
+
+extension Image {
+    static let gitBranch = Image("git.branch")
+}
 
 extension GitRef {
-    var systemImage: String {
-        kind == .tag ? "tag" : "arrow.triangle.branch"
+    var icon: Image {
+        kind == .tag ? Image(systemName: "tag") : .gitBranch
     }
 }

@@ -20,13 +20,24 @@ enum SettingsTab: String, CaseIterable, Identifiable {
     }
     var symbol: String {
         switch self {
-        case .general: "gearshape"
-        case .appearance: "paintpalette"
-        case .comparison: "rectangle.split.2x1"
-        case .snippets: "text.badge.plus"
-        case .repositories: "folder.badge.gearshape"
-        case .applications: "arrow.up.forward.app"
-        case .about: "info.circle"
+        case .general: "gearshape.fill"
+        case .appearance: "paintpalette.fill"
+        case .comparison: "rectangle.split.2x1.fill"
+        case .snippets: "text.bubble.fill"
+        case .repositories: "book.closed.fill"
+        case .applications: "square.grid.2x2.fill"
+        case .about: "info"
+        }
+    }
+    var tint: Color {
+        switch self {
+        case .general: .gray
+        case .appearance: .indigo
+        case .comparison: .orange
+        case .snippets: .green
+        case .repositories: .blue
+        case .applications: .purple
+        case .about: .teal
         }
     }
 }
@@ -55,9 +66,10 @@ struct SettingsView: View {
                             .font(.system(size: 13))
                     } icon: {
                         Image(systemName: tab.symbol)
-                            .font(.system(size: 14, weight: .regular))
-                            .imageScale(.medium)
-                            .frame(width: 18, height: 18)
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 20, height: 20)
+                            .background(tab.tint.gradient, in: RoundedRectangle(cornerRadius: 5))
                     }
                     .tag(tab)
                     .listRowInsets(EdgeInsets(top: 3, leading: 0, bottom: 3, trailing: 0))
@@ -248,7 +260,7 @@ struct AppearanceSettingsPane: View {
 struct ComparisonSettingsPane: View {
     @AppStorage(PreferenceKey.showCommitGraph.rawValue) private var showGraph = true
     @AppStorage(PreferenceKey.diffLayout.rawValue) private var layout = DiffLayout.automatic
-    @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = DiffFileExpansion.expanded
+    @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = AppPreferences.defaultDiffFileExpansion
     @AppStorage(PreferenceKey.codeFontSize.rawValue) private var fontSize = AppPreferences.defaultCodeFontSize
     @AppStorage(PreferenceKey.wrapLongLines.rawValue) private var wrapLongLines = false
 

@@ -114,11 +114,11 @@ struct UncommittedChangesLabel: View {
         HStack(spacing: 10) {
             if showsIcon {
                 Image(systemName: "square.and.pencil")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(isSelected ? AnyShapeStyle(HierarchicalShapeStyle.primary) : AnyShapeStyle(Color.orange))
-                    .frame(width: 30, height: 30)
+                    .frame(width: 24, height: 24)
                     .background(Color.orange.opacity(isSelected ? 0 : 0.12),
-                                in: RoundedRectangle(cornerRadius: 7))
+                                in: RoundedRectangle(cornerRadius: 6))
                     .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: 3) {

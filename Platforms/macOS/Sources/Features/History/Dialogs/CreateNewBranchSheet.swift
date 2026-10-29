@@ -10,12 +10,12 @@ struct CreateNewBranchSheet: View {
 
     var body: some View {
         VStack {
-            Text("Create New Branch")
+            Text("New Branch")
                 .font(.headline)
             VStack(alignment: .leading) {
                 Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 10) {
                     GridRow {
-                        Text("from:")
+                        Text("From:")
                             .gridColumnAlignment(.trailing)
                             .fixedSize(horizontal: false, vertical: true)
                         Text(showingCreateNewBranchFrom?.name ?? "")
@@ -24,7 +24,7 @@ struct CreateNewBranchSheet: View {
                             .textSelection(.enabled)
                     }
                     GridRow {
-                        Text("to:")
+                        Text("Name:")
                             .fixedSize(horizontal: false, vertical: true)
                         TextField("New branch name", text: $newBranchName)
                     }

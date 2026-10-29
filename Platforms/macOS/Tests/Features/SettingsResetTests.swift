@@ -49,7 +49,9 @@ struct SettingsResetTests {
             #expect(!worktreePreferences.isEnabled(for: URL(fileURLWithPath: "/projects/FoldGit"), global: true))
             #expect(!AppStorage(wrappedValue: false, PreferenceKey.wrapLongLines.rawValue, store: defaults).wrappedValue)
             #expect(AppStorage(wrappedValue: DiffLayout.automatic, PreferenceKey.diffLayout.rawValue, store: defaults).wrappedValue == .automatic)
-            #expect(AppStorage(wrappedValue: DiffFileExpansion.expanded, PreferenceKey.diffFileExpansion.rawValue, store: defaults).wrappedValue == .expanded)
+            #expect(AppStorage(wrappedValue: AppPreferences.defaultDiffFileExpansion, PreferenceKey.diffFileExpansion.rawValue, store: defaults).wrappedValue == .collapsed)
+            #expect(AppStorage(wrappedValue: AppPreferences.defaultChangeFileLayout, PreferenceKey.changeFileLayout.rawValue, store: defaults).wrappedValue == .tree)
+            #expect(defaults.dictionary(forKey: PreferenceKey.repositoryHistoryScopes.rawValue) == nil)
             #expect(AppStorage(wrappedValue: SidebarSort.manual, PreferenceKey.sidebarSort.rawValue, store: defaults).wrappedValue == .manual)
         }
     }
@@ -118,6 +120,10 @@ struct SettingsResetTests {
         }
         #expect(snippets.items[1].value == "fix:  feat:  docs:")
         #expect(groups.flatMap(\.items).filter { $0.keys.contains(.codeFontSize) }.first?.value == String(localized: "\(12) pt"))
+        let comparison = groups.first { $0.id == "comparison" }!
+        #expect(comparison.items.first { $0.id == "expansion" }?.value == DiffFileExpansion.collapsed.title)
+        #expect(comparison.items.first { $0.id == "changeFiles" }?.value == ChangeFileLayout.tree.title)
+        #expect(comparison.items.first { $0.id == "historyScope" }?.keys == [.repositoryHistoryScopes])
     }
 }
 

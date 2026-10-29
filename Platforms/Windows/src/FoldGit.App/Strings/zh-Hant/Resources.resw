@@ -10,7 +10,7 @@
     <value>{0}，{1}</value>
   </data>
   <data name="Text_1ee89c2c01e0ed612af30945" xml:space="preserve">
-    <value>{0} 次提交</value>
+    <value>{0} 個提交</value>
   </data>
   <data name="Text_40c21e81080887d4e08b2f47" xml:space="preserve">
     <value>刪除 {0} 行</value>
@@ -90,17 +90,17 @@
   <data name="Text_c94ecadbce99bae7f94cfcfb" xml:space="preserve">
     <value>修改上次提交</value>
   </data>
-  <data name="Text_bb9c3ca1fcf56ea4eaf9fd6c" xml:space="preserve">
+  <data name="Text_24da7b5eb1cdcba0e665e1b6" xml:space="preserve">
     <value>執行 {0} 時發生錯誤。</value>
   </data>
   <data name="Text_3907fa7f80722a6fc58cd8c1" xml:space="preserve">
     <value>外觀</value>
   </data>
   <data name="Text_98e33b0f3104fcf1b812ba2c" xml:space="preserve">
-    <value>應用程式列表</value>
+    <value>應用程式</value>
   </data>
   <data name="Text_868cdc6ea50ad80ee6876d2f" xml:space="preserve">
-    <value>新開啟的比對依此設定顯示，手動展開或摺疊的檔案會保留目前狀態。</value>
+    <value>新開啟的差異依此設定顯示，手動展開或收合的檔案會保留目前狀態。</value>
   </data>
   <data name="Text_31e392d1c0378beca611de66" xml:space="preserve">
     <value>套用</value>
@@ -118,10 +118,10 @@
     <value>自動</value>
   </data>
   <data name="Text_15d5c7ad6b4b19a78d97273b" xml:space="preserve">
-    <value>自動抓取</value>
+    <value>自動擷取</value>
   </data>
   <data name="Text_c9156a4ced754ec967489b19" xml:space="preserve">
-    <value>軟體執行期間會繼續依設定間隔自動抓取。</value>
+    <value>軟體執行期間會依設定間隔自動擷取。</value>
   </data>
   <data name="Text_8f0184ccd344ff0656dbefea" xml:space="preserve">
     <value>自動模式會在空間充足時採用並排配置。</value>
@@ -136,7 +136,7 @@
     <value>修改前</value>
   </data>
   <data name="Text_b8d413ef5ae09a42d7fce8bf" xml:space="preserve">
-    <value>落後 {0} 次提交</value>
+    <value>落後 {0} 個提交</value>
   </data>
   <data name="Text_1e09add288606fd64a35ae5a" xml:space="preserve">
     <value>二進位檔案</value>
@@ -159,8 +159,11 @@
   <data name="Text_6717f40f497e0510e95e83c7" xml:space="preserve">
     <value>正在取消複製</value>
   </data>
+  <data name="Text_b585b9ae2b811e9c591c9d00" xml:space="preserve">
+    <value>變更檔案顯示</value>
+  </data>
   <data name="Text_da9fc80016b0ff1af0d679e5" xml:space="preserve">
-    <value>修改已在本機合併。可以打開目標工作樹檢查、測試並推送。</value>
+    <value>變更已在本機合併。可以打開目標工作樹檢查、測試並推送。</value>
   </data>
   <data name="Text_57e4d74626635008f6a0ced2" xml:space="preserve">
     <value>勾選常用的快捷輸入，將其顯示在提交訊息編輯框下方。</value>
@@ -190,7 +193,7 @@
     <value>請選擇其他目標分支。</value>
   </data>
   <data name="Text_13bc4500c90bc072fef5674f" xml:space="preserve">
-    <value>為每個儲存庫個別設定抓取間隔。抓取會下載遠端更新，不會自動合併。</value>
+    <value>為每個儲存庫個別設定擷取間隔。擷取會下載遠端更新，不會自動合併。</value>
   </data>
   <data name="Text_179bf01adabef87cd4a9af91" xml:space="preserve">
     <value>選擇檔案以比較兩個版本。可以在外部編輯，或保留其中一個版本，然後繼續合併。</value>
@@ -208,7 +211,7 @@
     <value>選擇複製儲存庫的上層目錄。</value>
   </data>
   <data name="Text_379afe481ec4a23bd1363f12" xml:space="preserve">
-    <value>工作樹無修改</value>
+    <value>無變更</value>
   </data>
   <data name="Text_9f1b237b5dc314edb0dafba4" xml:space="preserve">
     <value>清理</value>
@@ -240,14 +243,23 @@
   <data name="Text_ffe95143bc990ee850df6607" xml:space="preserve">
     <value>收合全部</value>
   </data>
+  <data name="Text_624e3d714b392ee74e912c9d" xml:space="preserve">
+    <value>收合差異</value>
+  </data>
+  <data name="Text_a1feb1d2c82679bc386b27a4" xml:space="preserve">
+    <value>收合目錄</value>
+  </data>
   <data name="Text_45fb3894186e30b7cc38da32" xml:space="preserve">
     <value>收合檔案</value>
+  </data>
+  <data name="Text_7995322f8f50d43b0bd75061" xml:space="preserve">
+    <value>收合資料夾</value>
   </data>
   <data name="Text_b322b65227bc3ec948893e32" xml:space="preserve">
     <value>收合</value>
   </data>
   <data name="Text_c52309d3f294de8fbde959fd" xml:space="preserve">
-    <value>亮暗模式</value>
+    <value>外觀模式</value>
   </data>
   <data name="Text_b3f29b99a24d4c504921396b" xml:space="preserve">
     <value>合併衝突的組合差異使用單欄版面。</value>
@@ -274,10 +286,10 @@
     <value>提交訊息</value>
   </data>
   <data name="Text_041d3c070151e15e382d3360" xml:space="preserve">
-    <value>請先提交或儲藏 {0} 中的修改，再進行合併。</value>
+    <value>請先提交或儲藏 {0} 中的變更，再進行合併。</value>
   </data>
   <data name="Text_6db7ad198515f6d07132432c" xml:space="preserve">
-    <value>先提交修改，合併到目標分支，再選擇要保留的內容。</value>
+    <value>先提交變更，合併到目標分支，再選擇要保留的內容。</value>
   </data>
   <data name="Text_84da95ea87e533097ef70561" xml:space="preserve">
     <value>提交：</value>
@@ -315,17 +327,17 @@
   <data name="Text_ab480df9b105271e4e11fcea" xml:space="preserve">
     <value>複製提交雜湊</value>
   </data>
+  <data name="Text_04a05d81cc5c997a10f7ab9e" xml:space="preserve">
+    <value>無法讀取差異中的變更檔案。</value>
+  </data>
+  <data name="Text_aaa1d8c5ca48d2a3cf8eb0db" xml:space="preserve">
+    <value>無法讀取差異。</value>
+  </data>
   <data name="Text_4759498ac2a719c619e2c8cf" xml:space="preserve">
     <value>建立</value>
   </data>
   <data name="Text_cb68879d74579d38a6f412e4" xml:space="preserve">
     <value>建立並推送</value>
-  </data>
-  <data name="Text_bf815ec6a83fe388ec634585" xml:space="preserve">
-    <value>建立分支</value>
-  </data>
-  <data name="Text_ad41f17a7f5ed0d23b3734a0" xml:space="preserve">
-    <value>建立標籤</value>
   </data>
   <data name="Text_e0d1b68224bf0b31ef16b206" xml:space="preserve">
     <value>目前</value>
@@ -358,16 +370,19 @@
     <value>降冪</value>
   </data>
   <data name="Text_23b028a2c6050cdb51bd5582" xml:space="preserve">
-    <value>分離 HEAD</value>
+    <value>分離頭指標</value>
   </data>
   <data name="Text_7ecf46284588f3fa7e31a578" xml:space="preserve">
     <value>差異</value>
   </data>
   <data name="Text_0e676fa7d2c127daeed7938e" xml:space="preserve">
-    <value>檔案比較</value>
+    <value>差異顯示</value>
   </data>
   <data name="Text_33bb7b7370aad4f9d3f0a923" xml:space="preserve">
-    <value>比較版面</value>
+    <value>差異版面</value>
+  </data>
+  <data name="Text_25523ba32c7136d9f0713a70" xml:space="preserve">
+    <value>目錄樹</value>
   </data>
   <data name="Text_18d67c992b71ce69eb924554" xml:space="preserve">
     <value>顯示名稱</value>
@@ -388,7 +403,7 @@
     <value>啟用工作樹</value>
   </data>
   <data name="Text_9aa79346aa8ddea912935d99" xml:space="preserve">
-    <value>請輸入有效的檔案夾名稱。</value>
+    <value>請輸入有效的資料夾名稱。</value>
   </data>
   <data name="Text_8dd1f0f19b22d32a8701ac8a" xml:space="preserve">
     <value>請輸入有效的儲存庫位址。</value>
@@ -420,8 +435,17 @@
   <data name="Text_7cf0d193cccdfabb97454557" xml:space="preserve">
     <value>展開全部</value>
   </data>
+  <data name="Text_f99cd7ddd3e0dbf63d0b8833" xml:space="preserve">
+    <value>展開差異</value>
+  </data>
+  <data name="Text_f9203a91288857a2eb29c982" xml:space="preserve">
+    <value>展開目錄</value>
+  </data>
   <data name="Text_483d3ba8580a6642298c1c50" xml:space="preserve">
     <value>展開檔案</value>
+  </data>
+  <data name="Text_ce65cc8bc111022d3861c6ae" xml:space="preserve">
+    <value>展開資料夾</value>
   </data>
   <data name="Text_e72d5d8d0b167d21b4e4a89e" xml:space="preserve">
     <value>展開</value>
@@ -430,16 +454,16 @@
     <value>外部應用程式</value>
   </data>
   <data name="Text_cd7d61bf7e38c7c2280b4241" xml:space="preserve">
-    <value>抓取</value>
+    <value>擷取</value>
   </data>
   <data name="Text_837c12c4f7ecd4c1dbbdd4df" xml:space="preserve">
-    <value>抓取分支與標籤</value>
+    <value>擷取分支與標籤</value>
   </data>
   <data name="Text_7514c6b66c4fa8b6a3d82afe" xml:space="preserve">
-    <value>抓取標籤</value>
+    <value>擷取標籤</value>
   </data>
   <data name="Text_b602a9170fa36600b5e30f38" xml:space="preserve">
-    <value>正在抓取</value>
+    <value>正在擷取</value>
   </data>
   <data name="Text_41d284eaa312e2d9762e3cd6" xml:space="preserve">
     <value>此版本已刪除該檔案</value>
@@ -454,7 +478,7 @@
     <value>檔案</value>
   </data>
   <data name="Text_47aa7d820cf5618322fc8a2f" xml:space="preserve">
-    <value>變更檔案</value>
+    <value>已變更檔案</value>
   </data>
   <data name="Text_638e249f4a15ebb84957da13" xml:space="preserve">
     <value>篩選</value>
@@ -484,10 +508,13 @@
     <value>修正程式碼檢查警告</value>
   </data>
   <data name="Text_67a5454cfa4113b2e0387a12" xml:space="preserve">
-    <value>檔案夾名稱</value>
+    <value>資料夾名稱</value>
   </data>
   <data name="Text_f1c65e14817efef2b77973a4" xml:space="preserve">
     <value>前進</value>
+  </data>
+  <data name="Text_dc45d36f35e84e07f49bc9d0" xml:space="preserve">
+    <value>起點：</value>
   </data>
   <data name="Text_c910d474dcd724bff83ddede" xml:space="preserve">
     <value>一般</value>
@@ -510,6 +537,9 @@
   <data name="Text_5d2e701ca0f1ef2dad59d311" xml:space="preserve">
     <value>Git 傳回了無效的工作樹資訊。</value>
   </data>
+  <data name="Text_9248ca516a7c79c6fee27c8d" xml:space="preserve">
+    <value>Git 沒有傳回內容。</value>
+  </data>
   <data name="Text_71f9f4866eacd0c07a930f1c" xml:space="preserve">
     <value>找不到 Git。請安裝 Git for Windows 或選擇 git.exe。</value>
   </data>
@@ -520,7 +550,7 @@
     <value>群組名稱</value>
   </data>
   <data name="Text_6e5473abce378847b9057f59" xml:space="preserve">
-    <value>群組僅用於整理儲存庫，不會移動檔案夾。每個儲存庫同一時間只屬於一個群組。</value>
+    <value>群組僅用於整理儲存庫，不會移動資料夾。每個儲存庫同一時間只屬於一個群組。</value>
   </data>
   <data name="Text_5cb0bf3aa928f2464329991b" xml:space="preserve">
     <value>HTTPS 或 SSH 儲存庫位址</value>
@@ -528,14 +558,11 @@
   <data name="Text_9709a3b2e51f0ef313f5ad19" xml:space="preserve">
     <value>隱藏側邊欄</value>
   </data>
-  <data name="Text_0e769600933790607b2a13b3" xml:space="preserve">
-    <value>搜尋記錄</value>
-  </data>
   <data name="Text_e6a07707b0fbc950b433139a" xml:space="preserve">
     <value>歷史範圍</value>
   </data>
   <data name="Text_c6040c57a0e14641107e3a4f" xml:space="preserve">
-    <value>歷史與比較</value>
+    <value>歷史與差異</value>
   </data>
   <data name="Text_365819e56f8313cb63ef6aa9" xml:space="preserve">
     <value>僅圖像</value>
@@ -544,7 +571,7 @@
     <value>圖像與文字</value>
   </data>
   <data name="Text_c536b2d7c1205a80cd559b36" xml:space="preserve">
-    <value>圖片對比</value>
+    <value>圖片比較</value>
   </data>
   <data name="Text_03913069dcd3c8cd8723ecb9" xml:space="preserve">
     <value>無法預覽圖片</value>
@@ -580,7 +607,7 @@
     <value>重新啟動應用程式後，語言變更將完整生效。</value>
   </data>
   <data name="Text_856a3723d543e02279010aa3" xml:space="preserve">
-    <value>上次抓取成功</value>
+    <value>上次成功擷取</value>
   </data>
   <data name="Text_73b6e48a1b552d112502d37a" xml:space="preserve">
     <value>稍後</value>
@@ -589,10 +616,10 @@
     <value>登入時啟動</value>
   </data>
   <data name="Text_77d5dbd3b313e4112e98867f" xml:space="preserve">
-    <value>此處的配置選項與比較區域的切換按鈕保持同步。</value>
+    <value>此處的版面選項與差異區域的切換按鈕保持同步。</value>
   </data>
   <data name="Text_d32ec834f46c429ce0816506" xml:space="preserve">
-    <value>留空時使用檔案夾名稱。</value>
+    <value>留空時使用資料夾名稱。</value>
   </data>
   <data name="Text_dbcd5e7bb7a0f538810de44c" xml:space="preserve">
     <value>淺色</value>
@@ -602,6 +629,12 @@
   </data>
   <data name="Text_54d16531eb769f15a910c862" xml:space="preserve">
     <value>關聯工作樹</value>
+  </data>
+  <data name="Text_6f202f54a7b2d8fe42aa804e" xml:space="preserve">
+    <value>列表</value>
+  </data>
+  <data name="Text_3f06cd334f4811b2130b13a8" xml:space="preserve">
+    <value>載入更多</value>
   </data>
   <data name="Text_322b540df1e8e7eaf9b0fec3" xml:space="preserve">
     <value>正在讀取應用程式</value>
@@ -673,7 +706,7 @@
     <value>修改</value>
   </data>
   <data name="Text_d47d7cb0e4f8fd2be5ee0782" xml:space="preserve">
-    <value>載入更多</value>
+    <value>更多</value>
   </data>
   <data name="Text_6ecc3df6bffdd06c58cd4f6e" xml:space="preserve">
     <value>移動</value>
@@ -690,8 +723,11 @@
   <data name="Text_5c1f4b6143af38d55c58ea29" xml:space="preserve">
     <value>命名儲存庫</value>
   </data>
+  <data name="Text_2683cad48a14dc3f79c167e4" xml:space="preserve">
+    <value>名稱：</value>
+  </data>
   <data name="Text_cd5ce4449ea9f8c537b990f5" xml:space="preserve">
-    <value>新分支</value>
+    <value>新增分支</value>
   </data>
   <data name="Text_493c780b4823eec50aa921b4" xml:space="preserve">
     <value>新分支名稱</value>
@@ -704,6 +740,9 @@
   </data>
   <data name="Text_1fac73e86cf4db8ba24f1b6b" xml:space="preserve">
     <value>將所選儲存庫新增為群組</value>
+  </data>
+  <data name="Text_82148b3da229440cdb35bd4e" xml:space="preserve">
+    <value>新增標籤</value>
   </data>
   <data name="Text_61fced6671058e6b666a63e2" xml:space="preserve">
     <value>新增工作樹</value>
@@ -731,9 +770,6 @@
   </data>
   <data name="Text_145b487f5ed6096d9f048af5" xml:space="preserve">
     <value>沒有提交紀錄</value>
-  </data>
-  <data name="Text_06bff09c7e200917cbe975e0" xml:space="preserve">
-    <value>沒有提交歷程</value>
   </data>
   <data name="Text_4e47ec927670bb96ab007a75" xml:space="preserve">
     <value>沒有內容</value>
@@ -787,10 +823,10 @@
     <value>開啟</value>
   </data>
   <data name="Text_3495086d5f7b910836ed6c6a" xml:space="preserve">
-    <value>只有提交已合併、無修改且未鎖定的工作樹才能移除。遠端分支會保留。</value>
+    <value>只有提交已合併、無變更且未鎖定的工作樹才能移除。遠端分支會保留。</value>
   </data>
   <data name="Text_9f23ccc98700345150d1d7d8" xml:space="preserve">
-    <value>僅修改側邊欄中的顯示名稱，不會修改檔案夾名稱。</value>
+    <value>僅修改側邊欄中的顯示名稱，不會變更資料夾名稱。</value>
   </data>
   <data name="Text_ed077f3d8125d60dca1979c7" xml:space="preserve">
     <value>打開</value>
@@ -834,20 +870,8 @@
   <data name="Text_07ab08927a968d80214e1036" xml:space="preserve">
     <value>請先在另一個工作樹中打開目標分支，再完成操作。</value>
   </data>
-  <data name="Text_8e5c518bc240ced7f0082d36" xml:space="preserve">
-    <value>原始專案</value>
-  </data>
   <data name="Text_189a8567d84bfbdd8629aab5" xml:space="preserve">
     <value>其他應用程式</value>
-  </data>
-  <data name="Text_27eb74726f093262742ca114" xml:space="preserve">
-    <value>無法解析檔案差異的首行。</value>
-  </data>
-  <data name="Text_8591c33061180da3a98de9c3" xml:space="preserve">
-    <value>無法解析檔案差異中的目標檔案標記。</value>
-  </data>
-  <data name="Text_b1e214809bc313c13f0d340f" xml:space="preserve">
-    <value>無法解析 Git 輸出，輸出內容為空。</value>
   </data>
   <data name="Text_30d2d6bd3576a41f3616e71d" xml:space="preserve">
     <value>釘選常用應用程式</value>
@@ -907,7 +931,7 @@
     <value>重新整理</value>
   </data>
   <data name="Text_6c77419207d3a4089520ef72" xml:space="preserve">
-    <value>重新整理應用程式列表</value>
+    <value>重新整理應用程式</value>
   </data>
   <data name="Text_db010f388106692884f127c8" xml:space="preserve">
     <value>重新整理儲存庫列表</value>
@@ -964,7 +988,7 @@
     <value>儲存庫</value>
   </data>
   <data name="Text_21dbf396d782cdbc702a4d49" xml:space="preserve">
-    <value>儲存庫會保留在側邊欄中，磁碟上的檔案夾保持不變。</value>
+    <value>儲存庫會保留在側邊欄中，磁碟上的資料夾保持不變。</value>
   </data>
   <data name="Text_13d6ff07b8a5d792ec87d5ec" xml:space="preserve">
     <value>儲存庫</value>
@@ -985,7 +1009,7 @@
     <value>處理合併</value>
   </data>
   <data name="Text_3b12a8a5f3973429ff37edf0" xml:space="preserve">
-    <value>請先解決所有衝突並暫存修改，再繼續合併。</value>
+    <value>請先解決所有衝突並暫存變更，再繼續合併。</value>
   </data>
   <data name="Text_0fe0c953737413887ef7295e" xml:space="preserve">
     <value>立即重新啟動</value>
@@ -1026,14 +1050,11 @@
   <data name="Text_23a1309d6a7c1e827442065c" xml:space="preserve">
     <value>儲存位置</value>
   </data>
-  <data name="Text_f61d313e4bc27b6e5f427f2f" xml:space="preserve">
-    <value>搜尋作者、電子郵件或提交訊息</value>
-  </data>
   <data name="Text_3a93f31e545c049a2864a25b" xml:space="preserve">
     <value>搜尋提交</value>
   </data>
-  <data name="Text_263673f6564548b254a7dd2a" xml:space="preserve">
-    <value>搜尋目錄或儲存庫</value>
+  <data name="Text_d416f4340be478fabb6757d5" xml:space="preserve">
+    <value>搜尋儲存庫</value>
   </data>
   <data name="Text_1ce37f395d7aa7aaa8076d0f" xml:space="preserve">
     <value>選取分支</value>
@@ -1056,6 +1077,9 @@
   <data name="Text_74a883a037bc227f91891ab6" xml:space="preserve">
     <value>設定</value>
   </data>
+  <data name="Text_0df6f1cad36c49da768a6efd" xml:space="preserve">
+    <value>檢視</value>
+  </data>
   <data name="Text_590180ed4faa710883dfa079" xml:space="preserve">
     <value>顯示提交關係圖</value>
   </data>
@@ -1065,11 +1089,11 @@
   <data name="Text_04efae3fc7825d3a016a59f5" xml:space="preserve">
     <value>顯示側邊欄</value>
   </data>
-  <data name="Text_d54b67e82cfc26c3277e9d86" xml:space="preserve">
-    <value>檢視儲藏的變更</value>
+  <data name="Text_2da0f3d2589892ba011473c0" xml:space="preserve">
+    <value>顯示儲藏</value>
   </data>
   <data name="Text_a81279506a9593595764ef25" xml:space="preserve">
-    <value>檢視標籤</value>
+    <value>顯示標籤</value>
   </data>
   <data name="Text_c2a9c77acf9b329f25b32c6f" xml:space="preserve">
     <value>在檔案總管中顯示</value>
@@ -1104,6 +1128,9 @@
   <data name="Text_d1ce47c82d3285bba8b89d87" xml:space="preserve">
     <value>全部暫存</value>
   </data>
+  <data name="Text_9efa12c7103ca805a98eb2f5" xml:space="preserve">
+    <value>暫存此目錄</value>
+  </data>
   <data name="Text_4a990090e7099391b64119f1" xml:space="preserve">
     <value>暫存此檔案</value>
   </data>
@@ -1111,7 +1138,7 @@
     <value>暫存此變更區塊</value>
   </data>
   <data name="Text_9146f6965705db924aa1619e" xml:space="preserve">
-    <value>請在提交檢視中暫存剩餘修改，然後繼續。</value>
+    <value>請在提交檢視中暫存剩餘變更，然後繼續。</value>
   </data>
   <data name="Text_b5ff1947b664c6719dfbb256" xml:space="preserve">
     <value>已暫存的變更</value>
@@ -1123,22 +1150,22 @@
     <value>啟動</value>
   </data>
   <data name="Text_9b1a2b61aa956a9af54b18b2" xml:space="preserve">
-    <value>儲藏變更</value>
+    <value>儲藏全部變更</value>
   </data>
-  <data name="Text_fd40083287af8b989fb242b3" xml:space="preserve">
+  <data name="Text_3601420ab6a0cf864306d9d8" xml:space="preserve">
     <value>儲藏的變更</value>
   </data>
-  <data name="Text_eb388bc6fa1bdf4bd521a53c" xml:space="preserve">
+  <data name="Text_e45b6015e5311ca73cb415a2" xml:space="preserve">
+    <value>儲藏</value>
+  </data>
+  <data name="Text_ce23ab1e75dc0ad7dcbfc55e" xml:space="preserve">
     <value>交換提交</value>
   </data>
-  <data name="Text_61f24ced9ac719e37f48e3f9" xml:space="preserve">
+  <data name="Text_de245f1d6203f04adab03041" xml:space="preserve">
     <value>交換比較方向</value>
   </data>
   <data name="Text_0cfdb0c8e363449c2b4919ee" xml:space="preserve">
     <value>同步錯誤</value>
-  </data>
-  <data name="Text_1503916a2ab2b0fd6768d345" xml:space="preserve">
-    <value>建立標籤</value>
   </data>
   <data name="Text_4a32b016fa3839ad18caaf9b" xml:space="preserve">
     <value>標籤名稱：</value>
@@ -1165,7 +1192,7 @@
     <value>分支或提交已變更。請重新整理合併預覽後再繼續。</value>
   </data>
   <data name="Text_6caac58ec0390aea14f31a2f" xml:space="preserve">
-    <value>目標檔案夾已存在，請使用其他檔案夾名稱。</value>
+    <value>目標資料夾已存在，請使用其他資料夾名稱。</value>
   </data>
   <data name="Text_f0ef1f3ba63c0fc001be0521" xml:space="preserve">
     <value>無法解碼此圖片。</value>
@@ -1189,7 +1216,7 @@
     <value>此檔案或工作樹沒有進行中的合併。請重新整理後再試。</value>
   </data>
   <data name="Text_118a470931669215bde94f22" xml:space="preserve">
-    <value>此操作會移除 {0} 資料夾，並保留分支。如果工作樹包含未提交的修改或未追蹤檔案，Git 會拒絕移除。</value>
+    <value>此操作會移除 {0} 資料夾，並保留分支。如果工作樹包含未提交的變更或未追蹤檔案，Git 會拒絕移除。</value>
   </data>
   <data name="Text_0d1f4bf86a81f2a364a74b48" xml:space="preserve">
     <value>此操作會將 {0} 的目前編輯取代為所選版本。如果該版本已刪除此檔案，則會刪除該檔案。</value>
@@ -1201,7 +1228,7 @@
     <value>待推送</value>
   </data>
   <data name="Text_1d4c17db52f714ab60482303" xml:space="preserve">
-    <value>顯示或隱藏側邊欄</value>
+    <value>顯示/隱藏側邊欄</value>
   </data>
   <data name="Text_451aa51a0fb5068da31b9bff" xml:space="preserve">
     <value>工具列</value>
@@ -1227,6 +1254,9 @@
   <data name="Text_76ebb3e1241d665cb7cc2ee7" xml:space="preserve">
     <value>全部取消暫存</value>
   </data>
+  <data name="Text_eca58eb8a8fcfb0c75dab5d5" xml:space="preserve">
+    <value>取消暫存此目錄</value>
+  </data>
   <data name="Text_8110d1d98b7c3dad099a29ad" xml:space="preserve">
     <value>取消暫存此檔案</value>
   </data>
@@ -1240,16 +1270,13 @@
     <value>未追蹤的檔案</value>
   </data>
   <data name="Text_fdad19b2db24f1a14a14f2f4" xml:space="preserve">
-    <value>使用檔案夾名稱</value>
+    <value>使用資料夾名稱</value>
   </data>
   <data name="Text_1809df9f2b1c43e3a7abd28d" xml:space="preserve">
     <value>使用待合併分支版本</value>
   </data>
   <data name="Text_3cc572f22838566564c488c8" xml:space="preserve">
     <value>使用目標分支版本</value>
-  </data>
-  <data name="Text_d946352c8f8acf980ce6099d" xml:space="preserve">
-    <value>作為文字使用</value>
   </data>
   <data name="Text_d131ef7f9b5e2b457faba856" xml:space="preserve">
     <value>使用指南</value>
@@ -1270,10 +1297,7 @@
     <value>視窗</value>
   </data>
   <data name="Text_bd3cfaa28d90627d171fc565" xml:space="preserve">
-    <value>在獨立資料夾中處理其他分支，同時保留目前修改。</value>
-  </data>
-  <data name="Text_7b5d66944b4512ab009f67ea" xml:space="preserve">
-    <value>工作區變更</value>
+    <value>在獨立資料夾中處理其他分支，同時保留目前變更。</value>
   </data>
   <data name="Text_bd85643c93f3f3707df4f4fa" xml:space="preserve">
     <value>工作區</value>

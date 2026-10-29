@@ -127,14 +127,14 @@ public sealed partial class MainWindow : Window
     private void ApplyResources()
     {
         Root.RequestedTheme = Model.Settings.Appearance switch { "light" => ElementTheme.Light, "dark" => ElementTheme.Dark, _ => ElementTheme.Default };
-        foreach (var (item, key) in new (MenuFlyoutItem, string)[] { (AddButton, "Add"), (CloneButton, "Clone"), (RefreshButton, "Refresh"), (TagsButton, "Tags"), (StashesButton, "Stash Changed"), (CompareButton, "Compare Branches or Tags") }) item.Text = L(key);
-        foreach (var (button, key) in new (Button, string)[] { (BranchButton, "Create New Branch"), (MoreButton, "More"), (NewWorktreeButton, "New Worktree"), (PruneButton, "Prune Missing Worktrees"), (ResolveButton, "Resolve Merge"), (CommitButton, "Commit"), (StageAllButton, "Stage All"), (UnstageAllButton, "Unstage All"), (StashButton, "Stash All Changes"), (TemplatesButton, "Commit Message Snippets") }) button.Content = L(key);
+        foreach (var (item, key) in new (MenuFlyoutItem, string)[] { (AddButton, "Add"), (CloneButton, "Clone"), (RefreshButton, "Refresh"), (TagsButton, "Tags"), (StashesButton, "Stashed Changes"), (CompareButton, "Compare Branches or Tags") }) item.Text = L(key);
+        foreach (var (button, key) in new (Button, string)[] { (BranchButton, "New Branch"), (MoreButton, "More"), (NewWorktreeButton, "New Worktree"), (PruneButton, "Prune Missing Worktrees"), (ResolveButton, "Resolve Merge"), (CommitButton, "Commit"), (StageAllButton, "Stage All"), (UnstageAllButton, "Unstage All"), (StashButton, "Stash All Changes"), (TemplatesButton, "Commit Message Snippets") }) button.Content = L(key);
         foreach (var (element, key) in new (FrameworkElement, string)[] { (AddMenuButton, "Add"), (FetchButton, "Fetch"), (PullButton, "Pull"), (PushButton, "Push"), (BranchSelector, "Select Branch"), (RepositoryMenuButton, "More"), (OpenButton, "Open in"), (SettingsButton, "Settings"), (WorktreesButton, "Worktrees"), (LayoutButton, "Diff Layout"), (ChangesLayoutButton, "Diff Layout"), (ExpandButton, "Expand All Files"), (ChangesExpandButton, "Expand All Files"), (CollapseButton, "Collapse All Files"), (ChangesCollapseButton, "Collapse All Files") })
         { AutomationProperties.SetName(element, L(key)); ToolTipService.SetToolTip(element, L(key)); }
         RepositoriesHeading.Text = L("Repositories"); BranchesHeading.Text = L("Local Branches"); BranchFilter.PlaceholderText = L("Filter"); RemoteBranchesSection.Header = L("Remote Branches");
         ChangesLabel.Text = L("Uncommitted Changes"); WorkingTreeLabel.Text = L("Working Tree");
         UnstagedHeading.Text = L("Unstaged Changes"); StagedHeading.Text = L("Staged Changes"); EmptySelection.Text = L("No Selection");
-        RepositoryFilter.PlaceholderText = L("Filter Repositories"); CommitSearch.PlaceholderText = L("Search Author, Email, or Message");
+        RepositoryFilter.PlaceholderText = L("Filter Repositories"); CommitSearch.PlaceholderText = L("Search Commits");
         CommitSearch.ItemsSource = Model.Settings.SearchHistory;
         MessageEditor.PlaceholderText = L("Commit Message"); AmendToggle.Content = L("Amend");
         AutomationProperties.SetName(MessageEditor, L("Commit Message"));
@@ -375,7 +375,7 @@ public sealed partial class MainWindow : Window
     {
         BranchesFlyout.Hide();
         if (Model.Directory is null) return;
-        var name = await PromptAsync("Create New Branch", "New Branch Name");
+        var name = await PromptAsync("New Branch", "New Branch Name");
         if (name is not null) await Model.MutateAsync((service, directory) => service.CreateBranchAsync(directory, name, revision, true));
     }
     private async void BranchClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(() => CreateBranchAsync("HEAD"));
@@ -385,7 +385,7 @@ public sealed partial class MainWindow : Window
         var push = new CheckBox { Content = L("Create & Push"), IsEnabled = Model.Snapshot?.Remotes.Length > 0 };
         var remote = new ComboBox { Header = L("Remotes"), ItemsSource = Model.Snapshot?.Remotes, SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Stretch };
         var panel = new StackPanel { Spacing = 12 }; panel.Children.Add(name); panel.Children.Add(push); panel.Children.Add(remote);
-        if (!await DialogAsync("Create New Tag", panel, "Create")) return;
+        if (!await DialogAsync("New Tag", panel, "Create")) return;
         await Model.MutateAsync(async (service, directory) =>
         {
             await service.TagAsync(directory, name.Text, revision);
@@ -432,8 +432,8 @@ public sealed partial class MainWindow : Window
     {
         if (ItemAt<GraphCommit>(args) is not { } row) return;
         var menu = new MenuFlyout();
-        menu.Items.Add(Menu("Create New Branch", () => CreateBranchAsync(row.Commit.Hash)));
-        menu.Items.Add(Menu("Create New Tag", () => CreateTagAsync(row.Commit.Hash)));
+        menu.Items.Add(Menu("New Branch", () => CreateBranchAsync(row.Commit.Hash)));
+        menu.Items.Add(Menu("New Tag", () => CreateTagAsync(row.Commit.Hash)));
         var copy = new MenuFlyoutItem { Text = Model.Text.Get("Copy %@", row.Commit.ShortHash) };
         copy.Click += (_, _) => { var data = new DataPackage(); data.SetText(row.Commit.Hash); Clipboard.SetContent(data); }; menu.Items.Add(copy);
         menu.Items.Add(Menu("Checkout", () => Model.MutateAsync((service, directory) => service.SwitchAsync(directory, row.Commit.Hash, true))));
@@ -453,7 +453,7 @@ public sealed partial class MainWindow : Window
     {
         if (ItemAt<Branch>(args) is not { } branch) return;
         var menu = new MenuFlyout();
-        menu.Items.Add(Menu("Create New Branch", () => CreateBranchAsync(branch.Hash)));
+        menu.Items.Add(Menu("New Branch", () => CreateBranchAsync(branch.Hash)));
         if (!branch.Remote) menu.Items.Add(Menu("Rename Branch", async () => { BranchesFlyout.Hide(); var name = await PromptAsync("Rename Branch", "New Branch Name", branch.Name); if (name is not null) await Model.MutateAsync((service, directory) => service.RenameBranchAsync(directory, branch.Name, name)); }));
         menu.Items.Add(Menu("Delete", async () => { BranchesFlyout.Hide(); if (await ConfirmAsync("Delete", branch.Name, "Delete")) await Model.MutateAsync((service, directory) => service.DeleteBranchAsync(directory, branch.Name, branch.Remote)); }));
         menu.Items.Add(Menu("Merge", async () =>

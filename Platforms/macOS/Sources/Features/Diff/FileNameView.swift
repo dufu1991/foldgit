@@ -4,6 +4,7 @@ import SwiftUI
 struct FileNameView: View {
     @Environment(\.colorScheme) private var colorScheme
     var fileDiff: FileDiff
+    var showsTreeName = false
 
     var body: some View {
         HStack {
@@ -12,13 +13,14 @@ struct FileNameView: View {
                 .renderingMode(.original)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 18, height: 18)
+                .frame(width: 16, height: 16)
                 .accessibilityHidden(true)
-            Text(fileDiff.filePathDisplay)
+            Text(verbatim: showsTreeName ? fileDiff.changeTreeTitle : fileDiff.filePathDisplay)
                 .fontWeight(.bold)
                 .font(Font.system(.body, design: .default))
+                .lineLimit(1)
+                .truncationMode(.middle)
                 .help(fileDiff.header + "\n" + (fileDiff.extendedHeaderLines + fileDiff.fromFileToFileLines).joined(separator: "\n"))
-            OpenFileButton(filePath: fileDiff.toFilePath)
         }
     }
 }

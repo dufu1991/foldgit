@@ -87,7 +87,7 @@ final class GitRepositoryDiscoveryTests: XCTestCase {
         let legacy = try JSONSerialization.data(withJSONObject: [["url": root.absoluteString]])
         let decoded = try JSONDecoder().decode([WorkspaceEntry].self, from: legacy)
         XCTAssertEqual(decoded, [WorkspaceEntry(url: root)])
-        XCTAssertEqual(decoded[0].symbol, "arrow.triangle.branch")
+        XCTAssertEqual(decoded[0].symbol, "book.closed")
         let group = WorkspaceEntry(url: root, children: [WorkspaceEntry(url: root.appendingPathComponent("web")),
                                                 WorkspaceEntry(url: root.appendingPathComponent("api"))])
         let folders = [group, WorkspaceEntry(url: root.appendingPathComponent("standalone"))]

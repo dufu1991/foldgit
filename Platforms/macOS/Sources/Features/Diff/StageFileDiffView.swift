@@ -12,6 +12,7 @@ struct StageFileDiffView: View {
     var selectButtonHelp: String
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
+    var treeDepth: Int?
 
     var body: some View {
         Section {
@@ -30,10 +31,11 @@ struct StageFileDiffView: View {
                                     onSelectChunk?(fileDiff, chunk)
                                 } label: {
                                     Image(systemName: selectButtonImageSystemName)
+                                        .font(.system(size: 11, weight: .medium))
                                         .foregroundStyle(.secondary)
-                                        .frame(width: 20, height: 20)
+                                        .frame(width: 22, height: 22)
                                 }
-                                .buttonStyle(.bordered)
+                                .buttonStyle(.plain)
                                 .controlSize(.small)
                                 .help(selectButtonHelp)
                                 .accessibilityLabel(Text(verbatim: selectButtonHelp))
@@ -51,10 +53,11 @@ struct StageFileDiffView: View {
                                 onSelectFileDiff?(fileDiff)
                             } label: {
                                 Image(systemName: selectButtonImageSystemName)
+                                    .font(.system(size: 11, weight: .medium))
                                     .foregroundStyle(.secondary)
-                                    .frame(width: 20, height: 20)
+                                    .frame(width: 22, height: 22)
                             }
-                            .buttonStyle(.bordered)
+                            .buttonStyle(.plain)
                             .controlSize(.small)
                             .help(selectFileButtonHelp)
                             .accessibilityLabel(Text(verbatim: selectFileButtonHelp))
@@ -75,12 +78,13 @@ struct StageFileDiffView: View {
                 isExpanded: $expandableFileDiff.isExpanded,
                 fileDiff: fileDiff,
                 leadingActionImageSystemName: selectButtonImageSystemName,
-                leadingActionHelp: selectFileButtonHelp
+                leadingActionHelp: selectFileButtonHelp,
+                treeDepth: treeDepth
             ) {
                 onSelectFileDiff?(fileDiff)
             }
         } footer: {
-            FileDiffDivider()
+            if expandableFileDiff.isExpanded { FileDiffDivider() }
         }
     }
 }

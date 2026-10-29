@@ -2,7 +2,8 @@ import FoldGitCore
 import SwiftUI
 
 struct CommitDetailContentView: View {
-    @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = DiffFileExpansion.expanded
+    @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = AppPreferences.defaultDiffFileExpansion
+    @AppStorage(PreferenceKey.changeFileLayout.rawValue) private var changeFileLayout = AppPreferences.defaultChangeFileLayout
     var commit: Commit
     var folder: WorkspaceEntry
     @State private var commitDetail: CommitDetail?
@@ -12,6 +13,13 @@ struct CommitDetailContentView: View {
     @State private var mergeCommitViewTab = 0
     @State private var mergeCommitFilesChanged: [ExpandableModel<FileDiff>] = []
     @State private var error: Error?
+    @State private var collapsedDirectories: Set<String> = []
+    @State private var fileTree = ChangeFileTree()
+
+    /// File identities only, so expanding a file does not rebuild the tree.
+    private var treeFileIDs: [String] {
+        (commit.parentHashes.count == 2 ? mergeCommitFilesChanged : fileDiffs).map(\.model.id)
+    }
 
     var body: some View {
         ScrollView {
@@ -61,10 +69,14 @@ struct CommitDetailContentView: View {
                             mergeCommit: commit,
                             directoryURL: folder.url,
                             tab: $mergeCommitViewTab,
-                            filesChanged: $mergeCommitFilesChanged
+                            filesChanged: $mergeCommitFilesChanged,
+                            layout: changeFileLayout,
+                            tree: fileTree,
+                            collapsedDirectories: $collapsedDirectories
                         )
                     } else {
-                        FileDiffsView(expandableFileDiffs: $fileDiffs)
+                        FileDiffsView(expandableFileDiffs: $fileDiffs, layout: changeFileLayout,
+                                      tree: fileTree, collapsedDirectories: $collapsedDirectories)
                             .environment(\.imageDiffContext, ImageDiffContext(
                                 old: commit.parentHashes.first.map { .revision($0) } ?? .absent,
                                 new: .revision(commit.hash)))
@@ -83,9 +95,21 @@ struct CommitDetailContentView: View {
             CommitDetailBottomBar(
                 commit: commit,
                 folder: folder,
-                fileDiffs: bottomBarFileDiff()
+                fileDiffs: bottomBarFileDiff(),
+                changeFileLayout: $changeFileLayout,
+                onExpandDirectories: { collapsedDirectories = [] },
+                onCollapseDirectories: { collapsedDirectories = fileTree.directoryPaths }
             )
         })
+        .focusedSceneValue(\.diffMenu, menuActions)
+        .onChange(of: [folder.identity.absoluteString, commit.hash]) { _, _ in
+            collapsedDirectories = []
+        }
+        .onChange(of: treeFileIDs, initial: true) { _, _ in
+            let files = commit.parentHashes.count == 2 ? mergeCommitFilesChanged : fileDiffs
+            fileTree = ChangeFileTree(fileDiffs: files.map(\.model))
+            collapsedDirectories.formIntersection(fileTree.directoryPaths)
+        }
         .task(id: commit) {
             // Selection can change quickly; a canceled load must not overwrite the newer commit.
             do {
@@ -133,6 +157,23 @@ struct CommitDetailContentView: View {
         } else {
             return $fileDiffs
         }
+    }
+
+    private var menuActions: MenuActions {
+        var actions = MenuActions()
+        let files = bottomBarFileDiff()
+        guard !files.wrappedValue.isEmpty else { return actions }
+        actions[.expandAll] = {
+            files.wrappedValue = files.wrappedValue.settingExpansion(true)
+        }
+        actions[.collapseAll] = {
+            files.wrappedValue = files.wrappedValue.settingExpansion(false)
+        }
+        if changeFileLayout == .tree {
+            actions[.expandDirectories] = { collapsedDirectories = [] }
+            actions[.collapseDirectories] = { collapsedDirectories = fileTree.directoryPaths }
+        }
+        return actions
     }
 
 }

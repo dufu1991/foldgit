@@ -52,7 +52,7 @@ extension View {
                     }
                 }
             }
-            Button("Tag") {
+            Button("New Tag") {
                 showing.wrappedValue.createNewTagAt = commit
             }
         }

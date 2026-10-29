@@ -11,7 +11,7 @@ struct CreateNewTagSheet: View {
 
     var body: some View {
         VStack {
-            Text("Create New Tag")
+            Text("New Tag")
                 .font(.headline)
             VStack(alignment: .leading) {
                 Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 10) {

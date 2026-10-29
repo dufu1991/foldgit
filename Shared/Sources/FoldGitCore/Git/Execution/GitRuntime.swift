@@ -193,7 +193,7 @@ public enum GitRuntime: Sendable {
         }
         guard result.terminationStatus.isSuccess else {
             throw GitExecutionError(description:
-                String(format: NSLocalizedString("An error occurred while executing %@", comment: "Git command failure"), arguments.joined(separator: " "))
+                String(format: NSLocalizedString("An error occurred while executing %@.", comment: "Git command failure"), arguments.joined(separator: " "))
                 + "\n\n" + String(decoding: result.standardOutput, as: UTF8.self) + "\n" + stderr)
         }
         return BinaryCommandOutput(standardOutput: Data(result.standardOutput), standardError: stderr)

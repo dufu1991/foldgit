@@ -2,11 +2,14 @@ import FoldGitCore
 import SwiftUI
 
 struct MergeCommitContentView: View {
-    @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = DiffFileExpansion.expanded
+    @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = AppPreferences.defaultDiffFileExpansion
     var mergeCommit: Commit
     var directoryURL: URL
     @Binding var tab: Int
     @Binding var filesChanged: [ExpandableModel<FileDiff>]
+    var layout = ChangeFileLayout.list
+    var tree = ChangeFileTree()
+    var collapsedDirectories: Binding<Set<String>> = .constant([])
     @State private var commits: [Commit] = []
     @State private var error: Error?
 
@@ -14,7 +17,10 @@ struct MergeCommitContentView: View {
         DiffView(
             commits: $commits,
             filesChanged: $filesChanged,
-            tab: $tab
+            tab: $tab,
+            layout: layout,
+            tree: tree,
+            collapsedDirectories: collapsedDirectories
         )
             .environment(\.folder, directoryURL)
             .environment(\.imageDiffContext, ImageDiffContext(

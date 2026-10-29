@@ -13,7 +13,7 @@ public sealed partial class MainWindow
         TagList.ItemsSource = Model.Tags;
         TagList.MinWidth = 340; TagList.MaxHeight = 480;
         TagList.IsItemClickEnabled = true;
-        var create = new Button { Content = L("Create New Tag"), HorizontalAlignment = HorizontalAlignment.Stretch };
+        var create = new Button { Content = L("New Tag"), HorizontalAlignment = HorizontalAlignment.Stretch };
         var panel = new StackPanel { Spacing = 12 }; panel.Children.Add(TagList); panel.Children.Add(create);
         var dialog = new ContentDialog { Title = L("Tags"), Content = panel, CloseButtonText = L("Close"), XamlRoot = Root.XamlRoot, RequestedTheme = Root.ActualTheme };
         string? revision = null;
@@ -61,7 +61,7 @@ public sealed partial class MainWindow
         var panel = new Grid { Width = Math.Min(1040, Math.Max(600, Root.ActualWidth - 120)), Height = Math.Min(620, Math.Max(320, Root.ActualHeight - 200)) };
         panel.ColumnDefinitions.Add(new() { Width = GridLength.Auto }); panel.ColumnDefinitions.Add(new() { Width = new(1, GridUnitType.Star) });
         panel.Children.Add(StashList); Grid.SetColumn(detail, 1); panel.Children.Add(detail);
-        var dialog = new ContentDialog { Title = L("Stash Changed"), Content = panel, CloseButtonText = L("Close"), XamlRoot = Root.XamlRoot, RequestedTheme = Root.ActualTheme };
+        var dialog = new ContentDialog { Title = L("Stashed Changes"), Content = panel, CloseButtonText = L("Close"), XamlRoot = Root.XamlRoot, RequestedTheme = Root.ActualTheme };
         dialog.Resources["ContentDialogMaxWidth"] = 1200.0;
         using var cancellation = new CancellationTokenSource();
         var generation = 0;

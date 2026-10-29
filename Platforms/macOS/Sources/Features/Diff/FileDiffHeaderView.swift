@@ -6,6 +6,7 @@ struct FileDiffHeaderView: View {
     var fileDiff: FileDiff
     var leadingActionImageSystemName: String?
     var leadingActionHelp: String?
+    var treeDepth: Int?
     var onLeadingAction: (() -> Void)?
 
     private var hasLeadingAction: Bool {
@@ -20,16 +21,15 @@ struct FileDiffHeaderView: View {
         Group {
             if hasLeadingAction {
                 headerContent
+                    .padding(.leading, CGFloat(treeDepth ?? 0) * 16)
                     .padding(.leading, 3)
-                    .padding(.vertical, 8)
                     .padding(.trailing, 2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Color(NSColor.textBackgroundColor).opacity(0.9), in: RoundedRectangle(cornerRadius: 8))
             } else {
                 headerContent
-                    .padding(.leading, 3)
+                    .padding(.leading, CGFloat(treeDepth ?? 0) * 16 + 3)
                     .padding(.trailing, 12)
-                    .padding(.vertical, 8)
                     .background(Color(NSColor.textBackgroundColor).opacity(0.9), in: RoundedRectangle(cornerRadius: 8))
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -43,10 +43,11 @@ struct FileDiffHeaderView: View {
                     onLeadingAction?()
                 } label: {
                     Image(systemName: leadingActionImageSystemName)
+                        .font(.system(size: 11, weight: .medium))
                         .foregroundStyle(.secondary)
-                        .frame(width: 16, height: 16)
+                        .frame(width: 22, height: 22)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(.plain)
                 .controlSize(.small)
                 .help(leadingActionHelp ?? "")
                 .accessibilityLabel(Text(verbatim: leadingActionHelp ?? ""))
@@ -56,19 +57,19 @@ struct FileDiffHeaderView: View {
             Button {
                 isExpanded.toggle()
             } label: {
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundStyle(.tertiary)
-                    .rotationEffect(.degrees(isExpanded ? 90 : 0))
-                    .frame(width: 16, height: 16)
+                FileNameView(fileDiff: fileDiff, showsTreeName: treeDepth != nil)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(minHeight: 22)
                     .contentShape(Rectangle())
             }
-            .buttonStyle(.bordered)
-            .controlSize(.small)
-            .help(expansionTitle)
-            .accessibilityLabel(Text(verbatim: expansionTitle))
+            .buttonStyle(.plain)
+            .textSelection(.disabled)
+            .accessibilityLabel(Text(verbatim: fileDiff.filePathDisplay))
+            .accessibilityValue(isExpanded ? Text("Expanded") : Text("Collapsed"))
+            .accessibilityHint(Text(verbatim: expansionTitle))
+            .accessibilityIdentifier("fileDiffExpansion-" + fileDiff.changeTreePath)
 
-            FileNameView(fileDiff: fileDiff)
+            OpenFileButton(filePath: fileDiff.toFilePath)
         }
     }
 }

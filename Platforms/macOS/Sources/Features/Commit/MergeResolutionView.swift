@@ -47,7 +47,7 @@ struct MergeResolutionContent: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Label("Resolve Merge", systemImage: "arrow.triangle.merge").font(.headline)
+                Label("Resolve Merge", systemImage: "arrow.trianglehead.merge").font(.headline)
                 Spacer()
                 if model.isBusy { ProgressView().controlSize(.small) }
                 Button("Refresh", systemImage: "arrow.clockwise") { Task { await model.refresh() } }

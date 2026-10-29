@@ -82,6 +82,8 @@ enum DiffFileExpansion: String, CaseIterable, Identifiable {
 enum AppPreferences {
     static let defaultCodeFontSize = 12.0
     static let defaultToolbarLabelStyle: ToolbarLabelStyle = .titleAndIcon
+    static let defaultDiffFileExpansion = DiffFileExpansion.collapsed
+    static let defaultChangeFileLayout = ChangeFileLayout.tree
 
     static func restoresSession(in defaults: UserDefaults = .standard) -> Bool {
         defaults.object(forKey: PreferenceKey.restoreSession.rawValue) as? Bool ?? true

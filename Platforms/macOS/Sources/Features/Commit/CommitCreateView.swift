@@ -3,7 +3,10 @@ import os
 import SwiftUI
 
 struct CommitCreateView: View {
-    @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = DiffFileExpansion.expanded
+    @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = AppPreferences.defaultDiffFileExpansion
+    @AppStorage(PreferenceKey.changeFileLayout.rawValue) private var changeFileLayout = AppPreferences.defaultChangeFileLayout
+    @Environment(\.expandAllFiles) private var expandAllFilesID: UUID?
+    @Environment(\.collapseAllFiles) private var collapseAllFilesID: UUID?
     @Environment(\.openSettings) var openSettings: OpenSettingsAction
     @Environment(\.appearsActive) private var appearsActive
 
@@ -49,6 +52,16 @@ struct CommitCreateView: View {
     @State private var amendCommit: Commit?
     @State private var isStagingChanges = false
     @State private var stagedPaneHeight: CGFloat = 180
+    @State private var stagedTree = ChangeFileTree()
+    @State private var unstagedTree = ChangeFileTree()
+    @State private var untrackedTree = ChangeFileTree()
+    @State private var collapsedStagedDirectories: Set<String> = []
+    @State private var collapsedUnstagedDirectories: Set<String> = []
+    @State private var collapsedUntrackedDirectories: Set<String> = []
+    @State private var isStagedExpanded = true
+    @State private var isUnstagedExpanded = true
+    @State private var isUntrackedExpanded = false
+    @State private var expandedUntrackedImages: Set<String> = []
     @Binding var isRefresh: Bool
     var onCommit: () -> Void
     var onStash: () -> Void
@@ -150,6 +163,8 @@ struct CommitCreateView: View {
         .errorSheet($error)
         .environment(\.imageDiffRefreshID, imageDiffRefreshID)
         .focusedSceneValue(\.stagingMenu, menuActions)
+        .onChange(of: expandAllFilesID) { _, _ in setAllDiffExpansion(true) }
+        .onChange(of: collapseAllFilesID) { _, _ in setAllDiffExpansion(false) }
     }
 
     @ViewBuilder
@@ -159,26 +174,28 @@ struct CommitCreateView: View {
                 fileDiffs: $expandableFileDiffs,
                 status: notStagedHeaderCaption,
                 untrackedFiles: status?.untrackedFiles ?? [],
-                onSelectFileDiff: { fileDiff in
+                onSelectFileDiff: isStagingChanges ? nil : { fileDiff in
                     if let newDiff = self.diff?.updateFileDiffStage(fileDiff, stage: true) {
                         addPatch(newDiff)
                     }
                 },
-                onSelectChunk: status?.unmergedFiles.isEmpty == false ? nil : { fileDiff, chunk in
+                onSelectChunk: isStagingChanges || status?.unmergedFiles.isEmpty == false ? nil : { fileDiff, chunk in
                     if let newDiff = self.diff?.updateChunkStage(chunk, in: fileDiff, stage: true) {
                         addPatch(newDiff)
                     }
                 },
-                onSelectUntrackedFile: { file in
-                    Task {
-                        do {
-                            try await GitRuntime.run(GitAddPathspec(directory: folder.url, pathspec: file))
-                            await updateChanges()
-                        } catch {
-                            self.error = error
-                        }
-                    }
-                }
+                onSelectUntrackedFile: isStagingChanges ? nil : { file in
+                    updateIndex { try await GitRuntime.run(GitAddPathspec(directory: folder.url, pathspec: file)) }
+                },
+                layout: changeFileLayout,
+                tree: unstagedTree,
+                untrackedTree: untrackedTree,
+                collapsedDirectories: $collapsedUnstagedDirectories,
+                collapsedUntrackedDirectories: $collapsedUntrackedDirectories,
+                isExpanded: $isUnstagedExpanded,
+                isUntrackedExpanded: $isUntrackedExpanded,
+                expandedUntrackedImages: $expandedUntrackedImages,
+                onSelectDirectory: isStagingChanges ? nil : { stageDirectory($0, staging: true) }
             )
             .padding(.top)
         } else if updateChangesError == nil {
@@ -195,28 +212,43 @@ struct CommitCreateView: View {
             StagedView(
                 fileDiffs: $cachedExpandableFileDiffs,
                 status: cachedDiffShortStat,
-                onSelectFileDiff: { fileDiff in
+                onSelectFileDiff: isStagingChanges ? nil : { fileDiff in
                     if let newDiff = self.cachedDiff?.updateFileDiffStage(fileDiff, stage: false) {
                         restorePatch(newDiff)
                     }
                 },
-                onSelectChunk: status?.unmergedFiles.isEmpty == false ? nil : { fileDiff, chunk in
+                onSelectChunk: isStagingChanges || status?.unmergedFiles.isEmpty == false ? nil : { fileDiff, chunk in
                     if let newDiff = self.cachedDiff?.updateChunkStage(chunk, in: fileDiff, stage: false) {
                         restorePatch(newDiff)
                     }
-                }
+                },
+                layout: changeFileLayout,
+                tree: stagedTree,
+                collapsedDirectories: $collapsedStagedDirectories,
+                isExpanded: $isStagedExpanded,
+                onSelectDirectory: isStagingChanges ? nil : { stageDirectory($0, staging: false) }
             )
         }
     }
 
     private var changeControls: some View {
-        DiffDisplayControls(onExpandAll: {
-            cachedExpandableFileDiffs = cachedExpandableFileDiffs.map { ExpandableModel(isExpanded: true, model: $0.model) }
-            expandableFileDiffs = expandableFileDiffs.map { ExpandableModel(isExpanded: true, model: $0.model) }
-        }, onCollapseAll: {
-            cachedExpandableFileDiffs = cachedExpandableFileDiffs.map { ExpandableModel(isExpanded: false, model: $0.model) }
-            expandableFileDiffs = expandableFileDiffs.map { ExpandableModel(isExpanded: false, model: $0.model) }
-        })
+        DiffDisplayControls(changeFileLayout: $changeFileLayout,
+                            onExpandDirectories: { setAllDirectoryExpansion(true) },
+                            onCollapseDirectories: { setAllDirectoryExpansion(false) },
+                            onExpandAll: { setAllDiffExpansion(true) },
+                            onCollapseAll: { setAllDiffExpansion(false) })
+    }
+
+    private func setAllDiffExpansion(_ expanded: Bool) {
+        cachedExpandableFileDiffs = cachedExpandableFileDiffs.settingExpansion(expanded)
+        expandableFileDiffs = expandableFileDiffs.settingExpansion(expanded)
+        expandedUntrackedImages = expanded ? Set((status?.untrackedFiles ?? []).filter { DiffImage.supports(path: $0) }) : []
+    }
+
+    private func setAllDirectoryExpansion(_ expanded: Bool) {
+        collapsedStagedDirectories = expanded ? [] : stagedTree.directoryPaths
+        collapsedUnstagedDirectories = expanded ? [] : unstagedTree.directoryPaths
+        collapsedUntrackedDirectories = expanded ? [] : untrackedTree.directoryPaths
     }
 
     private var changeActions: some View {
@@ -244,6 +276,10 @@ struct CommitCreateView: View {
 
     private var menuActions: MenuActions {
         var actions = MenuActions()
+        if changeFileLayout == .tree {
+            actions[.expandDirectories] = { setAllDirectoryExpansion(true) }
+            actions[.collapseDirectories] = { setAllDirectoryExpansion(false) }
+        }
         guard !isStagingChanges else { return actions }
         if canStage { actions[.stageAll] = stageAll }
         if !cachedDiffRaw.isEmpty { actions[.unstageAll] = unstageAll }
@@ -257,6 +293,14 @@ struct CommitCreateView: View {
 
     private func unstageAll() {
         updateIndex { try await GitRuntime.run(GitRestore(directory: folder.url)) }
+    }
+
+    private func stageDirectory(_ path: String, staging: Bool) {
+        guard let diff = staging ? diff : cachedDiff else { return }
+        let selection = ChangeDirectoryStaging.selection(in: path, diff: diff,
+                                                        untrackedFiles: status?.untrackedFiles ?? [], staging: staging)
+        guard !selection.isEmpty else { return }
+        updateIndex { try await IndexStaging.apply(selection, staging: staging, in: folder.url) }
     }
 
     private func stashChanges() {
@@ -321,6 +365,18 @@ struct CommitCreateView: View {
             diff = changes.unstaged
             expandableFileDiffs = changes.unstaged.fileDiffs.withExpansionState(from: expandableFileDiffs, defaultIsExpanded: fileExpansion.isExpanded)
             cachedDiffStat = changes.stagedStatistics
+            stagedTree = changes.stagedTree
+            unstagedTree = changes.unstagedTree
+            collapsedStagedDirectories.formIntersection(stagedTree.directoryPaths)
+            collapsedUnstagedDirectories.formIntersection(unstagedTree.directoryPaths)
+        }
+        if status?.untrackedFiles != snapshot.status.untrackedFiles {
+            let files = snapshot.status.untrackedFiles
+            let tree = await Task.detached(priority: .userInitiated) { ChangeFileTree(untrackedFiles: files) }.value
+            guard request == updateGeneration else { return false }
+            untrackedTree = tree
+            collapsedUntrackedDirectories.formIntersection(tree.directoryPaths)
+            expandedUntrackedImages.formIntersection(files)
         }
         guard request == updateGeneration else { return false }
         status = snapshot.status
@@ -328,25 +384,11 @@ struct CommitCreateView: View {
     }
 
     private func restorePatch(_ newDiff: Diff) {
-        Task {
-            do {
-                try await IndexStaging.apply(newDiff.indexSelection(staging: false), staging: false, in: folder.url)
-                await updateChanges()
-            } catch {
-                self.error = error
-            }
-        }
+        updateIndex { try await IndexStaging.apply(newDiff.indexSelection(staging: false), staging: false, in: folder.url) }
     }
 
     private func addPatch(_ newDiff: Diff) {
-        Task {
-            do {
-                try await IndexStaging.apply(newDiff.indexSelection(staging: true), staging: true, in: folder.url)
-                await updateChanges()
-            } catch {
-                self.error = error
-            }
-        }
+        updateIndex { try await IndexStaging.apply(newDiff.indexSelection(staging: true), staging: true, in: folder.url) }
     }
 }
 
@@ -355,12 +397,16 @@ private struct ParsedChanges: Sendable {
     let unstaged: Diff
     let stagedStatistics: DiffStat
     let unstagedStatistics: DiffStat
+    let stagedTree: ChangeFileTree
+    let unstagedTree: ChangeFileTree
 
     init(_ snapshot: WorktreeSnapshot) throws {
         staged = try Diff(raw: snapshot.staged)
         unstaged = try Diff(raw: snapshot.unstaged)
         stagedStatistics = DiffStat(diff: staged)
         unstagedStatistics = DiffStat(diff: unstaged)
+        stagedTree = ChangeFileTree(fileDiffs: staged.fileDiffs)
+        unstagedTree = ChangeFileTree(fileDiffs: unstaged.fileDiffs)
     }
 }
 

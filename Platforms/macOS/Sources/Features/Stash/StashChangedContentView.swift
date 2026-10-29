@@ -2,7 +2,7 @@ import FoldGitCore
 import SwiftUI
 
 struct StashChangedContentView: View {
-    @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = DiffFileExpansion.expanded
+    @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = AppPreferences.defaultDiffFileExpansion
     
     var folder: WorkspaceEntry
     @Binding var showingStashChanged: Bool
@@ -15,7 +15,7 @@ struct StashChangedContentView: View {
     var body: some View {
         NavigationSplitView {
             List(selection: $selectionStashID) {
-                Text("Stash Changed")
+                Text("Stashed Changes")
                     .font(.title2)
                     .fontWeight(.bold)
                     .lineLimit(2)
@@ -101,9 +101,9 @@ struct StashChangedContentView: View {
 
     private var displayControls: some View {
         DiffDisplayControls(onExpandAll: {
-            fileDiffs = fileDiffs.map { ExpandableModel(isExpanded: true, model: $0.model) }
+            fileDiffs = fileDiffs.settingExpansion(true)
         }, onCollapseAll: {
-            fileDiffs = fileDiffs.map { ExpandableModel(isExpanded: false, model: $0.model) }
+            fileDiffs = fileDiffs.settingExpansion(false)
         })
     }
 

@@ -169,7 +169,7 @@ struct BranchListContentView<ContextMenu: View>: View {
                         .foregroundStyle(.secondary)
                 }
             } header: {
-                Label("Local Branches", systemImage: "arrow.triangle.branch")
+                Label("Local Branches", image: "git.branch")
             }
             .listSectionSeparator(.hidden)
             Section {
@@ -183,7 +183,7 @@ struct BranchListContentView<ContextMenu: View>: View {
                     }
                 } label: {
                     HStack {
-                        Label("Remote Branches", systemImage: "network")
+                        Label("Remote Branches", systemImage: "cloud")
                         Spacer()
                         Text(filteredRemote.count, format: .number)
                             .monospacedDigit()
@@ -233,7 +233,7 @@ struct BranchRowLabel: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Image(systemName: isCurrent ? "checkmark.circle.fill" : isRemote ? "network" : "arrow.triangle.branch")
+            (isCurrent ? Image(systemName: "checkmark.circle.fill") : isRemote ? Image(systemName: "cloud") : .gitBranch)
                 .foregroundStyle(isCurrent ? Color.accentColor : Color.secondary)
             Text(name)
                 .fontWeight(isCurrent ? .semibold : .regular)

@@ -39,17 +39,26 @@ struct DiffLayoutPicker: View {
 
 struct DiffDisplayControls: View {
     var showsFileControls = true
+    var changeFileLayout: Binding<ChangeFileLayout>? = nil
+    var onExpandDirectories: (() -> Void)? = nil
+    var onCollapseDirectories: (() -> Void)? = nil
     var onExpandAll: () -> Void
     var onCollapseAll: () -> Void
 
     var body: some View {
         ViewThatFits(in: .horizontal) {
             HStack(spacing: 16) {
+                if let changeFileLayout {
+                    ChangeFileLayoutPicker(layout: changeFileLayout)
+                }
                 DiffLayoutPicker()
                 fileControls
             }
             .fixedSize(horizontal: true, vertical: false)
             VStack(alignment: .leading, spacing: 8) {
+                if let changeFileLayout {
+                    ChangeFileLayoutPicker(layout: changeFileLayout)
+                }
                 DiffLayoutPicker()
                 fileControls
             }
@@ -63,18 +72,56 @@ struct DiffDisplayControls: View {
     private var fileControls: some View {
         if showsFileControls {
             ViewThatFits(in: .horizontal) {
-                HStack(spacing: 8) { fileButtons }
-                    .fixedSize(horizontal: true, vertical: false)
-                VStack(alignment: .leading, spacing: 8) { fileButtons }
+                HStack(spacing: 16) {
+                    directoryButtons
+                    diffButtons
+                }
+                .fixedSize(horizontal: true, vertical: false)
+                VStack(alignment: .leading, spacing: 8) {
+                    directoryButtons
+                    diffButtons
+                }
             }
         }
     }
 
     @ViewBuilder
-    private var fileButtons: some View {
-        Button("Expand All Files", action: onExpandAll)
-            .fixedSize()
-        Button("Collapse All Files", action: onCollapseAll)
-            .fixedSize()
+    private var directoryButtons: some View {
+        if changeFileLayout?.wrappedValue == .tree,
+           let onExpandDirectories, let onCollapseDirectories {
+            ExpansionButtonPair(expandTitle: "Expand Directories", collapseTitle: "Collapse Directories",
+                                identifier: "Directories", onExpand: onExpandDirectories, onCollapse: onCollapseDirectories)
+        }
+    }
+
+    private var diffButtons: some View {
+        ExpansionButtonPair(expandTitle: "Expand Diffs", collapseTitle: "Collapse Diffs",
+                            identifier: "Diffs", onExpand: onExpandAll, onCollapse: onCollapseAll)
+    }
+}
+
+private struct ExpansionButtonPair: View {
+    var expandTitle: LocalizedStringKey
+    var collapseTitle: LocalizedStringKey
+    var identifier: String
+    var onExpand: () -> Void
+    var onCollapse: () -> Void
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 8) { buttons }
+                .fixedSize(horizontal: true, vertical: false)
+            VStack(alignment: .leading, spacing: 8) { buttons }
+        }
+    }
+
+    private var buttons: some View {
+        Group {
+            Button(expandTitle, action: onExpand)
+                .accessibilityIdentifier("expand" + identifier + "Button")
+            Button(collapseTitle, action: onCollapse)
+                .accessibilityIdentifier("collapse" + identifier + "Button")
+        }
+        .fixedSize()
     }
 }

@@ -10,7 +10,7 @@
     <value>{0}，{1}</value>
   </data>
   <data name="Text_1ee89c2c01e0ed612af30945" xml:space="preserve">
-    <value>{0} 次提交</value>
+    <value>{0} 个提交</value>
   </data>
   <data name="Text_40c21e81080887d4e08b2f47" xml:space="preserve">
     <value>删除 {0} 行</value>
@@ -90,17 +90,17 @@
   <data name="Text_c94ecadbce99bae7f94cfcfb" xml:space="preserve">
     <value>修改上次提交</value>
   </data>
-  <data name="Text_bb9c3ca1fcf56ea4eaf9fd6c" xml:space="preserve">
+  <data name="Text_24da7b5eb1cdcba0e665e1b6" xml:space="preserve">
     <value>执行 {0} 时发生错误。</value>
   </data>
   <data name="Text_3907fa7f80722a6fc58cd8c1" xml:space="preserve">
     <value>外观</value>
   </data>
   <data name="Text_98e33b0f3104fcf1b812ba2c" xml:space="preserve">
-    <value>应用列表</value>
+    <value>应用</value>
   </data>
   <data name="Text_868cdc6ea50ad80ee6876d2f" xml:space="preserve">
-    <value>新打开的比对按此设置显示，手动展开或折叠的文件会保留当前状态。</value>
+    <value>新打开的差异按此设置显示，手动展开或折叠的文件会保留当前状态。</value>
   </data>
   <data name="Text_31e392d1c0378beca611de66" xml:space="preserve">
     <value>应用</value>
@@ -118,10 +118,10 @@
     <value>自动</value>
   </data>
   <data name="Text_15d5c7ad6b4b19a78d97273b" xml:space="preserve">
-    <value>自动抓取</value>
+    <value>自动获取</value>
   </data>
   <data name="Text_c9156a4ced754ec967489b19" xml:space="preserve">
-    <value>应用运行期间会继续按设定间隔自动抓取。</value>
+    <value>应用运行期间会按设定间隔自动获取。</value>
   </data>
   <data name="Text_8f0184ccd344ff0656dbefea" xml:space="preserve">
     <value>自动模式会在空间充足时采用并排布局。</value>
@@ -136,7 +136,7 @@
     <value>修改前</value>
   </data>
   <data name="Text_b8d413ef5ae09a42d7fce8bf" xml:space="preserve">
-    <value>落后 {0} 次提交</value>
+    <value>落后 {0} 个提交</value>
   </data>
   <data name="Text_1e09add288606fd64a35ae5a" xml:space="preserve">
     <value>二进制文件</value>
@@ -159,8 +159,11 @@
   <data name="Text_6717f40f497e0510e95e83c7" xml:space="preserve">
     <value>正在取消克隆</value>
   </data>
+  <data name="Text_b585b9ae2b811e9c591c9d00" xml:space="preserve">
+    <value>更改文件显示</value>
+  </data>
   <data name="Text_da9fc80016b0ff1af0d679e5" xml:space="preserve">
-    <value>修改已在本地合并。可以打开目标工作树检查、测试并推送。</value>
+    <value>更改已在本地合并。可以打开目标工作树检查、测试并推送。</value>
   </data>
   <data name="Text_57e4d74626635008f6a0ced2" xml:space="preserve">
     <value>勾选常用的快捷输入，将其显示在提交信息编辑框下方。</value>
@@ -190,7 +193,7 @@
     <value>请选择其他目标分支。</value>
   </data>
   <data name="Text_13bc4500c90bc072fef5674f" xml:space="preserve">
-    <value>为每个仓库单独设置抓取间隔。抓取会下载远程更新，不会自动合并。</value>
+    <value>为每个仓库单独设置获取间隔。获取会下载远程更新，不会自动合并。</value>
   </data>
   <data name="Text_179bf01adabef87cd4a9af91" xml:space="preserve">
     <value>选择文件以比较两个版本。可以在外部编辑，或保留其中一个版本，然后继续合并。</value>
@@ -208,7 +211,7 @@
     <value>选择克隆仓库的上级目录。</value>
   </data>
   <data name="Text_379afe481ec4a23bd1363f12" xml:space="preserve">
-    <value>工作树无修改</value>
+    <value>无更改</value>
   </data>
   <data name="Text_9f1b237b5dc314edb0dafba4" xml:space="preserve">
     <value>清理</value>
@@ -240,14 +243,23 @@
   <data name="Text_ffe95143bc990ee850df6607" xml:space="preserve">
     <value>折叠全部</value>
   </data>
+  <data name="Text_624e3d714b392ee74e912c9d" xml:space="preserve">
+    <value>折叠差异</value>
+  </data>
+  <data name="Text_a1feb1d2c82679bc386b27a4" xml:space="preserve">
+    <value>折叠目录</value>
+  </data>
   <data name="Text_45fb3894186e30b7cc38da32" xml:space="preserve">
     <value>折叠文件</value>
+  </data>
+  <data name="Text_7995322f8f50d43b0bd75061" xml:space="preserve">
+    <value>收起文件夹</value>
   </data>
   <data name="Text_b322b65227bc3ec948893e32" xml:space="preserve">
     <value>折叠</value>
   </data>
   <data name="Text_c52309d3f294de8fbde959fd" xml:space="preserve">
-    <value>亮暗模式</value>
+    <value>外观模式</value>
   </data>
   <data name="Text_b3f29b99a24d4c504921396b" xml:space="preserve">
     <value>合并冲突的组合差异使用单栏布局。</value>
@@ -274,10 +286,10 @@
     <value>提交信息</value>
   </data>
   <data name="Text_041d3c070151e15e382d3360" xml:space="preserve">
-    <value>请先提交或贮藏 {0} 中的修改，再进行合并。</value>
+    <value>请先提交或贮藏 {0} 中的更改，再进行合并。</value>
   </data>
   <data name="Text_6db7ad198515f6d07132432c" xml:space="preserve">
-    <value>先提交修改，合并到目标分支，再选择要保留的内容。</value>
+    <value>先提交更改，合并到目标分支，再选择要保留的内容。</value>
   </data>
   <data name="Text_84da95ea87e533097ef70561" xml:space="preserve">
     <value>提交：</value>
@@ -315,17 +327,17 @@
   <data name="Text_ab480df9b105271e4e11fcea" xml:space="preserve">
     <value>复制提交哈希</value>
   </data>
+  <data name="Text_04a05d81cc5c997a10f7ab9e" xml:space="preserve">
+    <value>无法读取差异中的更改文件。</value>
+  </data>
+  <data name="Text_aaa1d8c5ca48d2a3cf8eb0db" xml:space="preserve">
+    <value>无法读取差异。</value>
+  </data>
   <data name="Text_4759498ac2a719c619e2c8cf" xml:space="preserve">
     <value>创建</value>
   </data>
   <data name="Text_cb68879d74579d38a6f412e4" xml:space="preserve">
     <value>创建并推送</value>
-  </data>
-  <data name="Text_bf815ec6a83fe388ec634585" xml:space="preserve">
-    <value>新建分支</value>
-  </data>
-  <data name="Text_ad41f17a7f5ed0d23b3734a0" xml:space="preserve">
-    <value>新建标签</value>
   </data>
   <data name="Text_e0d1b68224bf0b31ef16b206" xml:space="preserve">
     <value>当前</value>
@@ -358,16 +370,19 @@
     <value>降序</value>
   </data>
   <data name="Text_23b028a2c6050cdb51bd5582" xml:space="preserve">
-    <value>分离 HEAD</value>
+    <value>分离头指针</value>
   </data>
   <data name="Text_7ecf46284588f3fa7e31a578" xml:space="preserve">
     <value>差异</value>
   </data>
   <data name="Text_0e676fa7d2c127daeed7938e" xml:space="preserve">
-    <value>文件比对</value>
+    <value>差异显示</value>
   </data>
   <data name="Text_33bb7b7370aad4f9d3f0a923" xml:space="preserve">
-    <value>比对布局</value>
+    <value>差异布局</value>
+  </data>
+  <data name="Text_25523ba32c7136d9f0713a70" xml:space="preserve">
+    <value>目录树</value>
   </data>
   <data name="Text_18d67c992b71ce69eb924554" xml:space="preserve">
     <value>显示名称</value>
@@ -420,8 +435,17 @@
   <data name="Text_7cf0d193cccdfabb97454557" xml:space="preserve">
     <value>展开全部</value>
   </data>
+  <data name="Text_f99cd7ddd3e0dbf63d0b8833" xml:space="preserve">
+    <value>展开差异</value>
+  </data>
+  <data name="Text_f9203a91288857a2eb29c982" xml:space="preserve">
+    <value>展开目录</value>
+  </data>
   <data name="Text_483d3ba8580a6642298c1c50" xml:space="preserve">
     <value>展开文件</value>
+  </data>
+  <data name="Text_ce65cc8bc111022d3861c6ae" xml:space="preserve">
+    <value>展开文件夹</value>
   </data>
   <data name="Text_e72d5d8d0b167d21b4e4a89e" xml:space="preserve">
     <value>展开</value>
@@ -430,16 +454,16 @@
     <value>外部应用</value>
   </data>
   <data name="Text_cd7d61bf7e38c7c2280b4241" xml:space="preserve">
-    <value>抓取</value>
+    <value>获取</value>
   </data>
   <data name="Text_837c12c4f7ecd4c1dbbdd4df" xml:space="preserve">
-    <value>抓取分支和标签</value>
+    <value>获取分支和标签</value>
   </data>
   <data name="Text_7514c6b66c4fa8b6a3d82afe" xml:space="preserve">
-    <value>抓取标签</value>
+    <value>获取标签</value>
   </data>
   <data name="Text_b602a9170fa36600b5e30f38" xml:space="preserve">
-    <value>正在抓取</value>
+    <value>正在获取</value>
   </data>
   <data name="Text_41d284eaa312e2d9762e3cd6" xml:space="preserve">
     <value>此版本已删除该文件</value>
@@ -454,7 +478,7 @@
     <value>文件</value>
   </data>
   <data name="Text_47aa7d820cf5618322fc8a2f" xml:space="preserve">
-    <value>变更文件</value>
+    <value>已更改文件</value>
   </data>
   <data name="Text_638e249f4a15ebb84957da13" xml:space="preserve">
     <value>筛选</value>
@@ -489,6 +513,9 @@
   <data name="Text_f1c65e14817efef2b77973a4" xml:space="preserve">
     <value>前进</value>
   </data>
+  <data name="Text_dc45d36f35e84e07f49bc9d0" xml:space="preserve">
+    <value>起点：</value>
+  </data>
   <data name="Text_c910d474dcd724bff83ddede" xml:space="preserve">
     <value>通用</value>
   </data>
@@ -510,6 +537,9 @@
   <data name="Text_5d2e701ca0f1ef2dad59d311" xml:space="preserve">
     <value>Git 返回了无效的工作树信息。</value>
   </data>
+  <data name="Text_9248ca516a7c79c6fee27c8d" xml:space="preserve">
+    <value>Git 没有返回内容。</value>
+  </data>
   <data name="Text_71f9f4866eacd0c07a930f1c" xml:space="preserve">
     <value>未找到 Git。请安装 Git for Windows 或选择 git.exe。</value>
   </data>
@@ -528,14 +558,11 @@
   <data name="Text_9709a3b2e51f0ef313f5ad19" xml:space="preserve">
     <value>隐藏边栏</value>
   </data>
-  <data name="Text_0e769600933790607b2a13b3" xml:space="preserve">
-    <value>搜索历史</value>
-  </data>
   <data name="Text_e6a07707b0fbc950b433139a" xml:space="preserve">
     <value>历史范围</value>
   </data>
   <data name="Text_c6040c57a0e14641107e3a4f" xml:space="preserve">
-    <value>历史与比对</value>
+    <value>历史与差异</value>
   </data>
   <data name="Text_365819e56f8313cb63ef6aa9" xml:space="preserve">
     <value>仅图标</value>
@@ -544,7 +571,7 @@
     <value>图标和文字</value>
   </data>
   <data name="Text_c536b2d7c1205a80cd559b36" xml:space="preserve">
-    <value>图片对比</value>
+    <value>图片比较</value>
   </data>
   <data name="Text_03913069dcd3c8cd8723ecb9" xml:space="preserve">
     <value>无法预览图片</value>
@@ -580,7 +607,7 @@
     <value>重启应用后，语言更改将完整生效。</value>
   </data>
   <data name="Text_856a3723d543e02279010aa3" xml:space="preserve">
-    <value>上次抓取成功</value>
+    <value>上次成功获取</value>
   </data>
   <data name="Text_73b6e48a1b552d112502d37a" xml:space="preserve">
     <value>稍后</value>
@@ -589,7 +616,7 @@
     <value>登录时启动</value>
   </data>
   <data name="Text_77d5dbd3b313e4112e98867f" xml:space="preserve">
-    <value>这里的布局选项与比对区域的切换按钮保持同步。</value>
+    <value>这里的布局选项与差异区域的切换按钮保持同步。</value>
   </data>
   <data name="Text_d32ec834f46c429ce0816506" xml:space="preserve">
     <value>留空时使用文件夹名称。</value>
@@ -602,6 +629,12 @@
   </data>
   <data name="Text_54d16531eb769f15a910c862" xml:space="preserve">
     <value>关联工作树</value>
+  </data>
+  <data name="Text_6f202f54a7b2d8fe42aa804e" xml:space="preserve">
+    <value>列表</value>
+  </data>
+  <data name="Text_3f06cd334f4811b2130b13a8" xml:space="preserve">
+    <value>加载更多</value>
   </data>
   <data name="Text_322b540df1e8e7eaf9b0fec3" xml:space="preserve">
     <value>正在读取应用</value>
@@ -673,7 +706,7 @@
     <value>修改</value>
   </data>
   <data name="Text_d47d7cb0e4f8fd2be5ee0782" xml:space="preserve">
-    <value>加载更多</value>
+    <value>更多</value>
   </data>
   <data name="Text_6ecc3df6bffdd06c58cd4f6e" xml:space="preserve">
     <value>移动</value>
@@ -690,8 +723,11 @@
   <data name="Text_5c1f4b6143af38d55c58ea29" xml:space="preserve">
     <value>命名仓库</value>
   </data>
+  <data name="Text_2683cad48a14dc3f79c167e4" xml:space="preserve">
+    <value>名称：</value>
+  </data>
   <data name="Text_cd5ce4449ea9f8c537b990f5" xml:space="preserve">
-    <value>新分支</value>
+    <value>新建分支</value>
   </data>
   <data name="Text_493c780b4823eec50aa921b4" xml:space="preserve">
     <value>新分支名称</value>
@@ -704,6 +740,9 @@
   </data>
   <data name="Text_1fac73e86cf4db8ba24f1b6b" xml:space="preserve">
     <value>将所选仓库新建为分组</value>
+  </data>
+  <data name="Text_82148b3da229440cdb35bd4e" xml:space="preserve">
+    <value>新建标签</value>
   </data>
   <data name="Text_61fced6671058e6b666a63e2" xml:space="preserve">
     <value>新建工作树</value>
@@ -731,9 +770,6 @@
   </data>
   <data name="Text_145b487f5ed6096d9f048af5" xml:space="preserve">
     <value>没有提交记录</value>
-  </data>
-  <data name="Text_06bff09c7e200917cbe975e0" xml:space="preserve">
-    <value>没有提交历史</value>
   </data>
   <data name="Text_4e47ec927670bb96ab007a75" xml:space="preserve">
     <value>没有内容</value>
@@ -787,10 +823,10 @@
     <value>开启</value>
   </data>
   <data name="Text_3495086d5f7b910836ed6c6a" xml:space="preserve">
-    <value>只有提交已合并、无修改且未锁定的工作树才能移除。远程分支会保留。</value>
+    <value>只有提交已合并、无更改且未锁定的工作树才能移除。远程分支会保留。</value>
   </data>
   <data name="Text_9f23ccc98700345150d1d7d8" xml:space="preserve">
-    <value>仅修改侧边栏中的显示名称，不会修改文件夹名称。</value>
+    <value>仅修改边栏中的显示名称，不会更改文件夹名称。</value>
   </data>
   <data name="Text_ed077f3d8125d60dca1979c7" xml:space="preserve">
     <value>打开</value>
@@ -834,20 +870,8 @@
   <data name="Text_07ab08927a968d80214e1036" xml:space="preserve">
     <value>请先在另一个工作树中打开目标分支，再完成操作。</value>
   </data>
-  <data name="Text_8e5c518bc240ced7f0082d36" xml:space="preserve">
-    <value>原始项目</value>
-  </data>
   <data name="Text_189a8567d84bfbdd8629aab5" xml:space="preserve">
     <value>其他应用</value>
-  </data>
-  <data name="Text_27eb74726f093262742ca114" xml:space="preserve">
-    <value>无法解析文件差异的首行。</value>
-  </data>
-  <data name="Text_8591c33061180da3a98de9c3" xml:space="preserve">
-    <value>无法解析文件差异中的目标文件标记。</value>
-  </data>
-  <data name="Text_b1e214809bc313c13f0d340f" xml:space="preserve">
-    <value>无法解析 Git 输出，输出内容为空。</value>
   </data>
   <data name="Text_30d2d6bd3576a41f3616e71d" xml:space="preserve">
     <value>固定常用应用</value>
@@ -907,7 +931,7 @@
     <value>刷新</value>
   </data>
   <data name="Text_6c77419207d3a4089520ef72" xml:space="preserve">
-    <value>刷新应用列表</value>
+    <value>刷新应用</value>
   </data>
   <data name="Text_db010f388106692884f127c8" xml:space="preserve">
     <value>刷新仓库列表</value>
@@ -934,7 +958,7 @@
     <value>移除工作树？</value>
   </data>
   <data name="Text_389881de7cfc8b5a104f1ab4" xml:space="preserve">
-    <value>从侧栏移除</value>
+    <value>从边栏移除</value>
   </data>
   <data name="Text_41292ea063219cc9b8ae0fdf" xml:space="preserve">
     <value>请先移除冲突标记，再将此文件标记为已解决。</value>
@@ -985,7 +1009,7 @@
     <value>处理合并</value>
   </data>
   <data name="Text_3b12a8a5f3973429ff37edf0" xml:space="preserve">
-    <value>请先解决所有冲突并暂存修改，再继续合并。</value>
+    <value>请先解决所有冲突并暂存更改，再继续合并。</value>
   </data>
   <data name="Text_0fe0c953737413887ef7295e" xml:space="preserve">
     <value>立即重新启动</value>
@@ -1026,14 +1050,11 @@
   <data name="Text_23a1309d6a7c1e827442065c" xml:space="preserve">
     <value>保存位置</value>
   </data>
-  <data name="Text_f61d313e4bc27b6e5f427f2f" xml:space="preserve">
-    <value>搜索作者、邮箱或提交信息</value>
-  </data>
   <data name="Text_3a93f31e545c049a2864a25b" xml:space="preserve">
     <value>搜索提交</value>
   </data>
-  <data name="Text_263673f6564548b254a7dd2a" xml:space="preserve">
-    <value>搜索目录或仓库</value>
+  <data name="Text_d416f4340be478fabb6757d5" xml:space="preserve">
+    <value>搜索仓库</value>
   </data>
   <data name="Text_1ce37f395d7aa7aaa8076d0f" xml:space="preserve">
     <value>选择分支</value>
@@ -1056,6 +1077,9 @@
   <data name="Text_74a883a037bc227f91891ab6" xml:space="preserve">
     <value>设置</value>
   </data>
+  <data name="Text_0df6f1cad36c49da768a6efd" xml:space="preserve">
+    <value>查看</value>
+  </data>
   <data name="Text_590180ed4faa710883dfa079" xml:space="preserve">
     <value>显示提交关系图</value>
   </data>
@@ -1065,11 +1089,11 @@
   <data name="Text_04efae3fc7825d3a016a59f5" xml:space="preserve">
     <value>显示边栏</value>
   </data>
-  <data name="Text_d54b67e82cfc26c3277e9d86" xml:space="preserve">
-    <value>查看贮藏的更改</value>
+  <data name="Text_2da0f3d2589892ba011473c0" xml:space="preserve">
+    <value>显示贮藏</value>
   </data>
   <data name="Text_a81279506a9593595764ef25" xml:space="preserve">
-    <value>查看标签</value>
+    <value>显示标签</value>
   </data>
   <data name="Text_c2a9c77acf9b329f25b32c6f" xml:space="preserve">
     <value>在文件资源管理器中显示</value>
@@ -1104,6 +1128,9 @@
   <data name="Text_d1ce47c82d3285bba8b89d87" xml:space="preserve">
     <value>全部暂存</value>
   </data>
+  <data name="Text_9efa12c7103ca805a98eb2f5" xml:space="preserve">
+    <value>暂存此目录</value>
+  </data>
   <data name="Text_4a990090e7099391b64119f1" xml:space="preserve">
     <value>暂存此文件</value>
   </data>
@@ -1111,7 +1138,7 @@
     <value>暂存此更改块</value>
   </data>
   <data name="Text_9146f6965705db924aa1619e" xml:space="preserve">
-    <value>请在提交视图中暂存剩余修改，然后继续。</value>
+    <value>请在提交视图中暂存剩余更改，然后继续。</value>
   </data>
   <data name="Text_b5ff1947b664c6719dfbb256" xml:space="preserve">
     <value>已暂存的更改</value>
@@ -1123,22 +1150,22 @@
     <value>启动</value>
   </data>
   <data name="Text_9b1a2b61aa956a9af54b18b2" xml:space="preserve">
-    <value>贮藏更改</value>
+    <value>贮藏全部更改</value>
   </data>
-  <data name="Text_fd40083287af8b989fb242b3" xml:space="preserve">
+  <data name="Text_3601420ab6a0cf864306d9d8" xml:space="preserve">
     <value>贮藏的更改</value>
   </data>
-  <data name="Text_eb388bc6fa1bdf4bd521a53c" xml:space="preserve">
+  <data name="Text_e45b6015e5311ca73cb415a2" xml:space="preserve">
+    <value>贮藏</value>
+  </data>
+  <data name="Text_ce23ab1e75dc0ad7dcbfc55e" xml:space="preserve">
     <value>交换提交</value>
   </data>
-  <data name="Text_61f24ced9ac719e37f48e3f9" xml:space="preserve">
+  <data name="Text_de245f1d6203f04adab03041" xml:space="preserve">
     <value>交换比较方向</value>
   </data>
   <data name="Text_0cfdb0c8e363449c2b4919ee" xml:space="preserve">
     <value>同步错误</value>
-  </data>
-  <data name="Text_1503916a2ab2b0fd6768d345" xml:space="preserve">
-    <value>创建标签</value>
   </data>
   <data name="Text_4a32b016fa3839ad18caaf9b" xml:space="preserve">
     <value>标签名称：</value>
@@ -1189,7 +1216,7 @@
     <value>此文件或工作树没有进行中的合并。请刷新后重试。</value>
   </data>
   <data name="Text_118a470931669215bde94f22" xml:space="preserve">
-    <value>此操作会移除 {0} 文件夹，并保留分支。如果工作树包含未提交的修改或未跟踪文件，Git 会拒绝移除。</value>
+    <value>此操作会移除 {0} 文件夹，并保留分支。如果工作树包含未提交的更改或未跟踪文件，Git 会拒绝移除。</value>
   </data>
   <data name="Text_0d1f4bf86a81f2a364a74b48" xml:space="preserve">
     <value>此操作会将 {0} 的当前编辑替换为所选版本。如果该版本已删除此文件，则会删除该文件。</value>
@@ -1201,7 +1228,7 @@
     <value>待推送</value>
   </data>
   <data name="Text_1d4c17db52f714ab60482303" xml:space="preserve">
-    <value>显示或隐藏侧边栏</value>
+    <value>显示/隐藏边栏</value>
   </data>
   <data name="Text_451aa51a0fb5068da31b9bff" xml:space="preserve">
     <value>工具栏</value>
@@ -1227,6 +1254,9 @@
   <data name="Text_76ebb3e1241d665cb7cc2ee7" xml:space="preserve">
     <value>全部取消暂存</value>
   </data>
+  <data name="Text_eca58eb8a8fcfb0c75dab5d5" xml:space="preserve">
+    <value>取消暂存此目录</value>
+  </data>
   <data name="Text_8110d1d98b7c3dad099a29ad" xml:space="preserve">
     <value>取消暂存此文件</value>
   </data>
@@ -1248,9 +1278,6 @@
   <data name="Text_3cc572f22838566564c488c8" xml:space="preserve">
     <value>使用目标分支版本</value>
   </data>
-  <data name="Text_d946352c8f8acf980ce6099d" xml:space="preserve">
-    <value>作为文本使用</value>
-  </data>
   <data name="Text_d131ef7f9b5e2b457faba856" xml:space="preserve">
     <value>使用指南</value>
   </data>
@@ -1270,10 +1297,7 @@
     <value>窗口</value>
   </data>
   <data name="Text_bd3cfaa28d90627d171fc565" xml:space="preserve">
-    <value>在独立文件夹中处理其他分支，同时保留当前修改。</value>
-  </data>
-  <data name="Text_7b5d66944b4512ab009f67ea" xml:space="preserve">
-    <value>工作区更改</value>
+    <value>在独立文件夹中处理其他分支，同时保留当前更改。</value>
   </data>
   <data name="Text_bd85643c93f3f3707df4f4fa" xml:space="preserve">
     <value>工作区</value>

@@ -43,8 +43,10 @@ enum SettingsReset {
             ]),
             Group(id: "comparison", title: String(localized: "History and Diffs"), items: [
                 Item(id: "graph", title: String(localized: "Show Commit Graph"), value: on, keys: [.showCommitGraph]),
+                Item(id: "historyScope", title: String(localized: "History Scope"), value: String(localized: "Current Branch"), keys: [.repositoryHistoryScopes]),
                 Item(id: "layout", title: String(localized: "Diff Layout"), value: automatic, keys: [.diffLayout]),
-                Item(id: "expansion", title: String(localized: "Default File Expansion"), value: String(localized: "Expanded"), keys: [.diffFileExpansion]),
+                Item(id: "expansion", title: String(localized: "Default File Expansion"), value: AppPreferences.defaultDiffFileExpansion.title, keys: [.diffFileExpansion]),
+                Item(id: "changeFiles", title: String(localized: "Changed File Display"), value: AppPreferences.defaultChangeFileLayout.title, keys: [.changeFileLayout]),
                 Item(id: "font", title: String(localized: "Code Font Size"), value: String(localized: "\(Int(AppPreferences.defaultCodeFontSize)) pt"), keys: [.codeFontSize]),
                 Item(id: "wrap", title: String(localized: "Wrap Long Lines"), value: off, keys: [.wrapLongLines]),
             ]),

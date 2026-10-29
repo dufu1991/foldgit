@@ -5,6 +5,7 @@ import SwiftUI
 enum MenuCommand: String {
     case openRepository, cloneRepository, newGroup, newWorktree, manageWorktrees, finishWorktree
     case toggleSidebar, expandAll, collapseAll, searchCommits, revealHead, showChanges
+    case expandDirectories, collapseDirectories
     case refresh, fetch, pull, push, stash, showStashes, showBranches, newBranch, renameBranch, mergeBranch, openTerminal
     case compare, showTags, newTag, checkoutCommit, revertCommit, copyCommitHash, amendCommit
     case stageAll, unstageAll, commit
@@ -95,6 +96,7 @@ private struct WorkspaceMenuKey: FocusedValueKey { typealias Value = WorkspaceMe
 private struct SidebarMenuKey: FocusedValueKey { typealias Value = MenuActions }
 private struct RepositoryMenuKey: FocusedValueKey { typealias Value = RepositoryMenuContext }
 private struct StagingMenuKey: FocusedValueKey { typealias Value = MenuActions }
+private struct DiffMenuKey: FocusedValueKey { typealias Value = MenuActions }
 private struct EditorMenuKey: FocusedValueKey { typealias Value = MenuActions }
 
 extension FocusedValues {
@@ -118,6 +120,10 @@ extension FocusedValues {
         get { self[EditorMenuKey.self] }
         set { self[EditorMenuKey.self] = newValue }
     }
+    var diffMenu: MenuActions? {
+        get { self[DiffMenuKey.self] }
+        set { self[DiffMenuKey.self] = newValue }
+    }
 }
 
 struct AppMenuCommands: Commands {
@@ -125,6 +131,7 @@ struct AppMenuCommands: Commands {
     @FocusedValue(\.sidebarMenu) private var sidebar
     @FocusedValue(\.repositoryMenu) private var repository
     @FocusedValue(\.stagingMenu) private var staging
+    @FocusedValue(\.diffMenu) private var diff
     @FocusedValue(\.editorMenu) private var editor
     @AppStorage(PreferenceKey.showCommitGraph.rawValue) private var showGraph = true
     @AppStorage(PreferenceKey.diffLayout.rawValue) private var diffLayout = DiffLayout.automatic
@@ -159,7 +166,7 @@ struct AppMenuCommands: Commands {
         }
         CommandGroup(before: .toolbar) {
             Toggle("Commit Graph", isOn: $showGraph).disabled(repository == nil)
-            command("Working Changes", .showChanges)
+            command("Uncommitted Changes", .showChanges)
             command("Jump to HEAD", .revealHead)
             Picker("History Scope", selection: Binding(
                 get: { repository?.historyScope ?? .currentBranch },
@@ -174,8 +181,12 @@ struct AppMenuCommands: Commands {
                 ForEach(DiffLayout.allCases, id: \.self) { Text($0.title).tag($0) }
             }
             .disabled(repository == nil)
-            command("Expand All Files", .expandAll)
-            command("Collapse All Files", .collapseAll)
+            if handler(.expandDirectories) != nil {
+                command("Expand Directories", .expandDirectories)
+                command("Collapse Directories", .collapseDirectories)
+            }
+            command("Expand Diffs", .expandAll)
+            command("Collapse Diffs", .collapseAll)
             Divider()
         }
         CommandMenu("Repository") { repositoryCommands }
@@ -198,7 +209,7 @@ struct AppMenuCommands: Commands {
         command("Push", .push)
         Divider()
         command("Stash All Changes", .stash)
-        command("Show Stashed Changes", .showStashes)
+        command("Show Stashes", .showStashes)
         Menu("Worktrees") {
             command("New Worktree", .newWorktree)
             command("Manage Worktrees", .manageWorktrees)
@@ -220,14 +231,14 @@ struct AppMenuCommands: Commands {
 
     @ViewBuilder private var branchCommands: some View {
         command("Select Branch", .showBranches)
-        command("Create New Branch", .newBranch)
+        command("New Branch", .newBranch)
         command("Rename Branch", .renameBranch)
         command("Merge Branch", .mergeBranch)
         Divider()
         command("Compare Branches or Tags", .compare)
         Menu("Tags") {
             command("Show Tags", .showTags)
-            command("Create New Tag", .newTag)
+            command("New Tag", .newTag)
         }
     }
 
@@ -248,6 +259,10 @@ struct AppMenuCommands: Commands {
             if let editor { return editor[command] }
         case .stageAll, .unstageAll:
             return staging?[command]
+        case .expandDirectories, .collapseDirectories:
+            return staging?[command] ?? diff?[command]
+        case .expandAll, .collapseAll:
+            if let diff { return diff[command] }
         case .stash:
             if let staging { return staging[command] }
         case .showInFinder:
@@ -287,8 +302,8 @@ struct KeyboardShortcutsView: View {
             }
             Section("Branch") {
                 shortcut("Select Branch", .showBranches)
-                shortcut("Create New Branch", .newBranch)
-                shortcut("Create New Tag", .newTag)
+                shortcut("New Branch", .newBranch)
+                shortcut("New Tag", .newTag)
             }
             Section("Commit") {
                 shortcut("Commit", .commit)
@@ -299,11 +314,11 @@ struct KeyboardShortcutsView: View {
             }
             Section("View") {
                 shortcut("Search Commits", .searchCommits)
-                shortcut("Working Changes", .showChanges)
+                shortcut("Uncommitted Changes", .showChanges)
                 shortcut("Jump to HEAD", .revealHead)
                 shortcut("Sidebar", .toggleSidebar)
-                shortcut("Expand All Files", .expandAll)
-                shortcut("Collapse All Files", .collapseAll)
+                shortcut("Expand Diffs", .expandAll)
+                shortcut("Collapse Diffs", .collapseAll)
             }
         }
         .formStyle(.grouped)

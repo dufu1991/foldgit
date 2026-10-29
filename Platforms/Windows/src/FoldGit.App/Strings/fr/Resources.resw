@@ -85,7 +85,7 @@
     <value>Après</value>
   </data>
   <data name="Text_ad35c6e38245aae843b1abba" xml:space="preserve">
-    <value>Après l’activation globale, activez les arbres de travail dans le menu contextuel de chaque dépôt. Les informations et les actions de gestion apparaissent uniquement pour les dépôts activés. La désactivation globale conserve les choix des dépôts.</value>
+    <value>Après l’activation globale, activez les worktrees dans le menu contextuel de chaque dépôt. Les informations et les actions de gestion apparaissent uniquement pour les dépôts activés. La désactivation globale conserve les choix des dépôts.</value>
   </data>
   <data name="Text_d5bc88a55761ffdd57820fcf" xml:space="preserve">
     <value>Tous les commits</value>
@@ -97,7 +97,7 @@
     <value>Autorisez FoldGit dans Réglages Système pour terminer l’activation.</value>
   </data>
   <data name="Text_4475f5152487261533c54976" xml:space="preserve">
-    <value>Modifier le dernier commit</value>
+    <value>Modifier</value>
   </data>
   <data name="Text_5696b4c8647337b7c8ee05a8" xml:space="preserve">
     <value>Modifier le message du commit</value>
@@ -105,8 +105,8 @@
   <data name="Text_c94ecadbce99bae7f94cfcfb" xml:space="preserve">
     <value>Modifier le dernier commit</value>
   </data>
-  <data name="Text_bb9c3ca1fcf56ea4eaf9fd6c" xml:space="preserve">
-    <value>Une erreur s’est produite lors de l’exécution de {0}</value>
+  <data name="Text_24da7b5eb1cdcba0e665e1b6" xml:space="preserve">
+    <value>Une erreur s’est produite lors de l’exécution de {0}.</value>
   </data>
   <data name="Text_3907fa7f80722a6fc58cd8c1" xml:space="preserve">
     <value>Apparence</value>
@@ -169,7 +169,7 @@
     <value>Branches</value>
   </data>
   <data name="Text_9f7a33b2621d7cb24fa268ae" xml:space="preserve">
-    <value>Les branches déjà utilisées dans un arbre de travail sont indisponibles.</value>
+    <value>Les branches déjà utilisées dans un worktree sont indisponibles.</value>
   </data>
   <data name="Text_19766ed6ccb2f4a32778eed8" xml:space="preserve">
     <value>Annuler</value>
@@ -177,8 +177,11 @@
   <data name="Text_6717f40f497e0510e95e83c7" xml:space="preserve">
     <value>Annulation du clonage</value>
   </data>
+  <data name="Text_b585b9ae2b811e9c591c9d00" xml:space="preserve">
+    <value>Affichage des fichiers modifiés</value>
+  </data>
   <data name="Text_da9fc80016b0ff1af0d679e5" xml:space="preserve">
-    <value>Les modifications sont fusionnées localement. Ouvrez l’arbre cible pour vérifier, tester et pousser.</value>
+    <value>Les modifications sont fusionnées localement. Ouvrez le worktree cible pour vérifier, tester et pousser.</value>
   </data>
   <data name="Text_57e4d74626635008f6a0ced2" xml:space="preserve">
     <value>Cochez les extraits fréquents pour les afficher sous l’éditeur de message de commit.</value>
@@ -258,8 +261,17 @@
   <data name="Text_ffe95143bc990ee850df6607" xml:space="preserve">
     <value>Replier tous les fichiers</value>
   </data>
+  <data name="Text_624e3d714b392ee74e912c9d" xml:space="preserve">
+    <value>Réduire les différences</value>
+  </data>
+  <data name="Text_a1feb1d2c82679bc386b27a4" xml:space="preserve">
+    <value>Réduire les dossiers</value>
+  </data>
   <data name="Text_45fb3894186e30b7cc38da32" xml:space="preserve">
     <value>Réduire le fichier</value>
+  </data>
+  <data name="Text_7995322f8f50d43b0bd75061" xml:space="preserve">
+    <value>Réduire le dossier</value>
   </data>
   <data name="Text_b322b65227bc3ec948893e32" xml:space="preserve">
     <value>Réduits</value>
@@ -333,17 +345,17 @@
   <data name="Text_ab480df9b105271e4e11fcea" xml:space="preserve">
     <value>Copier le hash du commit</value>
   </data>
+  <data name="Text_04a05d81cc5c997a10f7ab9e" xml:space="preserve">
+    <value>Impossible de lire le fichier modifié dans les différences.</value>
+  </data>
+  <data name="Text_aaa1d8c5ca48d2a3cf8eb0db" xml:space="preserve">
+    <value>Impossible de lire les différences.</value>
+  </data>
   <data name="Text_4759498ac2a719c619e2c8cf" xml:space="preserve">
     <value>Créer</value>
   </data>
   <data name="Text_cb68879d74579d38a6f412e4" xml:space="preserve">
     <value>Créer et pousser</value>
-  </data>
-  <data name="Text_bf815ec6a83fe388ec634585" xml:space="preserve">
-    <value>Créer une branche</value>
-  </data>
-  <data name="Text_ad41f17a7f5ed0d23b3734a0" xml:space="preserve">
-    <value>Créer un tag</value>
   </data>
   <data name="Text_e0d1b68224bf0b31ef16b206" xml:space="preserve">
     <value>Actuelle</value>
@@ -387,6 +399,9 @@
   <data name="Text_33bb7b7370aad4f9d3f0a923" xml:space="preserve">
     <value>Disposition du diff</value>
   </data>
+  <data name="Text_25523ba32c7136d9f0713a70" xml:space="preserve">
+    <value>Arborescence</value>
+  </data>
   <data name="Text_18d67c992b71ce69eb924554" xml:space="preserve">
     <value>Nom affiché</value>
   </data>
@@ -397,13 +412,13 @@
     <value>Terminé</value>
   </data>
   <data name="Text_c8af9ae37a48273f981bc82a" xml:space="preserve">
-    <value>Supprimer le stash</value>
+    <value>Supprimer la remise</value>
   </data>
   <data name="Text_464c4ffd019e1e9691dcf053" xml:space="preserve">
     <value>Modifier</value>
   </data>
   <data name="Text_c0ad208d2b3de165ce2b2ff2" xml:space="preserve">
-    <value>Activer les arbres de travail</value>
+    <value>Activer les worktrees</value>
   </data>
   <data name="Text_9aa79346aa8ddea912935d99" xml:space="preserve">
     <value>Saisissez un nom de dossier valide.</value>
@@ -438,8 +453,17 @@
   <data name="Text_7cf0d193cccdfabb97454557" xml:space="preserve">
     <value>Déplier tous les fichiers</value>
   </data>
+  <data name="Text_f99cd7ddd3e0dbf63d0b8833" xml:space="preserve">
+    <value>Développer les différences</value>
+  </data>
+  <data name="Text_f9203a91288857a2eb29c982" xml:space="preserve">
+    <value>Développer les dossiers</value>
+  </data>
   <data name="Text_483d3ba8580a6642298c1c50" xml:space="preserve">
     <value>Développer le fichier</value>
+  </data>
+  <data name="Text_ce65cc8bc111022d3861c6ae" xml:space="preserve">
+    <value>Développer le dossier</value>
   </data>
   <data name="Text_e72d5d8d0b167d21b4e4a89e" xml:space="preserve">
     <value>Développés</value>
@@ -484,10 +508,10 @@
     <value>Terminer le nettoyage</value>
   </data>
   <data name="Text_16bf7f70d69b869044e6dc36" xml:space="preserve">
-    <value>Terminer l’arbre de travail</value>
+    <value>Terminer le worktree</value>
   </data>
   <data name="Text_df0f6a5389da355250e0b1e9" xml:space="preserve">
-    <value>Un arbre lié à une branche locale est requis pour terminer.</value>
+    <value>Un worktree lié à une branche locale est requis pour terminer.</value>
   </data>
   <data name="Text_31b8d1b37f92dd5dd9500315" xml:space="preserve">
     <value>Terminez la fusion, le rebase ou le cherry-pick en cours avant une nouvelle fusion.</value>
@@ -506,6 +530,9 @@
   </data>
   <data name="Text_f1c65e14817efef2b77973a4" xml:space="preserve">
     <value>Suivant</value>
+  </data>
+  <data name="Text_dc45d36f35e84e07f49bc9d0" xml:space="preserve">
+    <value>Depuis :</value>
   </data>
   <data name="Text_c910d474dcd724bff83ddede" xml:space="preserve">
     <value>Général</value>
@@ -526,13 +553,16 @@
     <value>Git a renvoyé des informations de fusion invalides.</value>
   </data>
   <data name="Text_5d2e701ca0f1ef2dad59d311" xml:space="preserve">
-    <value>Git a renvoyé des informations de travail invalides.</value>
+    <value>Git a renvoyé des informations de worktree non valides.</value>
+  </data>
+  <data name="Text_9248ca516a7c79c6fee27c8d" xml:space="preserve">
+    <value>Git n’a renvoyé aucune sortie.</value>
   </data>
   <data name="Text_71f9f4866eacd0c07a930f1c" xml:space="preserve">
     <value>Git est introuvable. Installez Git for Windows ou choisissez git.exe.</value>
   </data>
   <data name="Text_fd02b1c18bef168d6f3add0b" xml:space="preserve">
-    <value>Git restaurera l’état précédant la fusion. Les modifications de résolution seront perdues. Les commits source seront conservés.</value>
+    <value>Git ramènera ce worktree à l’état précédant la fusion. Les modifications de résolution seront perdues. Les commits source seront conservés.</value>
   </data>
   <data name="Text_8e7526fdcc5cc34f34e420cb" xml:space="preserve">
     <value>Nom du groupe</value>
@@ -545,9 +575,6 @@
   </data>
   <data name="Text_9709a3b2e51f0ef313f5ad19" xml:space="preserve">
     <value>Masquer la barre latérale</value>
-  </data>
-  <data name="Text_0e769600933790607b2a13b3" xml:space="preserve">
-    <value>Historique de recherche</value>
   </data>
   <data name="Text_e6a07707b0fbc950b433139a" xml:space="preserve">
     <value>Portée de l’historique</value>
@@ -619,7 +646,13 @@
     <value>Numéros de ligne</value>
   </data>
   <data name="Text_54d16531eb769f15a910c862" xml:space="preserve">
-    <value>Arbre de travail lié</value>
+    <value>Worktree lié</value>
+  </data>
+  <data name="Text_6f202f54a7b2d8fe42aa804e" xml:space="preserve">
+    <value>Liste</value>
+  </data>
+  <data name="Text_3f06cd334f4811b2130b13a8" xml:space="preserve">
+    <value>Charger la suite</value>
   </data>
   <data name="Text_322b540df1e8e7eaf9b0fec3" xml:space="preserve">
     <value>Chargement des applications</value>
@@ -634,13 +667,13 @@
     <value>Branches locales</value>
   </data>
   <data name="Text_9b0c9e9aa7ae2efbed1a2291" xml:space="preserve">
-    <value>Verrouiller l’arbre de travail</value>
+    <value>Verrouiller le worktree</value>
   </data>
   <data name="Text_18f16c20b37d7e9cf72d483f" xml:space="preserve">
-    <value>Arbre de travail verrouillé</value>
+    <value>Worktree verrouillé</value>
   </data>
   <data name="Text_62edae1b15a2b136588ffa1c" xml:space="preserve">
-    <value>Arbre de travail principal</value>
+    <value>Worktree principal</value>
   </data>
   <data name="Text_e9fd194038a327fbd62853f7" xml:space="preserve">
     <value>Gérer le groupe</value>
@@ -649,7 +682,7 @@
     <value>Gérer les dépôts</value>
   </data>
   <data name="Text_0f00f5cea14b20d0f175cf41" xml:space="preserve">
-    <value>Gérer les arbres de travail</value>
+    <value>Gérer les worktrees</value>
   </data>
   <data name="Text_dc670ab0508a1f1210b034cd" xml:space="preserve">
     <value>Ordre manuel</value>
@@ -685,19 +718,19 @@
     <value>Fusionné dans {0}</value>
   </data>
   <data name="Text_924bd3c445d9c613595beae6" xml:space="preserve">
-    <value>Dossier de travail introuvable</value>
+    <value>Worktree introuvable</value>
   </data>
   <data name="Text_e8ce5dcaf408935ff7674722" xml:space="preserve">
     <value>Modifié</value>
   </data>
   <data name="Text_d47d7cb0e4f8fd2be5ee0782" xml:space="preserve">
-    <value>Charger la suite</value>
+    <value>Plus</value>
   </data>
   <data name="Text_6ecc3df6bffdd06c58cd4f6e" xml:space="preserve">
     <value>Déplacer</value>
   </data>
   <data name="Text_ad1a93fd9bc200e2ebc5f9cd" xml:space="preserve">
-    <value>Déplacer l’arbre de travail</value>
+    <value>Déplacer le worktree</value>
   </data>
   <data name="Text_6ef308d4965cb662437b48d7" xml:space="preserve">
     <value>Déplacer vers le groupe</value>
@@ -707,6 +740,9 @@
   </data>
   <data name="Text_5c1f4b6143af38d55c58ea29" xml:space="preserve">
     <value>Nommer le dépôt</value>
+  </data>
+  <data name="Text_2683cad48a14dc3f79c167e4" xml:space="preserve">
+    <value>Nom :</value>
   </data>
   <data name="Text_cd5ce4449ea9f8c537b990f5" xml:space="preserve">
     <value>Nouvelle branche</value>
@@ -723,8 +759,11 @@
   <data name="Text_1fac73e86cf4db8ba24f1b6b" xml:space="preserve">
     <value>Nouveau groupe avec la sélection</value>
   </data>
+  <data name="Text_82148b3da229440cdb35bd4e" xml:space="preserve">
+    <value>Nouveau tag</value>
+  </data>
   <data name="Text_61fced6671058e6b666a63e2" xml:space="preserve">
-    <value>Nouvel arbre de travail</value>
+    <value>Nouveau worktree</value>
   </data>
   <data name="Text_514cee61cf665c0adfbf0a61" xml:space="preserve">
     <value>Nom de la nouvelle branche</value>
@@ -749,9 +788,6 @@
   </data>
   <data name="Text_145b487f5ed6096d9f048af5" xml:space="preserve">
     <value>Aucun commit</value>
-  </data>
-  <data name="Text_06bff09c7e200917cbe975e0" xml:space="preserve">
-    <value>Aucun historique de commits</value>
   </data>
   <data name="Text_4e47ec927670bb96ab007a75" xml:space="preserve">
     <value>Aucun contenu</value>
@@ -805,7 +841,7 @@
     <value>Activé</value>
   </data>
   <data name="Text_3495086d5f7b910836ed6c6a" xml:space="preserve">
-    <value>Seul un arbre sans modifications, déverrouillé et dont les commits sont fusionnés peut être supprimé. Les branches distantes sont conservées.</value>
+    <value>Seul un worktree sans modifications, déverrouillé et dont les commits sont fusionnés peut être supprimé. Les branches distantes sont conservées.</value>
   </data>
   <data name="Text_9f23ccc98700345150d1d7d8" xml:space="preserve">
     <value>Modifie uniquement le nom affiché dans la barre latérale. Le nom du dossier reste inchangé.</value>
@@ -835,13 +871,13 @@
     <value>Licences open source</value>
   </data>
   <data name="Text_8aaee6ffeadb0b89d8f73beb" xml:space="preserve">
-    <value>Ouvrir l’arbre source</value>
+    <value>Ouvrir le worktree source</value>
   </data>
   <data name="Text_d50438fafed771d04ec923c5" xml:space="preserve">
-    <value>Ouvrir l’arbre cible</value>
+    <value>Ouvrir le worktree cible</value>
   </data>
   <data name="Text_6a7ddcdb43036233e03f9ebe" xml:space="preserve">
-    <value>Ouvrir l’arbre de travail</value>
+    <value>Ouvrir le worktree</value>
   </data>
   <data name="Text_2c8f3f64efd200a85a49bbc8" xml:space="preserve">
     <value>Ouvrir dans</value>
@@ -850,22 +886,10 @@
     <value>Ouvrir dans le terminal</value>
   </data>
   <data name="Text_07ab08927a968d80214e1036" xml:space="preserve">
-    <value>Ouvrez la branche cible dans un autre arbre avant de terminer.</value>
-  </data>
-  <data name="Text_8e5c518bc240ced7f0082d36" xml:space="preserve">
-    <value>Projet d’origine</value>
+    <value>Ouvrez la branche cible dans un autre worktree avant de terminer.</value>
   </data>
   <data name="Text_189a8567d84bfbdd8629aab5" xml:space="preserve">
     <value>Autres applications</value>
-  </data>
-  <data name="Text_27eb74726f093262742ca114" xml:space="preserve">
-    <value>Impossible d’analyser la première ligne des différences du fichier.</value>
-  </data>
-  <data name="Text_8591c33061180da3a98de9c3" xml:space="preserve">
-    <value>Impossible d’analyser le marqueur du fichier cible dans les différences.</value>
-  </data>
-  <data name="Text_b1e214809bc313c13f0d340f" xml:space="preserve">
-    <value>Impossible d’analyser la sortie vide de Git.</value>
   </data>
   <data name="Text_30d2d6bd3576a41f3616e71d" xml:space="preserve">
     <value>Épingler des applications</value>
@@ -889,10 +913,10 @@
     <value>Page du projet</value>
   </data>
   <data name="Text_290d3637fced29384fce7548" xml:space="preserve">
-    <value>Nettoyer les arbres de travail manquants</value>
+    <value>Nettoyer les worktrees manquants</value>
   </data>
   <data name="Text_b66d044181a0e29642a95872" xml:space="preserve">
-    <value>Récupérer</value>
+    <value>Tirer</value>
   </data>
   <data name="Text_782586828ac82e385ac5e1ef" xml:space="preserve">
     <value>Tirer {0} depuis origin</value>
@@ -943,13 +967,13 @@
     <value>Retirer l’application personnalisée</value>
   </data>
   <data name="Text_f3fb9debe126dd69c278a395" xml:space="preserve">
-    <value>Supprimer l’arbre de travail</value>
+    <value>Supprimer le worktree</value>
   </data>
   <data name="Text_f9488a4d689597464febf243" xml:space="preserve">
-    <value>Supprimer le dossier de travail</value>
+    <value>Supprimer le dossier du worktree</value>
   </data>
   <data name="Text_80ba2f22d1e799684307155e" xml:space="preserve">
-    <value>Supprimer l’arbre de travail ?</value>
+    <value>Supprimer le worktree ?</value>
   </data>
   <data name="Text_389881de7cfc8b5a104f1ab4" xml:space="preserve">
     <value>Retirer de la barre latérale</value>
@@ -994,7 +1018,7 @@
     <value>Nom affiché du dépôt</value>
   </data>
   <data name="Text_ac51a40e0c992b7c1d8696fb" xml:space="preserve">
-    <value>Arbres de travail des dépôts</value>
+    <value>Worktrees par dépôt</value>
   </data>
   <data name="Text_c17307e2f5ac4d4095cf0ba7" xml:space="preserve">
     <value>Réinitialiser les réglages</value>
@@ -1044,14 +1068,11 @@
   <data name="Text_23a1309d6a7c1e827442065c" xml:space="preserve">
     <value>Emplacement</value>
   </data>
-  <data name="Text_f61d313e4bc27b6e5f427f2f" xml:space="preserve">
-    <value>Rechercher un auteur, un e-mail ou un message</value>
-  </data>
   <data name="Text_3a93f31e545c049a2864a25b" xml:space="preserve">
     <value>Rechercher des commits</value>
   </data>
-  <data name="Text_263673f6564548b254a7dd2a" xml:space="preserve">
-    <value>Rechercher un dossier ou un dépôt</value>
+  <data name="Text_d416f4340be478fabb6757d5" xml:space="preserve">
+    <value>Rechercher un dépôt</value>
   </data>
   <data name="Text_1ce37f395d7aa7aaa8076d0f" xml:space="preserve">
     <value>Choisir une branche</value>
@@ -1074,6 +1095,9 @@
   <data name="Text_74a883a037bc227f91891ab6" xml:space="preserve">
     <value>Réglages</value>
   </data>
+  <data name="Text_0df6f1cad36c49da768a6efd" xml:space="preserve">
+    <value>Afficher</value>
+  </data>
   <data name="Text_590180ed4faa710883dfa079" xml:space="preserve">
     <value>Afficher le graphe des commits</value>
   </data>
@@ -1083,8 +1107,8 @@
   <data name="Text_04efae3fc7825d3a016a59f5" xml:space="preserve">
     <value>Afficher la barre latérale</value>
   </data>
-  <data name="Text_d54b67e82cfc26c3277e9d86" xml:space="preserve">
-    <value>Afficher les modifications du stash</value>
+  <data name="Text_2da0f3d2589892ba011473c0" xml:space="preserve">
+    <value>Afficher les remises</value>
   </data>
   <data name="Text_a81279506a9593595764ef25" xml:space="preserve">
     <value>Afficher les tags</value>
@@ -1114,13 +1138,16 @@
     <value>Branche source</value>
   </data>
   <data name="Text_7a1f88a31bf6a575e75756a9" xml:space="preserve">
-    <value>Arbre de travail source</value>
+    <value>Worktree source</value>
   </data>
   <data name="Text_3359eeafa9d74b3e75e30c8d" xml:space="preserve">
     <value>Licence Sourceful</value>
   </data>
   <data name="Text_d1ce47c82d3285bba8b89d87" xml:space="preserve">
     <value>Tout indexer</value>
+  </data>
+  <data name="Text_9efa12c7103ca805a98eb2f5" xml:space="preserve">
+    <value>Indexer ce dossier</value>
   </data>
   <data name="Text_4a990090e7099391b64119f1" xml:space="preserve">
     <value>Indexer ce fichier</value>
@@ -1141,22 +1168,22 @@
     <value>Démarrage</value>
   </data>
   <data name="Text_9b1a2b61aa956a9af54b18b2" xml:space="preserve">
-    <value>Remiser toutes les modifications</value>
+    <value>Tout remiser</value>
   </data>
-  <data name="Text_fd40083287af8b989fb242b3" xml:space="preserve">
-    <value>Modifications du stash</value>
+  <data name="Text_3601420ab6a0cf864306d9d8" xml:space="preserve">
+    <value>Modifications remisées</value>
   </data>
-  <data name="Text_eb388bc6fa1bdf4bd521a53c" xml:space="preserve">
+  <data name="Text_e45b6015e5311ca73cb415a2" xml:space="preserve">
+    <value>Remises</value>
+  </data>
+  <data name="Text_ce23ab1e75dc0ad7dcbfc55e" xml:space="preserve">
     <value>Intervertir les commits</value>
   </data>
-  <data name="Text_61f24ced9ac719e37f48e3f9" xml:space="preserve">
+  <data name="Text_de245f1d6203f04adab03041" xml:space="preserve">
     <value>Inverser la comparaison</value>
   </data>
   <data name="Text_0cfdb0c8e363449c2b4919ee" xml:space="preserve">
     <value>Erreur de synchronisation</value>
-  </data>
-  <data name="Text_1503916a2ab2b0fd6768d345" xml:space="preserve">
-    <value>Créer un tag</value>
   </data>
   <data name="Text_4a32b016fa3839ad18caaf9b" xml:space="preserve">
     <value>Nom du tag :</value>
@@ -1171,7 +1198,7 @@
     <value>Version de la branche cible</value>
   </data>
   <data name="Text_a51be4c476e731e3c5b0491d" xml:space="preserve">
-    <value>Arbre de travail cible</value>
+    <value>Worktree cible</value>
   </data>
   <data name="Text_68d8d0239bde335868328a58" xml:space="preserve">
     <value>La commande Git est vide.</value>
@@ -1195,19 +1222,19 @@
     <value>Les réglages ci-dessous seront rétablis. Les extraits personnalisés et les applications ajoutées seront réinitialisés. Les dépôts, groupes, noms et fichiers locaux seront conservés.</value>
   </data>
   <data name="Text_70b6d6d4a8b6cf8df86763ac" xml:space="preserve">
-    <value>La branche cible ne contient pas tous les commits source. L’arbre et la branche ont été conservés.</value>
+    <value>La branche cible ne contient pas tous les commits source. Le worktree et la branche ont été conservés.</value>
   </data>
   <data name="Text_bc939bd4404df8257c268b9e" xml:space="preserve">
     <value>Le dossier cible passera à la branche sélectionnée avant la fusion.</value>
   </data>
   <data name="Text_f6c9dd3b5586ef02efe172c0" xml:space="preserve">
-    <value>L’arbre est verrouillé, absent ou sa branche est utilisée. Conservez-le ou déverrouillez-le avant le nettoyage.</value>
+    <value>Le worktree est verrouillé, absent ou sa branche est utilisée. Conservez-le ou déverrouillez-le avant le nettoyage.</value>
   </data>
   <data name="Text_90d2f542b118d50055ff1e33" xml:space="preserve">
-    <value>Aucune fusion active pour ce fichier ou cet arbre. Actualisez puis réessayez.</value>
+    <value>Aucune fusion active pour ce fichier ou ce worktree. Actualisez puis réessayez.</value>
   </data>
   <data name="Text_118a470931669215bde94f22" xml:space="preserve">
-    <value>Le dossier {0} sera supprimé. La branche sera conservée. Git refuse la suppression en présence de modifications non validées ou de fichiers non suivis.</value>
+    <value>Le dossier {0} sera supprimé et la branche conservée. Git refuse la suppression si le worktree contient des modifications non commitées ou des fichiers non suivis.</value>
   </data>
   <data name="Text_0d1f4bf86a81f2a364a74b48" xml:space="preserve">
     <value>Les modifications de {0} seront remplacées par la version choisie. Si celle-ci supprime le fichier, il sera supprimé.</value>
@@ -1219,7 +1246,7 @@
     <value>À pousser</value>
   </data>
   <data name="Text_1d4c17db52f714ab60482303" xml:space="preserve">
-    <value>Afficher ou masquer la barre latérale</value>
+    <value>Afficher/masquer la barre latérale</value>
   </data>
   <data name="Text_451aa51a0fb5068da31b9bff" xml:space="preserve">
     <value>Barre d’outils</value>
@@ -1240,10 +1267,13 @@
     <value>Unifiée</value>
   </data>
   <data name="Text_5e8abbdc7c8f7b1adf51e95e" xml:space="preserve">
-    <value>Déverrouiller l’arbre de travail</value>
+    <value>Déverrouiller le worktree</value>
   </data>
   <data name="Text_76ebb3e1241d665cb7cc2ee7" xml:space="preserve">
     <value>Tout désindexer</value>
+  </data>
+  <data name="Text_eca58eb8a8fcfb0c75dab5d5" xml:space="preserve">
+    <value>Désindexer ce dossier</value>
   </data>
   <data name="Text_8110d1d98b7c3dad099a29ad" xml:space="preserve">
     <value>Désindexer ce fichier</value>
@@ -1266,9 +1296,6 @@
   <data name="Text_3cc572f22838566564c488c8" xml:space="preserve">
     <value>Utiliser la version cible</value>
   </data>
-  <data name="Text_d946352c8f8acf980ce6099d" xml:space="preserve">
-    <value>Utiliser comme texte</value>
-  </data>
   <data name="Text_d131ef7f9b5e2b457faba856" xml:space="preserve">
     <value>Guide utilisateur</value>
   </data>
@@ -1290,29 +1317,26 @@
   <data name="Text_bd3cfaa28d90627d171fc565" xml:space="preserve">
     <value>Travaillez sur une autre branche dans un dossier distinct en conservant vos modifications.</value>
   </data>
-  <data name="Text_7b5d66944b4512ab009f67ea" xml:space="preserve">
-    <value>Modifications de travail</value>
-  </data>
   <data name="Text_bd85643c93f3f3707df4f4fa" xml:space="preserve">
     <value>Arbre de travail</value>
   </data>
   <data name="Text_c893ba3003855aabfee29447" xml:space="preserve">
-    <value>Arbre de travail</value>
+    <value>Worktree</value>
   </data>
   <data name="Text_785e35f923065b450aabd614" xml:space="preserve">
-    <value>Actions de l’arbre de travail</value>
+    <value>Actions du worktree</value>
   </data>
   <data name="Text_a36df5aa7f0744dac52bbe72" xml:space="preserve">
-    <value>Arbre de travail terminé</value>
+    <value>Worktree terminé</value>
   </data>
   <data name="Text_2f8b63e3720c7ffe01869aeb" xml:space="preserve">
-    <value>Dossier de travail supprimé</value>
+    <value>Dossier du worktree supprimé</value>
   </data>
   <data name="Text_aec2f93d67b7c4c5fd9b9404" xml:space="preserve">
-    <value>Arbres de travail</value>
+    <value>Worktrees</value>
   </data>
   <data name="Text_9e28f8d1a90e123cf2498877" xml:space="preserve">
-    <value>Les arbres partagent l’historique et les branches. Chaque dossier possède ses fichiers et son index.</value>
+    <value>Les worktrees partagent l’historique et les branches. Chaque dossier possède ses fichiers et son index.</value>
   </data>
   <data name="Text_2bbd34b89e44145f8a225a19" xml:space="preserve">
     <value>Renvoyer les lignes longues</value>

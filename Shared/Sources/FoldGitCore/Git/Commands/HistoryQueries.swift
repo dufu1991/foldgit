@@ -71,7 +71,7 @@ public struct GitShowShortstat: RepositoryCommand {
     public var arguments: [String] { ["git", "show", "--shortstat", object] }
 
     public func parse(for stdOut: String) throws -> String {
-        guard !stdOut.isEmpty else { throw GenericError(errorDescription: NSLocalizedString("Parse error: stdOut is empty.", comment: "")) }
+        guard !stdOut.isEmpty else { throw GenericError(errorDescription: NSLocalizedString("Git returned no output.", comment: "")) }
         return String(stdOut.split(separator: "\n").last ?? "").trimmingCharacters(in: .whitespaces)
     }
 }

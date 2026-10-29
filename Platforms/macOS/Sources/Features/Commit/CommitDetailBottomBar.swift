@@ -5,6 +5,9 @@ struct CommitDetailBottomBar: View {
     var commit: Commit
     var folder: WorkspaceEntry
     @Binding var fileDiffs: [ExpandableModel<FileDiff>]
+    var changeFileLayout: Binding<ChangeFileLayout>? = nil
+    var onExpandDirectories: (() -> Void)? = nil
+    var onCollapseDirectories: (() -> Void)? = nil
     @State private var shortstat = ""
 
     var body: some View {
@@ -30,11 +33,16 @@ struct CommitDetailBottomBar: View {
     }
 
     private var displayControls: some View {
-        DiffDisplayControls(showsFileControls: !fileDiffs.isEmpty, onExpandAll: {
-            fileDiffs = fileDiffs.map { ExpandableModel(isExpanded: true, model: $0.model) }
-        }, onCollapseAll: {
-            fileDiffs = fileDiffs.map { ExpandableModel(isExpanded: false, model: $0.model) }
-        })
+        DiffDisplayControls(showsFileControls: !fileDiffs.isEmpty,
+                            changeFileLayout: fileDiffs.isEmpty ? nil : changeFileLayout,
+                            onExpandDirectories: onExpandDirectories,
+                            onCollapseDirectories: onCollapseDirectories,
+                            onExpandAll: { setExpansion(true) },
+                            onCollapseAll: { setExpansion(false) })
+    }
+
+    private func setExpansion(_ isExpanded: Bool) {
+        fileDiffs = fileDiffs.settingExpansion(isExpanded)
     }
 
     private var statistics: some View {

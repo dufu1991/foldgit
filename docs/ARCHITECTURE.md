@@ -51,7 +51,7 @@ Windows 界面与状态 → C# FoldGit.Core ← Windows 系统适配
 
 日期显示、系统图标名称、搜索帮助文案和本地化统计由 macOS 扩展实现。仓库发现支持注入目录筛选规则，macOS 的应用包过滤由 `MacRepositoryDiscovery` 提供。共享 Git 服务不依赖 `AutoFetchScheduler` 或 `UserDefaults`。
 
-仓库身份仍由规范化文件路径决定，逻辑分组使用独立的 `foldgit-group` 标识和显示名称。`WorkspaceGroups` 负责成员去重、移动、重命名、解散和旧目录分组转换，不执行文件操作。`RepositoryDiscovery` 的目录扫描仅用于导入时快速选择成员，不能覆盖已保存的逻辑分组。macOS 启动时会备份旧边栏数据，再迁移目录分组；仓库路径、显示名称偏好和自动抓取配置保持有效。
+仓库身份仍由规范化文件路径决定，逻辑分组使用独立的 `foldgit-group` 标识和显示名称。`WorkspaceGroups` 负责成员去重、移动、重命名、解散和旧目录分组转换，不执行文件操作。`RepositoryDiscovery` 的目录扫描仅用于导入时快速选择成员，不能覆盖已保存的逻辑分组。macOS 启动时会备份旧边栏数据，再迁移目录分组；仓库路径、显示名称偏好和自动获取配置保持有效。
 
 品牌图标源文件集中在 `Shared/Resources/Branding`。macOS 工程直接引用分层图标，其他平台复用通用 PNG 或内部 SVG 图层。
 

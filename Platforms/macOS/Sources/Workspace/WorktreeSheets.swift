@@ -12,7 +12,7 @@ struct WorktreeIndicator: View {
 
     var body: some View {
         Image(systemName: "square.stack.3d.up")
-            .font(.caption)
+            .font(.caption2)
             .foregroundStyle(.secondary)
             .help(String(localized: "Linked Worktree") + "\n" + path)
             .accessibilityLabel(Text("Linked Worktree"))
@@ -176,7 +176,7 @@ struct WorktreeManagementSheet: View {
                 ForEach(worktrees.list(for: repository).filter { !$0.isBare }) { tree in
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {
-                            Image(systemName: tree.isMain ? "arrow.triangle.branch" : "square.stack.3d.up")
+                            (tree.isMain ? Image.gitBranch : Image(systemName: "square.stack.3d.up"))
                                 .foregroundStyle(.secondary)
                             Text(tree.url.lastPathComponent).fontWeight(.medium).lineLimit(1)
                             if tree.isMain { Text("Main Worktree").font(.caption).foregroundStyle(.secondary) }

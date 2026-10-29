@@ -13,7 +13,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>lld</string>
 			<key>other</key>
-			<string>%lld 次提交</string>
+			<string>%lld 个提交</string>
 		</dict>
 	</dict>
 	<key>%lld deletions</key>
@@ -83,7 +83,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>lld</string>
 			<key>other</key>
-			<string>落后 %lld 次提交</string>
+			<string>落后 %lld 个提交</string>
 		</dict>
 	</dict>
 </dict>

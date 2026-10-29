@@ -115,7 +115,7 @@
     <value>После</value>
   </data>
   <data name="Text_ad35c6e38245aae843b1abba" xml:space="preserve">
-    <value>После включения общей настройки включите рабочие деревья в контекстном меню каждого репозитория. Информация и команды управления отображаются только для включённых репозиториев. При отключении общей настройки выбор репозиториев сохраняется.</value>
+    <value>После включения общей настройки включите worktree в контекстном меню каждого репозитория. Информация и команды управления отображаются только для включённых репозиториев. При отключении общей настройки выбор репозиториев сохраняется.</value>
   </data>
   <data name="Text_d5bc88a55761ffdd57820fcf" xml:space="preserve">
     <value>Все коммиты</value>
@@ -127,7 +127,7 @@
     <value>Разрешите запуск FoldGit при входе в Системных настройках.</value>
   </data>
   <data name="Text_4475f5152487261533c54976" xml:space="preserve">
-    <value>Изменить последний коммит</value>
+    <value>Изменить</value>
   </data>
   <data name="Text_5696b4c8647337b7c8ee05a8" xml:space="preserve">
     <value>Изменить сообщение коммита</value>
@@ -135,8 +135,8 @@
   <data name="Text_c94ecadbce99bae7f94cfcfb" xml:space="preserve">
     <value>Изменить последний коммит</value>
   </data>
-  <data name="Text_bb9c3ca1fcf56ea4eaf9fd6c" xml:space="preserve">
-    <value>Ошибка при выполнении {0}</value>
+  <data name="Text_24da7b5eb1cdcba0e665e1b6" xml:space="preserve">
+    <value>Ошибка при выполнении {0}.</value>
   </data>
   <data name="Text_3907fa7f80722a6fc58cd8c1" xml:space="preserve">
     <value>Оформление</value>
@@ -145,7 +145,7 @@
     <value>Приложения</value>
   </data>
   <data name="Text_868cdc6ea50ad80ee6876d2f" xml:space="preserve">
-    <value>Применяется к новым сравнениям. Файлы, развёрнутые или свёрнутые вручную, сохраняют своё состояние.</value>
+    <value>Применяется к новым различиям. Файлы, развёрнутые или свёрнутые вручную, сохраняют своё состояние.</value>
   </data>
   <data name="Text_31e392d1c0378beca611de66" xml:space="preserve">
     <value>Применить</value>
@@ -205,7 +205,7 @@
     <value>Ветки</value>
   </data>
   <data name="Text_9f7a33b2621d7cb24fa268ae" xml:space="preserve">
-    <value>Ветки, уже используемые в рабочем дереве, недоступны.</value>
+    <value>Ветки, уже используемые в другом worktree, недоступны.</value>
   </data>
   <data name="Text_19766ed6ccb2f4a32778eed8" xml:space="preserve">
     <value>Отмена</value>
@@ -213,8 +213,11 @@
   <data name="Text_6717f40f497e0510e95e83c7" xml:space="preserve">
     <value>Отмена клонирования</value>
   </data>
+  <data name="Text_b585b9ae2b811e9c591c9d00" xml:space="preserve">
+    <value>Отображение изменённых файлов</value>
+  </data>
   <data name="Text_da9fc80016b0ff1af0d679e5" xml:space="preserve">
-    <value>Изменения объединены локально. Откройте целевое дерево для проверки, тестирования и отправки.</value>
+    <value>Изменения объединены локально. Откройте целевой worktree для проверки, тестирования и отправки.</value>
   </data>
   <data name="Text_57e4d74626635008f6a0ced2" xml:space="preserve">
     <value>Отметьте часто используемые фрагменты, чтобы показывать их под редактором сообщения коммита.</value>
@@ -294,8 +297,17 @@
   <data name="Text_ffe95143bc990ee850df6607" xml:space="preserve">
     <value>Свернуть все файлы</value>
   </data>
+  <data name="Text_624e3d714b392ee74e912c9d" xml:space="preserve">
+    <value>Свернуть различия</value>
+  </data>
+  <data name="Text_a1feb1d2c82679bc386b27a4" xml:space="preserve">
+    <value>Свернуть каталоги</value>
+  </data>
   <data name="Text_45fb3894186e30b7cc38da32" xml:space="preserve">
     <value>Свернуть файл</value>
+  </data>
+  <data name="Text_7995322f8f50d43b0bd75061" xml:space="preserve">
+    <value>Свернуть папку</value>
   </data>
   <data name="Text_b322b65227bc3ec948893e32" xml:space="preserve">
     <value>Свёрнуты</value>
@@ -369,17 +381,17 @@
   <data name="Text_ab480df9b105271e4e11fcea" xml:space="preserve">
     <value>Скопировать хеш коммита</value>
   </data>
+  <data name="Text_04a05d81cc5c997a10f7ab9e" xml:space="preserve">
+    <value>Не удалось прочитать изменённый файл в различиях.</value>
+  </data>
+  <data name="Text_aaa1d8c5ca48d2a3cf8eb0db" xml:space="preserve">
+    <value>Не удалось прочитать различия.</value>
+  </data>
   <data name="Text_4759498ac2a719c619e2c8cf" xml:space="preserve">
     <value>Создать</value>
   </data>
   <data name="Text_cb68879d74579d38a6f412e4" xml:space="preserve">
     <value>Создать и отправить</value>
-  </data>
-  <data name="Text_bf815ec6a83fe388ec634585" xml:space="preserve">
-    <value>Создать ветку</value>
-  </data>
-  <data name="Text_ad41f17a7f5ed0d23b3734a0" xml:space="preserve">
-    <value>Создать тег</value>
   </data>
   <data name="Text_e0d1b68224bf0b31ef16b206" xml:space="preserve">
     <value>Текущая</value>
@@ -421,7 +433,10 @@
     <value>Отображение различий</value>
   </data>
   <data name="Text_33bb7b7370aad4f9d3f0a923" xml:space="preserve">
-    <value>Вид сравнения</value>
+    <value>Вид различий</value>
+  </data>
+  <data name="Text_25523ba32c7136d9f0713a70" xml:space="preserve">
+    <value>Дерево каталогов</value>
   </data>
   <data name="Text_18d67c992b71ce69eb924554" xml:space="preserve">
     <value>Отображаемое имя</value>
@@ -439,7 +454,7 @@
     <value>Изменить</value>
   </data>
   <data name="Text_c0ad208d2b3de165ce2b2ff2" xml:space="preserve">
-    <value>Включить рабочие деревья</value>
+    <value>Включить worktree</value>
   </data>
   <data name="Text_9aa79346aa8ddea912935d99" xml:space="preserve">
     <value>Введите допустимое имя папки.</value>
@@ -474,8 +489,17 @@
   <data name="Text_7cf0d193cccdfabb97454557" xml:space="preserve">
     <value>Развернуть все файлы</value>
   </data>
+  <data name="Text_f99cd7ddd3e0dbf63d0b8833" xml:space="preserve">
+    <value>Развернуть различия</value>
+  </data>
+  <data name="Text_f9203a91288857a2eb29c982" xml:space="preserve">
+    <value>Развернуть каталоги</value>
+  </data>
   <data name="Text_483d3ba8580a6642298c1c50" xml:space="preserve">
     <value>Развернуть файл</value>
+  </data>
+  <data name="Text_ce65cc8bc111022d3861c6ae" xml:space="preserve">
+    <value>Развернуть папку</value>
   </data>
   <data name="Text_e72d5d8d0b167d21b4e4a89e" xml:space="preserve">
     <value>Развёрнуты</value>
@@ -484,7 +508,7 @@
     <value>Внешние приложения</value>
   </data>
   <data name="Text_cd7d61bf7e38c7c2280b4241" xml:space="preserve">
-    <value>Получить изменения</value>
+    <value>Получить</value>
   </data>
   <data name="Text_837c12c4f7ecd4c1dbbdd4df" xml:space="preserve">
     <value>Получить ветки и теги</value>
@@ -520,10 +544,10 @@
     <value>Завершить очистку</value>
   </data>
   <data name="Text_16bf7f70d69b869044e6dc36" xml:space="preserve">
-    <value>Завершить рабочее дерево</value>
+    <value>Завершить worktree</value>
   </data>
   <data name="Text_df0f6a5389da355250e0b1e9" xml:space="preserve">
-    <value>Для завершения нужно связанное дерево с локальной веткой.</value>
+    <value>Для завершения нужен связанный worktree с локальной веткой.</value>
   </data>
   <data name="Text_31b8d1b37f92dd5dd9500315" xml:space="preserve">
     <value>Завершите текущее слияние, перебазирование или перенос коммита перед новым слиянием.</value>
@@ -542,6 +566,9 @@
   </data>
   <data name="Text_f1c65e14817efef2b77973a4" xml:space="preserve">
     <value>Вперёд</value>
+  </data>
+  <data name="Text_dc45d36f35e84e07f49bc9d0" xml:space="preserve">
+    <value>Из:</value>
   </data>
   <data name="Text_c910d474dcd724bff83ddede" xml:space="preserve">
     <value>Основные</value>
@@ -562,13 +589,16 @@
     <value>Git вернул неверные сведения о слиянии.</value>
   </data>
   <data name="Text_5d2e701ca0f1ef2dad59d311" xml:space="preserve">
-    <value>Git вернул неверные сведения о рабочем дереве.</value>
+    <value>Git вернул неверные сведения о worktree.</value>
+  </data>
+  <data name="Text_9248ca516a7c79c6fee27c8d" xml:space="preserve">
+    <value>Git ничего не вернул.</value>
   </data>
   <data name="Text_71f9f4866eacd0c07a930f1c" xml:space="preserve">
     <value>Git не найден. Установите Git for Windows или выберите git.exe.</value>
   </data>
   <data name="Text_fd02b1c18bef168d6f3add0b" xml:space="preserve">
-    <value>Git восстановит состояние до слияния. Правки разрешения конфликтов будут отменены, коммиты исходной ветки сохранятся.</value>
+    <value>Git вернёт этот worktree в состояние до слияния. Правки разрешения конфликтов будут отменены, коммиты исходной ветки сохранятся.</value>
   </data>
   <data name="Text_8e7526fdcc5cc34f34e420cb" xml:space="preserve">
     <value>Название группы</value>
@@ -581,9 +611,6 @@
   </data>
   <data name="Text_9709a3b2e51f0ef313f5ad19" xml:space="preserve">
     <value>Скрыть боковую панель</value>
-  </data>
-  <data name="Text_0e769600933790607b2a13b3" xml:space="preserve">
-    <value>История поиска</value>
   </data>
   <data name="Text_e6a07707b0fbc950b433139a" xml:space="preserve">
     <value>Область истории</value>
@@ -643,7 +670,7 @@
     <value>Запускать при входе</value>
   </data>
   <data name="Text_77d5dbd3b313e4112e98867f" xml:space="preserve">
-    <value>Этот параметр синхронизируется с переключателем в области сравнения.</value>
+    <value>Этот параметр синхронизируется с переключателем в области различий.</value>
   </data>
   <data name="Text_d32ec834f46c429ce0816506" xml:space="preserve">
     <value>Оставьте пустым, чтобы использовать имя папки.</value>
@@ -655,7 +682,13 @@
     <value>Номера строк</value>
   </data>
   <data name="Text_54d16531eb769f15a910c862" xml:space="preserve">
-    <value>Связанное рабочее дерево</value>
+    <value>Связанный worktree</value>
+  </data>
+  <data name="Text_6f202f54a7b2d8fe42aa804e" xml:space="preserve">
+    <value>Список</value>
+  </data>
+  <data name="Text_3f06cd334f4811b2130b13a8" xml:space="preserve">
+    <value>Загрузить ещё</value>
   </data>
   <data name="Text_322b540df1e8e7eaf9b0fec3" xml:space="preserve">
     <value>Загрузка приложений</value>
@@ -670,13 +703,13 @@
     <value>Локальные ветки</value>
   </data>
   <data name="Text_9b0c9e9aa7ae2efbed1a2291" xml:space="preserve">
-    <value>Заблокировать рабочее дерево</value>
+    <value>Заблокировать worktree</value>
   </data>
   <data name="Text_18f16c20b37d7e9cf72d483f" xml:space="preserve">
-    <value>Заблокированное рабочее дерево</value>
+    <value>Заблокированный worktree</value>
   </data>
   <data name="Text_62edae1b15a2b136588ffa1c" xml:space="preserve">
-    <value>Основное рабочее дерево</value>
+    <value>Основной worktree</value>
   </data>
   <data name="Text_e9fd194038a327fbd62853f7" xml:space="preserve">
     <value>Управление группой</value>
@@ -685,7 +718,7 @@
     <value>Управление репозиториями</value>
   </data>
   <data name="Text_0f00f5cea14b20d0f175cf41" xml:space="preserve">
-    <value>Управление рабочими деревьями</value>
+    <value>Управление worktree</value>
   </data>
   <data name="Text_dc670ab0508a1f1210b034cd" xml:space="preserve">
     <value>Вручную</value>
@@ -721,19 +754,19 @@
     <value>Слито в {0}</value>
   </data>
   <data name="Text_924bd3c445d9c613595beae6" xml:space="preserve">
-    <value>Папка рабочего дерева отсутствует</value>
+    <value>Worktree отсутствует</value>
   </data>
   <data name="Text_e8ce5dcaf408935ff7674722" xml:space="preserve">
     <value>Изменён</value>
   </data>
   <data name="Text_d47d7cb0e4f8fd2be5ee0782" xml:space="preserve">
-    <value>Загрузить ещё</value>
+    <value>Ещё</value>
   </data>
   <data name="Text_6ecc3df6bffdd06c58cd4f6e" xml:space="preserve">
     <value>Переместить</value>
   </data>
   <data name="Text_ad1a93fd9bc200e2ebc5f9cd" xml:space="preserve">
-    <value>Переместить рабочее дерево</value>
+    <value>Переместить worktree</value>
   </data>
   <data name="Text_6ef308d4965cb662437b48d7" xml:space="preserve">
     <value>Переместить в группу</value>
@@ -743,6 +776,9 @@
   </data>
   <data name="Text_5c1f4b6143af38d55c58ea29" xml:space="preserve">
     <value>Назвать репозиторий</value>
+  </data>
+  <data name="Text_2683cad48a14dc3f79c167e4" xml:space="preserve">
+    <value>Имя:</value>
   </data>
   <data name="Text_cd5ce4449ea9f8c537b990f5" xml:space="preserve">
     <value>Новая ветка</value>
@@ -759,8 +795,11 @@
   <data name="Text_1fac73e86cf4db8ba24f1b6b" xml:space="preserve">
     <value>Создать группу из выбранных</value>
   </data>
+  <data name="Text_82148b3da229440cdb35bd4e" xml:space="preserve">
+    <value>Новый тег</value>
+  </data>
   <data name="Text_61fced6671058e6b666a63e2" xml:space="preserve">
-    <value>Новое рабочее дерево</value>
+    <value>Новый worktree</value>
   </data>
   <data name="Text_514cee61cf665c0adfbf0a61" xml:space="preserve">
     <value>Имя новой ветки</value>
@@ -785,9 +824,6 @@
   </data>
   <data name="Text_145b487f5ed6096d9f048af5" xml:space="preserve">
     <value>Нет коммитов</value>
-  </data>
-  <data name="Text_06bff09c7e200917cbe975e0" xml:space="preserve">
-    <value>Нет истории коммитов</value>
   </data>
   <data name="Text_4e47ec927670bb96ab007a75" xml:space="preserve">
     <value>Нет содержимого</value>
@@ -841,7 +877,7 @@
     <value>Вкл.</value>
   </data>
   <data name="Text_3495086d5f7b910836ed6c6a" xml:space="preserve">
-    <value>Удаляется только чистое, незаблокированное дерево с объединёнными коммитами. Удалённые ветки сохраняются.</value>
+    <value>Удалить можно только чистый незаблокированный worktree, коммиты которого слиты. Удалённые ветки сохраняются.</value>
   </data>
   <data name="Text_9f23ccc98700345150d1d7d8" xml:space="preserve">
     <value>Изменяется только имя в боковой панели. Имя папки остаётся прежним.</value>
@@ -871,13 +907,13 @@
     <value>Лицензии открытого ПО</value>
   </data>
   <data name="Text_8aaee6ffeadb0b89d8f73beb" xml:space="preserve">
-    <value>Открыть исходное дерево</value>
+    <value>Открыть исходный worktree</value>
   </data>
   <data name="Text_d50438fafed771d04ec923c5" xml:space="preserve">
-    <value>Открыть целевое дерево</value>
+    <value>Открыть целевой worktree</value>
   </data>
   <data name="Text_6a7ddcdb43036233e03f9ebe" xml:space="preserve">
-    <value>Открыть рабочее дерево</value>
+    <value>Открыть worktree</value>
   </data>
   <data name="Text_2c8f3f64efd200a85a49bbc8" xml:space="preserve">
     <value>Открыть в</value>
@@ -886,22 +922,10 @@
     <value>Открыть в терминале</value>
   </data>
   <data name="Text_07ab08927a968d80214e1036" xml:space="preserve">
-    <value>Откройте целевую ветку в другом дереве перед завершением.</value>
-  </data>
-  <data name="Text_8e5c518bc240ced7f0082d36" xml:space="preserve">
-    <value>Исходный проект</value>
+    <value>Перед завершением откройте целевую ветку в другом worktree.</value>
   </data>
   <data name="Text_189a8567d84bfbdd8629aab5" xml:space="preserve">
     <value>Другие приложения</value>
-  </data>
-  <data name="Text_27eb74726f093262742ca114" xml:space="preserve">
-    <value>Не удалось разобрать первую строку различий файла.</value>
-  </data>
-  <data name="Text_8591c33061180da3a98de9c3" xml:space="preserve">
-    <value>Не удалось разобрать маркер целевого файла в различиях.</value>
-  </data>
-  <data name="Text_b1e214809bc313c13f0d340f" xml:space="preserve">
-    <value>Не удалось разобрать пустой вывод Git.</value>
   </data>
   <data name="Text_30d2d6bd3576a41f3616e71d" xml:space="preserve">
     <value>Закрепить приложения</value>
@@ -925,13 +949,13 @@
     <value>Страница проекта</value>
   </data>
   <data name="Text_290d3637fced29384fce7548" xml:space="preserve">
-    <value>Очистить записи отсутствующих деревьев</value>
+    <value>Очистить отсутствующие worktree</value>
   </data>
   <data name="Text_b66d044181a0e29642a95872" xml:space="preserve">
-    <value>Получить</value>
+    <value>Извлечь</value>
   </data>
   <data name="Text_782586828ac82e385ac5e1ef" xml:space="preserve">
-    <value>Получить {0} из origin</value>
+    <value>Извлечь {0} из origin</value>
   </data>
   <data name="Text_731ce7ed808913b2fb4a3db7" xml:space="preserve">
     <value>Отправить</value>
@@ -979,13 +1003,13 @@
     <value>Удалить добавленное приложение</value>
   </data>
   <data name="Text_f3fb9debe126dd69c278a395" xml:space="preserve">
-    <value>Удалить рабочее дерево</value>
+    <value>Удалить worktree</value>
   </data>
   <data name="Text_f9488a4d689597464febf243" xml:space="preserve">
-    <value>Удалить папку рабочего дерева</value>
+    <value>Удалить папку worktree</value>
   </data>
   <data name="Text_80ba2f22d1e799684307155e" xml:space="preserve">
-    <value>Удалить рабочее дерево?</value>
+    <value>Удалить worktree?</value>
   </data>
   <data name="Text_389881de7cfc8b5a104f1ab4" xml:space="preserve">
     <value>Убрать с боковой панели</value>
@@ -1030,7 +1054,7 @@
     <value>Отображаемое имя репозитория</value>
   </data>
   <data name="Text_ac51a40e0c992b7c1d8696fb" xml:space="preserve">
-    <value>Рабочие деревья репозиториев</value>
+    <value>Worktree репозиториев</value>
   </data>
   <data name="Text_c17307e2f5ac4d4095cf0ba7" xml:space="preserve">
     <value>Сброс настроек</value>
@@ -1080,14 +1104,11 @@
   <data name="Text_23a1309d6a7c1e827442065c" xml:space="preserve">
     <value>Место сохранения</value>
   </data>
-  <data name="Text_f61d313e4bc27b6e5f427f2f" xml:space="preserve">
-    <value>Поиск по автору, почте или сообщению</value>
-  </data>
   <data name="Text_3a93f31e545c049a2864a25b" xml:space="preserve">
     <value>Поиск коммитов</value>
   </data>
-  <data name="Text_263673f6564548b254a7dd2a" xml:space="preserve">
-    <value>Поиск папок и репозиториев</value>
+  <data name="Text_d416f4340be478fabb6757d5" xml:space="preserve">
+    <value>Поиск репозиториев</value>
   </data>
   <data name="Text_1ce37f395d7aa7aaa8076d0f" xml:space="preserve">
     <value>Выбрать ветку</value>
@@ -1110,6 +1131,9 @@
   <data name="Text_74a883a037bc227f91891ab6" xml:space="preserve">
     <value>Настройки</value>
   </data>
+  <data name="Text_0df6f1cad36c49da768a6efd" xml:space="preserve">
+    <value>Показать</value>
+  </data>
   <data name="Text_590180ed4faa710883dfa079" xml:space="preserve">
     <value>Показывать граф коммитов</value>
   </data>
@@ -1119,8 +1143,8 @@
   <data name="Text_04efae3fc7825d3a016a59f5" xml:space="preserve">
     <value>Показать боковую панель</value>
   </data>
-  <data name="Text_d54b67e82cfc26c3277e9d86" xml:space="preserve">
-    <value>Показать изменения в stash</value>
+  <data name="Text_2da0f3d2589892ba011473c0" xml:space="preserve">
+    <value>Показать stash</value>
   </data>
   <data name="Text_a81279506a9593595764ef25" xml:space="preserve">
     <value>Показать теги</value>
@@ -1150,13 +1174,16 @@
     <value>Исходная ветка</value>
   </data>
   <data name="Text_7a1f88a31bf6a575e75756a9" xml:space="preserve">
-    <value>Исходное рабочее дерево</value>
+    <value>Исходный worktree</value>
   </data>
   <data name="Text_3359eeafa9d74b3e75e30c8d" xml:space="preserve">
     <value>Лицензия Sourceful</value>
   </data>
   <data name="Text_d1ce47c82d3285bba8b89d87" xml:space="preserve">
     <value>Индексировать всё</value>
+  </data>
+  <data name="Text_9efa12c7103ca805a98eb2f5" xml:space="preserve">
+    <value>Добавить каталог в индекс</value>
   </data>
   <data name="Text_4a990090e7099391b64119f1" xml:space="preserve">
     <value>Добавить файл в индекс</value>
@@ -1179,20 +1206,20 @@
   <data name="Text_9b1a2b61aa956a9af54b18b2" xml:space="preserve">
     <value>Убрать все изменения в stash</value>
   </data>
-  <data name="Text_fd40083287af8b989fb242b3" xml:space="preserve">
+  <data name="Text_3601420ab6a0cf864306d9d8" xml:space="preserve">
     <value>Изменения в stash</value>
   </data>
-  <data name="Text_eb388bc6fa1bdf4bd521a53c" xml:space="preserve">
+  <data name="Text_e45b6015e5311ca73cb415a2" xml:space="preserve">
+    <value>Stash</value>
+  </data>
+  <data name="Text_ce23ab1e75dc0ad7dcbfc55e" xml:space="preserve">
     <value>Поменять коммиты местами</value>
   </data>
-  <data name="Text_61f24ced9ac719e37f48e3f9" xml:space="preserve">
+  <data name="Text_de245f1d6203f04adab03041" xml:space="preserve">
     <value>Поменять стороны сравнения</value>
   </data>
   <data name="Text_0cfdb0c8e363449c2b4919ee" xml:space="preserve">
     <value>Ошибка синхронизации</value>
-  </data>
-  <data name="Text_1503916a2ab2b0fd6768d345" xml:space="preserve">
-    <value>Создать тег</value>
   </data>
   <data name="Text_4a32b016fa3839ad18caaf9b" xml:space="preserve">
     <value>Имя тега:</value>
@@ -1207,7 +1234,7 @@
     <value>Версия целевой ветки</value>
   </data>
   <data name="Text_a51be4c476e731e3c5b0491d" xml:space="preserve">
-    <value>Целевое рабочее дерево</value>
+    <value>Целевой worktree</value>
   </data>
   <data name="Text_68d8d0239bde335868328a58" xml:space="preserve">
     <value>Команда Git пуста.</value>
@@ -1231,19 +1258,19 @@
     <value>Будут восстановлены указанные ниже настройки. Пользовательские шаблоны и добавленные приложения будут сброшены. Репозитории, группы, имена и локальные файлы сохранятся.</value>
   </data>
   <data name="Text_70b6d6d4a8b6cf8df86763ac" xml:space="preserve">
-    <value>Целевая ветка не содержит все исходные коммиты. Дерево и ветка сохранены.</value>
+    <value>Целевая ветка содержит не все исходные коммиты. Worktree и ветка сохранены.</value>
   </data>
   <data name="Text_bc939bd4404df8257c268b9e" xml:space="preserve">
     <value>Перед слиянием целевая папка переключится на выбранную ветку.</value>
   </data>
   <data name="Text_f6c9dd3b5586ef02efe172c0" xml:space="preserve">
-    <value>Дерево заблокировано, отсутствует или ветка используется. Сохраните его либо разблокируйте перед очисткой.</value>
+    <value>Worktree заблокирован, отсутствует или его ветка всё ещё используется. Оставьте его или разблокируйте перед очисткой.</value>
   </data>
   <data name="Text_90d2f542b118d50055ff1e33" xml:space="preserve">
-    <value>Для файла или дерева нет активного слияния. Обновите и повторите.</value>
+    <value>Для этого файла или worktree нет активного слияния. Обновите и повторите попытку.</value>
   </data>
   <data name="Text_118a470931669215bde94f22" xml:space="preserve">
-    <value>Папка {0} будет удалена, а ветка сохранена. Git не удаляет деревья с незакоммиченными изменениями или неотслеживаемыми файлами.</value>
+    <value>Папка {0} будет удалена, ветка сохранится. Git откажется удалять worktree с незакоммиченными изменениями или неотслеживаемыми файлами.</value>
   </data>
   <data name="Text_0d1f4bf86a81f2a364a74b48" xml:space="preserve">
     <value>Текущие правки {0} будут заменены выбранной версией. Если в ней файл удалён, он будет удалён.</value>
@@ -1255,7 +1282,7 @@
     <value>К отправке</value>
   </data>
   <data name="Text_1d4c17db52f714ab60482303" xml:space="preserve">
-    <value>Показать или скрыть боковую панель</value>
+    <value>Показать/скрыть боковую панель</value>
   </data>
   <data name="Text_451aa51a0fb5068da31b9bff" xml:space="preserve">
     <value>Панель инструментов</value>
@@ -1276,10 +1303,13 @@
     <value>Единый</value>
   </data>
   <data name="Text_5e8abbdc7c8f7b1adf51e95e" xml:space="preserve">
-    <value>Разблокировать рабочее дерево</value>
+    <value>Разблокировать worktree</value>
   </data>
   <data name="Text_76ebb3e1241d665cb7cc2ee7" xml:space="preserve">
     <value>Убрать всё из индекса</value>
+  </data>
+  <data name="Text_eca58eb8a8fcfb0c75dab5d5" xml:space="preserve">
+    <value>Убрать каталог из индекса</value>
   </data>
   <data name="Text_8110d1d98b7c3dad099a29ad" xml:space="preserve">
     <value>Убрать файл из индекса</value>
@@ -1302,9 +1332,6 @@
   <data name="Text_3cc572f22838566564c488c8" xml:space="preserve">
     <value>Использовать целевую версию</value>
   </data>
-  <data name="Text_d946352c8f8acf980ce6099d" xml:space="preserve">
-    <value>Использовать как текст</value>
-  </data>
   <data name="Text_d131ef7f9b5e2b457faba856" xml:space="preserve">
     <value>Руководство пользователя</value>
   </data>
@@ -1326,29 +1353,26 @@
   <data name="Text_bd3cfaa28d90627d171fc565" xml:space="preserve">
     <value>Работайте с другой веткой в отдельной папке, сохранив текущие изменения.</value>
   </data>
-  <data name="Text_7b5d66944b4512ab009f67ea" xml:space="preserve">
-    <value>Рабочие изменения</value>
-  </data>
   <data name="Text_bd85643c93f3f3707df4f4fa" xml:space="preserve">
     <value>Рабочее дерево</value>
   </data>
   <data name="Text_c893ba3003855aabfee29447" xml:space="preserve">
-    <value>Рабочее дерево</value>
+    <value>Worktree</value>
   </data>
   <data name="Text_785e35f923065b450aabd614" xml:space="preserve">
-    <value>Действия с рабочим деревом</value>
+    <value>Действия с worktree</value>
   </data>
   <data name="Text_a36df5aa7f0744dac52bbe72" xml:space="preserve">
-    <value>Рабочее дерево завершено</value>
+    <value>Worktree завершён</value>
   </data>
   <data name="Text_2f8b63e3720c7ffe01869aeb" xml:space="preserve">
-    <value>Папка рабочего дерева удалена</value>
+    <value>Папка worktree удалена</value>
   </data>
   <data name="Text_aec2f93d67b7c4c5fd9b9404" xml:space="preserve">
-    <value>Рабочие деревья</value>
+    <value>Worktree</value>
   </data>
   <data name="Text_9e28f8d1a90e123cf2498877" xml:space="preserve">
-    <value>Рабочие деревья используют общие историю и ветки. У каждой папки свои файлы и индекс.</value>
+    <value>Все worktree используют общие историю и ветки. У каждой папки свои файлы и индекс.</value>
   </data>
   <data name="Text_2bbd34b89e44145f8a225a19" xml:space="preserve">
     <value>Переносить длинные строки</value>

@@ -87,7 +87,7 @@ struct CompareRevisionsView: View {
                                                 .tag(ref.id)
                                         }
                                     } label: {
-                                        Label("Remote Branches", systemImage: "network")
+                                        Label("Remote Branches", systemImage: "cloud")
                                             .foregroundStyle(.secondary)
                                     }
                                 }
@@ -101,7 +101,7 @@ struct CompareRevisionsView: View {
                         }
                     } else {
                         List(filteredTagRefs, selection: listSelection) { ref in
-                            referenceRow(ref.name, systemImage: ref.systemImage)
+                            referenceRow(ref.name, icon: ref.icon)
                                 .tag(ref.id)
                         }
                         .overlay {
@@ -154,6 +154,7 @@ struct CompareRevisionsView: View {
                 VStack(spacing: 0) {
                     HStack(spacing: 4) {
                         Image(systemName: "line.3.horizontal.decrease")
+                            .foregroundStyle(.secondary)
                         TextField("Filter", text: $filterText)
                             .textFieldStyle(.roundedBorder)
                     }
@@ -218,9 +219,9 @@ struct CompareRevisionsView: View {
         .errorSheet($error)
     }
 
-    private func referenceRow(_ name: String, systemImage: String) -> some View {
+    private func referenceRow(_ name: String, icon: Image) -> some View {
         HStack(spacing: 6) {
-            Image(systemName: systemImage)
+            icon
                 .font(.system(size: 13))
                 .frame(width: 16)
                 .accessibilityHidden(true)
@@ -234,12 +235,12 @@ struct CompareRevisionsView: View {
             HStack(spacing: 6) {
                 comparisonSideButton(.base, title: String(localized: "Base"), ref: baseRef)
                 Button(action: swapComparison) {
-                    Label("Swap the Comparison", systemImage: "arrow.up.arrow.down")
+                    Label("Swap Sides", systemImage: "arrow.up.arrow.down")
                         .labelStyle(.iconOnly)
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
-                .help("Swap the Comparison")
+                .help("Swap Sides")
                 .disabled(baseRef == nil || compareRef == nil || isLoading)
             }
             comparisonSideButton(.compare, title: String(localized: "Compare"), ref: compareRef)
@@ -255,7 +256,7 @@ struct CompareRevisionsView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     if let ref {
-                        referenceRow(ref.name, systemImage: ref.systemImage)
+                        referenceRow(ref.name, icon: ref.icon)
                             .lineLimit(1)
                             .truncationMode(.middle)
                     } else {

@@ -33,7 +33,7 @@
       }
     };
   </script>
-  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="styles.css?v=12">
 </head>
 <body class="manual-page">
   <div class="backdrop" aria-hidden="true">
@@ -95,10 +95,34 @@
 
     <div class="release-list">
     <!-- changelog:start -->
+    <article class="release glass" id="v0.2.0" aria-labelledby="title-0.2.0">
+      <header class="release-head">
+        <h2 id="title-0.2.0"><a href="#v0.2.0">0.2.0</a></h2>
+        <span class="release-latest"><span class="show-zh">最新版本</span><span class="show-en">Latest</span></span>
+        <time datetime="2026-10-29">2026-10-29</time>
+      </header>
+      <ul class="show-zh" lang="zh-CN">
+        <li>macOS 新增改动目录树，工作区与提交历史可独立展开目录和差异，并按整个目录暂存或取消暂存。</li>
+        <li>macOS 新增文件暂存与取消暂存动画，遵循系统减少动态效果设置，并优化文件操作按钮。</li>
+        <li>macOS 改进仓库分组与非活跃仓库的折叠操作，精简 macOS 与 Windows 的工具栏、搜索及操作文案。</li>
+        <li>macOS 新增启动时检查更新与菜单中的手动检查，发现新版本后可打开发布页下载。</li>
+        <li>更新中英文使用手册、官网与 README，替换亮暗色真实界面截图，并提供双语更新日志页面。</li>
+      </ul>
+      <ul class="show-en" lang="en">
+        <li>Add change directory trees on macOS for the working copy and commit history, with independent folder and diff expansion and directory-wide staging and unstaging.</li>
+        <li>Add file staging and unstaging animations on macOS that respect Reduce Motion, and refine file action buttons.</li>
+        <li>Improve folding of repository groups and inactive repositories on macOS, and simplify toolbar, search and action labels on macOS and Windows.</li>
+        <li>Add update checks at launch and a manual menu command on macOS, with a link to download newer releases.</li>
+        <li>Refresh the bilingual user guide, website and READMEs with real light and dark app screenshots, and add a bilingual changelog page.</li>
+      </ul>
+      <a class="release-link" href="https://github.com/dufu1991/foldgit/releases/tag/v0.2.0">
+        <span class="show-zh">下载此版本</span><span class="show-en">Download this release</span><span aria-hidden="true"> ↗</span>
+      </a>
+    </article>
+
     <article class="release glass" id="v0.1.1" aria-labelledby="title-0.1.1">
       <header class="release-head">
         <h2 id="title-0.1.1"><a href="#v0.1.1">0.1.1</a></h2>
-        <span class="release-latest"><span class="show-zh">最新版本</span><span class="show-en">Latest</span></span>
         <time datetime="2026-10-28">2026-10-28</time>
       </header>
       <ul class="show-zh" lang="zh-CN">
@@ -148,6 +172,6 @@
     <p><span class="show-zh">FoldGit 由 dufu 独立维护，采用 MIT 许可证开源。</span><span class="show-en">FoldGit is independently maintained by dufu and released under the MIT License.</span></p>
   </footer>
 
-  <script src="main.js?v=5"></script>
+  <script src="main.js?v=7"></script>
 </body>
 </html>

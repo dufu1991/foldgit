@@ -180,7 +180,7 @@ Output goes to `dist/macos`: `FoldGit.app`, a DMG and ZIP named `macOS-arm64`, a
 
 ### Releases
 
-Set the version with `python3 Scripts/version.py set <version>` and push to `main`; the [release workflow](.github/workflows/release.yml) publishes the macOS DMG and Windows EXE installers. The Homebrew tap automatically checks for new releases every 15 minutes and updates the cask using its own `GITHUB_TOKEN`, without a personal access token. GitHub scheduling may delay a run. Versioning, Homebrew synchronization and optional signing secrets are described in the [release guide](docs/RELEASING.md).
+Set the version with `python3 Scripts/version.py set <version>` and push to `main`; the [release workflow](.github/workflows/release.yml) publishes the macOS DMG and Windows EXE installers. The Homebrew tap automatically checks for new releases every hour and updates the cask using its own `GITHUB_TOKEN`, without a personal access token. GitHub scheduling may delay a run. Versioning, Homebrew synchronization and optional signing secrets are described in the [release guide](docs/RELEASING.md).
 
 ### Website
 

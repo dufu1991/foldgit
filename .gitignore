@@ -104,6 +104,9 @@ vendor/bundle
 # Local distribution artifacts
 dist/
 
+# Local promotion materials
+/docs/promotion/
+
 # Generated icon previews and drafts
 output/
 *.profraw

@@ -72,7 +72,7 @@ See the [user guide](https://foldgit.com/manual) on foldgit.com.
 
 ## Windows
 
-The repository also contains a Windows client built with C#, WinUI 3 and .NET 10 (Windows 11 24H2 or later, x64 and ARM64). It is only a minimal implementation, and the author has no Windows machine to polish it on. Contributions are very welcome: see the [Windows guide](Platforms/Windows/README.md) and the [feature parity checklist](docs/WINDOWS_PARITY.md).
+The repository also contains a Windows client built with C#, WinUI 3 and .NET 10 (Windows 11 24H2 or later, x64 and ARM64). It is only a minimal implementation, and the author has no Windows machine to polish it on. Contributions are very welcome: see the [Windows guide](Platforms/Windows/README.md).
 
 Download the Windows x64 or ARM64 EXE from [Releases](https://github.com/dufu1991/foldgit/releases/latest), then open it to install. Required runtimes are included.
 
@@ -115,14 +115,12 @@ Platforms/
     Resources/                Localizations and Apple asset catalogs
     Configuration/            App identity, signing and export settings
     Tests/                    macOS UI and integration tests
-    Screenshots/              macOS app screenshots
     FoldGit.xcodeproj/        Xcode project
     project.yml               XcodeGen spec
   Windows/                    WinUI 3 app, C# core, system adapters and installer packaging
 Scripts/                      Resource generation, validation and packaging tools
 website/                      Landing page and user guide (static)
 .github/                      Build workflows for the core and each platform
-docs/                         Architecture, migration and release notes
 ```
 
 The shared module does not depend on AppKit, SwiftUI or macOS preferences. The macOS app consumes it as a local Swift package instead of compiling shared sources into the app target.
@@ -173,13 +171,11 @@ Output goes to `dist/macos`: `FoldGit.app`, a DMG and ZIP named `macOS-arm64`, a
 
 ### Releases
 
-Set the version with `python3 Scripts/version.py set <version>` and push to `main`; the [release workflow](.github/workflows/release.yml) publishes the macOS DMG and Windows EXE installers. The Homebrew tap automatically checks for new releases every 6 hours and updates the cask using its own `GITHUB_TOKEN`, without a personal access token. GitHub scheduling may delay a run. Versioning, Homebrew synchronization and optional signing secrets are described in the [release guide](docs/RELEASING.md).
+Set the version with `python3 Scripts/version.py set <version>` and push to `main`; the [release workflow](.github/workflows/release.yml) publishes the macOS DMG and Windows EXE installers. The Homebrew tap automatically checks for new releases every 6 hours and updates the cask using its own `GITHUB_TOKEN`, without a personal access token. GitHub scheduling may delay a run.
 
 ### Website
 
 `website/` is the static landing page and user guide published at [foldgit.com](https://foldgit.com), with no build step. See [website/README.md](website/README.md) for local preview and how screenshots are captured from demo repositories.
-
-More reading: [Architecture](docs/ARCHITECTURE.md), [Migration notes](docs/MIGRATION.md), [Localization guide](docs/LOCALIZATION.md), [File icons](docs/FILE_ICONS.md), [Windows parity checklist](docs/WINDOWS_PARITY.md), [Release guide](docs/RELEASING.md). Notes under `docs/` are written in Chinese.
 
 ## License
 

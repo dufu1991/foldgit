@@ -10,29 +10,14 @@
 
 画布为 1024 × 1024，仅启用 macOS 平台。圆角遮罩和材质效果由系统处理，源素材不烘焙圆角或投影。
 
-在 Icon Composer 中编辑源文件后，从仓库根目录运行：
+仓库保存应用和网站实际使用的图标源文件与成品资源。图标制作、预览与导出工具仅保存在本地，并由 Git 忽略。普通构建直接使用已提交的资源，无需 Pillow 或素材制作脚本。
 
-```sh
-python3 Scripts/Branding/render-icons.py
-```
+在 Icon Composer 中编辑源文件后，导出并同步更新以下成品：
 
-导出脚本使用当前选中 Xcode 自带的 Icon Composer，默认导出第 27 代材质，避免独立安装的旧版工具忽略折射设置。如需核对 macOS 26 的兼容效果，使用 `--design-generation 26`，并通过 `--previews` 指定单独的预览目录。原生折射需要 macOS 27，旧系统保留玻璃高光和透明材质。
+- `Images/FoldGit.png` 与 `Images/FoldGit-dark.png`，供 README 与其他平台使用。
+- `Platforms/Windows/src/FoldGit.App/Assets` 中的各尺寸 PNG 与 `FoldGit.ico`，供 Windows 构建和打包使用。
+- `website/assets/icon.webp` 与 `icon-dark.webp`，尺寸 512 × 512；`favicon.png` 与 `favicon-dark.png`，尺寸 180 × 180。
 
-通用 PNG 更新后，同步重新生成各处派生图标，并一起提交：
-
-```sh
-python3 Scripts/Branding/generate-windows-icons.py
-python3 Scripts/Branding/generate-website-icons.py
-```
-
-前者更新 `Platforms/Windows/src/FoldGit.App/Assets` 中的 MSIX 图标与 `FoldGit.ico`，后者更新落地页与手册使用的 `website/assets/icon(-dark).webp`（512 × 512）和 `favicon(-dark).png`（180 × 180）。两个脚本都需要 Pillow，网站脚本另需 `cwebp`。仓库 README 直接引用 `Images` 中的 PNG，无需额外处理。
-
-如需重新生成矢量轮廓，运行：
-
-```sh
-swift Scripts/Branding/BuildArtwork.swift Shared/Resources/Branding/AppIcon.icon
-```
-
-重新生成轮廓不会覆盖 `icon.json` 中的系统材质、平台和外观注释。最终版预览与辅助脚本集中在 `output/FoldGit-icon-final`。折边与网格调整的对比预览及构建日志存放于 `output/FoldGit-icon-glass`。
+导出时使用当前选中 Xcode 自带的 Icon Composer，并检查亮色和暗色外观。修改矢量轮廓时保留 `icon.json` 中的系统材质、平台和外观配置。
 
 官方设计依据：[Apple App Icons 指南](https://developer.apple.com/design/human-interface-guidelines/app-icons)。

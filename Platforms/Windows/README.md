@@ -31,7 +31,7 @@ dotnet build Platforms/Windows/src/FoldGit.App -p:Platform=x64 -p:RuntimeIdentif
 
 品牌、文件图标和许可从 `Shared/Resources` 引用。维护共享翻译后运行 `python Scripts/generate-resources.py`，生成两端原生资源。Windows 运行时使用同源翻译目录处理动态文本和复数；MSIX 的显示信息使用 `.resw` 资源。
 
-Windows 图标已生成并提交。更改共享品牌图后，使用 Pillow 12.1.1 运行 `python Scripts/Branding/generate-windows-icons.py` 更新平台派生资源。
+Windows 图标已生成并提交。更改共享品牌图后，同步更新 `Assets` 中的 PNG 与 `FoldGit.ico`。图标制作工具仅保存在本地，普通构建直接使用仓库中的成品资源。
 
 偏好保存在当前用户本地应用数据目录下的 `FoldGit/settings.json`，通过临时文件替换完成保存。包括仓库、逻辑分组、显示偏好、模板、最近应用和待完成 Worktree 流程。语言切换在下次启动时生效。恢复默认设置保留仓库与分组，并备份原设置文件。
 
@@ -67,4 +67,4 @@ App Installer 在后续启动时检查更新，不配置后台强制更新。应
 
 macOS 可运行 C# 核心测试、编译 Windows 适配库，并使用官方引用程序集检查界面 C# 类型。WinUI 的 XAML 编译、应用启动、凭据交互和 MSIX 安装必须在 Windows 上验证。
 
-`.github/workflows/windows.yml` 提供 x64 和 ARM64 的行为测试、应用构建和未签名打包任务。尚未运行的 CI 或实机步骤不能视为已通过，验收项见 `docs/WINDOWS_PARITY.md`。
+`.github/workflows/windows.yml` 提供 x64 和 ARM64 的行为测试、应用构建和未签名打包任务。尚未运行的 CI 或实机步骤不能视为已通过。发布前仍需在 Windows 11 24H2 的 x64 与 ARM64 设备上验证原生界面、认证、系统集成、安装和升级。

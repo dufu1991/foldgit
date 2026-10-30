@@ -11,7 +11,6 @@ i18n.js           英文文案
 styles.css        设计变量、液态玻璃样式、亮暗色与动效
 main.js           语言与外观切换、截图同步、滚动动效、Fold 演示
 assets/           图标、赞助二维码、原始截图、亮暗壁纸与 README 展示图
-scripts/          演示仓库生成与展示图导出脚本
 ```
 
 ## 本地预览
@@ -40,19 +39,11 @@ python3 -m http.server 8765 --directory website
 
 首页展示区先呈现完整壁纸，滚动进入固定展示区后，软件窗口从下方以 3D 倾角逐渐出现，随后展开并落稳。展示区按视口高度适配，窗口展开后保留一段滚动距离供阅读。启用系统的减少动态效果设置时，直接展示静态截图；手册和 README 保持静态构图。
 
-中英文 README 使用 `assets/showcases/` 的静态展示图，通过 `<picture>` 跟随阅读器亮暗色。导出脚本直接渲染网站共用的 CSS，不重绘应用界面。画布为 2176 × 1244，窗口为 1920 × 988，四周各留 128 像素；按 2 倍分辨率导出 WebP。
+中英文 README 使用 `assets/showcases/` 的静态展示图，通过 `<picture>` 跟随阅读器亮暗色。展示图使用网站共用的 CSS，不重绘应用界面。画布为 2176 × 1244，窗口为 1920 × 988，四周各留 128 像素；按 2 倍分辨率导出 WebP。
 
-Open Graph 与 Twitter 分享卡片使用 `assets/og.png`，尺寸 1200 × 630。模板为 `scripts/og-card.html`：左侧是图标、名称和首页标语，右侧放大英文亮色截图中的侧栏与提交图，保证缩小到卡片尺寸后仍可辨认。三个页面的 `og:image` 必须使用 `https://foldgit.com/` 开头的绝对地址；替换卡片后可更改文件名或追加查询参数，促使各平台刷新缓存。
+Open Graph 与 Twitter 分享卡片使用 `assets/og.png`，尺寸 1200 × 630。构图为：左侧是图标、名称和首页标语，右侧放大英文亮色截图中的侧栏与提交图，保证缩小到卡片尺寸后仍可辨认。三个页面的 `og:image` 必须使用 `https://foldgit.com/` 开头的绝对地址；替换卡片后可更改文件名或追加查询参数，促使各平台刷新缓存。
 
-替换原始截图、壁纸或调整展示样式后，重新导出主界面的中英文和亮暗色组合以及分享卡片：
-
-```sh
-npm install --prefix /tmp/foldgit-showcase-tools playwright sharp
-/tmp/foldgit-showcase-tools/node_modules/.bin/playwright install chromium
-NODE_PATH=/tmp/foldgit-showcase-tools/node_modules node website/scripts/render-showcases.mjs
-```
-
-已有 Chromium 时，可通过 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` 指定可执行文件。导出依赖只用于更新静态素材，网站部署仍无需构建。
+替换原始截图、壁纸或调整展示样式后，同步更新中英文和亮暗色展示图以及分享卡片。素材制作脚本和模板仅保存在本地，不随仓库分发；网站直接使用已提交的静态资源，部署无需安装导出工具。
 
 ## 更新日志
 
@@ -87,20 +78,13 @@ python3 Scripts/changelog.py --release 0.2.0  # 输出指定版本的双语 Rele
 
 截图取自最新成功构建的真实 macOS 界面，不重绘控件或修改截图文案。演示项目使用虚构数据。
 
-1. 生成演示仓库：
+1. 准备仅含虚构项目、作者和代码的演示仓库，覆盖分支、合并、标签、Stash、Worktree、已暂存与未暂存改动。
+2. 用 `defaults export com.dufu.foldgit <备份.plist>` 备份偏好。关闭所有 FoldGit 实例，使用本地固定的 Apple Development 签名，在原有 Debug 应用路径构建当前代码。不得复制应用或修改 Bundle ID。
+3. 临时配置演示仓库与分组，使用 1920 × 988 的窗口，历史列宽 320，保留目录树、暂存区与展开的并排差异。提交框只填写演示文案，不执行提交。
+4. 分别切换中文、英文与亮暗色，捕获主窗口。语言切换后重启同一个应用，每次确认运行路径和构建版本。移开鼠标，避免悬浮提示，确认左上角为真实的红黄绿按钮且不含共享指示器。
+5. 使用 `cwebp -q 90 -m 6` 导出 `assets/screenshots/main-<zh|en>-<light|dark>.webp`（1920 × 988）和同名 `@2x.webp`（3840 × 1976）。只缩放与压缩，不修饰实际界面。同步更新 README 展示图和分享卡片。
+6. 退出应用，执行 `defaults import com.dufu.foldgit <备份.plist>`，删除仅由截图会话新增的偏好键并逐项核对恢复结果。重新打开原路径的最新构建，恢复原仓库列表。
 
-   ```sh
-   website/scripts/make-demo-repos.sh <全新的输出目录>
-   ```
-
-   脚本创建 `aurora-ui`、`tide-api`、`pebble-notes` 和 `harbor-docs`，包含分支、合并、标签、贮藏、工作树与未提交改动。`aurora-ui` 另有已暂存的主题与测试，以及未暂存的组件改动。输出目录已存在时会退出，避免覆盖文件。
-
-2. 用 `defaults export com.dufu.foldgit <备份.plist>` 备份偏好。关闭所有 FoldGit 实例，使用 `Platforms/macOS/Configuration/LocalSigning.xcconfig` 的固定 Apple Development 签名，在原有 Debug 应用路径构建当前代码。不得复制应用或修改 Bundle ID。
-3. 临时设置演示仓库列表：`aurora-ui`、`tide-api` 和 `pebble-notes` 放入 Studio 分组，将 `pebble-notes` 标为不活跃；FoldGit 临时副本与 `harbor-docs` 放入 Open Source 分组。
-4. 使用 1920 × 988 的窗口，历史列宽 320，确保英文底部选项完整显示在一行。保留目录树、暂存区与展开的 `Badge.swift` 并排差异，折叠暂存区的 Tests 目录。提交框只填写演示文案，不执行提交。
-5. 分别切换中文、英文与亮暗色，捕获主窗口。语言切换后重启同一个应用；每次都确认运行路径和构建版本。移开鼠标，避免截图包含悬浮提示。若使用 Computer Use 布置界面，必须先停止其窗口控制服务，再用系统截图工具捕获，逐图确认左上角是真实的红黄绿按钮，不含紫色共享指示器。
-6. 使用 `cwebp -q 90 -m 6` 导出 `assets/screenshots/main-<zh|en>-<light|dark>.webp`（1920 × 988）和同名 `@2x.webp`（3840 × 1976）。只缩放与压缩，不修饰实际界面。
-7. 同步 `Platforms/macOS/Screenshots/Screenshot2-1.png` 与 `Screenshot2-2.png`，分别保留中文亮暗色主图原图。运行 `scripts/render-showcases.mjs` 更新 README 展示图，网站截图跟随语言和外观切换。
-8. 退出应用，执行 `defaults import com.dufu.foldgit <备份.plist>`。该命令会保留新增键，需删除仅由截图会话新增的偏好键，再逐项核对恢复结果。重新打开原路径的最新构建，恢复原仓库列表。
+截图原图、演示仓库生成工具和展示图导出工具仅在本地保留，并由 Git 忽略。仓库只保存页面和 README 实际使用的成品图片。
 
 当前截图基于 2026 年 10 月 29 日的工作目录，包含目录树审查、文件暂存动画，以及无背景的打开文件箭头。落地页截图路径带缓存版本参数；替换同名图片时同步更新 `main.js` 和 Open Graph 图片的版本参数。

@@ -72,7 +72,7 @@ xattr -dr com.apple.quarantine /Applications/FoldGit.app
 
 ## Windows 版
 
-仓库中还包含一个基于 C#、WinUI 3 和 .NET 10 的 Windows 客户端（Windows 11 24H2 及以上，x64 与 ARM64）。它目前只是最简实现，作者没有 Windows 设备，无法继续打磨。非常欢迎感兴趣的你参与建设：开发步骤见 [Windows 说明](Platforms/Windows/README.md)，实机验收项见 [功能对齐清单](docs/WINDOWS_PARITY.md)。
+仓库中还包含一个基于 C#、WinUI 3 和 .NET 10 的 Windows 客户端（Windows 11 24H2 及以上，x64 与 ARM64）。它目前只是最简实现，作者没有 Windows 设备，无法继续打磨。非常欢迎感兴趣的你参与建设，开发步骤见 [Windows 说明](Platforms/Windows/README.md)。
 
 在 [Releases](https://github.com/dufu1991/foldgit/releases/latest) 下载 Windows x64 或 ARM64 的 EXE，双击安装即可，无需另行下载运行时。
 
@@ -115,14 +115,12 @@ Platforms/
     Resources/                本地化与 Apple 资源目录
     Configuration/            应用标识、签名和导出配置
     Tests/                    macOS 界面与系统集成测试
-    Screenshots/              macOS 应用截图
     FoldGit.xcodeproj/        Xcode 工程
     project.yml               macOS 工程生成配置
   Windows/                    WinUI 3 应用、C# 核心、系统适配与安装包打包
 Scripts/                      资源生成、校验与打包工具
 website/                      落地页与使用手册（静态页面）
 .github/                      共享核心与平台构建工作流
-docs/                         架构、迁移与发布文档
 ```
 
 共享模块不依赖 AppKit、SwiftUI 或 macOS 偏好存储。macOS 应用通过本地 Swift Package 依赖引用核心，不把共享源码重复编译到应用模块。
@@ -173,13 +171,11 @@ Scripts/package-macos.sh
 
 ### 发布
 
-用 `python3 Scripts/version.py set <版本号>` 设置版本并推送到 `main`，[发布工作流](.github/workflows/release.yml)会发布 macOS DMG 与 Windows EXE 安装包。Homebrew tap 每 6 小时自动检查新版本，使用自身的 `GITHUB_TOKEN` 更新 Cask，无须配置个人令牌；GitHub 调度繁忙时可能延迟。版本号、Homebrew 同步和可选签名 Secrets 见[发布流程](docs/RELEASING.md)。
+用 `python3 Scripts/version.py set <版本号>` 设置版本并推送到 `main`，[发布工作流](.github/workflows/release.yml)会发布 macOS DMG 与 Windows EXE 安装包。Homebrew tap 每 6 小时自动检查新版本，使用自身的 `GITHUB_TOKEN` 更新 Cask，无须配置个人令牌；GitHub 调度繁忙时可能延迟。
 
 ### 网站
 
 `website/` 是无需构建的静态落地页与使用手册，发布在 [foldgit.com](https://foldgit.com)。本地预览方式，以及如何用演示仓库重新截图，见 [website/README.md](website/README.md)。
-
-更多文档：[架构说明](docs/ARCHITECTURE.md)、[迁移记录](docs/MIGRATION.md)、[本地化指南](docs/LOCALIZATION.md)、[文件图标](docs/FILE_ICONS.md)、[Windows 功能对齐清单](docs/WINDOWS_PARITY.md)、[发布流程](docs/RELEASING.md)。
 
 ## 开源许可
 

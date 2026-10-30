@@ -104,8 +104,15 @@ vendor/bundle
 # Local distribution artifacts
 dist/
 
-# Local promotion materials
-/docs/promotion/
+# Local documentation and promotion materials
+/docs/
+
+# Local artwork, screenshot production and demo tools
+/Platforms/macOS/Screenshots/
+/Scripts/Branding/
+/website/scripts/
+/Platforms/Windows/Packaging/cloud-debug.ps1
+/Platforms/Windows/Packaging/expand-demo-history.ps1
 
 # Generated icon previews and drafts
 output/

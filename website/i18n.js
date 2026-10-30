@@ -83,7 +83,6 @@ window.FOLDGIT_I18N = {
     "win.requirements": "Windows 11 24H2 or later. Choose your architecture and open the EXE installer. No separate runtime download is needed.",
     "win.installGuide": "Installation guide",
     "win.readme": "Windows dev guide",
-    "win.parity": "Feature parity checklist",
 
     "support.kicker": "Support open source",
     "support.title": "Buy the author a coffee.",

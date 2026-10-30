@@ -7,6 +7,7 @@ import SwiftUI
 
 struct OpenFileButton: View {
     @Environment(\.folder) private var folder
+    @State private var error: Error?
 
     var filePath: String
 
@@ -17,7 +18,7 @@ struct OpenFileButton: View {
     var body: some View {
         Button {
             if let fileURL {
-                NSWorkspace.shared.open(fileURL)
+                error = FileOpening.open(fileURL, using: NSWorkspace.shared.open)
             }
         } label: {
             Image(systemName: "arrow.up.right")
@@ -30,5 +31,6 @@ struct OpenFileButton: View {
         .controlSize(.small)
         .help("Open \(fileURL?.absoluteString ?? "")")
         .disabled(fileURL == nil)
+        .errorSheet($error, operation: "Open File")
     }
 }

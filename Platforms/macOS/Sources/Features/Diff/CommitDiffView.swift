@@ -80,7 +80,7 @@ struct CommitDiffView: View {
                 await updateDiff(commitRange: commitFirst + ".." + commitSecond)
             }
         }
-        .errorSheet($error)
+        .errorSheet($error, operation: "Load Differences")
     }
 
     private var displayControls: some View {

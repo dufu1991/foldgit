@@ -111,6 +111,9 @@
   <data name="Text_6306b6322724b81efa0b7ddc" xml:space="preserve">
     <value>应用解决方案</value>
   </data>
+  <data name="Text_8787b7a71d085b7b4a3e94cf" xml:space="preserve">
+    <value>应用贮藏</value>
+  </data>
   <data name="Text_09ea09e4c02dfa28858a06da" xml:space="preserve">
     <value>恢复并删除</value>
   </data>
@@ -147,6 +150,9 @@
   <data name="Text_2709a726a7ca8186057b5d9e" xml:space="preserve">
     <value>二进制文件，请在外部打开</value>
   </data>
+  <data name="Text_7f216915ec37e5cc746e9f31" xml:space="preserve">
+    <value>二进制输出（{0} 字节）</value>
+  </data>
   <data name="Text_52656e8104eef3fddd3d4546" xml:space="preserve">
     <value>分支</value>
   </data>
@@ -161,6 +167,9 @@
   </data>
   <data name="Text_6717f40f497e0510e95e83c7" xml:space="preserve">
     <value>正在取消克隆</value>
+  </data>
+  <data name="Text_d353a99eb4556847ceeb3c30" xml:space="preserve">
+    <value>已取消</value>
   </data>
   <data name="Text_b585b9ae2b811e9c591c9d00" xml:space="preserve">
     <value>更改文件显示</value>
@@ -227,6 +236,9 @@
   </data>
   <data name="Text_24f3383dd8dac9661ffd4c7b" xml:space="preserve">
     <value>清理选项</value>
+  </data>
+  <data name="Text_533e26bdccddf82cae5b0f28" xml:space="preserve">
+    <value>清空日志</value>
   </data>
   <data name="Text_5779f32fab00c2aae390fe9f" xml:space="preserve">
     <value>克隆</value>
@@ -315,6 +327,9 @@
   <data name="Text_efbef582e6154da9ce87779e" xml:space="preserve">
     <value>比较分支或标签</value>
   </data>
+  <data name="Text_80138e9720f0a101716742d1" xml:space="preserve">
+    <value>比较版本</value>
+  </data>
   <data name="Text_916a464e6cfffe51cd6f9bf4" xml:space="preserve">
     <value>冲突</value>
   </data>
@@ -333,8 +348,14 @@
   <data name="Text_8c12fd1ccd55b393744500cd" xml:space="preserve">
     <value>复制 {0}</value>
   </data>
+  <data name="Text_3bdd0fd90f741a1fe131b068" xml:space="preserve">
+    <value>复制命令</value>
+  </data>
   <data name="Text_ab480df9b105271e4e11fcea" xml:space="preserve">
     <value>复制提交哈希</value>
+  </data>
+  <data name="Text_dba23f14c1094cbd338b8288" xml:space="preserve">
+    <value>复制日志</value>
   </data>
   <data name="Text_04a05d81cc5c997a10f7ab9e" xml:space="preserve">
     <value>无法读取差异中的更改文件。</value>
@@ -366,11 +387,17 @@
   <data name="Text_e2d0a54968ead24efc0dffa6" xml:space="preserve">
     <value>删除</value>
   </data>
+  <data name="Text_06da38448937c5ca3cf8a9a4" xml:space="preserve">
+    <value>删除分支</value>
+  </data>
   <data name="Text_e1e5fe2043bd3003147a785a" xml:space="preserve">
     <value>删除文件</value>
   </data>
   <data name="Text_f3d5b704f7933bd630896f34" xml:space="preserve">
     <value>删除本地源分支</value>
+  </data>
+  <data name="Text_01595e8f253bee9c7dd4cd6a" xml:space="preserve">
+    <value>删除标签</value>
   </data>
   <data name="Text_b48ff39c2e0f5451b9b29b09" xml:space="preserve">
     <value>删除</value>
@@ -408,6 +435,12 @@
   <data name="Text_c8af9ae37a48273f981bc82a" xml:space="preserve">
     <value>删除贮藏</value>
   </data>
+  <data name="Text_915b68364a1238bc4b3dc7ed" xml:space="preserve">
+    <value>删除贮藏</value>
+  </data>
+  <data name="Text_4fc52a3c4c558b517c463b22" xml:space="preserve">
+    <value>耗时</value>
+  </data>
   <data name="Text_464c4ffd019e1e9691dcf053" xml:space="preserve">
     <value>编辑</value>
   </data>
@@ -444,6 +477,9 @@
   <data name="Text_1c9c3ead31be31433fd1f5bd" xml:space="preserve">
     <value>已有分支</value>
   </data>
+  <data name="Text_60e19de8fff7c8217cd5679c" xml:space="preserve">
+    <value>退出码</value>
+  </data>
   <data name="Text_7cf0d193cccdfabb97454557" xml:space="preserve">
     <value>展开全部</value>
   </data>
@@ -462,8 +498,20 @@
   <data name="Text_e72d5d8d0b167d21b4e4a89e" xml:space="preserve">
     <value>展开</value>
   </data>
+  <data name="Text_f08d673e035e5182febdbe70" xml:space="preserve">
+    <value>导出命令日志</value>
+  </data>
+  <data name="Text_818cb91030ce80d3cd923f45" xml:space="preserve">
+    <value>导出日志</value>
+  </data>
   <data name="Text_a1587027c2e469fbf273e130" xml:space="preserve">
     <value>外部应用</value>
+  </data>
+  <data name="Text_031a8f0f659df890dfd53c92" xml:space="preserve">
+    <value>执行失败</value>
+  </data>
+  <data name="Text_f274e9e8e7be5ea70b5c6cd5" xml:space="preserve">
+    <value>失败原因</value>
   </data>
   <data name="Text_cd7d61bf7e38c7c2280b4241" xml:space="preserve">
     <value>获取</value>
@@ -494,6 +542,9 @@
   </data>
   <data name="Text_638e249f4a15ebb84957da13" xml:space="preserve">
     <value>筛选</value>
+  </data>
+  <data name="Text_376476d1a9b56cd5e1f6cb96" xml:space="preserve">
+    <value>筛选命令</value>
   </data>
   <data name="Text_899d861562c6c0dc927c2e67" xml:space="preserve">
     <value>筛选仓库</value>
@@ -546,6 +597,9 @@
   <data name="Text_92eec3591752b7b15160e73a" xml:space="preserve">
     <value>Git 安装</value>
   </data>
+  <data name="Text_3f6e0caf008feb149f07fd85" xml:space="preserve">
+    <value>本仓库执行的 Git 命令会显示在这里。</value>
+  </data>
   <data name="Text_aeb0518b4bec58c35886a8f6" xml:space="preserve">
     <value>Git 返回了无效的 UTF-8 输出。</value>
   </data>
@@ -596,6 +650,9 @@
   </data>
   <data name="Text_ac7c949f1211b7814bdd28a6" xml:space="preserve">
     <value>不活跃</value>
+  </data>
+  <data name="Text_f2f5d44f2620f63bad4b678f" xml:space="preserve">
+    <value>包含读取命令</value>
   </data>
   <data name="Text_2bad485c00acd73ab7727513" xml:space="preserve">
     <value>待合并分支版本</value>
@@ -651,8 +708,44 @@
   <data name="Text_6f202f54a7b2d8fe42aa804e" xml:space="preserve">
     <value>列表</value>
   </data>
+  <data name="Text_864b087a641a71c06152c7bd" xml:space="preserve">
+    <value>读取分支</value>
+  </data>
+  <data name="Text_ddf685990848831f503af2a4" xml:space="preserve">
+    <value>读取更改</value>
+  </data>
+  <data name="Text_74e9e76e2fbaedff22628ac3" xml:space="preserve">
+    <value>读取提交详情</value>
+  </data>
+  <data name="Text_7b4bebfdc537feebd6996536" xml:space="preserve">
+    <value>读取提交统计</value>
+  </data>
+  <data name="Text_61635112f74486ca261672f3" xml:space="preserve">
+    <value>读取冲突预览</value>
+  </data>
+  <data name="Text_427a76bbee8b87a849eb3842" xml:space="preserve">
+    <value>读取差异</value>
+  </data>
+  <data name="Text_9ea4bcb1fcb49890a35540c7" xml:space="preserve">
+    <value>读取合并状态</value>
+  </data>
   <data name="Text_3f06cd334f4811b2130b13a8" xml:space="preserve">
     <value>加载更多</value>
+  </data>
+  <data name="Text_d552e677f008d8f7274647bd" xml:space="preserve">
+    <value>读取仓库</value>
+  </data>
+  <data name="Text_fe55252e787711381db33e68" xml:space="preserve">
+    <value>读取贮藏更改</value>
+  </data>
+  <data name="Text_a470ea3cb0d1e0b391d5f560" xml:space="preserve">
+    <value>读取贮藏列表</value>
+  </data>
+  <data name="Text_5e2571c6f701b52228149ed9" xml:space="preserve">
+    <value>读取标签</value>
+  </data>
+  <data name="Text_a4dde47d9a5883ce34f9b8af" xml:space="preserve">
+    <value>读取工作树</value>
   </data>
   <data name="Text_322b540df1e8e7eaf9b0fec3" xml:space="preserve">
     <value>正在读取应用</value>
@@ -671,6 +764,15 @@
   </data>
   <data name="Text_18f16c20b37d7e9cf72d483f" xml:space="preserve">
     <value>已锁定的工作树</value>
+  </data>
+  <data name="Text_21e49eb2b299c9f7503a1236" xml:space="preserve">
+    <value>日志</value>
+  </data>
+  <data name="Text_c9a01025f5ec1c675e3491ca" xml:space="preserve">
+    <value>日志操作</value>
+  </data>
+  <data name="Text_a9c1cbe7274651fbf3cc4c54" xml:space="preserve">
+    <value>日志仅保留在本次运行期间，旧记录和过长的输出会受到限制。</value>
   </data>
   <data name="Text_62edae1b15a2b136588ffa1c" xml:space="preserve">
     <value>主工作树</value>
@@ -783,6 +885,9 @@
   <data name="Text_80998dce6bdbbc106c3de35b" xml:space="preserve">
     <value>没有更改</value>
   </data>
+  <data name="Text_8efc136c63bb000de52f680d" xml:space="preserve">
+    <value>暂无命令</value>
+  </data>
   <data name="Text_7098b38e487832dbf337e43d" xml:space="preserve">
     <value>暂无提交快捷输入</value>
   </data>
@@ -798,11 +903,17 @@
   <data name="Text_06f64cfa4f6ab3e82798e08a" xml:space="preserve">
     <value>此版本无图片</value>
   </data>
+  <data name="Text_567f9e1f461c007c7fba3a45" xml:space="preserve">
+    <value>没有匹配的命令</value>
+  </data>
   <data name="Text_eb0204f61a639289b16276f3" xml:space="preserve">
     <value>未找到匹配的目录或仓库</value>
   </data>
   <data name="Text_208cf0811adc18dca542e2dd" xml:space="preserve">
     <value>没有进行中的合并</value>
+  </data>
+  <data name="Text_ffe64588d75aeaaf8414c8c7" xml:space="preserve">
+    <value>无输出</value>
   </data>
   <data name="Text_ebb726dc60b4f582a011944c" xml:space="preserve">
     <value>尚未添加项目文件夹</value>
@@ -822,6 +933,9 @@
   <data name="Text_56166423b7658edf33f7f8f4" xml:space="preserve">
     <value>尚未配置远程仓库。</value>
   </data>
+  <data name="Text_bdf1b82e95997a23c03e6ee6" xml:space="preserve">
+    <value>尚未配置上游分支。请先推送此分支以设置上游，再执行拉取。</value>
+  </data>
   <data name="Text_dc937b59892604f5a86ac969" xml:space="preserve">
     <value>无</value>
   </data>
@@ -839,6 +953,9 @@
   </data>
   <data name="Text_130011756125313c72f2cab7" xml:space="preserve">
     <value>开启</value>
+  </data>
+  <data name="Text_ca0d7d935df267b1b8a6426b" xml:space="preserve">
+    <value>只看失败</value>
   </data>
   <data name="Text_3495086d5f7b910836ed6c6a" xml:space="preserve">
     <value>只有提交已合并、无更改且未锁定的工作树才能移除。远程分支会保留。</value>
@@ -864,6 +981,9 @@
   <data name="Text_d2b9f8f8baec315e5189a2fc" xml:space="preserve">
     <value>最近打开</value>
   </data>
+  <data name="Text_31da50092e2acbe2f7f13525" xml:space="preserve">
+    <value>打开版本发布页面</value>
+  </data>
   <data name="Text_2466923190a5c2d425403829" xml:space="preserve">
     <value>打开仓库</value>
   </data>
@@ -875,6 +995,9 @@
   </data>
   <data name="Text_d50438fafed771d04ec923c5" xml:space="preserve">
     <value>打开目标工作树</value>
+  </data>
+  <data name="Text_ae088e1416176bb9dde0eb1a" xml:space="preserve">
+    <value>打开终端</value>
   </data>
   <data name="Text_6a7ddcdb43036233e03f9ebe" xml:space="preserve">
     <value>打开工作树</value>
@@ -890,6 +1013,9 @@
   </data>
   <data name="Text_189a8567d84bfbdd8629aab5" xml:space="preserve">
     <value>其他应用</value>
+  </data>
+  <data name="Text_49dcf4bd635f6099579f4af7" xml:space="preserve">
+    <value>输出已截断</value>
   </data>
   <data name="Text_30d2d6bd3576a41f3616e71d" xml:space="preserve">
     <value>固定常用应用</value>
@@ -1029,6 +1155,9 @@
   <data name="Text_3b12a8a5f3973429ff37edf0" xml:space="preserve">
     <value>请先解决所有冲突并暂存更改，再继续合并。</value>
   </data>
+  <data name="Text_f8a675fe3a456d13c1138c22" xml:space="preserve">
+    <value>重启 FoldGit</value>
+  </data>
   <data name="Text_0fe0c953737413887ef7295e" xml:space="preserve">
     <value>立即重新启动</value>
   </data>
@@ -1059,14 +1188,41 @@
   <data name="Text_aff0766a5290e117b8433c35" xml:space="preserve">
     <value>检查</value>
   </data>
+  <data name="Text_5d8021556c24ef0720ad3e41" xml:space="preserve">
+    <value>检查工作树</value>
+  </data>
   <data name="Text_2d2ad59d90427b3476a8a981" xml:space="preserve">
     <value>恢复前可以查看全部默认值。</value>
+  </data>
+  <data name="Text_f4ccae29e1bb0c20a124570a" xml:space="preserve">
+    <value>执行中</value>
   </data>
   <data name="Text_1509f561f2416598629b886a" xml:space="preserve">
     <value>保存</value>
   </data>
+  <data name="Text_7b720ce2c5f0438067356a05" xml:space="preserve">
+    <value>保存提交信息片段</value>
+  </data>
   <data name="Text_23a1309d6a7c1e827442065c" xml:space="preserve">
     <value>保存位置</value>
+  </data>
+  <data name="Text_3ce4ea090222138f5e184083" xml:space="preserve">
+    <value>保存仓库名称</value>
+  </data>
+  <data name="Text_fe416216c26acad4465462df" xml:space="preserve">
+    <value>保存仓库设置</value>
+  </data>
+  <data name="Text_ec92e1dc9bb3bf7b98ee8604" xml:space="preserve">
+    <value>保存设置</value>
+  </data>
+  <data name="Text_3f43ef7f99cda474a4afc555" xml:space="preserve">
+    <value>保存侧栏活动记录</value>
+  </data>
+  <data name="Text_01974cf3a6a68fbe276313f5" xml:space="preserve">
+    <value>保存工作区</value>
+  </data>
+  <data name="Text_590dea95f532d81346dcc457" xml:space="preserve">
+    <value>搜索命令</value>
   </data>
   <data name="Text_3a93f31e545c049a2864a25b" xml:space="preserve">
     <value>搜索提交</value>
@@ -1146,6 +1302,9 @@
   <data name="Text_d1ce47c82d3285bba8b89d87" xml:space="preserve">
     <value>全部暂存</value>
   </data>
+  <data name="Text_9061f71fa424e25250f577d6" xml:space="preserve">
+    <value>暂存更改</value>
+  </data>
   <data name="Text_9efa12c7103ca805a98eb2f5" xml:space="preserve">
     <value>暂存此目录</value>
   </data>
@@ -1160,6 +1319,12 @@
   </data>
   <data name="Text_b5ff1947b664c6719dfbb256" xml:space="preserve">
     <value>已暂存的更改</value>
+  </data>
+  <data name="Text_6c1e834e5a522e0769648f01" xml:space="preserve">
+    <value>错误输出</value>
+  </data>
+  <data name="Text_8d3f7a535f4578b41b9921d3" xml:space="preserve">
+    <value>标准输出</value>
   </data>
   <data name="Text_7345985afc37b8a0244bbb67" xml:space="preserve">
     <value>起始位置</value>
@@ -1176,14 +1341,23 @@
   <data name="Text_e45b6015e5311ca73cb415a2" xml:space="preserve">
     <value>贮藏</value>
   </data>
+  <data name="Text_6d9a6f97a5fdaf3b90a0cf02" xml:space="preserve">
+    <value>执行成功</value>
+  </data>
   <data name="Text_ce23ab1e75dc0ad7dcbfc55e" xml:space="preserve">
     <value>交换提交</value>
   </data>
   <data name="Text_de245f1d6203f04adab03041" xml:space="preserve">
     <value>交换比较方向</value>
   </data>
+  <data name="Text_b64bdbdd76d36232de560447" xml:space="preserve">
+    <value>请先切换到分支，再拉取或推送。</value>
+  </data>
   <data name="Text_0cfdb0c8e363449c2b4919ee" xml:space="preserve">
     <value>同步错误</value>
+  </data>
+  <data name="Text_37fe872ceff82cba889900b3" xml:space="preserve">
+    <value>同步仓库</value>
   </data>
   <data name="Text_4a32b016fa3839ad18caaf9b" xml:space="preserve">
     <value>标签名称：</value>
@@ -1212,11 +1386,17 @@
   <data name="Text_6caac58ec0390aea14f31a2f" xml:space="preserve">
     <value>目标文件夹已存在，请使用其他文件夹名称。</value>
   </data>
+  <data name="Text_ce71757a337da564952c58de" xml:space="preserve">
+    <value>无法打开文件：{0}</value>
+  </data>
   <data name="Text_f0ef1f3ba63c0fc001be0521" xml:space="preserve">
     <value>无法解码此图片。</value>
   </data>
   <data name="Text_aed55c286b887d989cf12a07" xml:space="preserve">
     <value>图片过大，无法预览。</value>
+  </data>
+  <data name="Text_d2d65881343a6a2476f09c9a" xml:space="preserve">
+    <value>无法打开版本发布页面。</value>
   </data>
   <data name="Text_bc99b8cb8fa3244d8eca96af" xml:space="preserve">
     <value>以下设置将恢复为默认值，自定义快捷输入和手动添加的应用配置将被重置。仓库列表、分组、名称和本地文件会保留。</value>
@@ -1239,6 +1419,9 @@
   <data name="Text_0d1f4bf86a81f2a364a74b48" xml:space="preserve">
     <value>此操作会将 {0} 的当前编辑替换为所选版本。如果该版本已删除此文件，则会删除该文件。</value>
   </data>
+  <data name="Text_babf3e95c725fe047bc6e813" xml:space="preserve">
+    <value>已超时</value>
+  </data>
   <data name="Text_bfe83056f4a5d583639ec4bb" xml:space="preserve">
     <value>待拉取</value>
   </data>
@@ -1253,6 +1436,9 @@
   </data>
   <data name="Text_ee72274fbfae999effb293e8" xml:space="preserve">
     <value>工具栏显示</value>
+  </data>
+  <data name="Text_f68ef174d62b538a19a3ea7f" xml:space="preserve">
+    <value>请尝试其他搜索内容或调整筛选条件。</value>
   </data>
   <data name="Text_ec45bbdcf18b7ed139160270" xml:space="preserve">
     <value>细节调整</value>
@@ -1274,6 +1460,9 @@
   </data>
   <data name="Text_76ebb3e1241d665cb7cc2ee7" xml:space="preserve">
     <value>全部取消暂存</value>
+  </data>
+  <data name="Text_eb7f3c20dfcda531737bbd9b" xml:space="preserve">
+    <value>取消暂存更改</value>
   </data>
   <data name="Text_eca58eb8a8fcfb0c75dab5d5" xml:space="preserve">
     <value>取消暂存此目录</value>
@@ -1308,8 +1497,14 @@
   <data name="Text_dcc839a4015c4b7dd9db959a" xml:space="preserve">
     <value>显示</value>
   </data>
+  <data name="Text_7404b364d49d6eb6c226440a" xml:space="preserve">
+    <value>查看错误详情</value>
+  </data>
   <data name="Text_a96fdff97286bedf4066a956" xml:space="preserve">
     <value>查看待拉取提交</value>
+  </data>
+  <data name="Text_a76646e2d2c239a7863cd9c7" xml:space="preserve">
+    <value>查看日志</value>
   </data>
   <data name="Text_421dba311ad7c79b6a25aa38" xml:space="preserve">
     <value>关闭最后一个窗口时</value>

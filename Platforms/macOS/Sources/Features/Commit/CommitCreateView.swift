@@ -182,10 +182,10 @@ struct CommitCreateView: View {
             do {
                 amendCommit = try await GitRuntime.run(GitLog(directory: folder.url, number: 1)).first
             } catch {
-                self.error = error
+                self.error = OperationFailure("Load Commit Details", error)
             }
         }
-        .errorSheet($error)
+        .errorSheet($error, operation: "Load Changes")
         .environment(\.imageDiffRefreshID, imageDiffRefreshID)
         .focusedSceneValue(\.stagingMenu, menuActions)
         .onChange(of: expandAllFilesID) { _, _ in setAllDiffExpansion(true) }
@@ -210,7 +210,7 @@ struct CommitCreateView: View {
                     }
                 },
                 onSelectUntrackedFile: isStagingChanges ? nil : { file in
-                    updateIndex { try await GitRuntime.run(GitAddPathspec(directory: folder.url, pathspec: file)) }
+                    updateIndex("Stage Changes") { try await GitRuntime.run(GitAddPathspec(directory: folder.url, pathspec: file)) }
                 },
                 layout: changeFileLayout,
                 tree: unstagedTree,
@@ -315,11 +315,11 @@ struct CommitCreateView: View {
     }
 
     private func stageAll() {
-        updateIndex { try await GitRuntime.run(GitAdd(directory: folder.url)) }
+        updateIndex("Stage Changes") { try await GitRuntime.run(GitAdd(directory: folder.url)) }
     }
 
     private func unstageAll() {
-        updateIndex { try await GitRuntime.run(GitRestore(directory: folder.url)) }
+        updateIndex("Unstage Changes") { try await GitRuntime.run(GitRestore(directory: folder.url)) }
     }
 
     private func stageDirectory(_ path: String, staging: Bool) {
@@ -327,18 +327,18 @@ struct CommitCreateView: View {
         let selection = ChangeDirectoryStaging.selection(in: path, diff: diff,
                                                         untrackedFiles: status?.untrackedFiles ?? [], staging: staging)
         guard !selection.isEmpty else { return }
-        updateIndex { try await IndexStaging.apply(selection, staging: staging, in: folder.url) }
+        updateIndex(staging ? "Stage Changes" : "Unstage Changes") { try await IndexStaging.apply(selection, staging: staging, in: folder.url) }
     }
 
     private func stashChanges() {
         // onStash leaves the working changes view, so reloading its diff afterwards is wasted work.
-        updateIndex(refreshing: false) {
+        updateIndex("Stash All Changes", refreshing: false) {
             try await GitRuntime.run(GitStash(directory: folder.url))
             onStash()
         }
     }
 
-    private func updateIndex(refreshing: Bool = true, _ operation: @escaping @MainActor () async throws -> Void) {
+    private func updateIndex(_ name: LocalizedStringResource, refreshing: Bool = true, _ operation: @escaping @MainActor () async throws -> Void) {
         guard !isStagingChanges else { return }
         isStagingChanges = true
         Task {
@@ -346,7 +346,7 @@ struct CommitCreateView: View {
             do {
                 try await operation()
                 if refreshing { await updateChanges() }
-            } catch { self.error = error }
+            } catch { self.error = OperationFailure(name, error) }
         }
     }
 
@@ -374,7 +374,7 @@ struct CommitCreateView: View {
             }
         } catch {
             guard request == updateGeneration, !Task.isCancelled else { return }
-            updateChangesError = error
+            updateChangesError = OperationFailure("Load Changes", error)
         }
     }
 
@@ -411,11 +411,11 @@ struct CommitCreateView: View {
     }
 
     private func restorePatch(_ newDiff: Diff) {
-        updateIndex { try await IndexStaging.apply(newDiff.indexSelection(staging: false), staging: false, in: folder.url) }
+        updateIndex("Unstage Changes") { try await IndexStaging.apply(newDiff.indexSelection(staging: false), staging: false, in: folder.url) }
     }
 
     private func addPatch(_ newDiff: Diff) {
-        updateIndex { try await IndexStaging.apply(newDiff.indexSelection(staging: true), staging: true, in: folder.url) }
+        updateIndex("Stage Changes") { try await IndexStaging.apply(newDiff.indexSelection(staging: true), staging: true, in: folder.url) }
     }
 }
 

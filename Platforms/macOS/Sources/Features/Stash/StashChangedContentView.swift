@@ -96,7 +96,7 @@ struct StashChangedContentView: View {
             idealHeight: 700,
             maxHeight: .infinity
         )
-        .errorSheet($error)
+        .errorSheet($error, operation: "Load Stash Changes")
     }
 
     private var displayControls: some View {
@@ -116,7 +116,7 @@ struct StashChangedContentView: View {
                         try await GitRuntime.run(GitStashApply(directory: folder.url, index: selectionStashID!))
                         showingStashChanged = false
                     } catch {
-                        self.error = error
+                        self.error = OperationFailure("Apply Stash", error)
                     }
                 }
             }
@@ -136,7 +136,7 @@ struct StashChangedContentView: View {
                 fileDiffs = []
             }
         } catch {
-            self.error = error
+            self.error = OperationFailure("Load Stash Changes", error)
         }
     }
     

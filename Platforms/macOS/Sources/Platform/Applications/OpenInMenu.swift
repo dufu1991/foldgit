@@ -74,7 +74,7 @@ struct OpenInMenu: View {
             do {
                 try await store.open(application, directory: directory, rememberApplication: rememberApplication)
             } catch {
-                onError(error)
+                onError(OperationFailure("Open in", error))
             }
         }
     }
@@ -90,7 +90,7 @@ struct OpenInMenu: View {
         panel.begin { response in
             guard response == .OK, let url = panel.url else { return }
             guard let application = OpenInApplication.read(at: url), application.id != Bundle.main.bundleIdentifier else {
-                onError(SelectionError.invalidApplication)
+                onError(OperationFailure("Choose Application", SelectionError.invalidApplication))
                 return
             }
             open(application, rememberApplication: true)

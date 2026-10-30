@@ -110,7 +110,7 @@ struct WorktreeCreateSheet: View {
                 if let tree = worktrees.worktree(at: repository) { startPoint = tree.branch ?? tree.head ?? "HEAD" }
                 existingBranch = availableBranches.first?.name ?? ""
                 branchIsFocused = true
-            } catch { errorMessage = error.localizedDescription }
+            } catch { errorMessage = OperationFailure("Load Worktrees", error).localizedDescription }
         }
     }
 
@@ -140,7 +140,7 @@ struct WorktreeCreateSheet: View {
                 try await worktrees.execute(.add(destination: destination, branch: branch), in: repository)
                 openWorktree(destination)
                 dismiss()
-            } catch { errorMessage = error.localizedDescription }
+            } catch { errorMessage = OperationFailure("New Worktree", error).localizedDescription }
         }
     }
 }
@@ -272,7 +272,7 @@ struct WorktreeManagementSheet: View {
                 let output = try await GitRuntime.run(arguments: ["git", "status", "--porcelain", "-z"], currentDirectoryURL: tree.url)
                 dirty[tree.id] = !output.standardOutput.isEmpty
             }
-        } catch { errorMessage = error.localizedDescription }
+        } catch { errorMessage = OperationFailure("Load Worktrees", error).localizedDescription }
     }
 
     private func perform(_ operation: WorktreeOperation, removed: URL? = nil) {
@@ -288,7 +288,7 @@ struct WorktreeManagementSheet: View {
                     for tree in previous where !remaining.contains(tree.id) { onRelocated(tree.url, nil) }
                 }
                 await reload()
-            } catch { errorMessage = error.localizedDescription }
+            } catch { errorMessage = OperationFailure(operation.errorTitle, error).localizedDescription }
             isBusy = false
         }
     }
@@ -340,7 +340,7 @@ private struct WorktreeMoveSheet: View {
                             try await worktrees.execute(.move(tree.url, destination: destination), in: repository)
                             onMoved(destination)
                             dismiss()
-                        } catch { errorMessage = error.localizedDescription }
+                        } catch { errorMessage = OperationFailure("Move Worktree", error).localizedDescription }
                     }
                 }
                 .buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
@@ -359,5 +359,18 @@ private struct WorktreeErrorLabel: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxHeight: 90)
+    }
+}
+
+private extension WorktreeOperation {
+    var errorTitle: LocalizedStringResource {
+        switch self {
+        case .add: "New Worktree"
+        case .remove: "Remove Worktree"
+        case .move: "Move Worktree"
+        case .lock: "Lock Worktree"
+        case .unlock: "Unlock Worktree"
+        case .prune: "Prune Missing Worktrees"
+        }
     }
 }

@@ -147,7 +147,7 @@ struct CommitDetailContentView: View {
                 fileDiffs = []
             }
         })
-        .errorSheet($error)
+        .errorSheet($error, operation: "Load Differences")
     }
     
     private func bottomBarFileDiff() -> Binding<[ExpandableModel<FileDiff>]> {

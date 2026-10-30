@@ -7,6 +7,7 @@ struct RepositoryScreen: View {
     @Environment(WorktreeStore.self) private var worktrees
     @Environment(\.openWorktree) private var openWorktree
     @Environment(\.worktreeVisibility) private var worktreeVisibility
+    @Environment(\.toggleCommandLog) private var toggleCommandLog
     var folder: WorkspaceEntry
     @Binding var selectionLog: Log?
     @Binding var subSelectionLogID: String?
@@ -23,7 +24,6 @@ struct RepositoryScreen: View {
     @State private var searchText = ""
     @State private var searchFocusRequest = UUID()
     @AppStorage(PreferenceKey.showCommitGraph.rawValue) private var showGraph = true
-    @State private var showingSyncError = false
     @State private var checkoutConfirmation: Commit?
     @State private var revertConfirmation: Commit?
     /// Shared by the toolbar's Open in menu and the menu bar so applications are discovered once per repository.
@@ -149,6 +149,11 @@ struct RepositoryScreen: View {
         .loadsApplications(menuApplications, for: folder.url)
         .onChange(of: logStore.logs()) { syncHistorySelection() }
         .onChange(of: logStore.isSearching) { syncHistorySelection() }
+        .onChange(of: logStore.error?.localizedDescription) { _, _ in
+            if let error = logStore.error {
+                self.error = OperationFailure("Commit History", error)
+            }
+        }
         .onChange(of: selectionLogID, {
             selectionLog = logStore.logs().first { $0.id == selectionLogID }
         })
@@ -186,7 +191,7 @@ struct RepositoryScreen: View {
         ), titleVisibility: .visible) {
             if let commit = checkoutConfirmation {
                 Button("Checkout") {
-                    runMenuOperation { try await GitRuntime.run(GitCheckout(directory: folder.url, commitHash: commit.hash)) }
+                    runMenuOperation("Checkout") { try await GitRuntime.run(GitCheckout(directory: folder.url, commitHash: commit.hash)) }
                 }
             }
         } message: {
@@ -197,7 +202,7 @@ struct RepositoryScreen: View {
         ), titleVisibility: .visible) {
             if let commit = revertConfirmation {
                 Button("Revert") {
-                    runMenuOperation {
+                    runMenuOperation("Revert") {
                         try await GitRuntime.run(GitRevert(directory: folder.url,
                             parentNumber: commit.revertMainline, commit: commit.hash))
                     }
@@ -206,8 +211,7 @@ struct RepositoryScreen: View {
         } message: {
             if let commit = revertConfirmation { Text(verbatim: String(commit.hash.prefix(12)) + " · " + commit.title) }
         }
-        .errorSheet($error)
-        .errorSheet($session.history.error)
+        .errorSheet($error, operation: "Load Repository")
         .sheet(item: $showing.createNewBranchFrom, content: { _ in
             CreateNewBranchSheet(folder: folder, showingCreateNewBranchFrom: $showing.createNewBranchFrom) {
                 Task {
@@ -259,7 +263,9 @@ struct RepositoryScreen: View {
                 if syncState.syncError != nil {
                     ToolbarItem(placement: .primaryAction) {
                         Button {
-                            showingSyncError.toggle()
+                            if let reason = syncState.syncError {
+                                error = OperationFailure("Synchronize Repository", GenericError(errorDescription: reason))
+                            }
                         } label: {
                             Label {
                                 Text("Sync Error")
@@ -269,18 +275,6 @@ struct RepositoryScreen: View {
                             }
                         }
                         .help("Sync Error")
-                        .popover(isPresented: $showingSyncError) {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Sync Error")
-                                    .font(.headline)
-                                ScrollView {
-                                    Text(syncState.syncError ?? "")
-                                        .textSelection(.enabled)
-                                }
-                            }
-                            .padding()
-                            .frame(width: 360, height: 160)
-                        }
                     }
                 }
                 ToolbarItem(placement: .primaryAction) {
@@ -318,6 +312,14 @@ struct RepositoryScreen: View {
             ToolbarSpacer(.fixed, placement: .primaryAction)
             ToolbarItem(placement: .primaryAction) {
                 OpenInMenu(directory: folder.url, store: menuApplications, onError: { error = $0 })
+            }
+            ToolbarSpacer(.flexible, placement: .primaryAction)
+            ToolbarItem(id: "commandLog", placement: .primaryAction) {
+                Button { toggleCommandLog() } label: {
+                    Label("Log", systemImage: "terminal")
+                }
+                .help("Log")
+                .accessibilityIdentifier("toggleCommandLog")
             }
         }
         .onChange(of: showing.stashChanged) { _, new in
@@ -393,7 +395,7 @@ struct RepositoryScreen: View {
                 if syncState.tracking?.upstream != nil { actions[.pull] = pullChanges }
             }
             if logStore.notCommitted?.isEmpty == false {
-                actions[.stash] = { runMenuOperation { try await GitRuntime.run(GitStash(directory: folder.url)) } }
+                actions[.stash] = { runMenuOperation("Stash All Changes") { try await GitRuntime.run(GitStash(directory: folder.url)) } }
             }
             if let terminal = Self.terminalURL {
                 actions[.openTerminal] = {
@@ -401,7 +403,7 @@ struct RepositoryScreen: View {
                         do {
                             _ = try await NSWorkspace.shared.open([folder.url], withApplicationAt: terminal,
                                                                  configuration: NSWorkspace.OpenConfiguration())
-                        } catch { self.error = error }
+                        } catch { self.error = OperationFailure("Open Terminal", error) }
                     }
                 }
             }
@@ -434,8 +436,12 @@ struct RepositoryScreen: View {
         panel.canChooseFiles = true
         panel.canChooseDirectories = false
         panel.begin { response in
-            guard response == .OK, let url = panel.url,
-                  let application = OpenInApplication.read(at: url), application.id != Bundle.main.bundleIdentifier else { return }
+            guard response == .OK, let url = panel.url else { return }
+            guard let application = OpenInApplication.read(at: url), application.id != Bundle.main.bundleIdentifier else {
+                error = OperationFailure("Choose Application", GenericError(errorDescription:
+                    String(localized: "Choose another application to open the project folder.")))
+                return
+            }
             openMenuApplication(application, remember: true)
         }
     }
@@ -444,7 +450,7 @@ struct RepositoryScreen: View {
         Task {
             do {
                 try await menuApplications.open(application, directory: folder.url, rememberApplication: remember)
-            } catch { self.error = error }
+            } catch { self.error = OperationFailure("Open in", error) }
         }
     }
 
@@ -453,12 +459,12 @@ struct RepositoryScreen: View {
         return commit
     }
 
-    private func runMenuOperation(_ operation: @escaping @MainActor () async throws -> Void) {
+    private func runMenuOperation(_ name: LocalizedStringResource, _ operation: @escaping @MainActor () async throws -> Void) {
         guard !isLoading, !isFetching else { return }
         isLoading = true
         Task {
             defer { isLoading = false }
-            do { try await operation() } catch { self.error = error }
+            do { try await operation() } catch { self.error = OperationFailure(name, error) }
             await refreshModels()
         }
     }
@@ -472,7 +478,7 @@ struct RepositoryScreen: View {
                 try await GitRuntime.run(GitMerge(directory: folder.url, branchName: branch.name))
             } catch {
                 let state = try? await GitMergeState.read(in: folder.url)
-                if state?.isMerging != true { self.error = error }
+                if state?.isMerging != true { self.error = OperationFailure("Merge", error) }
             }
             await refreshModels()
             if session.mergeState?.isMerging == true { showing.mergeResolution = true }
@@ -483,7 +489,7 @@ struct RepositoryScreen: View {
     private func refreshModels(fetchRemote: Bool = false) async {
         await session.refresh(in: folder.url, fetchRemote: fetchRemote)
         guard !Task.isCancelled else { return }
-        if let error = session.error { self.error = error }
+        if let error = session.error { self.error = OperationFailure("Load Repository", error) }
         if let selectionLog { self.selectionLog = logStore.logs().first { $0.id == selectionLog.id } }
     }
 
@@ -521,7 +527,7 @@ struct RepositoryScreen: View {
                         do {
                             try await GitRuntime.run(GitSwitch(directory: folder.url, branchName: selected.name))
                         } catch {
-                            self.error = error
+                            self.error = OperationFailure("Checkout", error)
                         }
                         await refreshModels()
                     }
@@ -532,7 +538,7 @@ struct RepositoryScreen: View {
                         do {
                             try await GitRuntime.run(GitSwitch(directory: folder.url, branchName: selected.name, detach: true))
                         } catch {
-                            self.error = error
+                            self.error = OperationFailure("Checkout", error)
                         }
                         await refreshModels()
                     }
@@ -544,7 +550,7 @@ struct RepositoryScreen: View {
                             try await GitRuntime.run(GitMerge(directory: folder.url, branchName: selected.name))
                         } catch {
                             let mergeState = try? await GitMergeState.read(in: folder.url)
-                            if mergeState?.isMerging != true { self.error = error }
+                            if mergeState?.isMerging != true { self.error = OperationFailure("Merge", error) }
                         }
                         await refreshModels()
                         if session.mergeState?.isMerging == true { showing.mergeResolution = true }
@@ -632,11 +638,12 @@ struct RepositoryScreen: View {
             defer { isFetching = false }
             do {
                 try await RemoteUpdateService.shared.execute(GitFetch(directory: folder.url))
+                AutoFetchScheduler.shared.recordFetchSuccess(for: folder.url)
                 syncState.syncError = nil
                 await refreshModels()
             } catch {
                 syncState.syncError = error.localizedDescription
-                self.error = error
+                self.error = OperationFailure("Fetch", error)
             }
         }
     }
@@ -651,14 +658,22 @@ struct RepositoryScreen: View {
         Task {
             defer { isLoading = false }
             do {
-                guard let branch, let tracking = try await TrackingBranch.inspect(in: folder.url, branch: branch.name), tracking.upstream != nil else { return }
+                guard let branch, !branch.isDetached else {
+                    throw GenericError(errorDescription: String(localized: "Switch to a branch before pulling or pushing."))
+                }
+                guard let tracking = try await TrackingBranch.inspect(in: folder.url, branch: branch.name) else {
+                    throw GenericError(errorDescription: String(localized: "No remote repository is configured."))
+                }
+                guard tracking.upstream != nil else {
+                    throw GenericError(errorDescription: String(localized: "No upstream branch is configured. Push this branch to set its upstream before pulling."))
+                }
                 try await RemoteUpdateService.shared.execute(GitPull(directory: folder.url, refspec: tracking.remoteBranch, remote: tracking.remote))
                 syncState.shouldPull = false
                 isLoading = false
                 await refreshModels()
             } catch {
                 isLoading = false
-                self.error = error
+                self.error = OperationFailure("Pull", error)
             }
         }
     }
@@ -695,14 +710,19 @@ struct RepositoryScreen: View {
         Task {
             defer { isLoading = false }
             do {
-                guard let branch, let tracking = try await TrackingBranch.inspect(in: folder.url, branch: branch.name) else { return }
+                guard let branch, !branch.isDetached else {
+                    throw GenericError(errorDescription: String(localized: "Switch to a branch before pulling or pushing."))
+                }
+                guard let tracking = try await TrackingBranch.inspect(in: folder.url, branch: branch.name) else {
+                    throw GenericError(errorDescription: String(localized: "No remote repository is configured."))
+                }
                 try await GitRuntime.run(GitPush(directory: folder.url, refspec: "HEAD:refs/heads/\(tracking.remoteBranch)", remote: tracking.remote, setUpstream: tracking.upstream == nil))
                 syncState.shouldPush = false
                 isLoading = false
                 await refreshModels()
             } catch {
                 isLoading = false
-                self.error = error
+                self.error = OperationFailure("Push", error)
             }
         }
     }

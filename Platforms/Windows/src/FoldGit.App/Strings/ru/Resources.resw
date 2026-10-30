@@ -156,6 +156,9 @@
   <data name="Text_6306b6322724b81efa0b7ddc" xml:space="preserve">
     <value>Применить решение</value>
   </data>
+  <data name="Text_8787b7a71d085b7b4a3e94cf" xml:space="preserve">
+    <value>Применить отложенные изменения</value>
+  </data>
   <data name="Text_09ea09e4c02dfa28858a06da" xml:space="preserve">
     <value>Применить и удалить</value>
   </data>
@@ -201,6 +204,9 @@
   <data name="Text_2709a726a7ca8186057b5d9e" xml:space="preserve">
     <value>Двоичный файл — откройте снаружи</value>
   </data>
+  <data name="Text_7f216915ec37e5cc746e9f31" xml:space="preserve">
+    <value>Двоичный вывод ({0} байт)</value>
+  </data>
   <data name="Text_52656e8104eef3fddd3d4546" xml:space="preserve">
     <value>Ветка</value>
   </data>
@@ -215,6 +221,9 @@
   </data>
   <data name="Text_6717f40f497e0510e95e83c7" xml:space="preserve">
     <value>Отмена клонирования</value>
+  </data>
+  <data name="Text_d353a99eb4556847ceeb3c30" xml:space="preserve">
+    <value>Отменено</value>
   </data>
   <data name="Text_b585b9ae2b811e9c591c9d00" xml:space="preserve">
     <value>Отображение изменённых файлов</value>
@@ -281,6 +290,9 @@
   </data>
   <data name="Text_24f3383dd8dac9661ffd4c7b" xml:space="preserve">
     <value>Параметры очистки</value>
+  </data>
+  <data name="Text_533e26bdccddf82cae5b0f28" xml:space="preserve">
+    <value>Очистить журнал</value>
   </data>
   <data name="Text_5779f32fab00c2aae390fe9f" xml:space="preserve">
     <value>Клонировать</value>
@@ -369,6 +381,9 @@
   <data name="Text_efbef582e6154da9ce87779e" xml:space="preserve">
     <value>Сравнить ветки или теги</value>
   </data>
+  <data name="Text_80138e9720f0a101716742d1" xml:space="preserve">
+    <value>Сравнить ревизии</value>
+  </data>
   <data name="Text_916a464e6cfffe51cd6f9bf4" xml:space="preserve">
     <value>Конфликт</value>
   </data>
@@ -387,8 +402,14 @@
   <data name="Text_8c12fd1ccd55b393744500cd" xml:space="preserve">
     <value>Копировать {0}</value>
   </data>
+  <data name="Text_3bdd0fd90f741a1fe131b068" xml:space="preserve">
+    <value>Копировать команду</value>
+  </data>
   <data name="Text_ab480df9b105271e4e11fcea" xml:space="preserve">
     <value>Скопировать хеш коммита</value>
+  </data>
+  <data name="Text_dba23f14c1094cbd338b8288" xml:space="preserve">
+    <value>Копировать журнал</value>
   </data>
   <data name="Text_04a05d81cc5c997a10f7ab9e" xml:space="preserve">
     <value>Не удалось прочитать изменённый файл в различиях.</value>
@@ -420,11 +441,17 @@
   <data name="Text_e2d0a54968ead24efc0dffa6" xml:space="preserve">
     <value>Удалить</value>
   </data>
+  <data name="Text_06da38448937c5ca3cf8a9a4" xml:space="preserve">
+    <value>Удалить ветку</value>
+  </data>
   <data name="Text_e1e5fe2043bd3003147a785a" xml:space="preserve">
     <value>Удалить файл</value>
   </data>
   <data name="Text_f3d5b704f7933bd630896f34" xml:space="preserve">
     <value>Удалить локальную исходную ветку</value>
+  </data>
+  <data name="Text_01595e8f253bee9c7dd4cd6a" xml:space="preserve">
+    <value>Удалить тег</value>
   </data>
   <data name="Text_b48ff39c2e0f5451b9b29b09" xml:space="preserve">
     <value>Удалён</value>
@@ -462,6 +489,12 @@
   <data name="Text_c8af9ae37a48273f981bc82a" xml:space="preserve">
     <value>Удалить из stash</value>
   </data>
+  <data name="Text_915b68364a1238bc4b3dc7ed" xml:space="preserve">
+    <value>Удалить отложенные изменения</value>
+  </data>
+  <data name="Text_4fc52a3c4c558b517c463b22" xml:space="preserve">
+    <value>Длительность</value>
+  </data>
   <data name="Text_464c4ffd019e1e9691dcf053" xml:space="preserve">
     <value>Изменить</value>
   </data>
@@ -498,6 +531,9 @@
   <data name="Text_1c9c3ead31be31433fd1f5bd" xml:space="preserve">
     <value>Существующая ветка</value>
   </data>
+  <data name="Text_60e19de8fff7c8217cd5679c" xml:space="preserve">
+    <value>Код выхода</value>
+  </data>
   <data name="Text_7cf0d193cccdfabb97454557" xml:space="preserve">
     <value>Развернуть все файлы</value>
   </data>
@@ -516,8 +552,20 @@
   <data name="Text_e72d5d8d0b167d21b4e4a89e" xml:space="preserve">
     <value>Развёрнуты</value>
   </data>
+  <data name="Text_f08d673e035e5182febdbe70" xml:space="preserve">
+    <value>Экспорт журнала команд</value>
+  </data>
+  <data name="Text_818cb91030ce80d3cd923f45" xml:space="preserve">
+    <value>Экспорт журнала</value>
+  </data>
   <data name="Text_a1587027c2e469fbf273e130" xml:space="preserve">
     <value>Внешние приложения</value>
+  </data>
+  <data name="Text_031a8f0f659df890dfd53c92" xml:space="preserve">
+    <value>Ошибка</value>
+  </data>
+  <data name="Text_f274e9e8e7be5ea70b5c6cd5" xml:space="preserve">
+    <value>Причина ошибки</value>
   </data>
   <data name="Text_cd7d61bf7e38c7c2280b4241" xml:space="preserve">
     <value>Получить</value>
@@ -548,6 +596,9 @@
   </data>
   <data name="Text_638e249f4a15ebb84957da13" xml:space="preserve">
     <value>Фильтр</value>
+  </data>
+  <data name="Text_376476d1a9b56cd5e1f6cb96" xml:space="preserve">
+    <value>Фильтр команд</value>
   </data>
   <data name="Text_899d861562c6c0dc927c2e67" xml:space="preserve">
     <value>Фильтр репозиториев</value>
@@ -600,6 +651,9 @@
   <data name="Text_92eec3591752b7b15160e73a" xml:space="preserve">
     <value>Установка Git</value>
   </data>
+  <data name="Text_3f6e0caf008feb149f07fd85" xml:space="preserve">
+    <value>Здесь отображаются команды Git для этого репозитория.</value>
+  </data>
   <data name="Text_aeb0518b4bec58c35886a8f6" xml:space="preserve">
     <value>Git вернул некорректный вывод UTF-8.</value>
   </data>
@@ -650,6 +704,9 @@
   </data>
   <data name="Text_ac7c949f1211b7814bdd28a6" xml:space="preserve">
     <value>Неактивные</value>
+  </data>
+  <data name="Text_f2f5d44f2620f63bad4b678f" xml:space="preserve">
+    <value>Включать команды чтения</value>
   </data>
   <data name="Text_2bad485c00acd73ab7727513" xml:space="preserve">
     <value>Версия входящей ветки</value>
@@ -705,8 +762,44 @@
   <data name="Text_6f202f54a7b2d8fe42aa804e" xml:space="preserve">
     <value>Список</value>
   </data>
+  <data name="Text_864b087a641a71c06152c7bd" xml:space="preserve">
+    <value>Загрузить ветки</value>
+  </data>
+  <data name="Text_ddf685990848831f503af2a4" xml:space="preserve">
+    <value>Загрузить изменения</value>
+  </data>
+  <data name="Text_74e9e76e2fbaedff22628ac3" xml:space="preserve">
+    <value>Загрузить сведения о коммите</value>
+  </data>
+  <data name="Text_7b4bebfdc537feebd6996536" xml:space="preserve">
+    <value>Загрузить статистику коммита</value>
+  </data>
+  <data name="Text_61635112f74486ca261672f3" xml:space="preserve">
+    <value>Загрузить предпросмотр конфликта</value>
+  </data>
+  <data name="Text_427a76bbee8b87a849eb3842" xml:space="preserve">
+    <value>Загрузить различия</value>
+  </data>
+  <data name="Text_9ea4bcb1fcb49890a35540c7" xml:space="preserve">
+    <value>Загрузить состояние слияния</value>
+  </data>
   <data name="Text_3f06cd334f4811b2130b13a8" xml:space="preserve">
     <value>Загрузить ещё</value>
+  </data>
+  <data name="Text_d552e677f008d8f7274647bd" xml:space="preserve">
+    <value>Загрузить репозиторий</value>
+  </data>
+  <data name="Text_fe55252e787711381db33e68" xml:space="preserve">
+    <value>Загрузить отложенные изменения</value>
+  </data>
+  <data name="Text_a470ea3cb0d1e0b391d5f560" xml:space="preserve">
+    <value>Загрузить список отложенных изменений</value>
+  </data>
+  <data name="Text_5e2571c6f701b52228149ed9" xml:space="preserve">
+    <value>Загрузить теги</value>
+  </data>
+  <data name="Text_a4dde47d9a5883ce34f9b8af" xml:space="preserve">
+    <value>Загрузить рабочие деревья</value>
   </data>
   <data name="Text_322b540df1e8e7eaf9b0fec3" xml:space="preserve">
     <value>Загрузка приложений</value>
@@ -725,6 +818,15 @@
   </data>
   <data name="Text_18f16c20b37d7e9cf72d483f" xml:space="preserve">
     <value>Заблокированный worktree</value>
+  </data>
+  <data name="Text_21e49eb2b299c9f7503a1236" xml:space="preserve">
+    <value>Журнал</value>
+  </data>
+  <data name="Text_c9a01025f5ec1c675e3491ca" xml:space="preserve">
+    <value>Действия с журналом</value>
+  </data>
+  <data name="Text_a9c1cbe7274651fbf3cc4c54" xml:space="preserve">
+    <value>Журнал хранится до закрытия приложения. Старые записи и длинный вывод ограничены.</value>
   </data>
   <data name="Text_62edae1b15a2b136588ffa1c" xml:space="preserve">
     <value>Основной worktree</value>
@@ -837,6 +939,9 @@
   <data name="Text_80998dce6bdbbc106c3de35b" xml:space="preserve">
     <value>Нет изменений</value>
   </data>
+  <data name="Text_8efc136c63bb000de52f680d" xml:space="preserve">
+    <value>Команд пока нет</value>
+  </data>
   <data name="Text_7098b38e487832dbf337e43d" xml:space="preserve">
     <value>Нет фрагментов сообщений коммитов</value>
   </data>
@@ -852,11 +957,17 @@
   <data name="Text_06f64cfa4f6ab3e82798e08a" xml:space="preserve">
     <value>В этой версии нет изображения</value>
   </data>
+  <data name="Text_567f9e1f461c007c7fba3a45" xml:space="preserve">
+    <value>Нет подходящих команд</value>
+  </data>
   <data name="Text_eb0204f61a639289b16276f3" xml:space="preserve">
     <value>Подходящие папки или репозитории не найдены</value>
   </data>
   <data name="Text_208cf0811adc18dca542e2dd" xml:space="preserve">
     <value>Нет активного слияния</value>
+  </data>
+  <data name="Text_ffe64588d75aeaaf8414c8c7" xml:space="preserve">
+    <value>Нет вывода</value>
   </data>
   <data name="Text_ebb726dc60b4f582a011944c" xml:space="preserve">
     <value>Папки проектов не добавлены</value>
@@ -876,6 +987,9 @@
   <data name="Text_56166423b7658edf33f7f8f4" xml:space="preserve">
     <value>Удалённый репозиторий не настроен.</value>
   </data>
+  <data name="Text_bdf1b82e95997a23c03e6ee6" xml:space="preserve">
+    <value>Вышестоящая ветка не настроена. Сначала отправьте эту ветку, чтобы настроить отслеживание.</value>
+  </data>
   <data name="Text_dc937b59892604f5a86ac969" xml:space="preserve">
     <value>Нет</value>
   </data>
@@ -893,6 +1007,9 @@
   </data>
   <data name="Text_130011756125313c72f2cab7" xml:space="preserve">
     <value>Вкл.</value>
+  </data>
+  <data name="Text_ca0d7d935df267b1b8a6426b" xml:space="preserve">
+    <value>Только ошибки</value>
   </data>
   <data name="Text_3495086d5f7b910836ed6c6a" xml:space="preserve">
     <value>Удалить можно только чистый незаблокированный worktree, коммиты которого слиты. Удалённые ветки сохраняются.</value>
@@ -918,6 +1035,9 @@
   <data name="Text_d2b9f8f8baec315e5189a2fc" xml:space="preserve">
     <value>Открыть недавние</value>
   </data>
+  <data name="Text_31da50092e2acbe2f7f13525" xml:space="preserve">
+    <value>Открыть страницу выпуска</value>
+  </data>
   <data name="Text_2466923190a5c2d425403829" xml:space="preserve">
     <value>Открыть репозиторий</value>
   </data>
@@ -929,6 +1049,9 @@
   </data>
   <data name="Text_d50438fafed771d04ec923c5" xml:space="preserve">
     <value>Открыть целевой worktree</value>
+  </data>
+  <data name="Text_ae088e1416176bb9dde0eb1a" xml:space="preserve">
+    <value>Открыть терминал</value>
   </data>
   <data name="Text_6a7ddcdb43036233e03f9ebe" xml:space="preserve">
     <value>Открыть worktree</value>
@@ -944,6 +1067,9 @@
   </data>
   <data name="Text_189a8567d84bfbdd8629aab5" xml:space="preserve">
     <value>Другие приложения</value>
+  </data>
+  <data name="Text_49dcf4bd635f6099579f4af7" xml:space="preserve">
+    <value>Вывод сокращён</value>
   </data>
   <data name="Text_30d2d6bd3576a41f3616e71d" xml:space="preserve">
     <value>Закрепить приложения</value>
@@ -1083,6 +1209,9 @@
   <data name="Text_3b12a8a5f3973429ff37edf0" xml:space="preserve">
     <value>Разрешите все конфликты и добавьте изменения в индекс перед продолжением.</value>
   </data>
+  <data name="Text_f8a675fe3a456d13c1138c22" xml:space="preserve">
+    <value>Перезапустить FoldGit</value>
+  </data>
   <data name="Text_0fe0c953737413887ef7295e" xml:space="preserve">
     <value>Перезапустить сейчас</value>
   </data>
@@ -1113,14 +1242,41 @@
   <data name="Text_aff0766a5290e117b8433c35" xml:space="preserve">
     <value>Проверка</value>
   </data>
+  <data name="Text_5d8021556c24ef0720ad3e41" xml:space="preserve">
+    <value>Проверить рабочее дерево</value>
+  </data>
   <data name="Text_2d2ad59d90427b3476a8a981" xml:space="preserve">
     <value>Перед восстановлением можно просмотреть все значения по умолчанию.</value>
+  </data>
+  <data name="Text_f4ccae29e1bb0c20a124570a" xml:space="preserve">
+    <value>Выполняется</value>
   </data>
   <data name="Text_1509f561f2416598629b886a" xml:space="preserve">
     <value>Сохранить</value>
   </data>
+  <data name="Text_7b720ce2c5f0438067356a05" xml:space="preserve">
+    <value>Сохранить шаблоны сообщений коммитов</value>
+  </data>
   <data name="Text_23a1309d6a7c1e827442065c" xml:space="preserve">
     <value>Место сохранения</value>
+  </data>
+  <data name="Text_3ce4ea090222138f5e184083" xml:space="preserve">
+    <value>Сохранить имя репозитория</value>
+  </data>
+  <data name="Text_fe416216c26acad4465462df" xml:space="preserve">
+    <value>Сохранить настройки репозитория</value>
+  </data>
+  <data name="Text_ec92e1dc9bb3bf7b98ee8604" xml:space="preserve">
+    <value>Сохранить настройки</value>
+  </data>
+  <data name="Text_3f43ef7f99cda474a4afc555" xml:space="preserve">
+    <value>Сохранить историю боковой панели</value>
+  </data>
+  <data name="Text_01974cf3a6a68fbe276313f5" xml:space="preserve">
+    <value>Сохранить рабочую область</value>
+  </data>
+  <data name="Text_590dea95f532d81346dcc457" xml:space="preserve">
+    <value>Поиск команд</value>
   </data>
   <data name="Text_3a93f31e545c049a2864a25b" xml:space="preserve">
     <value>Поиск коммитов</value>
@@ -1200,6 +1356,9 @@
   <data name="Text_d1ce47c82d3285bba8b89d87" xml:space="preserve">
     <value>Индексировать всё</value>
   </data>
+  <data name="Text_9061f71fa424e25250f577d6" xml:space="preserve">
+    <value>Индексировать изменения</value>
+  </data>
   <data name="Text_9efa12c7103ca805a98eb2f5" xml:space="preserve">
     <value>Добавить каталог в индекс</value>
   </data>
@@ -1214,6 +1373,12 @@
   </data>
   <data name="Text_b5ff1947b664c6719dfbb256" xml:space="preserve">
     <value>Подготовленные изменения</value>
+  </data>
+  <data name="Text_6c1e834e5a522e0769648f01" xml:space="preserve">
+    <value>Вывод ошибок</value>
+  </data>
+  <data name="Text_8d3f7a535f4578b41b9921d3" xml:space="preserve">
+    <value>Стандартный вывод</value>
   </data>
   <data name="Text_7345985afc37b8a0244bbb67" xml:space="preserve">
     <value>Начальная точка</value>
@@ -1230,14 +1395,23 @@
   <data name="Text_e45b6015e5311ca73cb415a2" xml:space="preserve">
     <value>Stash</value>
   </data>
+  <data name="Text_6d9a6f97a5fdaf3b90a0cf02" xml:space="preserve">
+    <value>Успешно</value>
+  </data>
   <data name="Text_ce23ab1e75dc0ad7dcbfc55e" xml:space="preserve">
     <value>Поменять коммиты местами</value>
   </data>
   <data name="Text_de245f1d6203f04adab03041" xml:space="preserve">
     <value>Поменять стороны сравнения</value>
   </data>
+  <data name="Text_b64bdbdd76d36232de560447" xml:space="preserve">
+    <value>Перед получением или отправкой изменений переключитесь на ветку.</value>
+  </data>
   <data name="Text_0cfdb0c8e363449c2b4919ee" xml:space="preserve">
     <value>Ошибка синхронизации</value>
+  </data>
+  <data name="Text_37fe872ceff82cba889900b3" xml:space="preserve">
+    <value>Синхронизировать репозиторий</value>
   </data>
   <data name="Text_4a32b016fa3839ad18caaf9b" xml:space="preserve">
     <value>Имя тега:</value>
@@ -1266,11 +1440,17 @@
   <data name="Text_6caac58ec0390aea14f31a2f" xml:space="preserve">
     <value>Папка назначения уже существует. Выберите другое имя.</value>
   </data>
+  <data name="Text_ce71757a337da564952c58de" xml:space="preserve">
+    <value>Не удалось открыть файл: {0}</value>
+  </data>
   <data name="Text_f0ef1f3ba63c0fc001be0521" xml:space="preserve">
     <value>Не удалось декодировать изображение.</value>
   </data>
   <data name="Text_aed55c286b887d989cf12a07" xml:space="preserve">
     <value>Изображение слишком большое для предпросмотра.</value>
+  </data>
+  <data name="Text_d2d65881343a6a2476f09c9a" xml:space="preserve">
+    <value>Не удалось открыть страницу выпуска.</value>
   </data>
   <data name="Text_bc99b8cb8fa3244d8eca96af" xml:space="preserve">
     <value>Будут восстановлены указанные ниже настройки. Пользовательские шаблоны и добавленные приложения будут сброшены. Репозитории, группы, имена и локальные файлы сохранятся.</value>
@@ -1293,6 +1473,9 @@
   <data name="Text_0d1f4bf86a81f2a364a74b48" xml:space="preserve">
     <value>Текущие правки {0} будут заменены выбранной версией. Если в ней файл удалён, он будет удалён.</value>
   </data>
+  <data name="Text_babf3e95c725fe047bc6e813" xml:space="preserve">
+    <value>Время ожидания истекло</value>
+  </data>
   <data name="Text_bfe83056f4a5d583639ec4bb" xml:space="preserve">
     <value>К получению</value>
   </data>
@@ -1307,6 +1490,9 @@
   </data>
   <data name="Text_ee72274fbfae999effb293e8" xml:space="preserve">
     <value>Отображение панели инструментов</value>
+  </data>
+  <data name="Text_f68ef174d62b538a19a3ea7f" xml:space="preserve">
+    <value>Измените поисковый запрос или фильтры.</value>
   </data>
   <data name="Text_ec45bbdcf18b7ed139160270" xml:space="preserve">
     <value>Небольшие доработки</value>
@@ -1328,6 +1514,9 @@
   </data>
   <data name="Text_76ebb3e1241d665cb7cc2ee7" xml:space="preserve">
     <value>Убрать всё из индекса</value>
+  </data>
+  <data name="Text_eb7f3c20dfcda531737bbd9b" xml:space="preserve">
+    <value>Убрать изменения из индекса</value>
   </data>
   <data name="Text_eca58eb8a8fcfb0c75dab5d5" xml:space="preserve">
     <value>Убрать каталог из индекса</value>
@@ -1362,8 +1551,14 @@
   <data name="Text_dcc839a4015c4b7dd9db959a" xml:space="preserve">
     <value>Вид</value>
   </data>
+  <data name="Text_7404b364d49d6eb6c226440a" xml:space="preserve">
+    <value>Показать сведения об ошибке</value>
+  </data>
   <data name="Text_a96fdff97286bedf4066a956" xml:space="preserve">
     <value>Показать входящие коммиты</value>
+  </data>
+  <data name="Text_a76646e2d2c239a7863cd9c7" xml:space="preserve">
+    <value>Открыть журнал</value>
   </data>
   <data name="Text_421dba311ad7c79b6a25aa38" xml:space="preserve">
     <value>При закрытии последнего окна</value>

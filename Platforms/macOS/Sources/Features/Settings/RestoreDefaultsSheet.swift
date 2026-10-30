@@ -64,7 +64,7 @@ struct RestoreDefaultsSheet: View {
         }
         .frame(width: 600, height: 620)
         .buttonStyle(.bordered)
-        .errorSheet($error)
+        .errorSheet($error, operation: "Restore Defaults")
     }
 
     private func confirmRestore() {

@@ -35,7 +35,7 @@ import Observation
             }
             targets = available
             try await prepare()
-        } catch { errorMessage = error.localizedDescription }
+        } catch { errorMessage = OperationFailure("Review Worktree", error).localizedDescription }
     }
 
     func preview() async {
@@ -45,7 +45,7 @@ import Observation
         plan = nil
         phase = .review
         defer { isBusy = false }
-        do { try await prepare() } catch { errorMessage = error.localizedDescription }
+        do { try await prepare() } catch { errorMessage = OperationFailure("Review Worktree", error).localizedDescription }
     }
 
     private func prepare() async throws {
@@ -66,10 +66,10 @@ import Observation
             case .merged: phase = .merged
             case let .inProgress(state, diagnostic):
                 phase = .conflicts
-                errorMessage = state.conflicts.isEmpty ? diagnostic : nil
+                errorMessage = state.conflicts.isEmpty ? OperationFailure("Merge into Target", GenericError(errorDescription: diagnostic)).localizedDescription : nil
             }
             NotificationCenter.default.post(name: .repositoryMergeDidChange, object: plan.target)
-        } catch { errorMessage = error.localizedDescription }
+        } catch { errorMessage = OperationFailure("Merge into Target", error).localizedDescription }
     }
 
     func mergeFinished() async {
@@ -108,7 +108,7 @@ import Observation
             }
             phase = .done
             NotificationCenter.default.post(name: .repositoryMergeDidChange, object: plan.target)
-        } catch { errorMessage = error.localizedDescription }
+        } catch { errorMessage = OperationFailure("Finish Worktree", error).localizedDescription }
     }
 }
 
@@ -126,22 +126,22 @@ import Observation
         isBusy = true
         defer { isBusy = false }
         do { state = try await GitMergeState.read(in: directory) }
-        catch { errorMessage = error.localizedDescription }
+        catch { errorMessage = OperationFailure("Load Merge State", error).localizedDescription }
     }
 
     @discardableResult
     func resolve(_ path: String, choosing resolution: MergeResolution) async -> Bool {
-        await perform { try await GitMergeWorkflow.resolve(path, choosing: resolution, in: self.directory) }
+        await perform("Resolve Merge") { try await GitMergeWorkflow.resolve(path, choosing: resolution, in: self.directory) }
     }
     @discardableResult
     func continueMerge() async -> Bool {
-        await perform { try await GitMergeWorkflow.continueMerge(in: self.directory) }
+        await perform("Continue Merge") { try await GitMergeWorkflow.continueMerge(in: self.directory) }
     }
     @discardableResult
     func abort() async -> Bool {
-        await perform { try await GitMergeWorkflow.abort(in: self.directory) }
+        await perform("Abort Merge") { try await GitMergeWorkflow.abort(in: self.directory) }
     }
-    private func perform(_ operation: () async throws -> Void) async -> Bool {
+    private func perform(_ name: LocalizedStringResource, _ operation: () async throws -> Void) async -> Bool {
         guard !isBusy else { return false }
         isBusy = true
         errorMessage = nil
@@ -152,7 +152,7 @@ import Observation
             NotificationCenter.default.post(name: .repositoryMergeDidChange, object: directory)
             return true
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = OperationFailure(name, error).localizedDescription
             state = try? await GitMergeState.read(in: directory)
             return false
         }

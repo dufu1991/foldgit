@@ -45,6 +45,6 @@ struct MergeBranchMenuSheet: View {
                 branches = available.filter { !$0.isCurrent && !$0.isDetached && !$0.name.contains(" -> ") }
             } catch { self.error = error }
         }
-        .errorSheet($error)
+        .errorSheet($error, operation: "Load Branches")
     }
 }

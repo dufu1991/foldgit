@@ -202,6 +202,33 @@ final class ProjectAutoFetchTests: XCTestCase {
         XCTAssertEqual(calls.count, 2)
     }
 
+    func testManualFetchSuccessClearsOnlyMatchingRepositoryWarning() async throws {
+        let harness = try harness([first, second])
+        defer { harness.close() }
+        let firstKey = AutoFetchScheduler.key(for: first.url)
+        let secondKey = AutoFetchScheduler.key(for: second.url)
+        harness.manager.setInterval(.fiveMinutes, for: first)
+        harness.manager.setInterval(.fiveMinutes, for: second)
+        await harness.recorder.setFails(true)
+        harness.manager.start()
+        try await eventually { await harness.clock.durations.count == 2 }
+        await harness.clock.advance()
+        try await eventually { harness.manager.errors.count == 2 }
+
+        let date = Date()
+        harness.manager.recordFetchSuccess(for: first.url.appendingPathComponent("."), at: date)
+
+        XCTAssertNil(harness.manager.errors[firstKey])
+        XCTAssertEqual(harness.manager.lastSuccess[firstKey], date)
+        XCTAssertNotNil(harness.manager.errors[secondKey])
+        XCTAssertNil(harness.manager.lastSuccess[secondKey])
+        XCTAssertEqual(harness.manager.interval(for: first), .fiveMinutes)
+
+        try await eventually { await harness.clock.durations.count == 2 }
+        await harness.clock.advance()
+        try await eventually { harness.manager.errors[firstKey] != nil }
+    }
+
     func testReconfigurationDoesNotOverlapAnInFlightFetch() async throws {
         let harness = try harness([first])
         defer { harness.close() }

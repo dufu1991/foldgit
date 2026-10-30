@@ -57,6 +57,6 @@ struct RenameBranchSheet: View {
         .padding()
         .cornerRadius(8)
         .fixedSize(horizontal: false, vertical: true)
-        .errorSheet($error)
+        .errorSheet($error, operation: "Rename Branch")
     }
 }

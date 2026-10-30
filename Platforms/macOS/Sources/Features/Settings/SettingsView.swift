@@ -203,7 +203,7 @@ struct GeneralSettingsPane: View {
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             loginStatus = SMAppService.mainApp.status
         }
-        .errorSheet($error)
+        .errorSheet($error, operation: "Save Settings")
     }
 
     private func restartApplication() {
@@ -212,7 +212,7 @@ struct GeneralSettingsPane: View {
             try ApplicationRelauncher.restart()
         } catch {
             isRestarting = false
-            self.error = error
+            self.error = OperationFailure("Restart FoldGit", error)
         }
     }
 
@@ -226,7 +226,7 @@ struct GeneralSettingsPane: View {
             if enabled { try SMAppService.mainApp.register() }
             else { try await SMAppService.mainApp.unregister() }
             LaunchAtLoginPreferences.rememberUserChoice()
-        } catch { self.error = error }
+        } catch { self.error = OperationFailure("Launch at Login", error) }
     }
 }
 
@@ -324,6 +324,7 @@ struct RepositorySettingsPane: View {
     private var showWorktreeInformation = PreferenceDefaults.showWorktreeInformation
     @AppStorage(PreferenceKey.folder.rawValue) private var data: Data?
     @State private var autoFetch = AutoFetchScheduler.shared
+    @State private var error: Error?
     private var folders: [WorkspaceEntry] { data.flatMap { try? JSONDecoder().decode([WorkspaceEntry].self, from: $0) } ?? [] }
     private var groups: [WorkspaceEntry] { folders.filter { !$0.repositories.isEmpty } }
 
@@ -366,10 +367,15 @@ struct RepositorySettingsPane: View {
                             if autoFetch.fetching.contains(key) {
                                 Label("Fetching", systemImage: "arrow.clockwise")
                                     .font(.caption).foregroundStyle(.secondary)
-                            } else if let error = autoFetch.errors[key] {
-                                Label(error, systemImage: "exclamationmark.triangle")
+                            } else if let reason = autoFetch.errors[key] {
+                                Button {
+                                    error = OperationFailure("Automatic Fetch", GenericError(errorDescription: reason), directory: repository.url)
+                                } label: {
+                                    Label(reason, systemImage: "exclamationmark.triangle")
                                     .font(.caption).foregroundStyle(.orange)
-                                    .lineLimit(2).help(error)
+                                    .lineLimit(2)
+                                }
+                                .buttonStyle(.borderless).help("View Error Details")
                             } else if let date = autoFetch.lastSuccess[key] {
                                 HStack {
                                     Text("Last Successful Fetch")
@@ -384,6 +390,7 @@ struct RepositorySettingsPane: View {
             }
         }
         .settingsForm()
+        .errorSheet($error, operation: "Automatic Fetch")
     }
 }
 
@@ -431,7 +438,7 @@ struct ApplicationSettingsPane: View {
         .settingsForm()
         .task { await store.reload(for: directory) }
         .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in store.reloadPreferences() }
-        .errorSheet($error)
+        .errorSheet($error, operation: "Choose Application")
     }
 
     private func chooseApplication() {

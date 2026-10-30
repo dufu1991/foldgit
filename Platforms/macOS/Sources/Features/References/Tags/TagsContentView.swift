@@ -36,9 +36,10 @@ struct TagsContentView: View {
                                 try await RemoteUpdateService.shared.execute(
                                     GitFetch(directory: folder.url, tags: true)
                                 )
+                                AutoFetchScheduler.shared.recordFetchSuccess(for: folder.url)
                                 tags = try await GitRuntime.run(GitTag(directory: folder.url))
                             } catch {
-                                self.error = error
+                                self.error = OperationFailure("Fetch Tags", error)
                             }
                         }
                     } label: {
@@ -70,7 +71,7 @@ struct TagsContentView: View {
                                             try await GitRuntime.run(GitTagDelete(directory: folder.url, tagname: tag))
                                             tags = tags?.filter{ $0 != tag}
                                         } catch {
-                                            self.error = error
+                                            self.error = OperationFailure("Delete Tag", error)
                                         }
                                     }
                                 }
@@ -82,7 +83,7 @@ struct TagsContentView: View {
                                 try await GitRuntime.run(GitCheckout(directory: folder.url, commitHash: newValue))
                                 showingTags = false
                             } catch {
-                                self.error = error
+                                self.error = OperationFailure("Checkout", error)
                             }
                         }
                     })
@@ -90,7 +91,7 @@ struct TagsContentView: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .errorSheet($error)
+        .errorSheet($error, operation: "Load Tags")
     }
 }
 

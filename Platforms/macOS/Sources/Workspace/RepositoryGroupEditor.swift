@@ -132,7 +132,7 @@ struct RepositoryGroupEditor: View {
                     selected.formUnion(incoming.map(\.identity))
                     filter = ""
                 } catch {
-                    errorMessage = error.localizedDescription
+                    errorMessage = OperationFailure("Add Repositories from Finder", error).localizedDescription
                 }
             }
         }

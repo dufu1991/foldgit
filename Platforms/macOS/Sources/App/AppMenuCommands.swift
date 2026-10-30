@@ -4,7 +4,7 @@ import SwiftUI
 
 enum MenuCommand: String {
     case openRepository, cloneRepository, newGroup, newWorktree, manageWorktrees, finishWorktree
-    case toggleSidebar, expandAll, collapseAll, searchCommits, revealHead, showChanges
+    case toggleSidebar, toggleCommandLog, expandAll, collapseAll, searchCommits, revealHead, showChanges
     case expandDirectories, collapseDirectories
     case refresh, fetch, pull, push, stash, showStashes, showBranches, newBranch, renameBranch, mergeBranch, openTerminal
     case compare, showTags, newTag, checkoutCommit, revertCommit, copyCommitHash, amendCommit
@@ -163,6 +163,7 @@ struct AppMenuCommands: Commands {
         }
         CommandGroup(replacing: .sidebar) {
             command("Sidebar", .toggleSidebar)
+            command("Log", .toggleCommandLog)
         }
         CommandGroup(before: .toolbar) {
             Toggle("Commit Graph", isOn: $showGraph).disabled(repository == nil)

@@ -142,7 +142,9 @@ struct MergeResolutionContent: View {
     private func resolutionActions(_ conflict: GitMergeConflict) -> some View {
         Button("Open File", systemImage: "arrow.up.forward.app") {
             let file = directory.appendingPathComponent(conflict.path)
-            if !NSWorkspace.shared.open(file) { NSWorkspace.shared.activateFileViewerSelecting([file]) }
+            if let failure = FileOpening.open(file, using: NSWorkspace.shared.open) {
+                model.errorMessage = failure.localizedDescription
+            }
         }
         Button("Mark Resolved", systemImage: "checkmark") {
             Task { await model.resolve(conflict.path, choosing: .edited) }
@@ -181,7 +183,7 @@ struct MergeResolutionContent: View {
             incomingPreview = incoming
         } catch {
             guard !Task.isCancelled else { return }
-            previewError = error.localizedDescription
+            previewError = OperationFailure("Load Conflict Preview", error).localizedDescription
         }
     }
 

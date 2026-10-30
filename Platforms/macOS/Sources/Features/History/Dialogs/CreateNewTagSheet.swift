@@ -48,7 +48,7 @@ struct CreateNewTagSheet: View {
         .padding()
         .cornerRadius(8)
         .fixedSize(horizontal: false, vertical: true)
-        .errorSheet($error)
+        .errorSheet($error, operation: "New Tag")
     }
 
     @ViewBuilder
@@ -69,7 +69,7 @@ struct CreateNewTagSheet: View {
                     onCreate()
                     showingCreateNewTagAt = nil
                 } catch {
-                    self.error = error
+                    self.error = OperationFailure("New Tag", error)
                 }
             }
         }
@@ -102,7 +102,7 @@ struct CreateNewTagSheet: View {
                         showingCreateNewTagAt = nil
                     } catch {
                         isLoading = false
-                        self.error = error
+                        self.error = OperationFailure("Create & Push", error)
                     }
                 }
             }

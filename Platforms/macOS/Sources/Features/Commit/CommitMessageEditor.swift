@@ -115,7 +115,7 @@ struct CommitMessageEditor: View {
             do {
                 try await GitRuntime.run(GitCommit(directory: folder.url, message: commitMessage, amend: isAmend))
                 onCommit()
-            } catch { self.error = error }
+            } catch { self.error = OperationFailure(isAmend ? "Amend Last Commit" : "Commit", error) }
         }
     }
 }

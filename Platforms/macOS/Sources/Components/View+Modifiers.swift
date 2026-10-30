@@ -2,9 +2,12 @@ import FoldGitCore
 import SwiftUI
 
 extension View {
-    func errorSheet(_ error: Binding<Error?>) -> some View {
-        sheet(isPresented: .constant(error.wrappedValue != nil)) {
-            ErrorTextSheet(error: error)
+    func errorSheet(_ error: Binding<Error?>, operation: LocalizedStringResource) -> some View {
+        sheet(isPresented: Binding(
+            get: { error.wrappedValue != nil },
+            set: { if !$0 { error.wrappedValue = nil } }
+        )) {
+            ErrorTextSheet(error: error, operation: operation)
         }
     }
 
@@ -23,7 +26,7 @@ extension View {
                         try await GitRuntime.run(GitCheckout(directory: folder, commitHash: commit.hash))
                         isRefresh.wrappedValue = true
                     } catch {
-                        bindingError.wrappedValue = error
+                        bindingError.wrappedValue = OperationFailure("Checkout", error)
                     }
                 }
             }
@@ -35,7 +38,7 @@ extension View {
                         try await GitRuntime.run(GitRevert(directory: folder, parentNumber: commit.revertMainline, commit: commit.hash))
                         isRefresh.wrappedValue = true
                     } catch {
-                        bindingError.wrappedValue = error
+                        bindingError.wrappedValue = OperationFailure("Revert", error)
                     }
                 }
             }

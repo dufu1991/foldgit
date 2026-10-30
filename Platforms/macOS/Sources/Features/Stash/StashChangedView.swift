@@ -14,7 +14,7 @@ struct StashChangedView: View {
                     try await GitRuntime.run(GitStashDrop(directory: folder.url, index: stash.index))
                     stashList = try await GitRuntime.run(GitStashList(directory: folder.url))
                 } catch {
-                    self.error = error
+                    self.error = OperationFailure("Drop Stash", error)
                 }
             }
         })
@@ -22,9 +22,9 @@ struct StashChangedView: View {
             do {
                stashList = try await GitRuntime.run(GitStashList(directory: folder.url))
             } catch {
-                self.error = error
+                self.error = OperationFailure("Load Stashes", error)
             }
         }
-        .errorSheet($error)
+        .errorSheet($error, operation: "Load Stashes")
     }
 }

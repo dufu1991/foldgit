@@ -349,7 +349,7 @@ struct ProjectSidebarView: View {
 
     private func saveDates(_ dates: SidebarDates) {
         do { datesData = try JSONEncoder().encode(dates) }
-        catch { onError(error) }
+        catch { onError(OperationFailure("Save Sidebar Activity", error)) }
     }
 
     private func addEntry(_ entry: WorkspaceEntry) {
@@ -428,14 +428,16 @@ struct ProjectSidebarView: View {
                 Image(systemName: "lock.fill").font(.caption2).foregroundStyle(.secondary).help("Locked Worktree")
             }
             if showWorktreeInformation && (tree?.isPrunable == true || worktrees.errors[folder.identity] != nil) {
-                Image(systemName: "exclamationmark.triangle").font(.caption2).foregroundStyle(.orange)
-                    .help(worktrees.errors[folder.identity] ?? String(localized: "Missing Worktree"))
+                warningButton("Load Worktrees", message: worktrees.errors[folder.identity] ?? String(localized: "Missing Worktree"), directory: folder.url)
             }
             if isSaved && interval != .off {
-                Image(systemName: fetchError == nil ? "clock.arrow.circlepath" : "exclamationmark.triangle")
-                    .font(.caption2)
-                    .foregroundStyle(fetchError == nil ? Color.secondary : .orange)
-                    .help(fetchError ?? interval.title)
+                if let fetchError {
+                    warningButton("Automatic Fetch", message: fetchError, directory: folder.url)
+                        .accessibilityIdentifier("autoFetchWarning-" + folder.identity.path)
+                } else {
+                    Image(systemName: "clock.arrow.circlepath")
+                        .font(.caption2).foregroundStyle(.secondary).help(interval.title)
+                }
             }
         }
         .help(folder.url.path)
@@ -498,6 +500,19 @@ struct ProjectSidebarView: View {
         }
     }
 
+    private func warningButton(_ operation: LocalizedStringResource, message: String, directory: URL) -> some View {
+        Button {
+            onError(OperationFailure(operation, GenericError(errorDescription: message), directory: directory))
+        } label: {
+            Image(systemName: "exclamationmark.triangle").font(.caption2).foregroundStyle(.orange)
+                .padding(4).contentShape(Rectangle())
+        }
+        .buttonStyle(.borderless)
+        .help("View Error Details")
+        .accessibilityLabel(Text("View Error Details"))
+        .accessibilityValue(Text(verbatim: String(localized: operation)))
+    }
+
     private func worktreeEnableToggle(for repository: WorkspaceEntry) -> some View {
         Toggle("Enable Worktrees", isOn: Binding(
             get: { showsWorktreeInformation(for: repository.url) },
@@ -512,7 +527,7 @@ struct ProjectSidebarView: View {
                 var preferences = worktreePreferences
                 preferences.setEnabled(enabled, for: worktrees.repositoryIdentity(for: repository.url))
                 worktreePreferencesData = try JSONEncoder().encode(preferences)
-            } catch { onError(error) }
+            } catch { onError(OperationFailure("Save Repository Settings", error)) }
         }
     }
 
@@ -527,7 +542,7 @@ struct ProjectSidebarView: View {
             if let name = names.customName(for: WorkspaceEntry(url: old)) {
                 names.setName(name, for: WorkspaceEntry(url: destination))
                 names.setName("", for: WorkspaceEntry(url: old))
-                do { displayNamesData = try JSONEncoder().encode(names) } catch { onError(error) }
+                do { displayNamesData = try JSONEncoder().encode(names) } catch { onError(OperationFailure("Save Repository Name", error)) }
             }
             var dates = sidebarDates
             let newPath = WorkspaceEntry(url: destination).identity.path
@@ -603,7 +618,7 @@ struct ProjectSidebarView: View {
             displayNamesData = try JSONEncoder().encode(names)
             repositoryToName = nil
         } catch {
-            onError(error)
+            onError(OperationFailure("Save Repository Name", error))
         }
     }
 
@@ -677,7 +692,7 @@ struct ProjectSidebarView: View {
                         if let repository = repositories.last { selection = repository.url }
                     }
                 } catch {
-                    onError(error)
+                    onError(OperationFailure("Add Repositories from Finder", error))
                 }
             }
         }

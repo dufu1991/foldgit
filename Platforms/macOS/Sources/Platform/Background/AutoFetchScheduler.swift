@@ -43,6 +43,12 @@ struct AutoFetchEvent: Sendable {
         intervals[Self.key(for: folder.url)] ?? .off
     }
 
+    func recordFetchSuccess(for directory: URL, at date: Date = .now) {
+        let key = Self.key(for: directory)
+        lastSuccess[key] = date
+        errors.removeValue(forKey: key)
+    }
+
     func setInterval(_ interval: AutoFetchInterval, for folder: WorkspaceEntry) {
         let key = Self.key(for: folder.url)
         var saved = Self.readIntervals(defaults)
@@ -117,8 +123,7 @@ struct AutoFetchEvent: Sendable {
         do {
             let date = try await fetch(folder.url, since)
             guard !Task.isCancelled else { return }
-            lastSuccess[key] = date
-            errors.removeValue(forKey: key)
+            recordFetchSuccess(for: folder.url, at: date)
             NotificationCenter.default.post(name: .projectAutoFetchDidFinish, object: AutoFetchEvent(directory: folder.url, error: nil))
         } catch {
             guard !Task.isCancelled else { return }

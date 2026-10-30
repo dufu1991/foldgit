@@ -22,6 +22,6 @@ struct CommitDetailView: View {
                 self.error = error
             }
         }
-        .errorSheet($error)
+        .errorSheet($error, operation: "Load Commit Details")
     }
 }

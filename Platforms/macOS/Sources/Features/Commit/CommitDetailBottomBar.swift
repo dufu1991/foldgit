@@ -9,6 +9,7 @@ struct CommitDetailBottomBar: View {
     var onExpandDirectories: (() -> Void)? = nil
     var onCollapseDirectories: (() -> Void)? = nil
     @State private var shortstat = ""
+    @State private var error: Error?
 
     var body: some View {
         ViewThatFits(in: .horizontal) {
@@ -26,10 +27,17 @@ struct CommitDetailBottomBar: View {
         .padding(.vertical, 10)
         .frame(minHeight: 40)
         .task(id: commit) {
-            let output = (try? await GitRuntime.run(GitShowShortstat(directory: folder.url, object: commit.hash))) ?? ""
-            guard !Task.isCancelled else { return }
-            shortstat = output
+            shortstat = ""
+            do {
+                let output = try await GitRuntime.run(GitShowShortstat(directory: folder.url, object: commit.hash))
+                guard !Task.isCancelled else { return }
+                shortstat = output
+            } catch {
+                guard !Task.isCancelled, !(error is CancellationError) else { return }
+                self.error = error
+            }
         }
+        .errorSheet($error, operation: "Load Commit Statistics")
     }
 
     private var displayControls: some View {

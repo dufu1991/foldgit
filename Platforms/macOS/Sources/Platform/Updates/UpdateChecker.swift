@@ -95,7 +95,10 @@ final class UpdateChecker {
         alert.addButton(withTitle: String(localized: "Download"))
         alert.addButton(withTitle: String(localized: "Later"))
         if alert.runModal() == .alertFirstButtonReturn {
-            NSWorkspace.shared.open(Self.releasesPage)
+            if !NSWorkspace.shared.open(Self.releasesPage) {
+                present(title: String(localized: "Open Release Page"),
+                        message: String(localized: "The release page could not be opened."))
+            }
         }
     }
 

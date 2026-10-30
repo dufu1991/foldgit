@@ -17,6 +17,6 @@ struct TagsView: View {
                     self.error = error
                 }
             }
-            .errorSheet($error)
+            .errorSheet($error, operation: "Load Tags")
     }
 }

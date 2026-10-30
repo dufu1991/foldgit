@@ -3,11 +3,19 @@ internal import Subprocess
 
 public struct GitExecutionError: Error, LocalizedError, Sendable {
     public let description: String
+    public let commandLogID: UUID?
+    public let directory: URL?
     public var errorDescription: String? { description }
 
-    public init(description: String) { self.description = description }
-    public init(error: any Error) { description = error.localizedDescription }
+    public init(description: String, commandLogID: UUID? = nil, directory: URL? = nil) {
+        self.description = description
+        self.commandLogID = commandLogID
+        self.directory = directory
+    }
+    public init(error: any Error) { self.init(description: error.localizedDescription) }
 }
+
+private struct GitExecutionTimeout: Error {}
 
 public struct CommandOutput: Sendable {
     public init(standardOutput: String, standardError: String) {
@@ -114,7 +122,7 @@ public enum GitRuntime: Sendable {
 
         public func run<Command: RepositoryCommand>(_ command: Command) async throws -> Command.OutputModel {
             precondition(command.directory == directory)
-            let output = try await GitRuntime.collect(arguments: command.arguments, directory: directory, inputs: [], environment: command.environment, timeout: .seconds(180))
+            let output = try await GitRuntime.collect(arguments: command.arguments, directory: directory, inputs: [], environment: command.environment, readOnly: command.isReadOnly, timeout: .seconds(180))
             return try command.parse(for: output.textOutput().standardOutput)
         }
     }
@@ -142,30 +150,63 @@ public enum GitRuntime: Sendable {
     public static func run(arguments: [String], currentDirectoryURL: URL?, inputs: [String] = [], environment: [String: String] = [:],
                            readOnly: Bool = false, timeout: Duration = .seconds(180)) async throws -> CommandOutput {
         try await RepositoryCommandQueue.shared.execute(at: currentDirectoryURL, readOnly: readOnly) {
-            try await collect(arguments: arguments, directory: currentDirectoryURL, inputs: inputs, environment: environment, timeout: timeout).textOutput()
+            try await collect(arguments: arguments, directory: currentDirectoryURL, inputs: inputs, environment: environment, readOnly: readOnly, timeout: timeout).textOutput()
         }
     }
 
     /// Collect bytes without a UTF-8 conversion, preserving image and other blob contents.
     public static func runData(arguments: [String], currentDirectoryURL: URL?, timeout: Duration = .seconds(180)) async throws -> Data {
         try await RepositoryCommandQueue.shared.execute(at: currentDirectoryURL, readOnly: true) {
-            try await collect(arguments: arguments, directory: currentDirectoryURL, inputs: [], environment: [:], timeout: timeout).standardOutput
+            try await collect(arguments: arguments, directory: currentDirectoryURL, inputs: [], environment: [:], readOnly: true, timeout: timeout, binaryOutput: true).standardOutput
         }
     }
 
-    private static func collect(arguments: [String], directory: URL?, inputs: [String], environment: [String: String], timeout: Duration) async throws -> BinaryCommandOutput {
-        try await withThrowingTaskGroup(of: BinaryCommandOutput.self) { group in
-            group.addTask { try await launch(arguments: arguments, directory: directory, inputs: inputs, environment: environment) }
-            group.addTask {
-                try await Task.sleep(for: timeout)
-                throw GitExecutionError(description: NSLocalizedString("The Git operation timed out.", comment: ""))
+    private static func collect(arguments: [String], directory: URL?, inputs: [String], environment: [String: String], readOnly: Bool,
+                                timeout: Duration, binaryOutput: Bool = false) async throws -> BinaryCommandOutput {
+        let logID = await GitCommandLog.shared.begin(arguments: preparedArguments(arguments), directory: directory, readOnly: readOnly)
+        let clock = ContinuousClock()
+        let start = clock.now
+        let elapsed = {
+            let duration = start.duration(to: clock.now).components
+            return Double(duration.seconds) + Double(duration.attoseconds) / 1e18
+        }
+        do {
+            let output = try await withThrowingTaskGroup(of: BinaryCommandOutput.self) { group in
+                group.addTask {
+                    try await launch(arguments: arguments, directory: directory, inputs: inputs, environment: environment,
+                                     logID: logID, binaryOutput: binaryOutput)
+                }
+                group.addTask {
+                    try await Task.sleep(for: timeout)
+                    throw GitExecutionTimeout()
+                }
+                defer { group.cancelAll() }
+                return try await group.next()!
             }
-            defer { group.cancelAll() }
-            return try await group.next()!
+            await GitCommandLog.shared.finish(logID, status: .succeeded, duration: elapsed())
+            return output
+        } catch {
+            let timedOut = error is GitExecutionTimeout
+            let failure = timedOut
+                ? GitExecutionError(description: NSLocalizedString("The Git operation timed out.", comment: "")) : error
+            let cancelled = Task.isCancelled || error is CancellationError
+            await GitCommandLog.shared.finish(logID, status: timedOut ? .timedOut : cancelled ? .cancelled : .failed,
+                                              duration: elapsed(), failure: cancelled ? nil : failure.localizedDescription)
+            if !cancelled, let logID {
+                throw GitExecutionError(description: failure.localizedDescription, commandLogID: logID, directory: directory)
+            }
+            throw failure
         }
     }
 
-    private static func launch(arguments: [String], directory: URL?, inputs: [String], environment overrides: [String: String]) async throws -> BinaryCommandOutput {
+    private static func preparedArguments(_ arguments: [String]) -> [String] {
+        arguments.first == "git"
+            ? ["git", "-c", "core.quotepath=false", "-c", "color.ui=false"] + arguments.dropFirst()
+            : arguments
+    }
+
+    private static func launch(arguments: [String], directory: URL?, inputs: [String], environment overrides: [String: String],
+                               logID: UUID?, binaryOutput: Bool) async throws -> BinaryCommandOutput {
         try Task.checkCancellation()
         guard let executable = arguments.first else {
             throw GitExecutionError(description: NSLocalizedString("The Git command is empty.", comment: ""))
@@ -177,16 +218,22 @@ public enum GitRuntime: Sendable {
         let environment = base.updating(Dictionary(uniqueKeysWithValues: overrides.map {
             (Subprocess.Environment.Key(stringLiteral: $0.key), Optional($0.value))
         }))
-        let commandArguments = executable == "git"
-            ? ["-c", "core.quotepath=false", "-c", "color.ui=false"] + arguments.dropFirst()
-            : Array(arguments.dropFirst())
         let result = try await Subprocess.run(
             (executable.contains("/") || executable.contains("\\")) ? .path(.init(executable)) : .name(executable),
-            arguments: .init(commandArguments), environment: environment,
+            arguments: .init(Array(preparedArguments(arguments).dropFirst())), environment: environment,
             workingDirectory: directory.map { .init($0.path) },
             input: .string(inputs.isEmpty ? "" : inputs.joined(separator: "\n") + "\n"),
             output: .bytes(limit: outputLimit), error: .bytes(limit: 4 * 1024 * 1024)
         )
+        let exitCode: Int?
+        switch result.terminationStatus {
+        case .exited(let code): exitCode = Int(code)
+        #if !os(Windows)
+        case .signaled: exitCode = nil
+        #endif
+        }
+        await GitCommandLog.shared.capture(logID, output: result.standardOutput, error: result.standardError,
+                                           exitCode: exitCode, binaryOutput: binaryOutput)
         try Task.checkCancellation()
         guard let stderr = String(bytes: result.standardError, encoding: .utf8) else {
             throw GitExecutionError(description: NSLocalizedString("Git returned invalid UTF-8 output.", comment: ""))

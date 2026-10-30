@@ -118,7 +118,7 @@ struct CommitGraphContentView: View {
         }
         .frame(width: rowWidth, alignment: .leading)
         .padding(.horizontal, 8)
-        .errorSheet($error)
+        .errorSheet($error, operation: "Commit History")
     }
 
     private func workingTreeRow(_ positioned: PositionedCommit, rowWidth: CGFloat) -> some View {

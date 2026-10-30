@@ -69,7 +69,8 @@ struct WorktreeCompletionSheet: View {
         .onChange(of: model.sourceRemoved) {
             guard model.sourceRemoved, let plan = model.plan else { return }
             Task {
-                try? await worktrees.refresh(plan.target)
+                do { try await worktrees.refresh(plan.target) }
+                catch { model.errorMessage = OperationFailure("Load Worktrees", error).localizedDescription }
                 onRemoved(plan.source, plan.target)
             }
         }

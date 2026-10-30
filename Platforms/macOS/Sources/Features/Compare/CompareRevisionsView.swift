@@ -133,10 +133,11 @@ struct CompareRevisionsView: View {
                                         try await RemoteUpdateService.shared.execute(
                                             GitFetch(directory: folder.url, tags: true)
                                         )
+                                        AutoFetchScheduler.shared.recordFetchSuccess(for: folder.url)
                                         try await loadReferences()
                                         diffRefreshID = UUID()
                                     } catch {
-                                        self.error = error
+                                        self.error = OperationFailure("Fetch Branches and Tags", error)
                                     }
                                 }
                             } label: {
@@ -210,13 +211,13 @@ struct CompareRevisionsView: View {
                 try await loadReferences()
                 compareRef = currentRef ?? GitRef(name: "HEAD", kind: .head)
             } catch {
-                self.error = error
+                self.error = OperationFailure("Load Branches", error)
             }
         }
         .onChange(of: filterText) { _, value in
             isRemoteExpanded = !value.isEmpty || editingRef?.kind == .remoteBranch
         }
-        .errorSheet($error)
+        .errorSheet($error, operation: "Compare Revisions")
     }
 
     private func referenceRow(_ name: String, icon: Image) -> some View {
@@ -402,9 +403,9 @@ private struct CompareRevisionContentView: View {
                 guard !Task.isCancelled else { return }
                 commits = []
                 commitsLoadFailed = true
-                self.error = error
+                self.error = OperationFailure("Load Differences", error)
             }
         }
-        .errorSheet($error)
+        .errorSheet($error, operation: "Compare Revisions")
     }
 }

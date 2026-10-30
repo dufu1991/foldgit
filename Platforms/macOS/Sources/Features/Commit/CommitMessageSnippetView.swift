@@ -54,7 +54,7 @@ struct CommitMessageSnippetView: View {
         .sheet(item: $editingSnippet) { snippet in
             CommitMessageSnippetEditSheet(snippet: snippet, onSave: update)
         }
-        .errorSheet($error)
+        .errorSheet($error, operation: "Save Commit Message Snippets")
     }
 
     private func update(_ snippet: CommitMessageSnippetEntry) {

@@ -38,6 +38,8 @@ struct WorkspaceScreen: View {
     @State private var columnVisibility = NavigationSplitViewVisibility.all
     @State private var expandAllFiles: UUID?
     @State private var collapseAllFiles: UUID?
+    @State private var showCommandLog = false
+    @State private var commandLogSelection: UUID?
     @AppStorage(PreferenceKey.sidebarDates.rawValue) private var sidebarDatesData = PreferenceDefaults.sidebarDates
     @State private var sidebarDatesCache = DecodedPreference { SidebarDates.decode($0 ?? Data()) }
 
@@ -102,6 +104,12 @@ struct WorkspaceScreen: View {
         }
         .navigationSplitViewStyle(.balanced)
         .toolbar(removing: .title)
+        .overlay {
+            if let folder = selectionFolder {
+                CommandLogOverlay(directory: folder.url, isPresented: $showCommandLog, selectedID: $commandLogSelection)
+                    .id(folder.url)
+            }
+        }
         .frame(minWidth: 900, minHeight: 420)
         .onAppear {
             AppDelegate.applyAppearance()
@@ -133,8 +141,10 @@ struct WorkspaceScreen: View {
         }
         .onChange(of: selectionFolder, {
             selectionLog = nil
+            commandLogSelection = nil
+            if selectionFolder == nil { showCommandLog = false }
         })
-        .errorSheet($error)
+        .errorSheet($error, operation: "Save Workspace")
         .environment(worktrees)
         .environment(\.worktreeVisibility, worktrees.visibility(for: selectionFolderURL, showInformation: worktrees.showsInformation(for: selectionFolderURL, global: showWorktreeInformation,
                 preferences: worktreePreferencesCache.value(for: worktreePreferencesData))))
@@ -142,6 +152,14 @@ struct WorkspaceScreen: View {
         .environment(\.folder, selectionFolder?.url)
         .environment(\.expandAllFiles, expandAllFiles)
         .environment(\.collapseAllFiles, collapseAllFiles)
+        .environment(\.toggleCommandLog, ToggleCommandLogAction {
+            commandLogSelection = nil
+            showCommandLog.toggle()
+        })
+        .environment(\.openCommandLog, selectionFolder == nil ? nil : OpenCommandLogAction { id in
+            commandLogSelection = id
+            showCommandLog = true
+        })
         .focusedSceneValue(\.workspaceMenu, menuContext)
     }
 
@@ -149,6 +167,7 @@ struct WorkspaceScreen: View {
         var actions = MenuActions()
         actions[.toggleSidebar] = toggleSidebar
         if selectionFolder != nil {
+            actions[.toggleCommandLog] = { showCommandLog.toggle() }
             actions[.expandAll] = { expandAllFiles = UUID() }
             actions[.collapseAll] = { collapseAllFiles = UUID() }
         }

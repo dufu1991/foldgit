@@ -3,20 +3,36 @@ import SwiftUI
 
 struct ErrorTextSheet: View {
     @Binding var error: Error?
+    var operation: LocalizedStringResource = "Error"
+    @Environment(\.folder) private var directory
+    @Environment(\.openCommandLog) private var openCommandLog
 
     var body: some View {
         VStack {
-            Text("Error")
+            Text(verbatim: (error as? OperationFailure)?.operation ?? String(localized: operation))
                 .font(.headline)
+            if let directory = (error as? OperationFailure)?.directory {
+                Text(verbatim: directory.path).font(.caption).foregroundStyle(.secondary)
+                    .textSelection(.enabled)
+            }
+            Text("Failure Reason").font(.subheadline).foregroundStyle(.secondary)
             ScrollView {
                 HStack(spacing: 0) {
-                    Text(error?.localizedDescription ?? "")
+                    Text(verbatim: (error as? OperationFailure)?.reason ?? error?.localizedDescription ?? "")
                         .textSelection(.enabled)
                     Spacer(minLength: 0)
                 }
             }
 
             HStack {
+                if let failure = (error as? OperationFailure)?.gitFailure ?? error as? GitExecutionError, let id = failure.commandLogID,
+                   let source = failure.directory, let directory, let openCommandLog,
+                   RepositoryLocation.canonical(source) == RepositoryLocation.canonical(directory) {
+                    Button("View Log") {
+                        error = nil
+                        openCommandLog(id)
+                    }
+                }
                 Spacer()
                 Button("OK") {
                     error = nil

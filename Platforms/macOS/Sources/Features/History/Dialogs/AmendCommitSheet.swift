@@ -54,6 +54,6 @@ struct AmendCommitSheet: View {
         .task {
             message = showingAmendCommitAt?.rawBody ?? ""
         }
-        .errorSheet($error)
+        .errorSheet($error, operation: "Amend Last Commit")
     }
 }

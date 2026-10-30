@@ -40,7 +40,7 @@ struct MergeCommitContentView: View {
                     self.error = error
                 }
             }
-            .errorSheet($error)
+            .errorSheet($error, operation: "Load Differences")
     }
 }
 

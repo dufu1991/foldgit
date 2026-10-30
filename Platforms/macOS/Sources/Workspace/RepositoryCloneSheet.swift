@@ -119,7 +119,7 @@ struct RepositoryCloneSheet: View {
             } catch {
                 errorMessage = Task.isCancelled
                     ? String(localized: "Clone canceled. You can try again.")
-                    : error.localizedDescription
+                    : OperationFailure("Clone Remote Repository", error).localizedDescription
             }
         }
     }

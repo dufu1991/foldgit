@@ -42,9 +42,10 @@ struct BranchesView: View {
                             defer { isFetching = false }
                             do {
                                 try await RemoteUpdateService.shared.execute(GitFetch(directory: folder.url))
+                                AutoFetchScheduler.shared.recordFetchSuccess(for: folder.url)
                                 try await loadBranches()
                             } catch {
-                                self.error = error
+                                self.error = OperationFailure("Fetch", error)
                             }
                         }
                     } label: {
@@ -84,10 +85,10 @@ struct BranchesView: View {
                 try await loadBranches()
             } catch {
                 guard !Task.isCancelled else { return }
-                self.error = error
+                self.error = OperationFailure("Load Branches", error)
             }
         }
-        .errorSheet($error)
+        .errorSheet($error, operation: "Load Branches")
     }
 
     @ViewBuilder
@@ -122,7 +123,7 @@ struct BranchesView: View {
                         try await GitRuntime.run(GitBranchDelete(directory: folder.url, isRemote: isRemote, branchName: item.name))
                         try await loadBranches()
                     } catch {
-                        self.error = error
+                        self.error = OperationFailure("Delete Branch", error)
                     }
                 }
             }

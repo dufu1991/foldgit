@@ -1,0 +1,18 @@
+X 英文版｜FoldGit 宣传文案
+
+【正文】
+Agent code needs human review. For diffs, skip the IDE.
+FoldGit: native macOS 26+, small, clean, intuitive. Free & open source.
+Mac: ~6.2 MB; Apple Silicon + Git.
+Windows: minimal implementation. Contributions welcome.
+https://foldgit.com
+https://github.com/dufu1991/foldgit
+
+【配图】
+cover-en.png
+
+【图片说明／替代文本】
+FoldGit on macOS, showing grouped repositories in the sidebar, commit history, a file tree and side-by-side code changes. The screenshot uses fictional demo repositories.
+
+【发布提示，不复制到正文】
+Post the body as one standard post with cover-en.png. Use the English caption as image alt text. Recheck the weighted length if you add hashtags or other text.

@@ -1,0 +1,987 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>FoldGit Launch Film</title>
+<style>
+  :root {
+    --ink: #0d1020; --muted: #5d6679; --accent: #0a6cf0; --accent2: #3b8cff;
+    --W: 1920px; --H: 1080px;
+    --sans: "SF Pro Display", -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    --text: "SF Pro Text", -apple-system, "PingFang SC", sans-serif;
+    --mono: "SF Mono", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: var(--W); height: var(--H); overflow: hidden; background: #04060c; }
+  body { font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  em { font-style: normal; color: var(--accent); }
+  .dark em { color: var(--accent2); }
+  #stage { position: absolute; inset: 0; overflow: hidden; }
+  .scene { position: absolute; inset: 0; overflow: hidden; display: none; }
+  .scene > .cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+  .dark { color: #f2f5fb;
+    background:
+      radial-gradient(ellipse 75% 60% at 50% 118%, rgba(10,108,240,0.55), rgba(10,108,240,0) 70%),
+      radial-gradient(ellipse 50% 45% at 12% -8%, rgba(90,150,255,0.16), rgba(90,150,255,0) 70%),
+      #04060c; }
+  .light { color: var(--ink);
+    background:
+      radial-gradient(ellipse 65% 60% at 50% 42%, #ffffff 0%, rgba(255,255,255,0) 72%),
+      radial-gradient(ellipse 70% 50% at 50% 125%, rgba(10,108,240,0.22), rgba(10,108,240,0) 70%),
+      #edf1f7; }
+  .abs { position: absolute; }
+  .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .big { font-size: 150px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.05; }
+  .huge { font-size: 210px; font-weight: 800; letter-spacing: -0.045em; line-height: 1; }
+  .mid { font-size: 76px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+  .w { display: inline-block; will-change: transform, opacity, filter; }
+  .swap { position: absolute; left: 0; right: 0; top: 50%; text-align: center; transform-origin: 50% 50%; }
+
+  /* A：Agent 代码流 */
+  #codeflow { position: absolute; inset: -10%; font: 500 22px/1.9 var(--mono); color: rgba(150,180,255,0.32); white-space: pre;
+    -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, transparent 0%, transparent 18%, #000 60%); }
+  #codeflow .col { position: absolute; top: 0; }
+  #codeflow .ok { color: rgba(80,210,140,0.55); }
+  #codeflow .add { color: rgba(80,210,140,0.45); }
+  #codeflow .del { color: rgba(255,110,110,0.45); }
+  #agentLine { font-size: 118px; font-weight: 700; letter-spacing: -0.03em; }
+  #agentLine .w { margin: 0; }
+
+  /* B：行数计数 */
+  #counter { font: 800 230px/1 var(--sans); letter-spacing: -0.04em; font-variant-numeric: tabular-nums;
+    background: linear-gradient(180deg, #ffffff 30%, #8fb8ff 100%); -webkit-background-clip: text; color: transparent; }
+  #linesLabel { font-size: 60px; font-weight: 600; margin-top: 18px; color: #c7d3ea; }
+  .chip { position: absolute; left: 50%; top: 50%; display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-radius: 14px;
+    background: rgba(30,36,52,0.85); border: 1px solid rgba(255,255,255,0.1); font: 500 22px var(--mono); color: #dbe4f5; white-space: nowrap;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+  .chip img { width: 24px; height: 24px; }
+  .chip .p { color: #4fd18b; } .chip .m { color: #ff7a7a; }
+
+  /* D：IDE */
+  .ide { position: absolute; width: 760px; height: 440px; margin: -220px 0 0 -380px; left: 50%; top: 56%; border-radius: 16px;
+    background: #20232b; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 40px 80px -20px rgba(0,0,0,0.7); overflow: hidden; }
+  .ide .bar { height: 38px; background: #2a2e37; display: flex; align-items: center; padding: 0 16px; gap: 8px; }
+  .ide .bar i { width: 12px; height: 12px; border-radius: 50%; background: #474c58; }
+  .ide .side { position: absolute; left: 0; top: 38px; bottom: 28px; width: 150px; background: #1b1e25; padding: 18px 14px; }
+  .ide s { display: block; height: 9px; border-radius: 5px; background: #353a46; margin-bottom: 14px; text-decoration: none; }
+  .ide .code { position: absolute; left: 172px; right: 210px; top: 60px; }
+  .ide .panel { position: absolute; right: 0; top: 38px; bottom: 28px; width: 190px; background: #1e2128; }
+  .ide .status { position: absolute; left: 0; right: 0; bottom: 0; height: 28px; background: #2a2e37; display: flex; align-items: center; gap: 12px; padding: 0 14px; font: 500 14px var(--text); color: #8a92a3; }
+  .ide .prog { width: 150px; height: 6px; border-radius: 3px; background: #3a3f4b; overflow: hidden; }
+  .ide .prog u { display: block; height: 100%; background: #7d8699; }
+  .ide .spin { position: absolute; left: 50%; top: 50%; width: 60px; height: 60px; margin: -30px 0 0 -10px; border-radius: 50%; border: 6px solid rgba(255,255,255,0.08); border-top-color: rgba(255,255,255,0.5); }
+  #beach { position: absolute; width: 64px; height: 64px; border-radius: 50%; left: 50%; top: 60%;
+    background: conic-gradient(#ff3b30, #ff9500, #ffcc00, #34c759, #0a84ff, #5e5ce6, #ff2d55, #ff3b30); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+  #ideText { position: absolute; left: 0; right: 0; top: 120px; height: 120px; }
+  #ideText .swap { font-size: 84px; font-weight: 700; letter-spacing: -0.02em; }
+  #foldLine { position: absolute; left: 50%; top: 56%; width: 1200px; height: 4px; margin: -2px 0 0 -600px; border-radius: 2px; background: #9cc3ff;
+    box-shadow: 0 0 30px 6px rgba(10,108,240,0.9), 0 0 80px 20px rgba(10,108,240,0.5); }
+
+  /* E：揭晓 */
+  #flash { position: absolute; inset: 0; background: #dfeaff; }
+  #ring { position: absolute; left: 50%; top: 42%; width: 400px; height: 400px; margin: -200px 0 0 -200px; border-radius: 50%; border: 3px solid rgba(160,200,255,0.9);
+    box-shadow: 0 0 40px rgba(10,108,240,0.8), inset 0 0 40px rgba(10,108,240,0.6); }
+  #rays { position: absolute; left: 50%; top: 42%; width: 2400px; height: 2400px; margin: -1200px 0 0 -1200px;
+    background: repeating-conic-gradient(from 0deg, rgba(120,170,255,0.16) 0deg 3deg, rgba(120,170,255,0) 3deg 15deg);
+    -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.6) 18%, transparent 45%); }
+  #glowE { position: absolute; left: 50%; top: 42%; width: 900px; height: 900px; margin: -450px 0 0 -450px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(10,108,240,0.55), rgba(10,108,240,0) 65%); }
+  .appicon { width: 300px; height: 300px; }
+  #eIcon { position: absolute; left: 50%; top: 42%; margin: -150px 0 0 -150px; filter: drop-shadow(0 30px 60px rgba(10,108,240,0.6)); }
+  #eBrand { position: absolute; left: 0; right: 0; top: 62%; font-size: 130px; font-weight: 800; letter-spacing: -0.04em; text-align: center; }
+  #eTag { position: absolute; left: 0; right: 0; top: 79%; font-size: 52px; font-weight: 600; text-align: center; color: #c9d6ee; }
+
+  /* F：主视觉 */
+  #horizon { position: absolute; left: 50%; top: 66%; width: 3000px; height: 1400px; margin-left: -1500px; border-radius: 50%;
+    border-top: 3px solid rgba(170,205,255,0.9); background: radial-gradient(ellipse 50% 30% at 50% 0%, rgba(10,108,240,0.55), rgba(4,6,12,0) 100%);
+    box-shadow: 0 -30px 120px rgba(10,108,240,0.55); }
+  #fShow { position: absolute; left: 50%; top: 57%; width: 1500px; border-radius: 22px; transform-origin: 50% 100%;
+    box-shadow: 0 60px 120px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.08); }
+  #fEyebrow { position: absolute; left: 0; right: 0; top: 70px; text-align: center; font-size: 40px; font-weight: 600; color: #cbd8f0; }
+
+  /* 功能镜头通用 */
+  .ftext { position: absolute; left: 130px; width: 640px; top: 0; bottom: 0; }
+  .slot { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); }
+  .slot h1 { font-size: 92px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.05; }
+  .slot p { font-size: 36px; font-weight: 500; line-height: 1.4; margin-top: 26px; opacity: 0.72; }
+  .pw { position: absolute; transform-origin: 50% 50%; }
+  .win { position: absolute; inset: 0; border-radius: 22px; overflow: hidden; font-family: var(--text); }
+  .light .win { background: rgba(255,255,255,0.94); border: 1px solid rgba(13,16,32,0.08); box-shadow: 0 50px 100px -30px rgba(13,30,80,0.35), 0 4px 16px rgba(13,30,80,0.08); color: #1b1f2a; }
+  .dark .win { background: #16181e; border: 1px solid rgba(255,255,255,0.09); box-shadow: 0 50px 120px -20px rgba(0,0,0,0.85), 0 0 80px rgba(10,108,240,0.18); color: #e6e9f0; }
+  .tl { position: absolute; left: 22px; top: 22px; display: flex; gap: 9px; }
+  .tl i { width: 14px; height: 14px; border-radius: 50%; display: block; }
+  .tl i:nth-child(1) { background: #ff5f57; } .tl i:nth-child(2) { background: #febc2e; } .tl i:nth-child(3) { background: #28c840; }
+  .field { position: absolute; height: 44px; border-radius: 12px; display: flex; align-items: center; gap: 10px; padding: 0 14px; font-size: 19px; }
+  .light .field { background: #eef0f4; color: #8b92a1; } .dark .field { background: #24272f; color: #8d94a4; }
+  .field.on .typed { color: #1b1f2a; } .dark .field.on .typed { color: #fff; }
+  .caret { display: inline-block; width: 2px; height: 22px; background: var(--accent); vertical-align: middle; margin-left: 1px; }
+  .row { position: absolute; left: 0; right: 0; display: flex; align-items: center; white-space: nowrap; }
+  .cursor { position: absolute; left: 0; top: 0; width: 34px; height: 46px; z-index: 50; pointer-events: none; }
+  .ripple { position: absolute; width: 70px; height: 70px; margin: -35px 0 0 -35px; border-radius: 50%; border: 3px solid var(--accent); z-index: 49; opacity: 0; }
+
+  /* G：侧边栏 */
+  .sb .row { height: 52px; padding: 0 22px; font-size: 21px; gap: 12px; }
+  .sb .grp { font-weight: 600; }
+  .sb .cnt { margin-left: auto; font-size: 18px; color: #8b92a1; }
+  .sb .sel { background: rgba(10,108,240,0.12); border-radius: 12px; margin: 0 12px; padding: 0 10px; }
+  .sb .wt { font: 500 18px var(--mono); color: var(--accent); }
+  .sb .wt small { font: 500 16px var(--text); color: #8b92a1; margin-left: 8px; }
+  .sb svg { flex: none; }
+  .repochip { position: absolute; display: flex; align-items: center; gap: 12px; padding: 14px 22px; border-radius: 16px; background: #fff; font: 600 24px var(--text);
+    box-shadow: 0 24px 50px -16px rgba(13,30,80,0.35), 0 0 0 1px rgba(13,16,32,0.06); color: #1b1f2a; white-space: nowrap; z-index: 40; }
+
+  /* H：提交图 */
+  .cg .row { height: 64px; padding-left: 92px; padding-right: 26px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 4px; }
+  .cg .msg { font-size: 20px; font-weight: 500; }
+  .cg .meta { font: 500 15px var(--mono); color: #7f8796; display: flex; gap: 14px; align-items: center; }
+  .cg .tag { color: var(--accent2); }
+  .cg .tag.purple { color: #b072ff; } .cg .tag.teal { color: #4cc3d9; }
+  .cg mark { background: rgba(59,140,255,0.35); color: #fff; border-radius: 4px; padding: 0 2px; }
+  .cg .foot { position: absolute; left: 0; right: 0; bottom: 0; height: 52px; display: flex; align-items: center; justify-content: center; font-size: 17px; color: #8d94a4; border-top: 1px solid rgba(255,255,255,0.06); }
+  .pill { position: absolute; height: 44px; border-radius: 12px; display: flex; align-items: center; gap: 8px; padding: 0 16px; font-size: 18px; white-space: nowrap; }
+  .dark .pill { background: #24272f; color: #cfd5e2; } .light .pill { background: #eef0f4; color: #3a4150; }
+
+  /* I：差异 */
+  .df { font-size: 19px; }
+  .df .sec { position: absolute; left: 26px; right: 26px; display: flex; align-items: center; gap: 12px; font-size: 24px; font-weight: 700; }
+  .df .sec .n { color: #8b92a1; font-weight: 600; }
+  .df .sec .s { margin-left: auto; font-size: 16px; font-weight: 500; color: #8b92a1; }
+  .df .file { position: absolute; left: 50px; right: 26px; display: flex; align-items: center; gap: 12px; font-weight: 600; }
+  .df .badge { font: 700 13px var(--mono); color: #d98a00; background: rgba(255,170,0,0.16); border-radius: 5px; padding: 2px 6px; }
+  .df .hh { position: absolute; left: 30px; font: 500 16px var(--mono); color: #8b92a1; }
+  .df .colhead { position: absolute; font-size: 14px; color: #9aa1ae; }
+  .df .ln { position: absolute; height: 34px; display: flex; align-items: center; font: 500 17px var(--mono); white-space: pre; overflow: hidden; }
+  .df .ln b { display: inline-block; width: 52px; text-align: right; padding-right: 18px; color: #9aa1ae; font-weight: 500; flex: none; }
+  .df .ln.del { background: rgba(255,80,80,0.12); } .df .ln.add { background: rgba(40,190,90,0.14); } .df .ln.gap { background: rgba(13,16,32,0.05); }
+  .df .kw { color: #c1307a; } .df .num { color: #1a5fd0; }
+  .df .hl { border-radius: 4px; }
+  .df .hunkbtn { position: absolute; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #5d6679; background: #eef0f4; }
+  .df .stagebox { position: absolute; border-radius: 14px; background: rgba(10,108,240,0.08); border: 2px solid rgba(10,108,240,0.5); }
+
+  /* J：提交 */
+  .cm .msgbox { position: absolute; left: 26px; right: 26px; top: 150px; height: 130px; border-radius: 14px; background: #1f2229; border: 1px solid rgba(255,255,255,0.07); padding: 18px 20px; font: 500 24px var(--mono); color: #fff; }
+  .cm .tpl { position: absolute; top: 300px; height: 40px; padding: 0 16px; border-radius: 10px; background: #262a33; color: #c8cfdc; font: 500 18px var(--mono); display: flex; align-items: center; }
+  .cm .btn { position: absolute; right: 26px; top: 300px; height: 52px; width: 150px; border-radius: 14px; background: var(--accent); color: #fff; font-size: 22px; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(10,108,240,0.5); }
+  .cm .summary { position: absolute; left: 26px; top: 96px; font-size: 19px; color: #9aa2b2; display: flex; gap: 18px; }
+  .cm .summary .p { color: #4fd18b; } .cm .summary .m { color: #ff7a7a; }
+  .cm .toast { position: absolute; left: 50%; top: 190px; padding: 14px 26px; border-radius: 14px; background: #1d3a2b; color: #6fe3a1; font: 600 22px var(--text); white-space: nowrap; }
+  .cm .badgeN { position: absolute; right: -8px; top: -8px; width: 26px; height: 26px; border-radius: 13px; background: var(--accent); color: #fff; font: 700 15px var(--text); display: flex; align-items: center; justify-content: center; }
+
+  /* K：外观与语言 */
+  #kWin { position: absolute; left: 50%; top: 56%; width: 1500px; height: 772px; margin: -386px 0 0 -750px; border-radius: 22px; overflow: hidden; box-shadow: 0 50px 120px -20px rgba(0,0,0,0.6); }
+  #kWin img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #kSplit { position: absolute; top: -10%; bottom: -10%; width: 4px; background: #fff; box-shadow: 0 0 30px 6px rgba(120,170,255,0.9); }
+  #kText { position: absolute; left: 0; right: 0; top: 40px; text-align: center; }
+  #kText h1 { font-size: 80px; font-weight: 800; letter-spacing: -0.03em; }
+  #kText p { font-size: 34px; opacity: 0.7; margin-top: 4px; }
+  #langBtn { position: absolute; left: 50%; top: 46%; height: 170px; padding: 0 90px; border-radius: 85px; background: var(--accent); color: #fff; font-size: 96px; font-weight: 700; display: flex; align-items: center; justify-content: center; white-space: nowrap;
+    box-shadow: 0 30px 80px rgba(10,108,240,0.6), inset 0 2px 0 rgba(255,255,255,0.3); }
+  #langCap { position: absolute; left: 0; right: 0; top: 66%; text-align: center; font-size: 60px; font-weight: 700; }
+
+  /* L：体积 */
+  .bars .lbl { position: absolute; left: 0; font-size: 30px; font-weight: 600; }
+  .bars .bar { position: absolute; left: 0; height: 64px; border-radius: 16px; }
+  .bars .val { position: absolute; font-size: 28px; font-weight: 600; white-space: nowrap; }
+
+  /* N：结尾 */
+  #nIcon { width: 240px; height: 240px; filter: drop-shadow(0 30px 60px rgba(10,108,240,0.6)); }
+  #nBrand { font-size: 110px; font-weight: 800; letter-spacing: -0.04em; margin-top: 8px; }
+  #nUrl { font-size: 48px; font-weight: 700; color: var(--accent2); margin-top: 22px; }
+  #nBrew { margin-top: 40px; padding: 18px 30px; border-radius: 16px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); font: 500 28px var(--mono); color: #e6ecf8; white-space: nowrap; width: 800px; text-align: left; }
+  #nBrew .pr { color: #4fd18b; }
+  #nGh { font: 500 26px var(--mono); color: #9aa6bd; margin-top: 26px; }
+  #nMeta { font-size: 22px; color: #6f7a90; margin-top: 18px; }
+
+
+  /* 深色背景里的浅色窗口 */
+  .dark .win.lw { background: rgba(255,255,255,0.97); color: #1b1f2a; border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 50px 120px -20px rgba(0,0,0,0.85), 0 0 90px rgba(10,108,240,0.35); }
+  .lw .field { background: #eef0f4; color: #8b92a1; } .lw .field.on .typed { color: #1b1f2a; }
+  .lw .pill { background: #eef0f4; color: #3a4150; }
+  .cg.lw .meta { color: #7a8292; } .cg.lw .tag { color: var(--accent); }
+  .cg.lw mark { background: rgba(10,108,240,0.16); color: #0a4fc0; }
+  .cg.lw .foot { color: #7a8292; border-top-color: rgba(13,16,32,0.08); }
+  .cm.lw .msgbox { background: #f5f6f8; border-color: rgba(13,16,32,0.08); color: #1b1f2a; }
+  .cm.lw .tpl { background: #eef0f4; color: #3a4150; }
+  .cm.lw .summary { color: #6b7383; }
+  .cm.lw .toast { background: #e3f6ea; color: #1f8a4c; }
+
+  /* 液态玻璃 */
+  #gWall { position: absolute; inset: -4%; background-size: cover; background-position: center; }
+  #gText { position: absolute; left: 130px; top: 96px; width: 600px; color: #0d1a33; }
+  #gText h1 { font-size: 92px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.05; text-shadow: 0 2px 30px rgba(255,255,255,0.7); }
+  #gText p { font-size: 34px; font-weight: 600; line-height: 1.35; margin-top: 18px; color: #1d3358; text-shadow: 0 1px 20px rgba(255,255,255,0.8); }
+  #gWin { position: absolute; overflow: hidden; border-radius: 22px; box-shadow: 0 50px 100px -30px rgba(10,30,80,0.55), 0 0 0 1px rgba(255,255,255,0.6); }
+  #gWin { background: #f6f7f9; }
+  #gWin .gstrip { position: absolute; left: 0; right: 0; top: 0; background: #f6f7f9; border-bottom: 1px solid rgba(13,16,32,0.06); z-index: 2; }
+  #gWin img { position: absolute; left: 0; top: 0; }
+  .glass { position: absolute; border-radius: 999px; display: flex; align-items: center; justify-content: space-around; padding: 0 10px; color: #1b1f2a;
+    background: rgba(255,255,255,0.12);
+    box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.95), inset 0 -1px 1px rgba(255,255,255,0.55), inset 0 0 0 1px rgba(255,255,255,0.4), 0 14px 34px rgba(20,40,90,0.22); }
+  .glass .spec { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; mix-blend-mode: screen; }
+  .glass > svg, .glass > span { position: relative; z-index: 2; }
+  .glass > span { font: 600 22px var(--text); }
+  .drop { position: absolute; top: 8px; height: 60px; border-radius: 30px; background: rgba(255,255,255,0.55); z-index: 1;
+    box-shadow: inset 0 1px 0 #fff, inset 0 0 0 1px rgba(255,255,255,0.7), 0 6px 16px rgba(20,40,90,0.18); }
+  #gLens { border-radius: 50%; padding: 0; background: rgba(255,255,255,0.04); }
+  #gWin .tl { z-index: 3; }
+  body.v #gText { left: 60px; right: 60px; top: 190px; width: auto; text-align: center; }
+  body.v #gText h1 { font-size: 104px; }
+  body.v #gText p { font-size: 42px; }
+
+  /* M：筛选 */
+  #fWall { position: absolute; inset: -6%; background-size: cover; background-position: center; filter: blur(26px) saturate(1.2); opacity: 0.6; }
+  #fHead { position: absolute; height: 0; }
+  #fHead .swap { font-size: 66px; font-weight: 800; letter-spacing: -0.025em; text-align: left; transform-origin: 0 50%; white-space: nowrap; }
+  #fPanel { position: absolute; border-radius: 36px; background: rgba(255,255,255,0.4); backdrop-filter: blur(24px) saturate(1.8);
+    box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.95), inset 0 0 0 1px rgba(255,255,255,0.55), 0 30px 70px -20px rgba(20,40,90,0.35); }
+  .trow { position: absolute; left: 40px; right: 40px; height: 80px; display: flex; align-items: center; justify-content: space-between; font-size: 34px; font-weight: 600; color: #13213d; }
+  .trow + .trow::before { content: ""; position: absolute; left: 0; right: 0; top: -10px; height: 1px; background: rgba(13,16,32,0.08); }
+  .track { position: relative; width: 100px; height: 58px; border-radius: 29px; flex: none; box-shadow: inset 0 1px 3px rgba(13,16,32,0.18); }
+  .knob { position: absolute; top: 5px; height: 48px; border-radius: 24px; background: rgba(255,255,255,0.96);
+    box-shadow: inset 0 1px 0 #fff, inset 0 -1px 2px rgba(13,16,32,0.08), 0 4px 10px rgba(13,30,80,0.28); }
+  .ccard { position: absolute; transform-style: preserve-3d; border-radius: 14px; }
+  .ccard .face, .ccard .back { position: absolute; inset: 0; border-radius: 14px; backface-visibility: hidden; }
+  .ccard .face { background: rgba(255,255,255,0.88); box-shadow: 0 10px 24px -10px rgba(20,40,90,0.35), 0 0 0 1px rgba(13,16,32,0.05); overflow: hidden; padding: 30px 14px 0; }
+  .ccard .face b { position: absolute; left: 0; right: 0; top: 0; height: 22px; background: var(--tint); display: flex; gap: 5px; align-items: center; padding-left: 9px; }
+  .ccard .face b i { width: 7px; height: 7px; border-radius: 50%; background: rgba(13,16,32,0.18); }
+  .ccard .face s { display: block; height: 7px; border-radius: 4px; background: rgba(13,16,32,0.1); margin-bottom: 10px; text-decoration: none; }
+  .ccard .back { transform: rotateY(180deg); display: flex; align-items: center; justify-content: center; }
+  .ccard .back img { height: 100%; filter: drop-shadow(0 10px 24px rgba(10,60,160,0.4)); }
+  #fPick { position: absolute; left: 0; right: 0; text-align: center; font-size: 64px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
+
+  /* 竖屏 */
+  body.v .big { font-size: 130px; }
+  body.v .huge { font-size: 190px; }
+  body.v #agentLine { font-size: 110px; line-height: 1.15; max-width: 960px; }
+  body.v #counter { font-size: 210px; }
+  body.v #ideText { top: 230px; }
+  body.v #ideText .swap { font-size: 76px; padding: 0 40px; }
+  body.v .ide { top: 58%; }
+  body.v #eBrand { top: 58%; }
+  body.v #eTag { top: 68%; font-size: 64px; line-height: 1.25; }
+  body.v #fEyebrow { top: 260px; font-size: 44px; padding: 0 80px; line-height: 1.35; }
+  body.v #horizon { top: 62%; }
+  body.v .ftext { left: 60px; right: 60px; width: auto; top: 150px; bottom: auto; height: 560px; text-align: center; }
+  body.v .slot h1 { font-size: 104px; }
+  body.v .slot p { font-size: 42px; }
+  body.v #kWin { width: 1000px; height: 515px; margin: -257px 0 0 -500px; top: 50%; }
+  body.v #kText { top: 260px; }
+  body.v #kText h1 { font-size: 96px; }
+  body.v #kText p { font-size: 42px; }
+  body.v #langBtn { font-size: 80px; height: 150px; padding: 0 70px; }
+  body.v #langCap { top: 62%; font-size: 68px; }
+  body.v #nBrew { font-size: 22px; width: 680px; }
+  body.v #nUrl { font-size: 56px; }
+  body.v #fHead .swap { text-align: center; transform-origin: 50% 50%; font-size: 64px; white-space: normal; }
+  body.v .trow { font-size: 38px; }
+  body.v #fPick { font-size: 66px; padding: 0 60px; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script src="copy.js"></script>
+<script src="glass.js"></script>
+<script>
+const Q = new URLSearchParams(location.search);
+const LANG = Q.get("lang") || "zh";
+const V = (Q.get("ratio") || "16x9") === "9x16";
+const W = V ? 1080 : 1920, H = V ? 1920 : 1080;
+const ROOT = "../../../../../";
+const ICON = ROOT + "Shared/Resources/Branding/Images/FoldGit.png";
+const FI = (n) => `${ROOT}Shared/Resources/FileIcons/MaterialFileIcons/${n}.svg`;
+const DURATION = 51.5;
+document.documentElement.style.setProperty("--W", W + "px");
+document.documentElement.style.setProperty("--H", H + "px");
+document.documentElement.lang = LANG === "zh" ? "zh-CN" : "en";
+if (V) document.body.classList.add("v");
+
+// \n：竖屏断行；横屏中文直接相连、英文补空格。br=true 时始终断行（用于副标题）。
+const fmt = (s, br = false) => s.replace(/\n/g, br || V ? "<br>" : LANG === "zh" ? "" : " ");
+const C = COPY[LANG], U = C.ui;
+const stage = document.getElementById("stage");
+const h = (html) => { const d = document.createElement("div"); d.innerHTML = html.trim(); return d.firstElementChild; };
+
+// ---------- 时间与缓动 ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, x) => a + (b - a) * x;
+const eOut = (x) => 1 - Math.pow(1 - x, 3);
+const eOut5 = (x) => 1 - Math.pow(1 - x, 5);
+const eIn = (x) => x * x * x;
+const eExpo = (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -10 * x));
+const eInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+const eBack = (x, c = 1.6) => 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2);
+const css = (el, o) => { for (const k in o) el.style[k] = o[k]; };
+
+// 词语弹入：放大 + 模糊收拢
+function pop(el, lt, tin, dur = 0.32, from = 1.25) {
+  const a = prog(lt, tin, tin + dur);
+  const e = eOut5(a);
+  css(el, { opacity: clamp(a * 2.5), transform: `scale(${lerp(from, 1, e)})`, filter: a < 1 ? `blur(${(1 - e) * 14}px)` : "none" });
+}
+// 进出场：上移淡入，退出上飘模糊
+function rise(el, lt, tin, tout = null, dist = 40, dur = 0.55) {
+  const a = eExpo(prog(lt, tin, tin + dur));
+  const b = tout == null ? 0 : eOut(prog(lt, tout, tout + 0.25));
+  css(el, { opacity: a * (1 - b), transform: `translateY(${(1 - a) * dist - b * 30}px)`, filter: a < 1 || b > 0 ? `blur(${(1 - a) * 10 + b * 12}px)` : "none" });
+}
+// 逐词替换：els[i] 在 times[i] 出现，下一词出现时退场
+function swapWords(els, lt, times, dur = 0.3) {
+  els.forEach((el, i) => {
+    const tin = times[i], tout = times[i + 1];
+    const a = eOut5(prog(lt, tin, tin + dur));
+    const b = tout == null ? 0 : eOut(prog(lt, tout - 0.02, tout + 0.16));
+    css(el, { opacity: (lt >= tin ? clamp(a * 2) : 0) * (1 - b),
+      transform: `translateY(-50%) scale(${lerp(1.22, 1, a) * lerp(1, 0.9, b)}) translateY(${-b * 40}px)`,
+      filter: a < 1 || b > 0 ? `blur(${(1 - a) * 16 + b * 14}px)` : "none" });
+  });
+}
+function typeText(el, text, lt, tin, cps, caret = true) {
+  const n = Math.floor(clamp((lt - tin) * cps, 0, text.length));
+  const blink = n < text.length || Math.floor(lt * 2.5) % 2 === 0;
+  el.innerHTML = text.slice(0, n).replace(/</g, "&lt;") + (caret && lt >= tin - 0.3 && blink ? '<span class="caret"></span>' : "");
+  return n;
+}
+
+// macOS 光标
+const CURSOR = `<svg class="cursor" viewBox="0 0 34 46"><path d="M3 2 L3 34 L11 26.5 L16.5 39 L22 36.6 L16.6 24.4 L27 24.4 Z" fill="#000" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg>`;
+function moveCursor(cur, rip, lt, keys, clicks = []) {
+  let x = keys[0][1], y = keys[0][2];
+  for (let i = 0; i < keys.length - 1; i++) {
+    const [ta, xa, ya] = keys[i], [tb, xb, yb] = keys[i + 1];
+    if (lt >= ta) { const e = eInOut(prog(lt, ta, tb)); x = lerp(xa, xb, e); y = lerp(ya, yb, e); }
+  }
+  let press = 1, rp = -1;
+  for (const c of clicks) { if (lt >= c && lt < c + 0.16) press = 0.82; if (lt >= c && lt < c + 0.5) rp = (lt - c) / 0.5; }
+  css(cur, { opacity: clamp(prog(lt, keys[0][0] - 0.2, keys[0][0])), transform: `translate(${x - 4}px, ${y - 3}px) scale(${press})`, transformOrigin: "4px 3px" });
+  if (rip) css(rip, { left: x + "px", top: y + "px", opacity: rp < 0 ? 0 : (1 - rp) * 0.9, transform: `scale(${0.3 + rp * 1.2})` });
+}
+
+// SVG 小图标
+const ICO = {
+  folder: (c = "#3b8cff") => `<svg width="24" height="22" viewBox="0 0 24 22"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3H9l2.2 2.4h8.3A2.5 2.5 0 0 1 22 7.9v9.6a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 17.5Z" fill="none" stroke="${c}" stroke-width="1.9"/></svg>`,
+  repo: (c) => `<svg width="22" height="24" viewBox="0 0 22 24"><rect x="3" y="2.5" width="16" height="19" rx="2.5" fill="none" stroke="${c}" stroke-width="2"/><rect x="6" y="5.5" width="4" height="13" rx="1" fill="${c}" opacity="0.85"/></svg>`,
+  chev: (c = "#8b92a1") => `<svg width="14" height="14" viewBox="0 0 14 14" class="chev"><path d="M4 2.5 9 7l-5 4.5" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  branch: (c = "#0a6cf0") => `<svg width="20" height="22" viewBox="0 0 20 22"><circle cx="5" cy="4" r="2.6" fill="none" stroke="${c}" stroke-width="1.8"/><circle cx="5" cy="18" r="2.6" fill="none" stroke="${c}" stroke-width="1.8"/><circle cx="15" cy="8" r="2.6" fill="none" stroke="${c}" stroke-width="1.8"/><path d="M5 6.6v8.8M15 10.6c0 4-10 2-10 4.8" fill="none" stroke="${c}" stroke-width="1.8"/></svg>`,
+  search: (c = "#8b92a1") => `<svg width="20" height="20" viewBox="0 0 20 20"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="${c}" stroke-width="2"/><path d="m13 13 5 5" stroke="${c}" stroke-width="2" stroke-linecap="round"/></svg>`,
+  up: (c) => `<svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 16V4M4.5 9.5 10 4l5.5 5.5" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  down: (c) => `<svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 4v12M4.5 10.5 10 16l5.5-5.5" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  box: (c) => `<svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="5" width="14" height="11" rx="2" fill="none" stroke="${c}" stroke-width="2"/><path d="M3 9h14" stroke="${c}" stroke-width="2"/></svg>`,
+  check: (c) => `<svg width="22" height="22" viewBox="0 0 22 22"><path d="m5 11.5 4 4 8-9" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  sidebar: (c) => `<svg width="28" height="24" viewBox="0 0 28 24"><rect x="2" y="3" width="24" height="18" rx="4" fill="none" stroke="${c}" stroke-width="2"/><path d="M10 3v18" stroke="${c}" stroke-width="2"/></svg>`,
+  refresh: (c) => `<svg width="26" height="26" viewBox="0 0 26 26"><path d="M21 13a8 8 0 1 1-2.6-5.9M21 4.5V9h-4.5" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  plus: (c) => `<svg width="24" height="24" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="${c}" stroke-width="2.4" stroke-linecap="round"/></svg>`,
+  tag: (c) => `<svg width="26" height="26" viewBox="0 0 26 26"><path d="M3.5 13.2V4.5a1 1 0 0 1 1-1h8.7l9.3 9.3-9.7 9.7Z" fill="none" stroke="${c}" stroke-width="2.1" stroke-linejoin="round"/><circle cx="9" cy="9" r="1.8" fill="${c}"/></svg>`,
+  compare: (c) => `<svg width="26" height="26" viewBox="0 0 26 26"><path d="M5 8h15l-4-4M21 18H6l4 4" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+};
+
+// ---------- 场景注册 ----------
+const SCENES = [];
+function scene(theme, a, b, build, update) {
+  const sec = h(`<section class="scene ${theme}"><div class="cam"></div></section>`);
+  stage.appendChild(sec);
+  const cam = sec.firstElementChild;
+  const ctx = build(cam, sec) || {};
+  SCENES.push({ sec, cam, a, b, ctx, update });
+}
+// 功能镜头：左侧（竖屏为上方）标题，右侧（下方）面板
+function featureShell(cam, slots, pw, ph) {
+  const ft = h(`<div class="ftext"></div>`);
+  const slotEls = slots.map(([t, p]) => { const s = h(`<div class="slot"><h1>${t}</h1>${p ? `<p>${fmt(p, true)}</p>` : ""}</div>`); ft.appendChild(s); return s; });
+  cam.appendChild(ft);
+  const [bw, bh] = V ? [1000, 1180] : [1120, 960];
+  const sc = Math.min(bw / pw, bh / ph, 1.3);
+  let cx = 1290, cy = 540;
+  if (V) {
+    // 竖屏：标题与面板作为一组垂直居中
+    const start = Math.max(140, (H - (330 + 60 + ph * sc)) / 2);
+    css(ft, { top: start + "px", height: "330px" });
+    cx = 540; cy = start + 390 + (ph * sc) / 2;
+  }
+  const wrap = h(`<div class="pw"></div>`);
+  css(wrap, { left: cx - pw / 2 + "px", top: cy - ph / 2 + "px", width: pw + "px", height: ph + "px" });
+  const win = h(`<div class="win"></div>`);
+  wrap.appendChild(win);
+  wrap.insertAdjacentHTML("beforeend", `<div class="ripple"></div>${CURSOR}`);
+  cam.appendChild(wrap);
+  return { slots: slotEls, wrap, win, sc, cur: wrap.querySelector(".cursor"), rip: wrap.querySelector(".ripple") };
+}
+function featureFrame(f, lt, dur, swapAt, flat = false) {
+  f.slots.forEach((s, i) => {
+    const tin = i === 0 ? 0.08 : swapAt, tout = i === 0 && f.slots.length > 1 ? swapAt - 0.18 : null;
+    const a = eExpo(prog(lt, tin, tin + 0.5)), b = tout == null ? 0 : eOut(prog(lt, tout, tout + 0.2));
+    css(s, { opacity: a * (1 - b), transform: `translateY(calc(-50% + ${(1 - a) * 50 - b * 30}px))`, filter: a < 1 || b > 0 ? `blur(${(1 - a) * 10 + b * 10}px)` : "none" });
+  });
+  const a = eOut5(prog(lt, 0, 0.7));
+  const drift = lt / dur;
+  const ry = flat || V ? 0 : lerp(-16, -6, a) + drift * 3;
+  const rx = flat ? 0 : V ? lerp(14, 4, a) - drift * 2 : 4 - drift * 2;
+  css(f.wrap, { opacity: clamp(a * 2), transform: `perspective(2600px) rotateY(${ry}deg) rotateX(${rx}deg) translateY(${(1 - a) * 80}px) scale(${f.sc * lerp(0.9, 1, a) * (1 + drift * 0.03)})` });
+}
+
+// ================= A：Agent 正在写代码 (0–2) =================
+const FLOW = [
+  "✓ Edited Sources/Auth/Session.swift", "  +128  −42", "✓ Created Tests/SessionTests.swift", "  +214", "› Running swift test…", "✓ 86 tests passed",
+  "✓ Edited Sources/UI/Toolbar.swift", "  +37  −19", "✓ Refactored Theme.spacing", "› Analyzing 312 files", "✓ Edited Package.swift", "  +4  −1",
+  "✓ Updated README.md", "  +22  −8", "✓ Edited Sources/Sync/Fetch.swift", "  +96  −51", "› Applying patch 14/23", "✓ Edited Sources/UI/Badge.swift", "  +11  −3",
+];
+scene("dark", 0, 2.0, (cam) => {
+  const flow = h(`<div id="codeflow"></div>`);
+  const cols = V ? 3 : 5;
+  for (let c = 0; c < cols; c++) {
+    const col = h(`<div class="col"></div>`);
+    let s = "";
+    for (let k = 0; k < 70; k++) {
+      const line = FLOW[(k * 7 + c * 5) % FLOW.length];
+      const cls = line.startsWith("✓") ? "ok" : line.includes("−") ? "del" : line.trim().startsWith("+") ? "add" : "";
+      s += `<span class="${cls}">${line}</span>\n`;
+    }
+    col.innerHTML = s;
+    col.style.left = `${(c / cols) * 110 - 2}%`;
+    flow.appendChild(col);
+  }
+  cam.appendChild(flow);
+  const line = h(`<div class="center"><div id="agentLine">${C.agent.map((w) => `<span class="w">${w}</span>`).join(LANG === "en" ? " " : "")}</div></div>`);
+  cam.appendChild(line);
+  const words = [...line.querySelectorAll(".w")];
+  if (LANG === "zh") { words.forEach((w) => { w.style.margin = "0"; }); words[0].style.marginRight = "0.25em"; }
+  return { cols: [...flow.children], words };
+}, (c, lt) => {
+  c.cols.forEach((col, i) => { col.style.transform = `translateY(${-(lt * (520 + i * 90) + lt * lt * 260 + i * 140)}px)`; });
+  c.words.forEach((w, i) => pop(w, lt, 0.12 + i * 0.4));
+});
+
+// ================= B：+2,847 行 (2–4) =================
+const CHIPS = [["swift", "Session.swift", 128, 42], ["swift", "Toolbar.swift", 37, 19], ["typescript", "api.ts", 64, 12], ["markdown", "README.md", 22, 8],
+  ["swift", "Badge.swift", 11, 3], ["yaml", "ci.yml", 9, 2], ["swift", "Fetch.swift", 96, 51], ["python", "release.py", 18, 6], ["swift", "Theme.swift", 14, 1],
+  ["json", "package.json", 4, 1], ["swift", "GlassCard.swift", 52, 17], ["typescript", "client.ts", 41, 9]];
+scene("dark", 2, 4.0, (cam) => {
+  const chips = CHIPS.map(([ic, n, p, m]) => { const el = h(`<div class="chip"><img src="${FI(ic)}"><span>${n}</span><span class="p">+${p}</span><span class="m">−${m}</span></div>`); cam.appendChild(el); return el; });
+  const ctr = h(`<div class="center"><div id="counter">+0</div><div id="linesLabel">${fmt(C.lines)}</div></div>`);
+  cam.appendChild(ctr);
+  return { chips, counter: ctr.querySelector("#counter"), label: ctr.querySelector("#linesLabel") };
+}, (c, lt) => {
+  const n = Math.round(2847 * eOut(prog(lt, 0.05, 1.3)));
+  c.counter.textContent = "+" + n.toLocaleString("en-US");
+  pop(c.counter, lt, 0.0, 0.35, 1.4);
+  rise(c.label, lt, 0.55);
+  c.chips.forEach((el, i) => {
+    const t0 = (i * 0.13) % 1.4, k = prog(lt, t0, t0 + 0.9);
+    const ang = (i * 137.5) * Math.PI / 180, R = (V ? 620 : 900) * eIn(k) + 120 * k;
+    const x = Math.cos(ang) * R * (V ? 0.75 : 1.1), y = Math.sin(ang) * R * (V ? 1.3 : 0.62);
+    css(el, { opacity: lt < t0 ? 0 : Math.sin(Math.PI * k) * 0.95, transform: `translate(-50%, -50%) translate(${x}px, ${y}px) scale(${lerp(0.25, 1.5, eIn(k))})`, filter: `blur(${k > 0.7 ? (k - 0.7) * 20 : (1 - k) * 2}px)` });
+  });
+});
+
+// ================= C：但是…你亲自过目 (4–6) =================
+scene("light", 4, 6.0, (cam) => {
+  const words = C.but.map((w) => { const el = h(`<div class="swap big">${w}</div>`); cam.appendChild(el); return el; });
+  return { words };
+}, (c, lt) => swapWords(c.words, lt, [0.0, 0.45, 0.9, 1.3]));
+
+// ================= D：笨重的 IDE (6–9) =================
+scene("dark", 6, 9.0, (cam) => {
+  const group = h(`<div class="abs" style="inset:0"></div>`);
+  const offs = V ? [[-170, -420], [150, -260], [-120, -90], [160, 80], [-140, 250], [90, 410]] : [[-470, -120], [430, -150], [-300, 70], [330, 110], [-60, -30], [100, 160]];
+  const from = [[-1600, 0], [1600, -200], [-1400, 600], [1500, 700], [0, -1200], [300, 1300]];
+  const ides = offs.map((o, i) => {
+    const el = h(`<div class="ide"><div class="bar"><i></i><i></i><i></i></div><div class="side">${"<s></s>".repeat(7)}</div><div class="code">${[78, 55, 66, 40, 72, 50, 61, 34].map((w) => `<s style="width:${w}%"></s>`).join("")}</div><div class="panel"></div><div class="spin"></div><div class="status"><span>${C.ideStatus[i]}</span><span class="prog"><u></u></span></div></div>`);
+    group.appendChild(el);
+    return el;
+  });
+  const beach = h(`<div id="beach"></div>`);
+  group.appendChild(beach);
+  cam.appendChild(group);
+  const line = h(`<div id="foldLine"></div>`);
+  cam.appendChild(line);
+  const tx = h(`<div id="ideText">${C.ide.map((s) => `<div class="swap">${s}</div>`).join("")}</div>`);
+  cam.appendChild(tx);
+  return { group, ides, offs, from, beach, line, words: [...tx.children] };
+}, (c, lt) => {
+  const sc = V ? 0.82 : 1;
+  c.ides.forEach((el, i) => {
+    const t0 = 0.05 + i * 0.2, a = prog(lt, t0, t0 + 0.38);
+    const e = eBack(a, 1.2);
+    const [ox, oy] = c.offs[i], [fx, fy] = c.from[i];
+    const shake = lt > 1.4 ? Math.sin(lt * 40 + i) * 2.5 * prog(lt, 1.4, 2.0) : 0;
+    css(el, { opacity: clamp(a * 4), transform: `translate(${(ox + fx * (1 - e)) * sc + shake}px, ${(oy + fy * (1 - e)) * sc}px) scale(${sc}) rotate(${(i % 2 ? 1 : -1) * (1.5 - a)}deg)` });
+    el.querySelector(".spin").style.transform = `rotate(${lt * 400 + i * 60}deg)`;
+    el.querySelector(".prog u").style.width = `${10 + 60 * prog(lt, t0, 2.5) * (0.6 + 0.4 * Math.sin(lt * 2 + i))}%`;
+  });
+  css(c.beach, { opacity: prog(lt, 1.0, 1.15), transform: `translate(-50%, -50%) rotate(${lt * 900}deg)` });
+  const fold = eInOut(prog(lt, 2.42, 2.9));
+  css(c.group, { transform: `perspective(1600px) rotateX(${fold * 80}deg) scaleY(${lerp(1, 0.01, fold)})`, transformOrigin: V ? "50% 58%" : "50% 56%", opacity: 1 - prog(lt, 2.82, 2.9) });
+  css(c.line, { opacity: prog(lt, 2.75, 2.85), transform: `scaleX(${lerp(0.4, 1, eOut(prog(lt, 2.75, 3.0)))})` });
+  swapWords(c.words, lt, [0.1, 0.95, 1.75]);
+  if (lt > 2.35) c.words.forEach((w) => { w.style.opacity *= 1 - prog(lt, 2.35, 2.55); });
+});
+
+// ================= E：揭晓 (9–11.5) =================
+scene("dark", 9, 11.5, (cam) => {
+  cam.insertAdjacentHTML("beforeend", `<div id="rays"></div><div id="glowE"></div><div id="ring"></div><img id="eIcon" class="appicon" src="${ICON}">
+    <div id="eBrand">${"FoldGit".split("").map((l) => `<span class="w">${l}</span>`).join("")}</div><div id="eTag">${fmt(C.tagline)}</div><div id="flash"></div>`);
+  return { rays: cam.querySelector("#rays"), glow: cam.querySelector("#glowE"), ring: cam.querySelector("#ring"), icon: cam.querySelector("#eIcon"),
+    letters: [...cam.querySelectorAll("#eBrand .w")], tag: cam.querySelector("#eTag"), flash: cam.querySelector("#flash") };
+}, (c, lt) => {
+  c.flash.style.opacity = 0.85 * (1 - eOut(prog(lt, 0, 0.35)));
+  const r = eOut(prog(lt, 0.02, 0.9));
+  css(c.ring, { transform: `scale(${lerp(0.1, 4, r)})`, opacity: 1 - r });
+  css(c.rays, { transform: `rotate(${lt * 8}deg) scale(${lerp(0.5, 1, eOut(prog(lt, 0, 0.6)))})`, opacity: 0.9 * prog(lt, 0, 0.3) });
+  css(c.glow, { transform: `scale(${1 + 0.05 * Math.sin(lt * 3)})`, opacity: prog(lt, 0, 0.4) });
+  const a = prog(lt, 0.05, 0.6);
+  css(c.icon, { opacity: clamp(a * 3), transform: `scale(${lerp(0.2, 1, eBack(a, 1.8))}) rotate(${(1 - eOut(a)) * -12}deg)` });
+  c.letters.forEach((l, i) => {
+    const b = prog(lt, 0.5 + i * 0.045, 0.85 + i * 0.045);
+    css(l, { opacity: clamp(b * 2), transform: `translateY(${(1 - eBack(b)) * 70}px)`, filter: b < 1 ? `blur(${(1 - b) * 10}px)` : "none" });
+  });
+  rise(c.tag, lt, 1.15);
+});
+
+// ================= F：主视觉 (11.5–14.5) =================
+scene("dark", 11.5, 14.5, (cam) => {
+  cam.insertAdjacentHTML("beforeend", `<div id="horizon"></div><div id="fEyebrow">${C.eyebrow}</div><img id="fShow" src="${ROOT}website/assets/showcases/main-${LANG}-light@2x.webp">`);
+  return { hz: cam.querySelector("#horizon"), eb: cam.querySelector("#fEyebrow"), img: cam.querySelector("#fShow") };
+}, (c, lt) => {
+  const w = V ? 1000 : 1340, hh = w * 2488 / 4352;
+  const a = eExpo(prog(lt, 0.0, 1.4));
+  css(c.img, { width: w + "px", marginLeft: -w / 2 + "px", marginTop: -hh / 2 + "px", opacity: clamp(prog(lt, 0, 0.25)),
+    transform: `translateY(${(1 - a) * 500}px) perspective(2400px) rotateX(${(1 - a) * 62}deg) scale(${lerp(0.8, 1, a) * (1 + lt * 0.02)})` });
+  css(c.hz, { transform: `translateY(${(1 - eExpo(prog(lt, 0, 1.0))) * 300}px)`, opacity: prog(lt, 0, 0.4) });
+  rise(c.eb, lt, 0.5);
+});
+
+// ================= G0：液态玻璃 (14.5–18.5) =================
+// 三次不同强度的位移分别取 R/G/B 再叠加，得到玻璃边缘的折射与轻微色散
+function glassFilter(id, map) {
+  const ch = ["1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0", "0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0", "0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0"];
+  return `<filter id="${id}" data-scale="${map.scale}" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feImage href="${map.src}" x="0" y="0" width="${map.w}" height="${map.h}" preserveAspectRatio="none" result="map"/>
+    ${ch.map((m, i) => `<feDisplacementMap in="SourceGraphic" in2="map" scale="0" data-k="${1 + i * 0.012}" xChannelSelector="R" yChannelSelector="G" result="d${i}"/><feColorMatrix in="d${i}" type="matrix" values="${m}" result="c${i}"/>`).join("")}
+    <feBlend in="c0" in2="c1" mode="screen" result="rg"/><feBlend in="rg" in2="c2" mode="screen"/>
+  </filter>`;
+}
+const setGlass = (filter, amount) => filter.querySelectorAll("feDisplacementMap").forEach((d) => d.setAttribute("scale", (amount * parseFloat(filter.dataset.scale) * parseFloat(d.dataset.k)).toFixed(2)));
+const INK = "#1b1f2a";
+const TOOLBAR = [["g76", [ICO.sidebar(INK)]], ["g150", [`<span>main</span>`, ICO.chev(INK).replace('class="chev"', 'style="transform:rotate(90deg)"')]],
+  ["g260", [ICO.refresh(INK), ICO.down(INK), ICO.up(INK)]], ["g180", [ICO.plus(INK), ICO.tag(INK)]], ["g180", [ICO.box(INK), ICO.compare(INK)]]];
+scene("light", 14.5, 18.5, (cam, sec) => {
+  const defs = h(`<svg width="0" height="0" style="position:absolute">${Object.entries(GLASS_MAPS).map(([k, m]) => glassFilter("gf-" + k, m)).join("")}</svg>`);
+  sec.appendChild(defs);
+  // 横屏：窗口在右下，工具栏浮在窗口内容上；竖屏：上文下图
+  const L = V ? { win: [40, 640, 1000, 1080], bar: [540, 600], lens: [[330, 1760], [880, 960]] }
+              : { win: [600, 360, 1240, 638], bar: [1220, 322], lens: [[520, 800], [1560, 540]] };
+  const [wx, wy, ww, wh] = L.win;
+  cam.insertAdjacentHTML("beforeend", `<div id="gWall" style="background-image:url('${ROOT}website/assets/wallpapers/landscape-light.webp')"></div>
+    <div id="gText"><h1>${C.glass[0]}</h1><p>${fmt(C.glass[1], true)}</p></div>
+    <div id="gWin" style="left:${wx}px;top:${wy}px;width:${ww}px;height:${wh}px"><img src="${ROOT}website/assets/screenshots/main-${LANG}-light@2x.webp" style="top:${(V ? 64 : 48) - wh * 0.118}px;height:${wh * 1.118}px;width:${wh * 1.118 * 3840 / 1976}px"><div class="gstrip" style="height:${V ? 64 : 48}px"></div><div class="tl"><i></i><i></i><i></i></div></div>`);
+  const gap = 14, total = TOOLBAR.reduce((a, [k]) => a + GLASS_MAPS[k].w, 0) + gap * (TOOLBAR.length - 1);
+  let x = L.bar[0] - total / 2;
+  const groups = TOOLBAR.map(([k, items], i) => {
+    const m = GLASS_MAPS[k];
+    const el = h(`<div class="glass" style="left:${x}px;top:${L.bar[1]}px;width:${m.w}px;height:${m.h}px;backdrop-filter:url(#gf-${k}) blur(1.5px) saturate(1.8) brightness(1.06)"><div class="spec"></div>${items.join("")}</div>`);
+    x += m.w + gap;
+    cam.appendChild(el);
+    return { el, f: defs.querySelector("#gf-" + k), spec: el.querySelector(".spec") };
+  });
+  const drop = h(`<div class="drop"></div>`);
+  groups[2].el.appendChild(drop);
+  const lm = GLASS_MAPS.lens;
+  const lens = h(`<div class="glass" id="gLens" style="width:${lm.w}px;height:${lm.h}px;backdrop-filter:url(#gf-lens) saturate(1.5) brightness(1.04)"><div class="spec"></div></div>`);
+  cam.appendChild(lens);
+  return { L, wall: cam.querySelector("#gWall"), text: cam.querySelector("#gText"), win: cam.querySelector("#gWin"), groups, drop, lens, lf: defs.querySelector("#gf-lens"), lm };
+}, (c, lt) => {
+  css(c.wall, { transform: `scale(${1 + lt * 0.015})` });
+  rise(c.text, lt, 0.1);
+  const wa = eExpo(prog(lt, 0, 0.7));
+  css(c.win, { opacity: clamp(wa * 2), transform: `translateY(${(1 - wa) * 90}px) scale(${lerp(0.94, 1, wa)})` });
+  // 工具栏：玻璃胶囊逐个弹出，带阻尼的液体晃动
+  c.groups.forEach((g, i) => {
+    const t0 = 0.35 + i * 0.09, a = prog(lt, t0, t0 + 0.45);
+    const dt = Math.max(0, lt - t0), wob = 0.09 * Math.sin(dt * 22) * Math.exp(-dt * 5);
+    css(g.el, { opacity: clamp(a * 3), transform: `scale(${lerp(0.4, 1, eBack(a, 1.4)) * (1 + wob)}, ${lerp(0.4, 1, eBack(a, 1.4)) * (1 - wob)})` });
+    setGlass(g.f, eOut(a));
+    g.spec.style.background = `linear-gradient(${110 + lt * 50 + i * 20}deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 26%, rgba(255,255,255,0) 74%, rgba(255,255,255,0.25) 100%)`;
+  });
+  // 选中水滴在三个按钮间流动，移动时被拉长
+  const slot = 260 / 3, stops = [[0.9, 0], [1.4, 1.75, 1], [2.2, 2.55, 2], [3.05, 3.45, 0]];
+  let pos = 0, stretch = 0;
+  for (const s of stops.slice(1)) { const p = prog(lt, s[0], s[1]); if (lt >= s[0]) { pos = lerp(pos, s[2], eInOut(p)); stretch = Math.max(stretch, Math.sin(Math.PI * p)); } }
+  const dw = 70 + 46 * stretch;
+  css(c.drop, { left: `${slot * (pos + 0.5) - dw / 2}px`, width: dw + "px", opacity: clamp(prog(lt, 0.9, 1.1)), transform: `scaleY(${1 - 0.12 * stretch})` });
+  // 透镜：液滴般出现，扫过界面并折射下方内容
+  const la = prog(lt, 1.0, 1.4), mv = eInOut(prog(lt, 1.1, 3.9));
+  const [[x0, y0], [x1, y1]] = c.L.lens;
+  const lx = lerp(x0, x1, mv), ly = lerp(y0, y1, mv) + Math.sin(lt * 2.4) * 30;
+  const vel = Math.sin(Math.PI * prog(lt, 1.1, 3.9));
+  css(c.lens, { left: lx - c.lm.w / 2 + "px", top: ly - c.lm.h / 2 + "px", opacity: clamp(la * 3), transform: `scale(${lerp(0.15, 1, eBack(la, 1.8)) * (1 + 0.06 * vel)}, ${lerp(0.15, 1, eBack(la, 1.8)) * (1 - 0.05 * vel)})` });
+  setGlass(c.lf, eOut(la));
+  c.lens.querySelector(".spec").style.background = `radial-gradient(circle at ${30 + 10 * Math.sin(lt * 1.5)}% 20%, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 16%), radial-gradient(circle at 72% 86%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 14%)`;
+});
+
+// ================= G：仓库折进侧边栏 (18.5–22.5) =================
+const REPOS = [
+  { g: "Studio", n: 3 }, { r: "aurora-ui", c: "#0a6cf0", sel: true }, { wt: "feature/toolbar", p: "aurora-ui-toolbar" }, { wt: "fix/dark-mode", p: "aurora-ui-dark" },
+  { r: "tide-api", c: "#34a853" }, { g: U.inactive, n: 1, sub: true, chev: "inactive" }, { r: "legacy-site", c: "#a0a6b2", in: 1, fold: "inactive" },
+  { g: "Open Source", n: 2 }, { r: "FoldGit", c: "#7cb342" }, { r: "harbor-docs", c: "#e5534b" },
+  { g: "Clients", n: 3, chev: "clients" }, { r: "pixel-studio", c: "#b072ff", fold: "clients" }, { r: "nova-app", c: "#ff9f0a", fold: "clients" }, { r: "atlas-cms", c: "#4cc3d9", fold: "clients" },
+];
+scene("light", 18.5, 22.5, (cam) => {
+  const f = featureShell(cam, [C.repos, C.worktrees], 560, 860);
+  f.win.classList.add("sb");
+  f.win.insertAdjacentHTML("beforeend", `<div class="tl"><i></i><i></i><i></i></div><div class="field" style="left:20px;right:20px;top:64px">${ICO.search()}<span>${U.searchRepos}</span></div>`);
+  const rows = REPOS.map((it) => {
+    let inner;
+    if (it.g) inner = `${it.sub ? '<span style="width:18px"></span>' : ""}${ICO.chev()}${it.sub ? ICO.box("#8b92a1") : ICO.folder()}<span class="grp">${it.g}</span><span class="cnt">${it.n}</span>`;
+    else if (it.wt) inner = `<span style="width:52px"></span>${ICO.branch()}<span class="wt">${it.wt}<small>${it.p}</small></span>`;
+    else inner = `<span style="width:${it.in ? 70 : 36}px"></span>${ICO.repo(it.c)}<span>${it.r}</span>`;
+    const el = h(`<div class="row${it.sel ? " sel" : ""}">${inner}</div>`);
+    f.win.appendChild(el);
+    return { ...it, el, chevEl: el.querySelector(".chev") };
+  });
+  // 飞入前散落的仓库卡片
+  const chips = rows.filter((r) => r.r).map((r, i) => { const el = h(`<div class="repochip">${ICO.repo(r.c)}<span>${r.r}</span></div>`); f.wrap.appendChild(el); return { el, row: r, i }; });
+  return { f, rows, chips };
+}, (c, lt) => {
+  const f = c.f;
+  featureFrame(f, lt, 4.0, 2.75);
+  const fold = { inactive: eInOut(prog(lt, 1.95, 2.3)), clients: eInOut(prog(lt, 2.3, 2.65)) };
+  const wtOpen = eInOut(prog(lt, 2.8, 3.2));
+  const flyT = (i) => [0.45 + i * 0.07, 1.05 + i * 0.07];
+  let y = 124, ri = 0;
+  for (const r of c.rows) {
+    let k = 1;
+    if (r.fold) k = 1 - fold[r.fold];
+    if (r.wt) k = wtOpen;
+    const rowH = 52 * k;
+    const rowIn = r.r ? prog(lt, flyT(ri)[1] - 0.05, flyT(ri)[1]) : eOut(prog(lt, 0.9, 1.3));
+    css(r.el, { top: y + "px", height: rowH + "px", opacity: rowIn * k, overflow: "hidden" });
+    if (r.chevEl) r.chevEl.style.transform = `rotate(${r.chev ? 90 * (1 - fold[r.chev]) : 90}deg)`;
+    if (r.r) { r.y = y; ri++; }
+    y += rowH;
+  }
+  c.chips.forEach(({ el, row, i }) => {
+    const [t0, t1] = flyT(i);
+    const a = eInOut(prog(lt, t0, t1));
+    const ang = i * 2.4 + 0.6;
+    const sx = V ? 380 * Math.cos(ang) - 40 : 190 + 400 * Math.cos(ang), sy = (V ? 520 : 400) * Math.sin(ang) + 380;
+    const float = Math.sin(lt * 2 + i) * 10 * (1 - a);
+    css(el, { opacity: lt > t1 ? 0 : clamp(prog(lt, i * 0.04, i * 0.04 + 0.2)), transform: `translate(${lerp(sx, 70, a)}px, ${lerp(sy, row.y + 2, a) + float}px) scale(${lerp(1.25, 0.85, a)}) rotate(${(1 - a) * (i % 2 ? 8 : -8)}deg)` });
+  });
+  moveCursor(f.cur, f.rip, lt, [[1.4, 470, 820], [1.85, 60, 309], [2.1, 60, 309], [2.3, 40, 413], [2.6, 40, 413], [2.9, 160, 152], [3.4, 230, 260]], [1.95, 2.3, 2.8]);
+});
+
+// ================= H：提交图与搜索 (22.5–26) =================
+const COMMITS = [
+  ["Update changelog for 0.2.0", "23bff88", "Mira Chen", 4, "HEAD -> main", "", 0],
+  ["Merge branch 'fix/dark-mode'", "12b6f01", "Sam Rivera", 5, "", "", 0],
+  ["Use adaptive stroke color in dark mode", "0e63b04", "Sam Rivera", 5, "fix/dark-mode", "purple", 1],
+  ["Add Badge view", "9643970", "Leo Hartmann", 5, "", "", 0],
+  ["Merge branch 'feature/toolbar'", "1383017", "Mira Chen", 5, "", "", 0],
+  ["Soften toolbar shadow", "fb66617", "Aiko Tanaka", 5, "feature/toolbar", "teal", 1],
+  ["Add FloatingToolbar with capsule background", "fd2ac73", "Aiko Tanaka", 5, "", "", 1],
+  ["Let GlassCard customize its corner radius", "8dca5ad", "Mira Chen", 5, "", "", 0],
+  ["Introduce shared theme constants", "41ab98f", "Leo Hartmann", 6, "", "", 0],
+  ["Add GlassCard component", "36d0130", "Mira Chen", 6, "", "", 0],
+  ["Initial commit", "d57e3bd", "Mira Chen", 6, "", "", 0],
+];
+scene("dark", 22.5, 26, (cam) => {
+  const f = featureShell(cam, [C.graph, C.search], 900, 860);
+  f.win.classList.add("cg", "lw");
+  f.win.insertAdjacentHTML("beforeend", `<div class="tl"><i></i><i></i><i></i></div>
+    <div class="field" id="hSearch" style="left:110px;width:420px;top:12px">${ICO.search()}<span class="typed"></span><span class="ph">${U.searchCommits}</span></div>
+    <div class="pill" style="right:20px;top:12px">${U.currentBranch} ⌄</div><div class="foot"><span id="hCount">${U.commits}</span></div>`);
+  const RH = 64, Y0 = 76, X0 = 34, X1 = 62;
+  const rows = COMMITS.map(([m, hs, a, d, tag, tc, lane]) => {
+    const el = h(`<div class="row"><div class="msg">${m}</div><div class="meta"><span>${hs}</span><span class="au">${a}</span><span>${U.ago(d)}</span>${tag ? `<span class="tag ${tc}">⎇ ${tag}</span>` : ""}</div></div>`);
+    f.win.appendChild(el);
+    return { el, author: a, au: el.querySelector(".au") };
+  });
+  const cy = (i) => Y0 + RH * i + RH / 2;
+  const col = (i) => (COMMITS[i][6] ? (i < 4 ? "#b072ff" : "#4cc3d9") : "#3b8cff");
+  const svg = h(`<svg class="abs" style="left:0;top:0" width="900" height="860" viewBox="0 0 900 860">
+    <path pathLength="1" d="M${X0} ${cy(0)} V${cy(10)}" stroke="#3b8cff" stroke-width="3.5" fill="none"/>
+    <path pathLength="1" d="M${X0} ${cy(1)} C${X0} ${cy(1) + 40} ${X1} ${cy(1) + 20} ${X1} ${cy(2)} C${X1} ${cy(3) - 20} ${X0} ${cy(3) - 30} ${X0} ${cy(3)}" stroke="#b072ff" stroke-width="3.5" fill="none"/>
+    <path pathLength="1" d="M${X0} ${cy(4)} C${X0} ${cy(4) + 40} ${X1} ${cy(4) + 20} ${X1} ${cy(5)} V${cy(6)} C${X1} ${cy(7) - 20} ${X0} ${cy(7) - 30} ${X0} ${cy(7)}" stroke="#4cc3d9" stroke-width="3.5" fill="none"/>
+    ${COMMITS.map((cm, i) => `<circle class="dot" cx="${cm[6] ? X1 : X0}" cy="${cy(i)}" r="${i === 1 || i === 4 ? 8 : 7}" fill="${i === 1 || i === 4 ? "#fff" : col(i)}" stroke="${col(i)}" stroke-width="3"/>`).join("")}
+  </svg>`);
+  f.win.appendChild(svg);
+  return { f, rows, RH, Y0, svg, paths: [...svg.querySelectorAll("path")], dots: [...svg.querySelectorAll(".dot")], search: f.win.querySelector("#hSearch"), count: f.win.querySelector("#hCount") };
+}, (c, lt) => {
+  const f = c.f;
+  featureFrame(f, lt, 3.5, 1.75);
+  c.paths.forEach((p, i) => { p.style.strokeDasharray = "1 1"; p.style.strokeDashoffset = 1 - eInOut(prog(lt, 0.25 + i * 0.2, 1.1 + i * 0.2)); });
+  const typed = typeText(c.search.querySelector(".typed"), "Mira", lt, 2.0, 9, lt >= 1.9);
+  c.search.querySelector(".ph").style.display = lt >= 1.9 ? "none" : "";
+  c.search.classList.toggle("on", lt >= 1.9);
+  const filt = eInOut(prog(lt, 2.45, 2.85));
+  let y = c.Y0;
+  c.rows.forEach((r, i) => {
+    const match = r.author === "Mira Chen";
+    const k = match ? 1 : 1 - filt;
+    const a = eOut5(prog(lt, 0.1 + i * 0.06, 0.55 + i * 0.06));
+    css(r.el, { top: y + "px", height: c.RH * k + "px", overflow: "hidden", opacity: a * k, transform: `translateX(${(1 - a) * 120}px)` });
+    r.au.innerHTML = match && typed === 4 ? `<mark>Mira</mark> Chen` : r.author;
+    c.dots[i].style.opacity = prog(lt, 0.2 + i * 0.06, 0.35 + i * 0.06);
+    y += c.RH * k;
+  });
+  c.svg.style.opacity = 1 - filt;
+  c.count.textContent = filt > 0.5 ? (LANG === "zh" ? "5 / 11 个提交" : "5 of 11 commits") : U.commits;
+  moveCursor(f.cur, f.rip, lt, [[1.3, 700, 600], [1.8, 260, 34], [3.5, 300, 120]], [1.85]);
+});
+
+// ================= I：并排差异与按块暂存 (26–30.5) =================
+const DIFF = [
+  [8, "    <k>public var</k> body: <k>some</k> View {", 8, "    <k>public var</k> body: <k>some</k> View {"],
+  [9, "        Text(text)", 9, "        Text(text)"],
+  [10, "            .font(.caption.weight(.semibold))", 10, "            .font(.caption.weight(.semibold))"],
+  [11, "            .padding(.horizontal, <n>8</n>)", 11, "            .padding(.horizontal, <h>Theme.spacing</h>)", "del", "add"],
+  [12, "            .padding(.vertical, <n>3</n>)", 12, "            .padding(.vertical, <n>4</n>)", "del", "add"],
+  [13, "            .background(Theme.accent.opacity(<n>0.15</n>), <k>in</k>: .capsule)", 13, "            .background(Theme.accent.opacity(<n>0.15</n>), <k>in</k>: .capsule)"],
+  [14, "            .foregroundStyle(Theme.accent)", 14, "            .foregroundStyle(Theme.accent)"],
+  ["", "", 15, "            .accessibilityLabel(text)", "gap", "add"],
+  [15, "    }", 16, "    }"],
+  [16, "}", 17, "}"],
+];
+const code = (s) => s.replace(/<k>/g, '<span class="kw">').replace(/<n>/g, '<span class="num">').replace(/<h>/g, '<span class="hl">').replace(/<\/[knh]>/g, "</span>");
+scene("light", 26, 30.5, (cam) => {
+  const f = featureShell(cam, [C.diff, C.hunk], 1200, 800);
+  f.win.classList.add("df");
+  const sw = `<img src="${FI("swift")}" width="22" height="22">`;
+  f.win.insertAdjacentHTML("beforeend", `<div class="tl"><i></i><i></i><i></i></div>
+    <div class="sec" style="top:62px">⌄ ${U.unstaged} <span class="n" id="iUn">3</span><span class="s">+15 −3</span></div>
+    <div class="hunk abs" style="left:0;right:0;top:100px;height:450px">
+      <div class="file" style="top:6px">${sw} Badge.swift <span class="badge">M</span></div>
+      <div class="hh" style="top:48px">@@ -8,9 +8,10 @@ public struct Badge: View {</div>
+      <div class="colhead" style="left:30px;top:76px">${U.before}</div><div class="colhead" style="left:614px;top:76px">${U.after}</div>
+      <div class="hunkbtn" style="right:22px;top:40px">+</div>
+    </div>
+    <div class="sec" style="top:584px">⌄ ${U.staged} <span class="n" id="iSt">1</span></div>
+    <div class="file" style="top:630px">${sw} Theme.swift <span class="badge">M</span></div>
+    <div class="file" id="iNew" style="top:672px">${sw} Badge.swift <span class="badge">M</span></div>
+    <div class="stagebox" id="iBox" style="left:30px;right:30px;top:618px;height:100px"></div>`);
+  const hunk = f.win.querySelector(".hunk");
+  const lines = [];
+  DIFF.forEach(([ln, l, rn, r, lc = "", rc = ""], i) => {
+    const top = 100 + i * 34;
+    const le = h(`<div class="ln ${lc}" style="left:20px;width:572px;top:${top}px"><b>${ln}</b>${code(l)}</div>`);
+    const re = h(`<div class="ln ${rc}" style="left:604px;width:576px;top:${top}px"><b>${rn}</b>${code(r)}</div>`);
+    hunk.append(le, re);
+    lines.push([le, re, rc === "add" || lc === "del"]);
+  });
+  return { f, hunk, lines, hl: hunk.querySelector(".hl"), un: f.win.querySelector("#iUn"), st: f.win.querySelector("#iSt"), nw: f.win.querySelector("#iNew"), box: f.win.querySelector("#iBox"), btn: hunk.querySelector(".hunkbtn") };
+}, (c, lt) => {
+  const f = c.f;
+  featureFrame(f, lt, 4.5, 2.1);
+  c.lines.forEach(([le, re, changed], i) => {
+    const a = eOut5(prog(lt, 0.25 + i * 0.06, 0.6 + i * 0.06));
+    css(le, { opacity: a, transform: `translateX(${(1 - a) * -40}px)` });
+    css(re, { opacity: a, transform: `translateX(${(1 - a) * 40}px)` });
+    if (changed) { const p = prog(lt, 1.0 + i * 0.05, 1.3 + i * 0.05); le.style.boxShadow = re.style.boxShadow = p > 0 && p < 1 ? `inset 0 0 0 2px rgba(10,108,240,${0.6 * Math.sin(p * Math.PI)})` : "none"; }
+  });
+  const sweep = eOut(prog(lt, 1.35, 1.75));
+  c.hl.style.background = `linear-gradient(90deg, rgba(40,190,90,0.45) ${sweep * 100}%, transparent ${sweep * 100}%)`;
+  // 点 + 后，代码块缩小飞进暂存区
+  const fly = eInOut(prog(lt, 2.6, 3.25));
+  css(c.hunk, { transformOrigin: "50% 0%", transform: `translate(0px, ${fly * 560}px) scale(${lerp(1, 0.12, fly)})`, opacity: 1 - prog(lt, 3.05, 3.25) });
+  css(c.btn, { background: lt > 2.45 ? "#0a6cf0" : "#eef0f4", color: lt > 2.45 ? "#fff" : "#5d6679" });
+  c.un.textContent = lt > 3.2 ? "2" : "3";
+  c.st.textContent = lt > 3.2 ? "2" : "1";
+  const n = prog(lt, 3.15, 3.5);
+  css(c.nw, { opacity: clamp(n * 2), transform: `scale(${lerp(0.6, 1, eBack(n))})`, transformOrigin: "0 50%" });
+  const bx = prog(lt, 2.6, 3.4);
+  css(c.box, { opacity: bx > 0 ? Math.sin(bx * Math.PI) : 0 });
+  moveCursor(f.cur, f.rip, lt, [[1.5, 900, 760], [2.3, 1158, 160], [2.7, 1158, 160], [3.4, 1000, 700]], [2.45]);
+});
+
+// ================= J：提交与推送 (30.5–33) =================
+scene("dark", 30.5, 33, (cam) => {
+  const f = featureShell(cam, [C.commit], 980, 380);
+  f.win.classList.add("cm", "lw");
+  const pushX = LANG === "zh" ? 236 : 220;
+  f.win.insertAdjacentHTML("beforeend", `<div class="tl"><i></i><i></i><i></i></div>
+    <div class="pill" style="left:120px;top:14px">${ICO.down("#3a4150")} ${U.pull}</div>
+    <div class="pill" id="jPush" style="left:${pushX}px;top:14px">${ICO.up("#3a4150")} ${U.push}<span class="badgeN">1</span></div>
+    <div class="pill" style="left:${pushX + 126}px;top:14px">${ICO.box("#3a4150")} ${U.stash}</div>
+    <div class="summary"><span>${U.staged}</span><span>2 files</span><span class="p">+11</span><span class="m">−1</span></div>
+    <div class="msgbox"><span id="jMsg"></span></div>
+    <div class="tpl" style="left:26px">fix:</div><div class="tpl" style="left:104px">feat:</div><div class="tpl" style="left:194px">docs:</div>
+    <div class="btn" id="jBtn">${U.commit}</div>
+    <div class="toast" id="jToast">${ICO.check("#1f8a4c")} ${LANG === "zh" ? "已提交并推送到 origin/main" : "Committed and pushed to origin/main"}</div>`);
+  return { f, pushX, msg: f.win.querySelector("#jMsg"), btn: f.win.querySelector("#jBtn"), push: f.win.querySelector("#jPush"), badge: f.win.querySelector(".badgeN"), toast: f.win.querySelector("#jToast"), box: f.win.querySelector(".msgbox") };
+}, (c, lt) => {
+  const f = c.f;
+  featureFrame(f, lt, 2.5, 99);
+  if (lt < 1.5) typeText(c.msg, U.message, lt, 0.42 - 6 / 40, 40, lt > 0.4);
+  else c.msg.innerHTML = "";
+  css(c.box, { opacity: lt > 1.5 && lt < 2.1 ? 0.45 : 1 });
+  const press = lt > 1.4 && lt < 1.56;
+  css(c.btn, { transform: `scale(${press ? 0.92 : 1})`, boxShadow: press ? "0 0 0 10px rgba(10,108,240,0.3)" : "0 10px 30px rgba(10,108,240,0.5)" });
+  const bd = lt < 1.6 ? 0 : lt < 2.05 ? eBack(prog(lt, 1.6, 1.8)) : 1 - prog(lt, 2.05, 2.15);
+  css(c.badge, { opacity: clamp(bd), transform: `scale(${clamp(bd, 0, 1.3)})` });
+  css(c.push, { transform: `translateY(${lt > 2.0 && lt < 2.2 ? -6 : 0}px)` });
+  const t = prog(lt, 2.1, 2.3);
+  css(c.toast, { opacity: t, transform: `translateX(-50%) translateY(${(1 - eOut(t)) * 20}px)`, display: "flex", alignItems: "center", gap: "10px" });
+  moveCursor(f.cur, f.rip, lt, [[0.05, 600, 360], [0.3, 140, 320], [0.6, 300, 240], [1.3, 880, 330], [1.7, 880, 330], [1.95, c.pushX + 50, 36], [2.5, c.pushX + 140, 120]], [0.35, 1.4, 2.0]);
+});
+
+// ================= K：亮暗与八种语言 (33–35.5) =================
+scene("dark", 33, 35.5, (cam) => {
+  cam.insertAdjacentHTML("beforeend", `<div id="kText"><h1>${C.theme[0]}</h1><p>${C.theme[1]}</p></div>
+    <div id="kWin"><img src="${ROOT}website/assets/screenshots/main-${LANG}-light@2x.webp"><img id="kDark" src="${ROOT}website/assets/screenshots/main-${LANG}-dark@2x.webp"><div id="kSplit"></div></div>
+    <div id="langBtn"></div><div id="langCap">${C.langs}</div>`);
+  return { tx: cam.querySelector("#kText"), win: cam.querySelector("#kWin"), dark: cam.querySelector("#kDark"), split: cam.querySelector("#kSplit"), btn: cam.querySelector("#langBtn"), cap: cam.querySelector("#langCap") };
+}, (c, lt) => {
+  rise(c.tx, lt, 0.05, 1.2);
+  const ww = V ? 1000 : 1500, wh = V ? 515 : 772;
+  const x = lt < 0.65 ? lerp(1.1, 0.15, eInOut(prog(lt, 0.15, 0.65))) : lerp(0.15, 0.6, eInOut(prog(lt, 0.7, 1.15)));
+  const skew = 0.06;
+  c.dark.style.clipPath = `polygon(${(x + skew) * 100}% 0, 100% 0, 100% 100%, ${(x - skew) * 100}% 100%)`;
+  css(c.split, { left: x * ww - 2 + "px", transform: `skewX(${-Math.atan(2 * skew * ww / wh) * 180 / Math.PI}deg)` });
+  const a = eExpo(prog(lt, 0, 0.5)), out = eInOut(prog(lt, 1.15, 1.45));
+  css(c.win, { opacity: a * (1 - out), transform: `translateY(${(1 - a) * 120}px) scale(${lerp(0.92, 1, a) * lerp(1, 0.7, out)})`, filter: out > 0 ? `blur(${out * 12}px)` : "none" });
+  const k = Math.min(COMMIT_WORDS.length - 1, Math.floor(clamp((lt - 1.4) / 0.13, 0, 99)));
+  c.btn.textContent = COMMIT_WORDS[k];
+  const b = prog(lt, 1.3, 1.6);
+  const tick = lt > 1.4 && (lt - 1.4) % 0.13 < 0.04 && k < COMMIT_WORDS.length - 1 ? 1.05 : 1;
+  css(c.btn, { opacity: clamp(b * 3), transform: `translate(-50%, -50%) scale(${lerp(0.5, 1, eBack(b)) * tick})` });
+  rise(c.cap, lt, 1.5);
+});
+
+// ================= L：约 6 MB (35.5–39) =================
+scene("dark", 35.5, 39, (cam) => {
+  const f = featureShell(cam, [C.size], 960, 380);
+  f.win.style.cssText = "background:transparent;border:0;box-shadow:none;overflow:visible";
+  f.win.classList.add("bars");
+  f.cur.style.display = "none";
+  f.win.insertAdjacentHTML("beforeend", `
+    <div class="lbl" style="top:20px;color:#aeb7c8">${C.bars[0][0]}</div><div class="bar" id="b0" style="top:70px;background:linear-gradient(90deg,#3a404d,#5b6273)"></div><div class="val" id="v0" style="top:84px;color:#e1e6ef">${C.bars[0][1]}</div>
+    <div class="lbl" style="top:200px">${C.bars[1][0]}</div><div class="bar" id="b1" style="top:250px;background:#3b8cff"></div><div class="val" id="v1" style="top:264px;color:#fff">${C.bars[1][1]}</div>`);
+  return { f, b0: f.win.querySelector("#b0"), b1: f.win.querySelector("#b1"), v0: f.win.querySelector("#v0"), v1: f.win.querySelector("#v1") };
+}, (c, lt) => {
+  featureFrame(c.f, lt, 3.5, 99, true);
+  css(c.b0, { width: 960 * eOut(prog(lt, 0.5, 1.5)) + "px" });
+  css(c.v0, { left: "28px", opacity: prog(lt, 1.2, 1.5) });
+  const g1 = eBack(prog(lt, 1.7, 2.0), 3);
+  const pulse = lt > 2.0 ? 0.5 + 0.5 * Math.sin((lt - 2.0) * 6) : 1;
+  css(c.b1, { width: Math.max(0, 24 * g1) + "px", opacity: clamp(prog(lt, 1.7, 1.75)), boxShadow: `0 0 ${24 + 30 * pulse}px rgba(59,140,255,${0.6 + 0.3 * pulse})` });
+  css(c.v1, { left: "52px", opacity: prog(lt, 1.9, 2.1), transform: `translateX(${(1 - eOut(prog(lt, 1.9, 2.2))) * -20}px)` });
+});
+
+// ================= M：同时想要的五样 (39–43.5) =================
+// 24 张通用客户端卡片，每打开一个开关淡出一批，最后只剩 WINNER
+const CARD_N = 24, WINNER = 9;
+const OUT = [[0, 4, 7, 12, 15, 19, 21, 23], [2, 6, 11, 16, 18, 22], [1, 5, 13, 17, 20], [3, 8, 14], [10]];
+const T_ON = (k) => 1.6 + k * 0.45;
+scene("light", 39, 43.5, (cam) => {
+  const P = V ? { head: [60, 250, 960], panel: [90, 400, 900, 560], grid: [45, 1110, 150, 100, 18, 24, 6], center: [540, 840], pickY: 1150 }
+              : { head: [120, 210, 760], panel: [120, 320, 680, 560], grid: [884, 312, 140, 96, 20, 24, 6], center: [960, 450], pickY: 720 };
+  cam.insertAdjacentHTML("beforeend", `<div id="fWall" style="background-image:url('${ROOT}website/assets/wallpapers/landscape-light.webp')"></div>
+    <div id="fHead" style="left:${P.head[0]}px;top:${P.head[1]}px;width:${P.head[2]}px">${C.clients.map((t) => `<div class="swap">${t}</div>`).join("")}</div>
+    <div id="fPanel" style="left:${P.panel[0]}px;top:${P.panel[1]}px;width:${P.panel[2]}px;height:${P.panel[3]}px">
+      ${C.toggles.map((t, i) => `<div class="trow" style="top:${30 + i * 100}px"><span>${t}</span><div class="track"><div class="knob"></div></div></div>`).join("")}
+    </div>
+    <div id="fPick" style="top:${P.pickY}px">${C.pick}</div>`);
+  const [gx, gy, cw, ch, gapx, gapy, cols] = P.grid;
+  const tints = ["#e9edf5", "#efe9f5", "#e8f3ee", "#f5efe6", "#e6eff7", "#f3e8ec"];
+  const cards = Array.from({ length: CARD_N }, (_, i) => {
+    const x = gx + (i % cols) * (cw + gapx), y = gy + Math.floor(i / cols) * (ch + gapy);
+    const el = h(`<div class="ccard" style="left:${x}px;top:${y}px;width:${cw}px;height:${ch}px">
+      <div class="face" style="--tint:${tints[i % tints.length]}"><b><i></i><i></i><i></i></b><s style="width:70%"></s><s style="width:45%"></s><s style="width:58%"></s></div>
+      ${i === WINNER ? `<div class="back"><img src="${ICON}"></div>` : ""}</div>`);
+    cam.appendChild(el);
+    return { el, x, y, out: OUT.findIndex((o) => o.includes(i)) };
+  });
+  return { P, cw, ch, wall: cam.querySelector("#fWall"), head: [...cam.querySelectorAll("#fHead .swap")], panel: cam.querySelector("#fPanel"),
+    rows: [...cam.querySelectorAll(".trow")], cards, pick: cam.querySelector("#fPick") };
+}, (c, lt) => {
+  css(c.wall, { transform: `scale(${1.1 + lt * 0.01})` });
+  const fin = eInOut(prog(lt, 3.55, 4.05));
+  swapWords(c.head, lt, [0.1, 1.0]);
+  c.head.forEach((h1) => { h1.style.opacity *= 1 - fin; });
+  const pa = eExpo(prog(lt, 0.9, 1.4));
+  css(c.panel, { opacity: pa * (1 - fin), transform: `translateY(${(1 - pa) * 60}px) scale(${lerp(0.94, 1, pa) * lerp(1, 0.94, fin)})` });
+  c.rows.forEach((r, i) => {
+    rise(r, lt, 1.05 + i * 0.07, null, 24, 0.4);
+    const p = prog(lt, T_ON(i), T_ON(i) + 0.28), e = eInOut(p);
+    const kw = 48 + 18 * Math.sin(Math.PI * p);
+    css(r.querySelector(".knob"), { left: `${lerp(5, 100 - 5 - 48, e) - (kw - 48) * e}px`, width: kw + "px" });
+    r.querySelector(".track").style.background = `rgba(${Math.round(lerp(150, 10, e))}, ${Math.round(lerp(158, 108, e))}, ${Math.round(lerp(175, 240, e))}, ${lerp(0.35, 1, e)})`;
+  });
+  c.cards.forEach((cd, i) => {
+    const a = eBack(prog(lt, 0.05 + i * 0.02, 0.45 + i * 0.02), 1.4);
+    let o = clamp(prog(lt, 0.05 + i * 0.02, 0.2 + i * 0.02)), sc = lerp(0.6, 1, a), ty = 0, blur = 0, gray = 0;
+    if (cd.out >= 0) {
+      const e = eOut(prog(lt, T_ON(cd.out) + 0.05, T_ON(cd.out) + 0.4));
+      o *= 1 - 0.92 * e; sc *= 1 - 0.18 * e; ty = 24 * e; blur = 3 * e; gray = e;
+    }
+    if (i === WINNER) {
+      const [cx, cy] = c.P.center;
+      const k = eInOut(prog(lt, 3.6, 4.15));
+      const flip = eInOut(prog(lt, 3.75, 4.25));
+      css(cd.el, { opacity: o, transform: `translate(${(cx - c.cw / 2 - cd.x) * k}px, ${(cy - c.ch / 2 - cd.y) * k}px) scale(${sc * lerp(1, 2.6, k)}) rotateY(${flip * 180}deg)`,
+        zIndex: 5 });
+      const img = cd.el.querySelector(".back img");
+      img.style.filter = `drop-shadow(0 ${10 + 20 * k}px ${24 + 30 * k}px rgba(10,80,220,${0.35 + 0.35 * k}))`;
+    } else {
+      css(cd.el, { opacity: o * (1 - fin), transform: `translateY(${ty}px) scale(${sc})`, filter: blur || gray ? `grayscale(${gray}) blur(${blur}px)` : "none" });
+    }
+  });
+  pop(c.pick, lt, 4.05, 0.35, 1.15);
+});
+
+// ================= M2：收尾一句 (43.5–45.5) =================
+scene("light", 43.5, 45.5, (cam) => {
+  const cl = h(`<div class="center"><div class="mid" id="m1">${C.closing[0]}</div><div class="mid" id="m2" style="margin-top:14px">${C.closing[1]}</div></div>`);
+  if (V) cl.querySelectorAll(".mid").forEach((m) => { m.style.fontSize = "72px"; m.style.padding = "0 50px"; });
+  cam.appendChild(cl);
+  return { m1: cl.querySelector("#m1"), m2: cl.querySelector("#m2") };
+}, (c, lt) => {
+  rise(c.m1, lt, 0.05);
+  pop(c.m2, lt, 0.5, 0.4, 1.15);
+});
+
+// ================= N：结尾 (45.5–51.5) =================
+const BREW = "brew install --cask dufu1991/tap/foldgit";
+scene("dark", 45.5, DURATION, (cam) => {
+  cam.insertAdjacentHTML("beforeend", `<div id="glowE" style="top:36%"></div><div class="center">
+    <img id="nIcon" src="${ICON}"><div id="nBrand">FoldGit</div><div id="nUrl">foldgit.com</div>
+    <div id="nBrew"><span class="pr">$</span> <span id="nCmd"></span></div><div id="nGh">github.com/dufu1991/foldgit</div><div id="nMeta">${C.meta}</div></div><div id="flash"></div>`);
+  return { glow: cam.querySelector("#glowE"), icon: cam.querySelector("#nIcon"), brand: cam.querySelector("#nBrand"), url: cam.querySelector("#nUrl"), brew: cam.querySelector("#nBrew"), cmd: cam.querySelector("#nCmd"), gh: cam.querySelector("#nGh"), meta: cam.querySelector("#nMeta"), flash: cam.querySelector("#flash") };
+}, (c, lt) => {
+  c.flash.style.opacity = 0.6 * (1 - eOut(prog(lt, 0, 0.3)));
+  css(c.glow, { opacity: prog(lt, 0, 0.5) * (0.85 + 0.15 * Math.sin(lt * 2)) });
+  const a = prog(lt, 0.0, 0.6);
+  css(c.icon, { opacity: clamp(a * 3), transform: `scale(${lerp(0.3, 1, eBack(a, 1.6))})` });
+  rise(c.brand, lt, 0.3);
+  rise(c.url, lt, 0.55);
+  rise(c.brew, lt, 0.85);
+  typeText(c.cmd, BREW, lt, 1.2, 26);
+  rise(c.gh, lt, 2.9);
+  rise(c.meta, lt, 3.1);
+});
+
+// ---------- 主渲染 ----------
+function render(t) {
+  for (const s of SCENES) {
+    const on = t >= s.a && t < s.b;
+    s.sec.style.display = on ? "block" : "none";
+    if (!on) continue;
+    const lt = t - s.a;
+    // 每个镜头切入时的冲击：轻微放大回落 + 模糊收拢
+    const k = eOut5(prog(lt, 0, 0.32));
+    css(s.cam, { transform: `scale(${lerp(1.07, 1, k)})`, filter: k < 1 ? `blur(${(1 - k) * 9}px)` : "none" });
+    s.update(s.ctx, lt, t);
+  }
+}
+window.render = render;
+window.DURATION = DURATION;
+window.ready = Promise.all([
+  document.fonts.ready,
+  ...[...document.images].map((i) => (i.complete ? Promise.resolve() : new Promise((r) => { i.onload = i.onerror = r; }))),
+]).then(() => Promise.all([...document.images].map((i) => i.decode().catch(() => {})))).then(() => { render(0); return true; });
+
+if (Q.get("t")) window.ready.then(() => render(parseFloat(Q.get("t"))));
+if (Q.get("play")) window.ready.then(() => { const t0 = performance.now(); const loop = () => { render(((performance.now() - t0) / 1000) % DURATION); requestAnimationFrame(loop); }; loop(); });
+</script>
+</body>
+</html>

@@ -4,20 +4,20 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>FoldGit 使用手册</title>
-  <meta name="description" content="FoldGit 使用手册：安装、仓库分组、目录树与差异查看、按目录或代码块暂存、提交、分支和工作树。">
+  <meta name="description" content="FoldGit 使用手册：安装、仓库整理、差异审查、暂存与提交、分支同步、工作树、Git 命令日志与操作失败排查。">
   <link rel="canonical" href="https://foldgit.com/manual">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="FoldGit">
   <meta property="og:url" content="https://foldgit.com/manual">
   <meta property="og:title" content="FoldGit User Guide">
-  <meta property="og:description" content="Install FoldGit, group repositories, review diffs in a directory tree, stage by folder or hunk, and work with branches and worktrees.">
+  <meta property="og:description" content="Install FoldGit, review and commit changes, sync branches, manage worktrees, and troubleshoot failures with Git command logs.">
   <meta property="og:image" content="https://foldgit.com/assets/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="FoldGit: every repository, folded into one window.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="FoldGit User Guide">
-  <meta name="twitter:description" content="Install FoldGit, group repositories, review diffs in a directory tree, stage by folder or hunk, and work with branches and worktrees.">
+  <meta name="twitter:description" content="Install FoldGit, review and commit changes, sync branches, manage worktrees, and troubleshoot failures with Git command logs.">
   <meta name="twitter:image" content="https://foldgit.com/assets/og.png">
   <meta name="color-scheme" content="light dark">
   <link rel="icon" href="assets/favicon.png" media="(prefers-color-scheme: light)">
@@ -39,11 +39,11 @@
     window.FOLDGIT_I18N = {
       zh: {
         "meta.title": "FoldGit 使用手册",
-        "meta.description": "FoldGit 使用手册：安装、仓库分组、目录树与差异查看、按目录或代码块暂存、提交、分支和工作树。"
+        "meta.description": "FoldGit 使用手册：安装、仓库整理、差异审查、暂存与提交、分支同步、工作树、Git 命令日志与操作失败排查。"
       },
       en: {
         "meta.title": "FoldGit User Guide",
-        "meta.description": "The FoldGit user guide: installation, repository groups, directory trees, diffs, staging by directory or hunk, commits, branches and worktrees."
+        "meta.description": "The FoldGit user guide: installation, repository organization, diffs, staging and commits, branch sync, worktrees, Git command logs and troubleshooting."
       }
     };
   </script>
@@ -121,6 +121,8 @@
         <a href="#branches"><span class="show-zh">分支与同步</span><span class="show-en">Branches and sync</span></a>
         <a href="#worktrees"><span class="show-zh">工作树</span><span class="show-en">Worktrees</span></a>
         <a href="#stash"><span class="show-zh">贮藏</span><span class="show-en">Stash</span></a>
+        <a href="#command-log"><span class="show-zh">Git 命令日志</span><span class="show-en">Git command logs</span></a>
+        <a href="#troubleshooting"><span class="show-zh">操作失败与排查</span><span class="show-en">Troubleshoot failures</span></a>
         <a href="#settings"><span class="show-zh">设置</span><span class="show-en">Settings</span></a>
         <a href="#shortcuts"><span class="show-zh">快捷键</span><span class="show-en">Shortcuts</span></a>
       </aside>
@@ -359,9 +361,10 @@
               <li><b>合并分支</b>：在菜单栏「分支 → 合并分支」中选一个本地或远程分支，合并到当前分支。</li>
               <li><b>新建分支</b>（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>B</kbd>）、<b>标签</b>：创建分支，浏览和管理标签；<kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd> 新建标签。</li>
               <li><b>比较</b>：选两个版本，查看它们之间的全部差异。</li>
-              <li><b>获取 / 拉取 / 推送</b>（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd> / <kbd>L</kbd> / <kbd>P</kbd>）：与远程同步。获取只下载更新，不会合并。<kbd>⌘</kbd><kbd>R</kbd> 刷新仓库状态。</li>
+              <li><b>获取、拉取与推送</b>：<kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd> 获取，<kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> 拉取，<kbd>⇧</kbd><kbd>⌘</kbd><kbd>P</kbd> 推送。获取只下载更新，不会合并。<kbd>⌘</kbd><kbd>R</kbd> 刷新仓库状态。</li>
               <li><b>打开方式</b>：在终端、编辑器或访达中打开当前仓库。<kbd>⌃</kbd><kbd>⌘</kbd><kbd>T</kbd> 在终端中打开，<kbd>⌃</kbd><kbd>⌘</kbd><kbd>O</kbd> 在访达中显示。</li>
             </ul>
+            <p class="tip">拉取和推送前，仓库需要已配置远程，且当前检出的是分支。处于分离头指针状态时，先切换到分支；当前分支尚未设置上游时，先推送以建立上游关联，再拉取。操作失败时，可按<a href="#troubleshooting">排查步骤</a>查看原因和日志。</p>
           </div>
           <div class="show-en">
             <p>Everything lives in the toolbar, and in the Repository and Branch menus of the menu bar:</p>
@@ -373,6 +376,7 @@
               <li><b>Fetch / Pull / Push</b> (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd> / <kbd>L</kbd> / <kbd>P</kbd>) — sync with the remote. Fetch only downloads; it never merges. <kbd>⌘</kbd><kbd>R</kbd> refreshes the repository.</li>
               <li><b>Open in</b> — open the repository in Terminal, your editor or Finder. <kbd>⌃</kbd><kbd>⌘</kbd><kbd>T</kbd> opens Terminal, <kbd>⌃</kbd><kbd>⌘</kbd><kbd>O</kbd> shows it in Finder.</li>
             </ul>
+            <p class="tip">Pull and Push require a configured remote and a checked-out branch. Switch to a branch if HEAD is detached. If the branch has no upstream, push it first to set the upstream before pulling. If an operation fails, follow the <a href="#troubleshooting">troubleshooting steps</a> to inspect the reason and logs.</p>
           </div>
         </section>
 
@@ -408,8 +412,70 @@
           </div>
         </section>
 
-        <section class="m-section glass" id="settings" data-reveal>
+        <section class="m-section glass" id="command-log" data-reveal>
           <span class="m-num">10</span>
+          <h2><span class="show-zh">Git 命令日志</span><span class="show-en">Git command logs</span></h2>
+          <div class="show-zh">
+            <p>在 macOS 版中选中仓库或工作树，点击工具栏右侧的「日志」，或选择菜单栏「显示 → 日志」，打开右侧浮层。日志按执行目录分别显示，切换仓库或工作树时会跟随切换，最新命令排在前面。点击关闭按钮或浮层外部可收起。</p>
+            <h3>查找并查看命令</h3>
+            <ul>
+              <li><b>展开记录</b>：查看命令、执行时间、状态和耗时。展开后可查看执行目录、退出码、标准输出、错误输出及失败原因；没有输出时会显示「无输出」。</li>
+              <li><b>搜索命令</b>：输入命令或输出中的文字，也可以搜索失败原因。</li>
+              <li><b>筛选命令</b>：默认隐藏读取命令。要查看读取历史、状态或差异等记录，在筛选菜单中勾选「包含读取命令」；「只看失败」显示执行失败或超时的记录。排查读取失败时，请同时勾选这两项。</li>
+            </ul>
+            <h3>复制、导出与清空</h3>
+            <ul>
+              <li><b>单条记录</b>：展开记录或右键，选择「复制命令」或「复制日志」。</li>
+              <li><b>当前列表</b>：顶部「日志操作」菜单中的「复制日志」和「导出日志」只包含当前搜索与筛选后显示的记录。需要更多记录时，先清空搜索并调整筛选；导出为文本日志文件。</li>
+              <li><b>清空日志</b>：移除当前仓库或工作树已结束的命令记录，正在执行的命令会保留。清空范围不受搜索与筛选条件限制。</li>
+            </ul>
+            <p class="tip">日志仅保留在本次应用运行期间，重启后清空。旧记录和过长输出有保留限制，输出截断时会标注「输出已截断」，二进制输出只显示字节数。需要留存排查信息时，请在退出前复制或导出。</p>
+          </div>
+          <div class="show-en">
+            <p>On macOS, select a repository or worktree and click Log on the right of the toolbar, or choose View → Log. A panel opens on the right. Logs are separated by execution directory and follow the selected repository or worktree, with the newest commands first. Close the panel with its close button or by clicking outside it.</p>
+            <h3>Find and inspect commands</h3>
+            <ul>
+              <li><b>Expand a record</b> — inspect the command, start time, status and duration. Expand it to see the execution directory, exit code, standard output, standard error and failure reason when available. Commands with no output show No Output.</li>
+              <li><b>Search Commands</b> — search text in commands, output or failure reasons.</li>
+              <li><b>Filter Commands</b> — read commands are hidden by default. Enable Include Read Commands to see commands that read history, status or diffs. Only Failures shows failed or timed-out commands. Enable both options when investigating a failed read.</li>
+            </ul>
+            <h3>Copy, export and clear</h3>
+            <ul>
+              <li><b>One record</b> — expand or right-click a record and choose Copy Command or Copy Log.</li>
+              <li><b>The current list</b> — Copy Log and Export Log in the top Log Actions menu include only records visible under the current search and filters. Clear the search and adjust the filters to include more records. Export saves a plain-text log file.</li>
+              <li><b>Clear Log</b> — removes completed records for the current repository or worktree and keeps running commands. Search and filters do not limit what gets cleared.</li>
+            </ul>
+            <p class="tip">Logs last for the current app session and are cleared on restart. Older records and long output have retention limits. Shortened output is marked Output Truncated; binary output shows only its byte count. Copy or export diagnostic information before quitting if you need to keep it.</p>
+          </div>
+        </section>
+
+        <section class="m-section glass" id="troubleshooting" data-reveal>
+          <span class="m-num">11</span>
+          <h2><span class="show-zh">操作失败与排查</span><span class="show-en">Troubleshoot failures</span></h2>
+          <div class="show-zh">
+            <ol>
+              <li><b>确认失败操作</b>：错误提示会标明正在执行的操作，例如「暂存更改」「提交」或「拉取」，并在「失败原因」中显示具体信息。部分工作树或合并操作会直接在弹窗内显示操作名称和原因。</li>
+              <li><b>定位 Git 命令</b>：错误弹窗提供「查看日志」时，点击即可打开日志并展开对应命令，原有搜索和筛选会重置，确保该记录可见。该入口仅在错误关联到当前仓库的 Git 命令时出现；其他情况可手动打开<a href="#command-log">日志</a>查找。</li>
+              <li><b>处理后重新操作</b>：根据失败原因检查远程配置、分支状态或文件，处理后再执行原操作。需要反馈时，复制失败原因及对应命令的日志。</li>
+            </ol>
+            <h3>后台获取与工作树警告</h3>
+            <p>侧边栏中，仓库旁的橙色警告图标可点击查看自动获取或工作树读取的错误详情，其中会显示对应目录。「设置 → 仓库」中的自动获取错误提示也可点击查看。工具栏出现「同步错误」时，点击可查看原因。</p>
+            <p class="tip">自动获取失败后，可选中对应仓库并手动执行「获取」。获取成功会清除该仓库的自动获取错误，并更新「上次成功获取」时间。</p>
+          </div>
+          <div class="show-en">
+            <ol>
+              <li><b>Identify the operation</b> — the error names the operation, such as Stage Changes, Commit or Pull, and shows the details under Failure Reason. Some worktree and merge operations display the operation name and reason directly inside their sheet.</li>
+              <li><b>Locate the Git command</b> — when an error sheet offers View Log, click it to open the log and expand the matching command. Previous search and filters reset to make the record visible. This shortcut appears only for a Git command associated with the current repository. Otherwise, open the <a href="#command-log">log</a> manually to investigate.</li>
+              <li><b>Resolve and retry</b> — use the reason to check the remote configuration, branch state or files, then repeat the original operation. For a bug report, copy the failure reason and the relevant command log.</li>
+            </ol>
+            <h3>Background fetch and worktree warnings</h3>
+            <p>Click an orange warning beside a repository in the sidebar to inspect an automatic fetch or worktree loading error, including its directory. Automatic fetch errors under Settings → Repositories are also clickable. If Sync Error appears in the toolbar, click it to inspect the reason.</p>
+            <p class="tip">After an automatic fetch fails, select that repository and run Fetch manually. A successful fetch clears its automatic fetch error and updates Last Successful Fetch.</p>
+          </div>
+        </section>
+
+        <section class="m-section glass" id="settings" data-reveal>
+          <span class="m-num">12</span>
           <h2><span class="show-zh">设置</span><span class="show-en">Settings</span></h2>
           <div class="show-zh">
             <p>按 <kbd>⌘</kbd><kbd>,</kbd> 打开。常用的几项：</p>
@@ -419,7 +485,7 @@
               <li><b>外观</b>：选择浅色、深色或自动跟随系统；工具栏可显示「仅图标」或「图标和文字」。</li>
               <li><b>历史与差异</b>：控制提交关系图、差异布局、代码字号和长行自动换行。「文件默认展开方式」默认设为「折叠」，可改为「展开」；它作用于新打开的差异，手动展开或收起的文件会保留原状态。</li>
               <li><b>提交信息</b>：维护提交快捷输入条目，插入常用前缀或文案。</li>
-              <li><b>仓库</b>：启用工作树信息，为每个仓库单独设置自动获取间隔。自动获取只下载远程更新，不合并。</li>
+              <li><b>仓库</b>：启用工作树信息，为每个仓库单独设置自动获取间隔。自动获取只下载远程更新，不合并；这里也可查看上次成功获取的时间，点击错误提示查看详情，具体见<a href="#troubleshooting">操作失败与排查</a>。</li>
               <li><b>外部应用</b>：固定常用的编辑器或终端，它们会排在「打开方式」菜单最前面。</li>
               <li><b>恢复默认</b>：在「通用」中点击「恢复默认设置」，先查看将被重置的选项，再确认恢复。</li>
             </ul>
@@ -432,7 +498,7 @@
               <li><b>Appearance</b> — choose Light, Dark or Automatic, and set Toolbar Display to Icons Only or Icons and Text.</li>
               <li><b>History and Diffs</b> — configure the commit graph, diff layout, code font size and line wrapping. Default File Expansion starts at Collapsed; choose Expanded to open new diffs with their contents visible. Files you expand or collapse manually keep their state.</li>
               <li><b>Commit Messages</b> — manage snippets for common prefixes or text.</li>
-              <li><b>Repositories</b> — enable worktree information and choose an automatic fetch interval per repository. Fetch downloads remote updates without merging them.</li>
+              <li><b>Repositories</b> — enable worktree information and choose an automatic fetch interval per repository. Fetch downloads remote updates without merging them. You can also see Last Successful Fetch and click errors for details; see <a href="#troubleshooting">Troubleshoot failures</a>.</li>
               <li><b>External Applications</b> — pin an editor or terminal to place it first in the Open in menu.</li>
               <li><b>Restore Defaults</b> — under General, review the settings that will be reset before confirming.</li>
             </ul>
@@ -440,7 +506,7 @@
         </section>
 
         <section class="m-section glass" id="shortcuts" data-reveal>
-          <span class="m-num">11</span>
+          <span class="m-num">13</span>
           <h2><span class="show-zh">快捷键</span><span class="show-en">Shortcuts</span></h2>
           <p><span class="show-zh">macOS 版的常用操作都在菜单栏中，菜单项旁显示对应快捷键；完整列表可在「帮助 → 快捷键」中查看。</span><span class="show-en">On macOS every common action is in the menu bar, with its shortcut beside it. Help → Keyboard Shortcuts shows the full list.</span></p>
           <dl class="keys">

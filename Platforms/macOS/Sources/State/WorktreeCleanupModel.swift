@@ -38,14 +38,14 @@ import Observation
     }
 
     /// Removes the selected worktrees one at a time. A worktree that changed since the preview is kept and reported.
-    func run(onRemoved: (URL) -> Void) async {
+    func run(onRemoved: (URL) async -> Void) async {
         guard phase == .review else { return }
         phase = .running
         errorMessage = nil
         for candidate in candidates where selection.contains(candidate.id) {
             do {
                 outcomes[candidate.id] = .removed(try await WorktreeCleanup.remove(candidate, deletingBranch: deleteBranches))
-                onRemoved(candidate.tree.url)
+                await onRemoved(candidate.tree.url)
             } catch {
                 outcomes[candidate.id] = .failed(error.localizedDescription)
             }

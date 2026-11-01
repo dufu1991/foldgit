@@ -9,6 +9,10 @@ import Observation
     private(set) var statuses: [URL: WorktreeStatus] = [:]
     private(set) var trunks: [URL: TrunkReference] = [:]
     @ObservationIgnored private let cache = TrunkComparisonCache()
+    /// The poll, file events and the management sheet refresh concurrently. Each refresh takes a newer generation,
+    /// and a result is applied only if no newer refresh has already written that worktree.
+    @ObservationIgnored private var generation = 0
+    @ObservationIgnored private var appliedGeneration: [URL: Int] = [:]
     static let concurrentReads = 4
 
     func status(for url: URL) -> WorktreeStatus? { statuses[RepositoryLocation.canonical(url)] }
@@ -23,6 +27,8 @@ import Observation
     /// Refreshes every worktree of the given families. Pass `onlyPaths` (canonical worktree paths) to limit reads
     /// to worktrees with file events, reusing the trunk already resolved for their family.
     func refresh(_ families: [[GitWorktree]], onlyPaths: Set<String>? = nil) async {
+        generation += 1
+        let token = generation
         var jobs: [(GitWorktree, TrunkReference?)] = []
         for trees in families {
             let usable = trees.filter { !$0.isBare && !$0.isPrunable && FileManager.default.fileExists(atPath: $0.url.path) }
@@ -36,7 +42,7 @@ import Observation
             jobs += targets.map { ($0, trunk) }
         }
         let cache = cache
-        var updated = statuses
+        var fresh: [URL: WorktreeStatus?] = [:]
         var start = jobs.startIndex
         while start < jobs.endIndex {
             guard !Task.isCancelled else { return }
@@ -50,9 +56,15 @@ import Observation
                 for await result in group { results.append(result) }
                 return results
             }
-            for (id, status) in results { updated[id] = status }
+            for (id, status) in results { fresh[id] = status }
         }
-        // Polling repeats this every few seconds; unchanged results must not invalidate the sidebar.
+        // Merge into the current values rather than a snapshot taken before the reads, so concurrent refreshes keep
+        // each other's results. Polling repeats this every few seconds; unchanged results must not invalidate the sidebar.
+        var updated = statuses
+        for (id, status) in fresh where appliedGeneration[id, default: 0] <= token {
+            appliedGeneration[id] = token
+            updated[id] = status
+        }
         if updated != statuses { statuses = updated }
     }
 }

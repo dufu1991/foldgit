@@ -183,8 +183,9 @@ public struct TrunkReference: Hashable, Sendable {
                 var remote: String?
                 if refs.contains(local) {
                     let upstream = try await session.run(TrunkUpstream(directory: directory, reference: local))
-                    // Without tracking configuration, a same-named branch on origin is still the trunk's remote copy.
-                    remote = upstream.isEmpty ? (refs.contains(remoteOnly) ? remoteOnly : nil) : upstream
+                    // A configured upstream may be pruned or never fetched; only an existing ref can be compared.
+                    // Without a usable upstream, a same-named branch on origin is still the trunk's remote copy.
+                    remote = refs.contains(upstream) ? upstream : (refs.contains(remoteOnly) ? remoteOnly : nil)
                 } else {
                     remote = remoteOnly
                 }
@@ -197,7 +198,7 @@ public struct TrunkReference: Hashable, Sendable {
 
 private struct TrunkRefs: GitTextQuery {
     var directory: URL
-    var arguments: [String] { ["git", "for-each-ref", "--format=%(refname)", "refs/heads", "refs/remotes/origin"] }
+    var arguments: [String] { ["git", "for-each-ref", "--format=%(refname)", "refs/heads", "refs/remotes"] }
 }
 
 /// `for-each-ref` succeeds without a match, so a missing `origin/HEAD` is not logged as a failed command.
@@ -236,6 +237,17 @@ public struct TrunkComparison: Hashable, Sendable {
     public let ahead: Int
     public let behind: Int
     public let integration: WorktreeIntegration
+    /// Short name of the reference that contains the commit. It differs from `reference`
+    /// when the work is merged into the local trunk but not pushed yet.
+    public let integratedInto: String?
+
+    public init(reference: String, ahead: Int, behind: Int, integration: WorktreeIntegration, integratedInto: String? = nil) {
+        self.reference = reference
+        self.ahead = ahead
+        self.behind = behind
+        self.integration = integration
+        self.integratedInto = integratedInto
+    }
 }
 
 public enum WorktreeIntegrationCheck {
@@ -249,20 +261,25 @@ public enum WorktreeIntegrationCheck {
             guard parts.count == 2 else { throw GitExecutionError(description: NSLocalizedString("Git returned invalid commit counts.", comment: "")) }
             let (behind, ahead) = (parts[0], parts[1])
             var integration = WorktreeIntegration.notIntegrated
+            var integratedInto: String?
             if ahead == 0 {
-                integration = .ancestor
+                (integration, integratedInto) = (.ancestor, comparison)
             } else {
                 for reference in trunk.candidates where reference != comparison {
                     let count = try await session.run(IntegrationGit(directory: directory, args: ["rev-list", "--count", "\(reference)..\(commit)"]))
-                    if count.trimmingCharacters(in: .whitespacesAndNewlines) == "0" { integration = .ancestor; break }
+                    if count.trimmingCharacters(in: .whitespacesAndNewlines) == "0" { (integration, integratedInto) = (.ancestor, reference); break }
                 }
                 if integration != .ancestor {
                     for reference in trunk.candidates {
-                        if try await contentMerged(commit, into: reference, using: session) { integration = .contentMerged; break }
+                        if try await contentMerged(commit, into: reference, using: session) {
+                            (integration, integratedInto) = (.contentMerged, reference)
+                            break
+                        }
                     }
                 }
             }
-            return TrunkComparison(reference: TrunkReference.shortName(comparison), ahead: ahead, behind: behind, integration: integration)
+            return TrunkComparison(reference: TrunkReference.shortName(comparison), ahead: ahead, behind: behind,
+                                   integration: integration, integratedInto: integratedInto.map(TrunkReference.shortName))
         }
     }
 
@@ -320,14 +337,15 @@ public struct WorktreeStatus: Hashable, Sendable {
         let (working, operation, tips) = try await GitRuntime.read(at: directory, readOnly: true) { session in
             let working = try await session.run(GitWorkingTreeStatusQuery(directory: directory, untracked: untracked))
             let operation = try await GitPendingOperation.detect(using: session)
-            var tips = ""
+            var tips: String?
             if let trunk, working.head != nil {
-                tips = try await session.run(IntegrationGit(directory: directory,
+                tips = try? await session.run(IntegrationGit(directory: directory,
                     args: ["rev-parse", "--end-of-options"] + trunk.candidates))
             }
             return (working, operation, tips)
         }
-        guard let head = working.head, let trunk else { return Self(working: working, operation: operation, trunk: nil) }
+        // Without readable trunk tips there is nothing to compare, but changes and pending operations still count.
+        guard let head = working.head, let trunk, let tips else { return Self(working: working, operation: operation, trunk: nil) }
         let key = [RepositoryLocation.key(for: directory), head, tips].joined(separator: "|")
         if let cached = await cache?.value(for: key) { return Self(working: working, operation: operation, trunk: cached) }
         let comparison = try? await WorktreeIntegrationCheck.compare(head, with: trunk, in: directory)

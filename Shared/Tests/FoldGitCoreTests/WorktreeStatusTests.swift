@@ -111,6 +111,36 @@ struct WorktreeStatusTests {
         #expect(try await TrunkReference.resolve(in: fixture.repository.url) == nil)
     }
 
+    @Test func missingUpstreamFallsBackToTheLocalTrunk() async throws {
+        let fixture = try await Fixture.create()
+        defer { fixture.remove() }
+        let feature = try await fixture.worktree("pruned", commits: ["pruned.txt"])
+        try await fixture.repository.git(["remote", "add", "origin", "https://example.com/repo.git"])
+        try await fixture.repository.git(["config", "branch.main.remote", "origin"])
+        try await fixture.repository.git(["config", "branch.main.merge", "refs/heads/main"])
+        // origin/main was never fetched, so the configured upstream does not resolve.
+        let trunk = try #require(try await TrunkReference.resolve(in: feature))
+        #expect(trunk == TrunkReference(local: "refs/heads/main", remote: nil))
+        try fixture.write(in: feature, "dirty.txt", "dirty\n")
+        let status = try await WorktreeStatus.read(feature, trunk: TrunkReference(local: "refs/heads/main", remote: "refs/remotes/origin/main"))
+        #expect(status.changes.untracked == 1)
+        #expect(status.trunk == nil)
+    }
+
+    @Test func integrationNamesTheReferenceThatContainsTheCommit() async throws {
+        let fixture = try await Fixture.create()
+        defer { fixture.remove() }
+        let feature = try await fixture.worktree("unpushed", commits: ["unpushed.txt"])
+        try await fixture.repository.git(["update-ref", "refs/remotes/origin/main", "main"])
+        try await fixture.repository.git(["merge", "--ff-only", "unpushed"])
+        let trunk = TrunkReference(local: "refs/heads/main", remote: "refs/remotes/origin/main")
+        let status = try await WorktreeStatus.read(feature, trunk: trunk)
+        #expect(status.trunk?.reference == "origin/main")
+        #expect(status.trunk?.ahead == 1)
+        #expect(status.trunk?.integration == .ancestor)
+        #expect(status.trunk?.integratedInto == "main")
+    }
+
     @Test func comparisonCacheSkipsRecomputingUntilTheTrunkMoves() async throws {
         let fixture = try await Fixture.create()
         defer { fixture.remove() }
@@ -185,6 +215,20 @@ struct WorktreeCleanupTests {
         let trunkTree = fixture.root.appendingPathComponent("main-tree")
         try await fixture.repository.git(["worktree", "add", trunkTree.path, "main"])
         #expect(try await WorktreeCleanup.candidates(in: fixture.repository.url).isEmpty)
+    }
+
+    @Test func detachedWorktreesQualifyWhenOnlyARemoteTrunkExists() async throws {
+        let fixture = try await Fixture.create()
+        defer { fixture.remove() }
+        let detached = fixture.root.appendingPathComponent("detached")
+        try await fixture.repository.git(["worktree", "add", "--detach", detached.path, "main"])
+        try await fixture.repository.git(["update-ref", "refs/remotes/origin/main", "main"])
+        try await fixture.repository.git(["switch", "-c", "work"])
+        try await fixture.repository.git(["branch", "-D", "main"])
+        let trunk = try #require(try await TrunkReference.resolve(in: fixture.repository.url))
+        #expect(trunk == TrunkReference(local: nil, remote: "refs/remotes/origin/main"))
+        let candidates = try await WorktreeCleanup.candidates(in: fixture.repository.url)
+        #expect(candidates.map(\.id) == [detached.resolvingSymlinksInPath()])
     }
 
     @Test func removalDeletesMergedBranchesAndKeepsSquashedOnes() async throws {

@@ -44,8 +44,12 @@ struct WorktreeCleanupSheet: View {
                     Button("Cancel") { dismiss() }.keyboardShortcut(.cancelAction).disabled(model.phase == .running)
                     Button("Remove \(model.selectedCount) Worktrees") {
                         Task {
-                            await model.run(onRemoved: onRemoved)
-                            try? await worktrees.refresh(model.repository)
+                            // Refresh before each callback, as manual removal does, so the sidebar never
+                            // picks the removed worktree as a replacement selection.
+                            await model.run { removed in
+                                try? await worktrees.refresh(model.repository)
+                                onRemoved(removed)
+                            }
                         }
                     }
                     .buttonStyle(.borderedProminent)

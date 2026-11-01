@@ -46,7 +46,8 @@ public enum WorktreeCleanup {
                                                            mainWorktreeBranch: trees.first(where: \.isMain)?.branch) else { return [] }
         let trunkBranch = trunk.local.map(TrunkReference.shortName)
         var candidates: [WorktreeCleanupCandidate] = []
-        for tree in trees where isRemovable(tree) && tree.branch != trunkBranch {
+        // Only a worktree that has the local trunk branch checked out is skipped; detached worktrees still qualify.
+        for tree in trees where isRemovable(tree) && (trunkBranch == nil || tree.branch != trunkBranch) {
             guard let status = try? await WorktreeStatus.read(tree.url, trunk: trunk, untracked: .all),
                   status.canBeCleanedUp, let head = status.head, let comparison = status.trunk else { continue }
             let ignored = try await GitRuntime.run(GitIgnoredEntriesQuery(directory: tree.url))

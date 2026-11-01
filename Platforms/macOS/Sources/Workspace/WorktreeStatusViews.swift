@@ -62,9 +62,11 @@ enum WorktreeStatusText {
     }
 
     static func integration(_ trunk: TrunkComparison) -> String? {
-        switch trunk.integration {
-        case .ancestor: String(localized: "Merged into \(trunk.reference)")
-        case .contentMerged: String(localized: "Changes already in \(trunk.reference) (squash or rebase merge)")
+        // Name the reference that holds the work: merged into local main but not pushed reads "main", not "origin/main".
+        let target = trunk.integratedInto ?? trunk.reference
+        return switch trunk.integration {
+        case .ancestor: String(localized: "Merged into \(target)")
+        case .contentMerged: String(localized: "Changes already in \(target) (squash or rebase merge)")
         case .notIntegrated: String(localized: "Not merged into \(trunk.reference)")
         case .unknown: nil
         }

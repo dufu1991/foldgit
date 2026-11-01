@@ -9,6 +9,9 @@
   <data name="Text_29b70cff605762a55098daac" xml:space="preserve">
     <value>{0}, {1}</value>
   </data>
+  <data name="Text_3ae9086abfdeb0c12fab11c7" xml:space="preserve">
+    <value>{0}: впереди на {1}, позади на {2}</value>
+  </data>
   <data name="Text_d550d037160f501470f55207" xml:space="preserve">
     <value>{0} коммита</value>
   </data>
@@ -86,6 +89,9 @@
   </data>
   <data name="Text_4efca0d10c5feb8e9b35eb1d" xml:space="preserve">
     <value>О программе</value>
+  </data>
+  <data name="Text_cc90f78e0ad41d4be95ae13c" xml:space="preserve">
+    <value>Был активен в последние 15 минут</value>
   </data>
   <data name="Text_ef37f4e061bb04ce93b664ae" xml:space="preserve">
     <value>Исходный размер</value>
@@ -219,6 +225,9 @@
   <data name="Text_9f7a33b2621d7cb24fa268ae" xml:space="preserve">
     <value>Ветки, уже используемые в другом worktree, недоступны.</value>
   </data>
+  <data name="Text_c51420c7bad5031e0721cedd" xml:space="preserve">
+    <value>Ветки, слитые через squash или rebase, сохраняются, так как их удаление требует принудительного режима. Удалённые ветки не затрагиваются.</value>
+  </data>
   <data name="Text_19766ed6ccb2f4a32778eed8" xml:space="preserve">
     <value>Отмена</value>
   </data>
@@ -231,8 +240,14 @@
   <data name="Text_b585b9ae2b811e9c591c9d00" xml:space="preserve">
     <value>Отображение изменённых файлов</value>
   </data>
+  <data name="Text_b178c865c38a11472a264689" xml:space="preserve">
+    <value>Изменения уже есть в {0} (слияние squash или rebase)</value>
+  </data>
   <data name="Text_da9fc80016b0ff1af0d679e5" xml:space="preserve">
     <value>Изменения объединены локально. Откройте целевой worktree для проверки, тестирования и отправки.</value>
+  </data>
+  <data name="Text_3653683990bc494a1ed4680b" xml:space="preserve">
+    <value>Изменения: в индексе {0}, вне индекса {1}, неотслеживаемых {2}, с конфликтами {3}</value>
   </data>
   <data name="Text_9ed79ee9b2129b5dc855c5dc" xml:space="preserve">
     <value>Проверить обновления</value>
@@ -248,6 +263,9 @@
   </data>
   <data name="Text_a9ca63fe145cccd64b8e183c" xml:space="preserve">
     <value>Переключиться на выбранный коммит</value>
+  </data>
+  <data name="Text_8ee71d69714ec60d96be3d1d" xml:space="preserve">
+    <value>Выполняется cherry-pick</value>
   </data>
   <data name="Text_c7f937836f5d82d53bc50775" xml:space="preserve">
     <value>Выбрать</value>
@@ -284,6 +302,9 @@
   </data>
   <data name="Text_102b9f2ab0aaa83bbe7bca26" xml:space="preserve">
     <value>Выберите родительскую папку для клонируемого репозитория.</value>
+  </data>
+  <data name="Text_ed983dc704f183995a95999c" xml:space="preserve">
+    <value>Очистить слитые worktree</value>
   </data>
   <data name="Text_379afe481ec4a23bd1363f12" xml:space="preserve">
     <value>Нет изменений</value>
@@ -452,6 +473,9 @@
   </data>
   <data name="Text_f3d5b704f7933bd630896f34" xml:space="preserve">
     <value>Удалить локальную исходную ветку</value>
+  </data>
+  <data name="Text_1657cf8e970d972a16a611f3" xml:space="preserve">
+    <value>Удалить слитые локальные ветки</value>
   </data>
   <data name="Text_01595e8f253bee9c7dd4cd6a" xml:space="preserve">
     <value>Удалить тег</value>
@@ -705,6 +729,9 @@
   <data name="Text_32beb698702cf7e23838ff28" xml:space="preserve">
     <value>Значки и текст</value>
   </data>
+  <data name="Text_bf01d57e38b150941df8f070" xml:space="preserve">
+    <value>Будут удалены игнорируемые файлы: {0}</value>
+  </data>
   <data name="Text_c536b2d7c1205a80cd559b36" xml:space="preserve">
     <value>Сравнение изображений</value>
   </data>
@@ -882,6 +909,9 @@
   <data name="Text_afed4cca114ed7a25b076b14" xml:space="preserve">
     <value>Слито в {0}</value>
   </data>
+  <data name="Text_f8e588e3816ff860c51bb2bd" xml:space="preserve">
+    <value>Слито в {0}</value>
+  </data>
   <data name="Text_924bd3c445d9c613595beae6" xml:space="preserve">
     <value>Worktree отсутствует</value>
   </data>
@@ -996,6 +1026,12 @@
   <data name="Text_822622a167cc9522df56237f" xml:space="preserve">
     <value>Нет тегов</value>
   </data>
+  <data name="Text_a53befb2563cd5bcdd5d81e1" xml:space="preserve">
+    <value>Нет незакоммиченных изменений</value>
+  </data>
+  <data name="Text_0fe076d57a58c8baa924a5f2" xml:space="preserve">
+    <value>Нет слитых worktree для очистки.</value>
+  </data>
   <data name="Text_56166423b7658edf33f7f8f4" xml:space="preserve">
     <value>Удалённый репозиторий не настроен.</value>
   </data>
@@ -1004,6 +1040,9 @@
   </data>
   <data name="Text_dc937b59892604f5a86ac969" xml:space="preserve">
     <value>Нет</value>
+  </data>
+  <data name="Text_8b8e6b38f1bc9cb6831fbb2d" xml:space="preserve">
+    <value>Не слито в {0}</value>
   </data>
   <data name="Text_565339bc4d33d72817b58302" xml:space="preserve">
     <value>ОК</value>
@@ -1125,6 +1164,9 @@
   <data name="Text_525212783dd88c8069b1d454" xml:space="preserve">
     <value>Выходить при закрытии последнего окна</value>
   </data>
+  <data name="Text_f897c1672415f3654ae0f5be" xml:space="preserve">
+    <value>Выполняется перебазирование</value>
+  </data>
   <data name="Text_76ad8e11d3ba073a5c8210c0" xml:space="preserve">
     <value>Недавно добавленные</value>
   </data>
@@ -1155,6 +1197,18 @@
   <data name="Text_c3812fc4acb861d5182fc2b8" xml:space="preserve">
     <value>Удалить</value>
   </data>
+  <data name="Text_b8a7eb684bf3baf392d32484" xml:space="preserve">
+    <value>Удалить {0} worktree</value>
+  </data>
+  <data name="Text_2c78465f4ddf5bc6166d2d2c" xml:space="preserve">
+    <value>Удалить {0} worktree</value>
+  </data>
+  <data name="Text_15169013c24096825ad08a47" xml:space="preserve">
+    <value>Удалить {0} worktree</value>
+  </data>
+  <data name="Text_44dde435d5aa6377635632a0" xml:space="preserve">
+    <value>Удалить {0} worktree</value>
+  </data>
   <data name="Text_54c8dbd8afc0b28bb01cac77" xml:space="preserve">
     <value>Удалить добавленное приложение</value>
   </data>
@@ -1175,6 +1229,21 @@
   </data>
   <data name="Text_acb594ffb7ba39e5cfee01ac" xml:space="preserve">
     <value>Удалить неиспользуемый код</value>
+  </data>
+  <data name="Text_b4df0c43b59cfbb146d94d56" xml:space="preserve">
+    <value>Удалено.</value>
+  </data>
+  <data name="Text_eef6fe19d21f64da04d4c638" xml:space="preserve">
+    <value>Удалено. Ветка сохранена, так как ещё используется.</value>
+  </data>
+  <data name="Text_3254270c7ccbf8f891d6bf05" xml:space="preserve">
+    <value>Удалено. Ветка сохранена, так как была слита через squash или rebase.</value>
+  </data>
+  <data name="Text_ce50a2d0579d1d107d8c4959" xml:space="preserve">
+    <value>Удалено. Ветка сохранена: {0}</value>
+  </data>
+  <data name="Text_6b8ea006e33209d4054364c8" xml:space="preserve">
+    <value>Удалено. Локальная ветка удалена.</value>
   </data>
   <data name="Text_3064d79a295cefe4b384b8fe" xml:space="preserve">
     <value>Переименовать</value>
@@ -1247,6 +1316,9 @@
   </data>
   <data name="Text_72b4ec02dc967cd1f9b710a0" xml:space="preserve">
     <value>Отменить выбранный коммит</value>
+  </data>
+  <data name="Text_60bf207855b706e21b688e7a" xml:space="preserve">
+    <value>Выполняется отмена коммита</value>
   </data>
   <data name="Text_4d20284363cf827c744380b6" xml:space="preserve">
     <value>Отменить коммит с основной линией {0}</value>
@@ -1334,6 +1406,9 @@
   </data>
   <data name="Text_a81279506a9593595764ef25" xml:space="preserve">
     <value>Показать теги</value>
+  </data>
+  <data name="Text_ce3bb5ea4bc4071ac56de7d7" xml:space="preserve">
+    <value>Показывать состояние worktree на боковой панели</value>
   </data>
   <data name="Text_c2a9c77acf9b329f25b32c6f" xml:space="preserve">
     <value>Показать в проводнике</value>
@@ -1482,6 +1557,9 @@
   <data name="Text_90d2f542b118d50055ff1e33" xml:space="preserve">
     <value>Для этого файла или worktree нет активного слияния. Обновите и повторите попытку.</value>
   </data>
+  <data name="Text_de9c64042fdcda5329b7b63f" xml:space="preserve">
+    <value>В этих связанных worktree нет незакоммиченных изменений, а их коммиты уже есть в основной ветке. Каждый проверяется повторно непосредственно перед удалением, без принудительного режима.</value>
+  </data>
   <data name="Text_118a470931669215bde94f22" xml:space="preserve">
     <value>Папка {0} будет удалена, ветка сохранится. Git откажется удалять worktree с незакоммиченными изменениями или неотслеживаемыми файлами.</value>
   </data>
@@ -1548,6 +1626,9 @@
   <data name="Text_9bc51f2f1a2a0998f6490334" xml:space="preserve">
     <value>Неотслеживаемые файлы</value>
   </data>
+  <data name="Text_5f61c3f8f7c5f5802be4769b" xml:space="preserve">
+    <value>Upstream: впереди на {0}, позади на {1}</value>
+  </data>
   <data name="Text_fdad19b2db24f1a14a14f2f4" xml:space="preserve">
     <value>Использовать имя папки</value>
   </data>
@@ -1598,6 +1679,9 @@
   </data>
   <data name="Text_2f8b63e3720c7ffe01869aeb" xml:space="preserve">
     <value>Папка worktree удалена</value>
+  </data>
+  <data name="Text_1ba4c75ec617f08429ecd534" xml:space="preserve">
+    <value>Состояние worktree</value>
   </data>
   <data name="Text_aec2f93d67b7c4c5fd9b9404" xml:space="preserve">
     <value>Worktree</value>

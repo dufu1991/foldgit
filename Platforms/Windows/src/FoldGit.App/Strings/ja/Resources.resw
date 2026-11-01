@@ -9,6 +9,9 @@
   <data name="Text_29b70cff605762a55098daac" xml:space="preserve">
     <value>{0}、{1}</value>
   </data>
+  <data name="Text_3ae9086abfdeb0c12fab11c7" xml:space="preserve">
+    <value>{0}：{1} 件先行、{2} 件遅れ</value>
+  </data>
   <data name="Text_1ee89c2c01e0ed612af30945" xml:space="preserve">
     <value>{0} 件のコミット</value>
   </data>
@@ -41,6 +44,9 @@
   </data>
   <data name="Text_4efca0d10c5feb8e9b35eb1d" xml:space="preserve">
     <value>このアプリについて</value>
+  </data>
+  <data name="Text_cc90f78e0ad41d4be95ae13c" xml:space="preserve">
+    <value>直近 15 分以内に操作あり</value>
   </data>
   <data name="Text_ef37f4e061bb04ce93b664ae" xml:space="preserve">
     <value>実際のサイズ</value>
@@ -165,6 +171,9 @@
   <data name="Text_9f7a33b2621d7cb24fa268ae" xml:space="preserve">
     <value>ワークツリーで使用中のブランチは選択できません。</value>
   </data>
+  <data name="Text_c51420c7bad5031e0721cedd" xml:space="preserve">
+    <value>squash または rebase でマージされたブランチは、削除に強制が必要なため保持されます。リモートブランチには触れません。</value>
+  </data>
   <data name="Text_19766ed6ccb2f4a32778eed8" xml:space="preserve">
     <value>キャンセル</value>
   </data>
@@ -177,8 +186,14 @@
   <data name="Text_b585b9ae2b811e9c591c9d00" xml:space="preserve">
     <value>変更ファイルの表示</value>
   </data>
+  <data name="Text_b178c865c38a11472a264689" xml:space="preserve">
+    <value>変更は {0} に取り込み済み（squash または rebase マージ）</value>
+  </data>
   <data name="Text_da9fc80016b0ff1af0d679e5" xml:space="preserve">
     <value>変更をローカルでマージしました。対象ワークツリーを開いて確認、テスト、プッシュを行えます。</value>
+  </data>
+  <data name="Text_3653683990bc494a1ed4680b" xml:space="preserve">
+    <value>変更：ステージ済み {0}、未ステージ {1}、未追跡 {2}、競合 {3}</value>
   </data>
   <data name="Text_9ed79ee9b2129b5dc855c5dc" xml:space="preserve">
     <value>アップデートを確認</value>
@@ -194,6 +209,9 @@
   </data>
   <data name="Text_a9ca63fe145cccd64b8e183c" xml:space="preserve">
     <value>選択したコミットをチェックアウト</value>
+  </data>
+  <data name="Text_8ee71d69714ec60d96be3d1d" xml:space="preserve">
+    <value>チェリーピック進行中</value>
   </data>
   <data name="Text_c7f937836f5d82d53bc50775" xml:space="preserve">
     <value>選択</value>
@@ -230,6 +248,9 @@
   </data>
   <data name="Text_102b9f2ab0aaa83bbe7bca26" xml:space="preserve">
     <value>クローンするリポジトリの親フォルダを選択してください。</value>
+  </data>
+  <data name="Text_ed983dc704f183995a95999c" xml:space="preserve">
+    <value>マージ済みのワークツリーを整理</value>
   </data>
   <data name="Text_379afe481ec4a23bd1363f12" xml:space="preserve">
     <value>変更なし</value>
@@ -398,6 +419,9 @@
   </data>
   <data name="Text_f3d5b704f7933bd630896f34" xml:space="preserve">
     <value>ローカルの元ブランチを削除</value>
+  </data>
+  <data name="Text_1657cf8e970d972a16a611f3" xml:space="preserve">
+    <value>マージ済みのローカルブランチを削除</value>
   </data>
   <data name="Text_01595e8f253bee9c7dd4cd6a" xml:space="preserve">
     <value>タグを削除</value>
@@ -651,6 +675,9 @@
   <data name="Text_32beb698702cf7e23838ff28" xml:space="preserve">
     <value>アイコンとテキスト</value>
   </data>
+  <data name="Text_bf01d57e38b150941df8f070" xml:space="preserve">
+    <value>無視ファイルも削除されます：{0}</value>
+  </data>
   <data name="Text_c536b2d7c1205a80cd559b36" xml:space="preserve">
     <value>画像の比較</value>
   </data>
@@ -828,6 +855,9 @@
   <data name="Text_afed4cca114ed7a25b076b14" xml:space="preserve">
     <value>{0} でマージ済み</value>
   </data>
+  <data name="Text_f8e588e3816ff860c51bb2bd" xml:space="preserve">
+    <value>{0} にマージ済み</value>
+  </data>
   <data name="Text_924bd3c445d9c613595beae6" xml:space="preserve">
     <value>ワークツリーが見つかりません</value>
   </data>
@@ -942,6 +972,12 @@
   <data name="Text_822622a167cc9522df56237f" xml:space="preserve">
     <value>タグがありません</value>
   </data>
+  <data name="Text_a53befb2563cd5bcdd5d81e1" xml:space="preserve">
+    <value>未コミットの変更なし</value>
+  </data>
+  <data name="Text_0fe076d57a58c8baa924a5f2" xml:space="preserve">
+    <value>整理できるマージ済みのワークツリーはありません。</value>
+  </data>
   <data name="Text_56166423b7658edf33f7f8f4" xml:space="preserve">
     <value>リモートリポジトリが設定されていません。</value>
   </data>
@@ -950,6 +986,9 @@
   </data>
   <data name="Text_dc937b59892604f5a86ac969" xml:space="preserve">
     <value>なし</value>
+  </data>
+  <data name="Text_8b8e6b38f1bc9cb6831fbb2d" xml:space="preserve">
+    <value>{0} に未マージ</value>
   </data>
   <data name="Text_565339bc4d33d72817b58302" xml:space="preserve">
     <value>OK</value>
@@ -1071,6 +1110,9 @@
   <data name="Text_525212783dd88c8069b1d454" xml:space="preserve">
     <value>最後のウインドウを閉じたときに終了</value>
   </data>
+  <data name="Text_f897c1672415f3654ae0f5be" xml:space="preserve">
+    <value>リベース進行中</value>
+  </data>
   <data name="Text_76ad8e11d3ba073a5c8210c0" xml:space="preserve">
     <value>追加日時順</value>
   </data>
@@ -1101,6 +1143,9 @@
   <data name="Text_c3812fc4acb861d5182fc2b8" xml:space="preserve">
     <value>削除</value>
   </data>
+  <data name="Text_44dde435d5aa6377635632a0" xml:space="preserve">
+    <value>{0} 個のワークツリーを削除</value>
+  </data>
   <data name="Text_54c8dbd8afc0b28bb01cac77" xml:space="preserve">
     <value>カスタムアプリを削除</value>
   </data>
@@ -1121,6 +1166,21 @@
   </data>
   <data name="Text_acb594ffb7ba39e5cfee01ac" xml:space="preserve">
     <value>未使用のコードを削除</value>
+  </data>
+  <data name="Text_b4df0c43b59cfbb146d94d56" xml:space="preserve">
+    <value>削除しました。</value>
+  </data>
+  <data name="Text_eef6fe19d21f64da04d4c638" xml:space="preserve">
+    <value>削除しました。ブランチはまだ使用中のため保持しました。</value>
+  </data>
+  <data name="Text_3254270c7ccbf8f891d6bf05" xml:space="preserve">
+    <value>削除しました。squash または rebase でマージされたため、ブランチは保持しました。</value>
+  </data>
+  <data name="Text_ce50a2d0579d1d107d8c4959" xml:space="preserve">
+    <value>削除しました。ブランチは保持しました：{0}</value>
+  </data>
+  <data name="Text_6b8ea006e33209d4054364c8" xml:space="preserve">
+    <value>削除しました。ローカルブランチも削除しました。</value>
   </data>
   <data name="Text_3064d79a295cefe4b384b8fe" xml:space="preserve">
     <value>名前を変更</value>
@@ -1193,6 +1253,9 @@
   </data>
   <data name="Text_72b4ec02dc967cd1f9b710a0" xml:space="preserve">
     <value>選択したコミットをリバート</value>
+  </data>
+  <data name="Text_60bf207855b706e21b688e7a" xml:space="preserve">
+    <value>リバート進行中</value>
   </data>
   <data name="Text_4d20284363cf827c744380b6" xml:space="preserve">
     <value>{0} をメインラインとして打ち消す</value>
@@ -1280,6 +1343,9 @@
   </data>
   <data name="Text_a81279506a9593595764ef25" xml:space="preserve">
     <value>タグを表示</value>
+  </data>
+  <data name="Text_ce3bb5ea4bc4071ac56de7d7" xml:space="preserve">
+    <value>サイドバーにワークツリーの状態を表示</value>
   </data>
   <data name="Text_c2a9c77acf9b329f25b32c6f" xml:space="preserve">
     <value>エクスプローラーで表示</value>
@@ -1428,6 +1494,9 @@
   <data name="Text_90d2f542b118d50055ff1e33" xml:space="preserve">
     <value>このファイルまたはワークツリーに進行中のマージはありません。更新して再試行してください。</value>
   </data>
+  <data name="Text_de9c64042fdcda5329b7b63f" xml:space="preserve">
+    <value>これらのリンクされたワークツリーには未コミットの変更がなく、コミットはすでにメインブランチにあります。Git が削除する直前にそれぞれ再確認し、強制はしません。</value>
+  </data>
   <data name="Text_118a470931669215bde94f22" xml:space="preserve">
     <value>{0} のフォルダを削除します。ブランチは保持されます。未コミットの変更や未追跡ファイルがある場合、Git は削除を拒否します。</value>
   </data>
@@ -1494,6 +1563,9 @@
   <data name="Text_9bc51f2f1a2a0998f6490334" xml:space="preserve">
     <value>未追跡のファイル</value>
   </data>
+  <data name="Text_5f61c3f8f7c5f5802be4769b" xml:space="preserve">
+    <value>上流：{0} 件先行、{1} 件遅れ</value>
+  </data>
   <data name="Text_fdad19b2db24f1a14a14f2f4" xml:space="preserve">
     <value>フォルダ名を使用</value>
   </data>
@@ -1544,6 +1616,9 @@
   </data>
   <data name="Text_2f8b63e3720c7ffe01869aeb" xml:space="preserve">
     <value>ワークツリーのフォルダを削除済み</value>
+  </data>
+  <data name="Text_1ba4c75ec617f08429ecd534" xml:space="preserve">
+    <value>ワークツリーの状態</value>
   </data>
   <data name="Text_aec2f93d67b7c4c5fd9b9404" xml:space="preserve">
     <value>ワークツリー</value>

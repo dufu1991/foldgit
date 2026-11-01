@@ -98,5 +98,21 @@
 			<string>En retard de %lld commits</string>
 		</dict>
 	</dict>
+	<key>Remove %lld Worktrees</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>Supprimer %lld worktree</string>
+			<key>other</key>
+			<string>Supprimer %lld worktrees</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

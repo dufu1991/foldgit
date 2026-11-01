@@ -160,7 +160,7 @@ struct WorktreeManagementSheet: View {
     @State private var moving: GitWorktree?
     @State private var isBusy = false
     @State private var errorMessage: String?
-    @State private var dirty: [URL: Bool] = [:]
+    @State private var cleaning = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -193,9 +193,14 @@ struct WorktreeManagementSheet: View {
                         if tree.isPrunable {
                             Label("Missing Worktree", systemImage: "exclamationmark.triangle")
                                 .font(.caption).foregroundStyle(.orange).help(tree.pruneReason ?? "")
-                        } else if let hasChanges = dirty[tree.id] {
-                            Text(hasChanges ? String(localized: "Uncommitted Changes") : String(localized: "Clean Worktree"))
-                                .font(.caption).foregroundStyle(hasChanges ? Color.orange : Color.secondary)
+                        } else if let status = worktrees.statuses.status(for: tree.url) {
+                            let onTrunk = worktrees.statuses.isOnTrunk(tree.url)
+                            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                                WorktreeStatusBadge(status: status, isOnTrunk: onTrunk)
+                                Text(WorktreeStatusText.lines(for: status, isOnTrunk: onTrunk).joined(separator: " · "))
+                                    .font(.caption).foregroundStyle(status.isClean ? Color.secondary : Color.orange)
+                                    .lineLimit(2)
+                            }
                         }
                         HStack {
                             Button("Open") { openWorktree(tree.url); dismiss() }.disabled(tree.isPrunable)
@@ -235,6 +240,9 @@ struct WorktreeManagementSheet: View {
                 if worktrees.list(for: repository).contains(where: \.isPrunable) {
                     Button("Prune Missing Worktrees") { perform(.prune) }
                 }
+                if worktrees.list(for: repository).contains(where: { !$0.isMain && worktrees.statuses.status(for: $0.url)?.canBeCleanedUp == true }) {
+                    Button("Clean Up Merged Worktrees") { cleaning = true }
+                }
                 if isBusy { ProgressView().controlSize(.small) }
                 Spacer()
                 Button("Done") { dismiss() }.keyboardShortcut(.cancelAction)
@@ -247,6 +255,9 @@ struct WorktreeManagementSheet: View {
             WorktreeCompletionSheet(source: target.url) { source, _ in onRelocated(source, nil) }
         }
         .sheet(isPresented: $showingCreate) { WorktreeCreateSheet(repository: repository) }
+        .sheet(isPresented: $cleaning, onDismiss: { Task { await reload() } }) {
+            WorktreeCleanupSheet(repository: repository) { removed in onRelocated(removed, nil) }
+        }
         .sheet(item: $moving) { tree in
             WorktreeMoveSheet(tree: tree, repository: repository) { destination in
                 onRelocated(tree.url, destination)
@@ -267,11 +278,7 @@ struct WorktreeManagementSheet: View {
         defer { isBusy = false }
         do {
             try await worktrees.refresh(repository)
-            dirty = [:]
-            for tree in worktrees.list(for: repository) where !tree.isBare && !tree.isPrunable {
-                let output = try await GitRuntime.run(arguments: ["git", "status", "--porcelain", "-z"], currentDirectoryURL: tree.url)
-                dirty[tree.id] = !output.standardOutput.isEmpty
-            }
+            await worktrees.statuses.refresh([worktrees.list(for: repository)])
         } catch { errorMessage = OperationFailure("Load Worktrees", error).localizedDescription }
     }
 

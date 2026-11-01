@@ -85,8 +85,10 @@
 "Collapsed" = "Свёрнуты";
 "Color Scheme" = "Цветовая схема";
 "Combined merge diffs use unified layout." = "Объединённые различия слияния отображаются в едином виде.";
+"Comfortable" = "Свободная";
 "Commit" = "Создать коммит";
 "Commit Graph" = "Граф коммитов";
+"Commit Graph Density" = "Плотность графа коммитов";
 "Commit Hash: %@" = "Хеш коммита: %@";
 "Commit History" = "История коммитов";
 "Commit Message" = "Сообщение коммита";
@@ -97,6 +99,7 @@
 "Commit:" = "Коммит:";
 "Commits" = "Коммиты";
 "Commits to Merge" = "Коммиты для слияния";
+"Compact" = "Компактная";
 "Compare" = "Сравнение";
 "Compare Branches or Tags" = "Сравнить ветки или теги";
 "Compare Revisions" = "Сравнить ревизии";
@@ -412,6 +415,7 @@
 "Side by Side" = "Рядом";
 "Sidebar" = "Боковая панель";
 "Similarity: %@" = "Сходство: %@";
+"Single Line" = "В одну строку";
 "Sort Direction" = "Порядок сортировки";
 "Sort Repositories" = "Сортировка репозиториев";
 "Source Branch" = "Исходная ветка";

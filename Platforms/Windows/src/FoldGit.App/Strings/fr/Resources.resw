@@ -303,11 +303,17 @@
   <data name="Text_b3f29b99a24d4c504921396b" xml:space="preserve">
     <value>Les différences combinées de fusion utilisent la disposition unifiée.</value>
   </data>
+  <data name="Text_459a23a5980fd5c63646e067" xml:space="preserve">
+    <value>Confortable</value>
+  </data>
   <data name="Text_82a9c46ffa4789945d9f2359" xml:space="preserve">
     <value>Créer un commit</value>
   </data>
   <data name="Text_9cda4a7ac93dc5bd89d388f4" xml:space="preserve">
     <value>Graphe des commits</value>
+  </data>
+  <data name="Text_9e628c194a300c44fa6705d7" xml:space="preserve">
+    <value>Densité du graphe des commits</value>
   </data>
   <data name="Text_9ef07ac1e909203b38c95794" xml:space="preserve">
     <value>Empreinte du commit : {0}</value>
@@ -338,6 +344,9 @@
   </data>
   <data name="Text_27b3cbf6fdae9b1e55c01778" xml:space="preserve">
     <value>Commits à fusionner</value>
+  </data>
+  <data name="Text_99452646e34b69704c9134a0" xml:space="preserve">
+    <value>Compacte</value>
   </data>
   <data name="Text_e888155d8c7d2e3c3f9eb1bf" xml:space="preserve">
     <value>Comparaison</value>
@@ -1301,6 +1310,9 @@
   </data>
   <data name="Text_c47c5c6b07dfc77a49a6b281" xml:space="preserve">
     <value>Similarité : {0}</value>
+  </data>
+  <data name="Text_7f07ae3076c59583486176b1" xml:space="preserve">
+    <value>Une ligne</value>
   </data>
   <data name="Text_372a698a29a5f059851375eb" xml:space="preserve">
     <value>Sens du tri</value>

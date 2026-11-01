@@ -134,6 +134,7 @@ struct AppMenuCommands: Commands {
     @FocusedValue(\.diffMenu) private var diff
     @FocusedValue(\.editorMenu) private var editor
     @AppStorage(PreferenceKey.showCommitGraph.rawValue) private var showGraph = true
+    @AppStorage(PreferenceKey.commitGraphDensity.rawValue) private var graphDensity = CommitGraphDensity.comfortable
     @AppStorage(PreferenceKey.diffLayout.rawValue) private var diffLayout = DiffLayout.automatic
     @Environment(\.openWindow) private var openWindow
 
@@ -167,6 +168,10 @@ struct AppMenuCommands: Commands {
         }
         CommandGroup(before: .toolbar) {
             Toggle("Commit Graph", isOn: $showGraph).disabled(repository == nil)
+            Picker("Commit Graph Density", selection: $graphDensity) {
+                ForEach(CommitGraphDensity.allCases) { Text($0.title).tag($0) }
+            }
+            .disabled(repository == nil)
             command("Uncommitted Changes", .showChanges)
             command("Jump to HEAD", .revealHead)
             Picker("History Scope", selection: Binding(

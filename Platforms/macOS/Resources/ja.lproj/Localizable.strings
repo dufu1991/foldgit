@@ -85,8 +85,10 @@
 "Collapsed" = "折りたたみ";
 "Color Scheme" = "カラーモード";
 "Combined merge diffs use unified layout." = "マージの結合差分は統合レイアウトで表示します。";
+"Comfortable" = "標準";
 "Commit" = "コミット";
 "Commit Graph" = "コミットグラフ";
+"Commit Graph Density" = "コミットグラフの密度";
 "Commit Hash: %@" = "コミットハッシュ：%@";
 "Commit History" = "コミット履歴";
 "Commit Message" = "コミットメッセージ";
@@ -97,6 +99,7 @@
 "Commit:" = "コミット：";
 "Commits" = "コミット";
 "Commits to Merge" = "マージするコミット";
+"Compact" = "コンパクト";
 "Compare" = "比較";
 "Compare Branches or Tags" = "ブランチまたはタグを比較";
 "Compare Revisions" = "リビジョンを比較";
@@ -412,6 +415,7 @@
 "Side by Side" = "左右比較";
 "Sidebar" = "サイドバー";
 "Similarity: %@" = "類似度：%@";
+"Single Line" = "1 行";
 "Sort Direction" = "並べ替えの方向";
 "Sort Repositories" = "リポジトリを並べ替え";
 "Source Branch" = "元のブランチ";

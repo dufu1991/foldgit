@@ -44,6 +44,8 @@ enum SettingsReset {
             ]),
             Group(id: "comparison", title: String(localized: "History and Diffs"), items: [
                 Item(id: "graph", title: String(localized: "Show Commit Graph"), value: on, keys: [.showCommitGraph]),
+                Item(id: "graphDensity", title: String(localized: "Commit Graph Density"), value: CommitGraphDensity.comfortable.title,
+                     keys: [.commitGraphDensity]),
                 Item(id: "historyScope", title: String(localized: "History Scope"), value: String(localized: "Current Branch"), keys: [.repositoryHistoryScopes]),
                 Item(id: "layout", title: String(localized: "Diff Layout"), value: automatic, keys: [.diffLayout]),
                 Item(id: "expansion", title: String(localized: "Default File Expansion"), value: AppPreferences.defaultDiffFileExpansion.title, keys: [.diffFileExpansion]),

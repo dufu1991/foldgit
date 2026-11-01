@@ -285,11 +285,17 @@
   <data name="Text_b3f29b99a24d4c504921396b" xml:space="preserve">
     <value>マージの結合差分は統合レイアウトで表示します。</value>
   </data>
+  <data name="Text_459a23a5980fd5c63646e067" xml:space="preserve">
+    <value>標準</value>
+  </data>
   <data name="Text_82a9c46ffa4789945d9f2359" xml:space="preserve">
     <value>コミット</value>
   </data>
   <data name="Text_9cda4a7ac93dc5bd89d388f4" xml:space="preserve">
     <value>コミットグラフ</value>
+  </data>
+  <data name="Text_9e628c194a300c44fa6705d7" xml:space="preserve">
+    <value>コミットグラフの密度</value>
   </data>
   <data name="Text_9ef07ac1e909203b38c95794" xml:space="preserve">
     <value>コミットハッシュ：{0}</value>
@@ -320,6 +326,9 @@
   </data>
   <data name="Text_27b3cbf6fdae9b1e55c01778" xml:space="preserve">
     <value>マージするコミット</value>
+  </data>
+  <data name="Text_99452646e34b69704c9134a0" xml:space="preserve">
+    <value>コンパクト</value>
   </data>
   <data name="Text_e888155d8c7d2e3c3f9eb1bf" xml:space="preserve">
     <value>比較</value>
@@ -1283,6 +1292,9 @@
   </data>
   <data name="Text_c47c5c6b07dfc77a49a6b281" xml:space="preserve">
     <value>類似度：{0}</value>
+  </data>
+  <data name="Text_7f07ae3076c59583486176b1" xml:space="preserve">
+    <value>1 行</value>
   </data>
   <data name="Text_372a698a29a5f059851375eb" xml:space="preserve">
     <value>並べ替えの方向</value>

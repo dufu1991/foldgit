@@ -262,6 +262,7 @@ struct AppearanceSettingsPane: View {
 
 struct ComparisonSettingsPane: View {
     @AppStorage(PreferenceKey.showCommitGraph.rawValue) private var showGraph = true
+    @AppStorage(PreferenceKey.commitGraphDensity.rawValue) private var graphDensity = CommitGraphDensity.comfortable
     @AppStorage(PreferenceKey.diffLayout.rawValue) private var layout = DiffLayout.automatic
     @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = AppPreferences.defaultDiffFileExpansion
     @AppStorage(PreferenceKey.codeFontSize.rawValue) private var fontSize = AppPreferences.defaultCodeFontSize
@@ -272,6 +273,11 @@ struct ComparisonSettingsPane: View {
             Section("Commit History") {
                 Toggle("Show Commit Graph", isOn: $showGraph)
                     .accessibilityIdentifier("showCommitGraphToggle")
+                Picker("Commit Graph Density", selection: $graphDensity) {
+                    ForEach(CommitGraphDensity.allCases) { Text($0.title).tag($0) }
+                }
+                .pickerStyle(.segmented)
+                .accessibilityIdentifier("commitGraphDensityPicker")
             }
             Section {
                 Picker("Diff Layout", selection: $layout) {

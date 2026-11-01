@@ -285,11 +285,17 @@
   <data name="Text_b3f29b99a24d4c504921396b" xml:space="preserve">
     <value>合併衝突的組合差異使用單欄版面。</value>
   </data>
+  <data name="Text_459a23a5980fd5c63646e067" xml:space="preserve">
+    <value>舒適</value>
+  </data>
   <data name="Text_82a9c46ffa4789945d9f2359" xml:space="preserve">
     <value>提交</value>
   </data>
   <data name="Text_9cda4a7ac93dc5bd89d388f4" xml:space="preserve">
     <value>提交關係圖</value>
+  </data>
+  <data name="Text_9e628c194a300c44fa6705d7" xml:space="preserve">
+    <value>提交關係圖密度</value>
   </data>
   <data name="Text_9ef07ac1e909203b38c95794" xml:space="preserve">
     <value>提交雜湊：{0}</value>
@@ -320,6 +326,9 @@
   </data>
   <data name="Text_27b3cbf6fdae9b1e55c01778" xml:space="preserve">
     <value>待合併提交</value>
+  </data>
+  <data name="Text_99452646e34b69704c9134a0" xml:space="preserve">
+    <value>緊湊</value>
   </data>
   <data name="Text_e888155d8c7d2e3c3f9eb1bf" xml:space="preserve">
     <value>比較</value>
@@ -1283,6 +1292,9 @@
   </data>
   <data name="Text_c47c5c6b07dfc77a49a6b281" xml:space="preserve">
     <value>相似度：{0}</value>
+  </data>
+  <data name="Text_7f07ae3076c59583486176b1" xml:space="preserve">
+    <value>單行</value>
   </data>
   <data name="Text_372a698a29a5f059851375eb" xml:space="preserve">
     <value>排序方向</value>

@@ -339,11 +339,17 @@
   <data name="Text_b3f29b99a24d4c504921396b" xml:space="preserve">
     <value>Combined merge diffs use unified layout.</value>
   </data>
+  <data name="Text_459a23a5980fd5c63646e067" xml:space="preserve">
+    <value>Comfortable</value>
+  </data>
   <data name="Text_82a9c46ffa4789945d9f2359" xml:space="preserve">
     <value>Commit</value>
   </data>
   <data name="Text_9cda4a7ac93dc5bd89d388f4" xml:space="preserve">
     <value>Commit Graph</value>
+  </data>
+  <data name="Text_9e628c194a300c44fa6705d7" xml:space="preserve">
+    <value>Commit Graph Density</value>
   </data>
   <data name="Text_9ef07ac1e909203b38c95794" xml:space="preserve">
     <value>Commit Hash: {0}</value>
@@ -374,6 +380,9 @@
   </data>
   <data name="Text_27b3cbf6fdae9b1e55c01778" xml:space="preserve">
     <value>Commits to Merge</value>
+  </data>
+  <data name="Text_99452646e34b69704c9134a0" xml:space="preserve">
+    <value>Compact</value>
   </data>
   <data name="Text_e888155d8c7d2e3c3f9eb1bf" xml:space="preserve">
     <value>Compare</value>
@@ -1337,6 +1346,9 @@
   </data>
   <data name="Text_c47c5c6b07dfc77a49a6b281" xml:space="preserve">
     <value>Similarity: {0}</value>
+  </data>
+  <data name="Text_7f07ae3076c59583486176b1" xml:space="preserve">
+    <value>Single Line</value>
   </data>
   <data name="Text_372a698a29a5f059851375eb" xml:space="preserve">
     <value>Sort Direction</value>

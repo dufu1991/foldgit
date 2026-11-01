@@ -85,8 +85,10 @@
 "Collapsed" = "Réduits";
 "Color Scheme" = "Mode d’apparence";
 "Combined merge diffs use unified layout." = "Les différences combinées de fusion utilisent la disposition unifiée.";
+"Comfortable" = "Confortable";
 "Commit" = "Créer un commit";
 "Commit Graph" = "Graphe des commits";
+"Commit Graph Density" = "Densité du graphe des commits";
 "Commit Hash: %@" = "Empreinte du commit : %@";
 "Commit History" = "Historique des commits";
 "Commit Message" = "Message de commit";
@@ -97,6 +99,7 @@
 "Commit:" = "Commit :";
 "Commits" = "Commits";
 "Commits to Merge" = "Commits à fusionner";
+"Compact" = "Compacte";
 "Compare" = "Comparaison";
 "Compare Branches or Tags" = "Comparer des branches ou des tags";
 "Compare Revisions" = "Comparer les révisions";
@@ -412,6 +415,7 @@
 "Side by Side" = "Côte à côte";
 "Sidebar" = "Barre latérale";
 "Similarity: %@" = "Similarité : %@";
+"Single Line" = "Une ligne";
 "Sort Direction" = "Sens du tri";
 "Sort Repositories" = "Trier les dépôts";
 "Source Branch" = "Branche source";

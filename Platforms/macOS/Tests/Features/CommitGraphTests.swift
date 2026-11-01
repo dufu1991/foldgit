@@ -164,6 +164,38 @@ final class CommitGraphTests: XCTestCase {
     }
 
     @MainActor
+    func testEveryDensityKeepsRoutesAndNodesInsideItsRow() {
+        let rows = CommitGraph().positionedCommits(nestedMerges)
+        XCTAssertEqual(CommitGraphDensity.comfortable.metrics, CommitGraphMetrics.comfortable)
+        XCTAssertEqual(CommitGraphStyle.rowHeight, CommitGraphMetrics.comfortable.rowHeight)
+        for density in CommitGraphDensity.allCases {
+            let metrics = density.metrics
+            let width = metrics.gutterWidth(columnCount: rows.map(\.columnCount).max()!)
+            XCTAssertLessThanOrEqual(metrics.nodeY + (metrics.nodeSize + 2) / 2 + 2, metrics.rowHeight, "\(density)")
+            XCTAssertGreaterThanOrEqual(metrics.nodeY - metrics.haloSize / 2, 0, "\(density)")
+            for row in rows {
+                XCTAssertGreaterThanOrEqual(metrics.textLeading(for: row) - metrics.x(column: row.column), metrics.textGap)
+                for segment in row.segments {
+                    let bounds = metrics.path(for: segment).boundingRect
+                    XCTAssertGreaterThanOrEqual(bounds.minX, 0, "\(density)")
+                    XCTAssertLessThan(bounds.maxX, width, "\(density)")
+                    XCTAssertGreaterThanOrEqual(bounds.minY, 0, "\(density)")
+                    XCTAssertLessThanOrEqual(bounds.maxY, metrics.rowHeight, "\(density)")
+                }
+            }
+        }
+        XCTAssertLessThan(CommitGraphMetrics.singleLine.rowHeight, CommitGraphMetrics.compact.rowHeight)
+        XCTAssertLessThan(CommitGraphMetrics.compact.rowHeight, CommitGraphMetrics.comfortable.rowHeight)
+    }
+
+    func testSingleLineBranchLabelsShortenFromTheMiddle() {
+        XCTAssertEqual(CommitGraphContentView.shortened("main", to: 24), "main")
+        XCTAssertEqual(CommitGraphContentView.shortened("feature/a-very-long-branch-name", to: 11), "featu…-name")
+        XCTAssertEqual(CommitGraphContentView.shortened("feature/a-very-long-branch-name", to: 11).count, 11)
+        XCTAssertEqual(CommitGraphContentView.shortened("feature/a-very-long-branch-name", to: nil), "feature/a-very-long-branch-name")
+    }
+
+    @MainActor
     func testRoundedRoutesStayInsideTheGraphGutter() {
         let rows = CommitGraph().positionedCommits(nestedMerges)
         let width = CommitGraphStyle.gutterWidth(columnCount: rows.map(\.columnCount).max()!)

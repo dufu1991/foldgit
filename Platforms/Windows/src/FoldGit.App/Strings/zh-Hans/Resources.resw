@@ -96,6 +96,9 @@
   <data name="Text_24da7b5eb1cdcba0e665e1b6" xml:space="preserve">
     <value>执行 {0} 时发生错误。</value>
   </data>
+  <data name="Text_be7e252a2dcd39c2cc2cd48b" xml:space="preserve">
+    <value>需要此仓库的另一个工作树才能移除这个工作树。</value>
+  </data>
   <data name="Text_3907fa7f80722a6fc58cd8c1" xml:space="preserve">
     <value>外观</value>
   </data>
@@ -603,8 +606,14 @@
   <data name="Text_aeb0518b4bec58c35886a8f6" xml:space="preserve">
     <value>Git 返回了无效的 UTF-8 输出。</value>
   </data>
+  <data name="Text_0605bf17abe400712c4180a6" xml:space="preserve">
+    <value>Git 返回了无效的提交数量。</value>
+  </data>
   <data name="Text_580442d63271f2a52564e666" xml:space="preserve">
     <value>Git 返回了无效的合并信息。</value>
+  </data>
+  <data name="Text_1bcee393ac7318030d78cb3b" xml:space="preserve">
+    <value>Git 返回了无效的状态信息。</value>
   </data>
   <data name="Text_5d2e701ca0f1ef2dad59d311" xml:space="preserve">
     <value>Git 返回了无效的工作树信息。</value>
@@ -869,6 +878,9 @@
   </data>
   <data name="Text_514cee61cf665c0adfbf0a61" xml:space="preserve">
     <value>新分支名称</value>
+  </data>
+  <data name="Text_bd7e4d73c5fa6ff0e3bead80" xml:space="preserve">
+    <value>预览后工作树中出现了新的被忽略文件，已保留。</value>
   </data>
   <data name="Text_4f8db0339aac07ba4c39f628" xml:space="preserve">
     <value>新标签名称</value>
@@ -1406,6 +1418,9 @@
   </data>
   <data name="Text_bc939bd4404df8257c268b9e" xml:space="preserve">
     <value>合并前，目标目录会切换到所选分支。</value>
+  </data>
+  <data name="Text_928417d9ab5415a532f7a52f" xml:space="preserve">
+    <value>预览后工作树发生了变化，已保留。</value>
   </data>
   <data name="Text_f6c9dd3b5586ef02efe172c0" xml:space="preserve">
     <value>工作树已锁定、目录缺失，或分支仍被检出。请保留它，或解锁后再清理。</value>

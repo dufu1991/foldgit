@@ -25,6 +25,7 @@
 "Amend Commit with a New Message" = "修改提交信息";
 "Amend Last Commit" = "修改上次提交";
 "An error occurred while executing %@." = "执行 %@ 时发生错误。";
+"Another worktree of this repository is required to remove this one." = "需要此仓库的另一个工作树才能移除这个工作树。";
 "Appearance" = "外观";
 "Applications" = "应用";
 "Applies to newly opened diffs. Files you expand or collapse manually keep their state." = "新打开的差异按此设置显示，手动展开或折叠的文件会保留当前状态。";
@@ -188,7 +189,9 @@
 "General" = "通用";
 "Git commands for this repository appear here." = "本仓库执行的 Git 命令会显示在这里。";
 "Git returned invalid UTF-8 output." = "Git 返回了无效的 UTF-8 输出。";
+"Git returned invalid commit counts." = "Git 返回了无效的提交数量。";
 "Git returned invalid merge information." = "Git 返回了无效的合并信息。";
+"Git returned invalid status information." = "Git 返回了无效的状态信息。";
 "Git returned invalid worktree information." = "Git 返回了无效的工作树信息。";
 "Git returned no output." = "Git 没有返回内容。";
 "Git will return this worktree to its pre-merge state. Conflict-resolution edits will be discarded. Source branch commits are kept." = "Git 会将此工作树恢复到合并前的状态。解决冲突时的编辑会被丢弃，源分支的提交会保留。";
@@ -274,6 +277,7 @@
 "New Tag" = "新建标签";
 "New Worktree" = "新建工作树";
 "New branch name" = "新分支名称";
+"New ignored files appeared in the worktree after the preview. It was kept." = "预览后工作树中出现了新的被忽略文件，已保留。";
 "New tag name" = "新标签名称";
 "New:" = "新名称：";
 "No Available Branches" = "没有可用分支";
@@ -453,6 +457,7 @@
 "The settings below will be restored. Custom snippets and custom application entries will be replaced. Repositories, groups, names, and local files are kept." = "以下设置将恢复为默认值，自定义快捷输入和手动添加的应用配置将被重置。仓库列表、分组、名称和本地文件会保留。";
 "The target branch does not contain all source commits. The worktree and branch were kept." = "目标分支尚未包含全部源提交。工作树和分支已保留。";
 "The target directory will switch to the selected branch before merging." = "合并前，目标目录会切换到所选分支。";
+"The worktree changed after the preview. It was kept." = "预览后工作树发生了变化，已保留。";
 "The worktree is locked, missing, or its branch is still checked out. Keep it or unlock it before cleanup." = "工作树已锁定、目录缺失，或分支仍被检出。请保留它，或解锁后再清理。";
 "There is no active merge for this file or worktree. Refresh and try again." = "此文件或工作树没有进行中的合并。请刷新后重试。";
 "This removes the folder at %@. The branch is kept. Git refuses removal if the worktree has uncommitted changes or untracked files." = "此操作会移除 %@ 文件夹，并保留分支。如果工作树包含未提交的更改或未跟踪文件，Git 会拒绝移除。";

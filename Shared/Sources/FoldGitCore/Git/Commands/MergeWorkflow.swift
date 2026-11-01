@@ -204,11 +204,7 @@ public enum WorktreeCompletion {
         try await GitRuntime.read(at: directory, readOnly: true) { try await requireClean(using: $0) }
     }
     private static func requireClean(using session: GitRuntime.Session) async throws {
-        for name in ["MERGE_HEAD", "CHERRY_PICK_HEAD", "REVERT_HEAD", "rebase-merge", "rebase-apply"] {
-            let path = try await session.run(GitRevParse(directory: session.directory, gitPath: name))
-            let url = URL(fileURLWithPath: path, relativeTo: session.directory.appendingPathComponent("", isDirectory: true))
-            guard !FileManager.default.fileExists(atPath: url.path) else { throw MergeWorkflowError.operationInProgress }
-        }
+        guard try await GitPendingOperation.detect(using: session) == nil else { throw MergeWorkflowError.operationInProgress }
         let status = try await session.run(MergeGit(directory: session.directory, args: ["status", "--porcelain", "-z", "--untracked-files=all"]))
         guard status.isEmpty else {
             throw GitExecutionError(description: String(format: NSLocalizedString("Commit or stash changes in %@ before merging.", comment: ""), session.directory.path))

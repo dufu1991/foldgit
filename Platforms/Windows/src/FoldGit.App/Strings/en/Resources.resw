@@ -141,6 +141,9 @@
   <data name="Text_24da7b5eb1cdcba0e665e1b6" xml:space="preserve">
     <value>An error occurred while executing {0}.</value>
   </data>
+  <data name="Text_be7e252a2dcd39c2cc2cd48b" xml:space="preserve">
+    <value>Another worktree of this repository is required to remove this one.</value>
+  </data>
   <data name="Text_3907fa7f80722a6fc58cd8c1" xml:space="preserve">
     <value>Appearance</value>
   </data>
@@ -657,8 +660,14 @@
   <data name="Text_aeb0518b4bec58c35886a8f6" xml:space="preserve">
     <value>Git returned invalid UTF-8 output.</value>
   </data>
+  <data name="Text_0605bf17abe400712c4180a6" xml:space="preserve">
+    <value>Git returned invalid commit counts.</value>
+  </data>
   <data name="Text_580442d63271f2a52564e666" xml:space="preserve">
     <value>Git returned invalid merge information.</value>
+  </data>
+  <data name="Text_1bcee393ac7318030d78cb3b" xml:space="preserve">
+    <value>Git returned invalid status information.</value>
   </data>
   <data name="Text_5d2e701ca0f1ef2dad59d311" xml:space="preserve">
     <value>Git returned invalid worktree information.</value>
@@ -923,6 +932,9 @@
   </data>
   <data name="Text_514cee61cf665c0adfbf0a61" xml:space="preserve">
     <value>New branch name</value>
+  </data>
+  <data name="Text_bd7e4d73c5fa6ff0e3bead80" xml:space="preserve">
+    <value>New ignored files appeared in the worktree after the preview. It was kept.</value>
   </data>
   <data name="Text_4f8db0339aac07ba4c39f628" xml:space="preserve">
     <value>New tag name</value>
@@ -1460,6 +1472,9 @@
   </data>
   <data name="Text_bc939bd4404df8257c268b9e" xml:space="preserve">
     <value>The target directory will switch to the selected branch before merging.</value>
+  </data>
+  <data name="Text_928417d9ab5415a532f7a52f" xml:space="preserve">
+    <value>The worktree changed after the preview. It was kept.</value>
   </data>
   <data name="Text_f6c9dd3b5586ef02efe172c0" xml:space="preserve">
     <value>The worktree is locked, missing, or its branch is still checked out. Keep it or unlock it before cleanup.</value>

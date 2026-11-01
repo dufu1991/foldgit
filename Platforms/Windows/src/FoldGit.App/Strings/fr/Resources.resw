@@ -111,6 +111,9 @@
   <data name="Text_24da7b5eb1cdcba0e665e1b6" xml:space="preserve">
     <value>Une erreur s’est produite lors de l’exécution de {0}.</value>
   </data>
+  <data name="Text_be7e252a2dcd39c2cc2cd48b" xml:space="preserve">
+    <value>Un autre worktree de ce dépôt est nécessaire pour supprimer celui-ci.</value>
+  </data>
   <data name="Text_3907fa7f80722a6fc58cd8c1" xml:space="preserve">
     <value>Apparence</value>
   </data>
@@ -621,8 +624,14 @@
   <data name="Text_aeb0518b4bec58c35886a8f6" xml:space="preserve">
     <value>Git a renvoyé une sortie UTF-8 non valide.</value>
   </data>
+  <data name="Text_0605bf17abe400712c4180a6" xml:space="preserve">
+    <value>Git a renvoyé des nombres de commits non valides.</value>
+  </data>
   <data name="Text_580442d63271f2a52564e666" xml:space="preserve">
     <value>Git a renvoyé des informations de fusion invalides.</value>
+  </data>
+  <data name="Text_1bcee393ac7318030d78cb3b" xml:space="preserve">
+    <value>Git a renvoyé des informations d’état non valides.</value>
   </data>
   <data name="Text_5d2e701ca0f1ef2dad59d311" xml:space="preserve">
     <value>Git a renvoyé des informations de worktree non valides.</value>
@@ -887,6 +896,9 @@
   </data>
   <data name="Text_514cee61cf665c0adfbf0a61" xml:space="preserve">
     <value>Nom de la nouvelle branche</value>
+  </data>
+  <data name="Text_bd7e4d73c5fa6ff0e3bead80" xml:space="preserve">
+    <value>De nouveaux fichiers ignorés sont apparus dans le worktree après l’aperçu. Il a été conservé.</value>
   </data>
   <data name="Text_4f8db0339aac07ba4c39f628" xml:space="preserve">
     <value>Nom du nouveau tag</value>
@@ -1424,6 +1436,9 @@
   </data>
   <data name="Text_bc939bd4404df8257c268b9e" xml:space="preserve">
     <value>Le dossier cible passera à la branche sélectionnée avant la fusion.</value>
+  </data>
+  <data name="Text_928417d9ab5415a532f7a52f" xml:space="preserve">
+    <value>Le worktree a changé après l’aperçu. Il a été conservé.</value>
   </data>
   <data name="Text_f6c9dd3b5586ef02efe172c0" xml:space="preserve">
     <value>Le worktree est verrouillé, absent ou sa branche est utilisée. Conservez-le ou déverrouillez-le avant le nettoyage.</value>

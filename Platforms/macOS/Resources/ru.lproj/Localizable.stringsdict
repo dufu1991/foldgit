@@ -242,6 +242,26 @@
 			<string>Отставание на %lld коммита</string>
 		</dict>
 	</dict>
+	<key>Remove %lld Worktrees</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>Удалить %lld worktree</string>
+			<key>many</key>
+			<string>Удалить %lld worktree</string>
+			<key>one</key>
+			<string>Удалить %lld worktree</string>
+			<key>other</key>
+			<string>Удалить %lld worktree</string>
+		</dict>
+	</dict>
 	<key>in %lld days</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

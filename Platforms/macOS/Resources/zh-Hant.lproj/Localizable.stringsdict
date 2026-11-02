@@ -170,6 +170,20 @@
 			<string>落後 %lld 個提交</string>
 		</dict>
 	</dict>
+	<key>Remove %lld Worktrees</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>other</key>
+			<string>移除 %lld 個工作樹</string>
+		</dict>
+	</dict>
 	<key>in %lld days</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

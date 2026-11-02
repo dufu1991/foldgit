@@ -9,6 +9,9 @@
   <data name="Text_29b70cff605762a55098daac" xml:space="preserve">
     <value>{0}, {1}</value>
   </data>
+  <data name="Text_3ae9086abfdeb0c12fab11c7" xml:space="preserve">
+    <value>{0} : {1} en avance, {2} en retard</value>
+  </data>
   <data name="Text_1390b90096476cc1d12b64f5" xml:space="preserve">
     <value>{0} commit</value>
   </data>
@@ -96,6 +99,9 @@
   <data name="Text_5f61a448b53339af755c8585" xml:space="preserve">
     <value>Date et heure</value>
   </data>
+  <data name="Text_cc90f78e0ad41d4be95ae13c" xml:space="preserve">
+    <value>Actif au cours des 15 dernières minutes</value>
+  </data>
   <data name="Text_ef37f4e061bb04ce93b664ae" xml:space="preserve">
     <value>Taille réelle</value>
   </data>
@@ -149,6 +155,9 @@
   </data>
   <data name="Text_24da7b5eb1cdcba0e665e1b6" xml:space="preserve">
     <value>Une erreur s’est produite lors de l’exécution de {0}.</value>
+  </data>
+  <data name="Text_be7e252a2dcd39c2cc2cd48b" xml:space="preserve">
+    <value>Un autre worktree de ce dépôt est nécessaire pour supprimer celui-ci.</value>
   </data>
   <data name="Text_3907fa7f80722a6fc58cd8c1" xml:space="preserve">
     <value>Apparence</value>
@@ -228,6 +237,9 @@
   <data name="Text_9f7a33b2621d7cb24fa268ae" xml:space="preserve">
     <value>Les branches déjà utilisées dans un worktree sont indisponibles.</value>
   </data>
+  <data name="Text_c51420c7bad5031e0721cedd" xml:space="preserve">
+    <value>Les branches fusionnées par squash ou rebase sont conservées, car leur suppression nécessite de forcer. Les branches distantes ne sont jamais modifiées.</value>
+  </data>
   <data name="Text_19766ed6ccb2f4a32778eed8" xml:space="preserve">
     <value>Annuler</value>
   </data>
@@ -243,8 +255,14 @@
   <data name="Text_b585b9ae2b811e9c591c9d00" xml:space="preserve">
     <value>Affichage des fichiers modifiés</value>
   </data>
+  <data name="Text_b178c865c38a11472a264689" xml:space="preserve">
+    <value>Modifications déjà présentes dans {0} (fusion squash ou rebase)</value>
+  </data>
   <data name="Text_da9fc80016b0ff1af0d679e5" xml:space="preserve">
     <value>Les modifications sont fusionnées localement. Ouvrez le worktree cible pour vérifier, tester et pousser.</value>
+  </data>
+  <data name="Text_3653683990bc494a1ed4680b" xml:space="preserve">
+    <value>Modifications : {0} indexées, {1} non indexées, {2} non suivies, {3} en conflit</value>
   </data>
   <data name="Text_9ed79ee9b2129b5dc855c5dc" xml:space="preserve">
     <value>Rechercher des mises à jour</value>
@@ -260,6 +278,9 @@
   </data>
   <data name="Text_a9ca63fe145cccd64b8e183c" xml:space="preserve">
     <value>Extraire le commit sélectionné</value>
+  </data>
+  <data name="Text_8ee71d69714ec60d96be3d1d" xml:space="preserve">
+    <value>Cherry-pick en cours</value>
   </data>
   <data name="Text_c7f937836f5d82d53bc50775" xml:space="preserve">
     <value>Choisir</value>
@@ -296,6 +317,9 @@
   </data>
   <data name="Text_102b9f2ab0aaa83bbe7bca26" xml:space="preserve">
     <value>Choisissez le dossier parent du dépôt à cloner.</value>
+  </data>
+  <data name="Text_ed983dc704f183995a95999c" xml:space="preserve">
+    <value>Nettoyer les worktrees fusionnés</value>
   </data>
   <data name="Text_379afe481ec4a23bd1363f12" xml:space="preserve">
     <value>Aucune modification</value>
@@ -482,6 +506,9 @@
   </data>
   <data name="Text_f3d5b704f7933bd630896f34" xml:space="preserve">
     <value>Supprimer la branche source locale</value>
+  </data>
+  <data name="Text_1657cf8e970d972a16a611f3" xml:space="preserve">
+    <value>Supprimer les branches locales fusionnées</value>
   </data>
   <data name="Text_01595e8f253bee9c7dd4cd6a" xml:space="preserve">
     <value>Supprimer le tag</value>
@@ -732,8 +759,14 @@
   <data name="Text_aeb0518b4bec58c35886a8f6" xml:space="preserve">
     <value>Git a renvoyé une sortie UTF-8 non valide.</value>
   </data>
+  <data name="Text_0605bf17abe400712c4180a6" xml:space="preserve">
+    <value>Git a renvoyé des nombres de commits non valides.</value>
+  </data>
   <data name="Text_580442d63271f2a52564e666" xml:space="preserve">
     <value>Git a renvoyé des informations de fusion invalides.</value>
+  </data>
+  <data name="Text_1bcee393ac7318030d78cb3b" xml:space="preserve">
+    <value>Git a renvoyé des informations d’état non valides.</value>
   </data>
   <data name="Text_5d2e701ca0f1ef2dad59d311" xml:space="preserve">
     <value>Git a renvoyé des informations de worktree non valides.</value>
@@ -776,6 +809,9 @@
   </data>
   <data name="Text_32beb698702cf7e23838ff28" xml:space="preserve">
     <value>Icônes et texte</value>
+  </data>
+  <data name="Text_bf01d57e38b150941df8f070" xml:space="preserve">
+    <value>Des fichiers ignorés seront supprimés : {0}</value>
   </data>
   <data name="Text_c536b2d7c1205a80cd559b36" xml:space="preserve">
     <value>Comparaison d’images</value>
@@ -969,6 +1005,9 @@
   <data name="Text_afed4cca114ed7a25b076b14" xml:space="preserve">
     <value>Fusionné dans {0}</value>
   </data>
+  <data name="Text_f8e588e3816ff860c51bb2bd" xml:space="preserve">
+    <value>Fusionné dans {0}</value>
+  </data>
   <data name="Text_924bd3c445d9c613595beae6" xml:space="preserve">
     <value>Worktree introuvable</value>
   </data>
@@ -1019,6 +1058,9 @@
   </data>
   <data name="Text_514cee61cf665c0adfbf0a61" xml:space="preserve">
     <value>Nom de la nouvelle branche</value>
+  </data>
+  <data name="Text_bd7e4d73c5fa6ff0e3bead80" xml:space="preserve">
+    <value>De nouveaux fichiers ignorés sont apparus dans le worktree après l’aperçu. Il a été conservé.</value>
   </data>
   <data name="Text_4f8db0339aac07ba4c39f628" xml:space="preserve">
     <value>Nom du nouveau tag</value>
@@ -1086,6 +1128,12 @@
   <data name="Text_822622a167cc9522df56237f" xml:space="preserve">
     <value>Aucun tag</value>
   </data>
+  <data name="Text_a53befb2563cd5bcdd5d81e1" xml:space="preserve">
+    <value>Aucune modification non commitée</value>
+  </data>
+  <data name="Text_0fe076d57a58c8baa924a5f2" xml:space="preserve">
+    <value>Aucun worktree fusionné à nettoyer.</value>
+  </data>
   <data name="Text_56166423b7658edf33f7f8f4" xml:space="preserve">
     <value>Aucun dépôt distant n’est configuré.</value>
   </data>
@@ -1094,6 +1142,9 @@
   </data>
   <data name="Text_dc937b59892604f5a86ac969" xml:space="preserve">
     <value>Aucune</value>
+  </data>
+  <data name="Text_8b8e6b38f1bc9cb6831fbb2d" xml:space="preserve">
+    <value>Non fusionné dans {0}</value>
   </data>
   <data name="Text_565339bc4d33d72817b58302" xml:space="preserve">
     <value>OK</value>
@@ -1218,6 +1269,9 @@
   <data name="Text_525212783dd88c8069b1d454" xml:space="preserve">
     <value>Quitter à la fermeture de la dernière fenêtre</value>
   </data>
+  <data name="Text_f897c1672415f3654ae0f5be" xml:space="preserve">
+    <value>Rebase en cours</value>
+  </data>
   <data name="Text_76ad8e11d3ba073a5c8210c0" xml:space="preserve">
     <value>Ajoutés récemment</value>
   </data>
@@ -1251,6 +1305,12 @@
   <data name="Text_c3812fc4acb861d5182fc2b8" xml:space="preserve">
     <value>Retirer</value>
   </data>
+  <data name="Text_15169013c24096825ad08a47" xml:space="preserve">
+    <value>Supprimer {0} worktree</value>
+  </data>
+  <data name="Text_44dde435d5aa6377635632a0" xml:space="preserve">
+    <value>Supprimer {0} worktrees</value>
+  </data>
   <data name="Text_54c8dbd8afc0b28bb01cac77" xml:space="preserve">
     <value>Retirer l’application personnalisée</value>
   </data>
@@ -1271,6 +1331,21 @@
   </data>
   <data name="Text_acb594ffb7ba39e5cfee01ac" xml:space="preserve">
     <value>Supprimer le code inutilisé</value>
+  </data>
+  <data name="Text_b4df0c43b59cfbb146d94d56" xml:space="preserve">
+    <value>Supprimé.</value>
+  </data>
+  <data name="Text_eef6fe19d21f64da04d4c638" xml:space="preserve">
+    <value>Supprimé. La branche a été conservée, car elle est encore utilisée.</value>
+  </data>
+  <data name="Text_3254270c7ccbf8f891d6bf05" xml:space="preserve">
+    <value>Supprimé. La branche a été conservée, car elle a été fusionnée par squash ou rebase.</value>
+  </data>
+  <data name="Text_ce50a2d0579d1d107d8c4959" xml:space="preserve">
+    <value>Supprimé. La branche a été conservée : {0}</value>
+  </data>
+  <data name="Text_6b8ea006e33209d4054364c8" xml:space="preserve">
+    <value>Supprimé. La branche locale a été supprimée.</value>
   </data>
   <data name="Text_3064d79a295cefe4b384b8fe" xml:space="preserve">
     <value>Renommer</value>
@@ -1349,6 +1424,9 @@
   </data>
   <data name="Text_72b4ec02dc967cd1f9b710a0" xml:space="preserve">
     <value>Inverser le commit sélectionné</value>
+  </data>
+  <data name="Text_60bf207855b706e21b688e7a" xml:space="preserve">
+    <value>Annulation en cours</value>
   </data>
   <data name="Text_4d20284363cf827c744380b6" xml:space="preserve">
     <value>Annuler le commit avec {0} comme parent principal</value>
@@ -1451,6 +1529,9 @@
   </data>
   <data name="Text_a81279506a9593595764ef25" xml:space="preserve">
     <value>Afficher les tags</value>
+  </data>
+  <data name="Text_ce3bb5ea4bc4071ac56de7d7" xml:space="preserve">
+    <value>Afficher l’état des worktrees dans la barre latérale</value>
   </data>
   <data name="Text_c2a9c77acf9b329f25b32c6f" xml:space="preserve">
     <value>Afficher dans l’Explorateur de fichiers</value>
@@ -1599,11 +1680,17 @@
   <data name="Text_bc939bd4404df8257c268b9e" xml:space="preserve">
     <value>Le dossier cible passera à la branche sélectionnée avant la fusion.</value>
   </data>
+  <data name="Text_928417d9ab5415a532f7a52f" xml:space="preserve">
+    <value>Le worktree a changé après l’aperçu. Il a été conservé.</value>
+  </data>
   <data name="Text_f6c9dd3b5586ef02efe172c0" xml:space="preserve">
     <value>Le worktree est verrouillé, absent ou sa branche est utilisée. Conservez-le ou déverrouillez-le avant le nettoyage.</value>
   </data>
   <data name="Text_90d2f542b118d50055ff1e33" xml:space="preserve">
     <value>Aucune fusion active pour ce fichier ou ce worktree. Actualisez puis réessayez.</value>
+  </data>
+  <data name="Text_de9c64042fdcda5329b7b63f" xml:space="preserve">
+    <value>Ces worktrees liés n’ont aucune modification non commitée et leurs commits sont déjà sur la branche principale. Chacun est revérifié juste avant que Git ne le supprime, sans forcer.</value>
   </data>
   <data name="Text_9669e237ff17c8a204092a42" xml:space="preserve">
     <value>Ce fichier contient une ligne trop longue pour l’aperçu. Ouvrez-le dans une application externe.</value>
@@ -1683,6 +1770,9 @@
   <data name="Text_9bc51f2f1a2a0998f6490334" xml:space="preserve">
     <value>Fichiers non suivis</value>
   </data>
+  <data name="Text_5f61c3f8f7c5f5802be4769b" xml:space="preserve">
+    <value>Upstream : {0} en avance, {1} en retard</value>
+  </data>
   <data name="Text_fdad19b2db24f1a14a14f2f4" xml:space="preserve">
     <value>Utiliser le nom du dossier</value>
   </data>
@@ -1739,6 +1829,9 @@
   </data>
   <data name="Text_2f8b63e3720c7ffe01869aeb" xml:space="preserve">
     <value>Dossier du worktree supprimé</value>
+  </data>
+  <data name="Text_1ba4c75ec617f08429ecd534" xml:space="preserve">
+    <value>État du worktree</value>
   </data>
   <data name="Text_aec2f93d67b7c4c5fd9b9404" xml:space="preserve">
     <value>Worktrees</value>

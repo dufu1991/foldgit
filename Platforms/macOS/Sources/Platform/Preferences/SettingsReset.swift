@@ -59,6 +59,7 @@ enum SettingsReset {
             ]),
             Group(id: "repositories", title: String(localized: "Repositories"), items: [
                 Item(id: "worktrees", title: String(localized: "Enable Worktrees"), value: on, keys: [.showWorktreeInformation]),
+                Item(id: "worktreeStatus", title: String(localized: "Show Worktree Status in Sidebar"), value: on, keys: [.showWorktreeStatus]),
                 Item(id: "worktreeOverrides", title: String(localized: "Repository Worktrees"), value: String(localized: "Off for All Repositories"), keys: [.repositoryWorktreeVisibility]),
                 Item(id: "fetch", title: String(localized: "Automatic Fetch"), value: String(localized: "Off for All Repositories"), keys: [.projectAutoFetch]),
             ]),

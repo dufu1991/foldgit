@@ -29,6 +29,7 @@ enum PreferenceKey: String, CaseIterable {
     case repositoryHistoryScopes
     case showCommitGraph
     case showWorktreeInformation
+    case showWorktreeStatus
     case repositoryWorktreeVisibility
     case codeFontSize
     case wrapLongLines

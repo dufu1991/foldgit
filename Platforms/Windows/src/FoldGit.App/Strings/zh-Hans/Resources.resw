@@ -9,6 +9,9 @@
   <data name="Text_29b70cff605762a55098daac" xml:space="preserve">
     <value>{0}，{1}</value>
   </data>
+  <data name="Text_3ae9086abfdeb0c12fab11c7" xml:space="preserve">
+    <value>{0}：领先 {1}，落后 {2}</value>
+  </data>
   <data name="Text_1ee89c2c01e0ed612af30945" xml:space="preserve">
     <value>{0} 个提交</value>
   </data>
@@ -63,6 +66,9 @@
   <data name="Text_5f61a448b53339af755c8585" xml:space="preserve">
     <value>具体时间</value>
   </data>
+  <data name="Text_cc90f78e0ad41d4be95ae13c" xml:space="preserve">
+    <value>最近 15 分钟内有活动</value>
+  </data>
   <data name="Text_ef37f4e061bb04ce93b664ae" xml:space="preserve">
     <value>原始尺寸</value>
   </data>
@@ -116,6 +122,9 @@
   </data>
   <data name="Text_24da7b5eb1cdcba0e665e1b6" xml:space="preserve">
     <value>执行 {0} 时发生错误。</value>
+  </data>
+  <data name="Text_be7e252a2dcd39c2cc2cd48b" xml:space="preserve">
+    <value>需要此仓库的另一个工作树才能移除这个工作树。</value>
   </data>
   <data name="Text_3907fa7f80722a6fc58cd8c1" xml:space="preserve">
     <value>外观</value>
@@ -192,6 +201,9 @@
   <data name="Text_9f7a33b2621d7cb24fa268ae" xml:space="preserve">
     <value>已在工作树中检出的分支不可重复使用。</value>
   </data>
+  <data name="Text_c51420c7bad5031e0721cedd" xml:space="preserve">
+    <value>通过 squash 或 rebase 合并的分支会保留，因为删除它们需要强制操作。远程分支始终不受影响。</value>
+  </data>
   <data name="Text_19766ed6ccb2f4a32778eed8" xml:space="preserve">
     <value>取消</value>
   </data>
@@ -207,8 +219,14 @@
   <data name="Text_b585b9ae2b811e9c591c9d00" xml:space="preserve">
     <value>更改文件显示</value>
   </data>
+  <data name="Text_b178c865c38a11472a264689" xml:space="preserve">
+    <value>更改已在 {0} 中（squash 或 rebase 合并）</value>
+  </data>
   <data name="Text_da9fc80016b0ff1af0d679e5" xml:space="preserve">
     <value>更改已在本地合并。可以打开目标工作树检查、测试并推送。</value>
+  </data>
+  <data name="Text_3653683990bc494a1ed4680b" xml:space="preserve">
+    <value>更改：已暂存 {0}，未暂存 {1}，未跟踪 {2}，冲突 {3}</value>
   </data>
   <data name="Text_9ed79ee9b2129b5dc855c5dc" xml:space="preserve">
     <value>检查更新</value>
@@ -224,6 +242,9 @@
   </data>
   <data name="Text_a9ca63fe145cccd64b8e183c" xml:space="preserve">
     <value>检出所选提交</value>
+  </data>
+  <data name="Text_8ee71d69714ec60d96be3d1d" xml:space="preserve">
+    <value>正在拣选</value>
   </data>
   <data name="Text_c7f937836f5d82d53bc50775" xml:space="preserve">
     <value>选择</value>
@@ -260,6 +281,9 @@
   </data>
   <data name="Text_102b9f2ab0aaa83bbe7bca26" xml:space="preserve">
     <value>选择克隆仓库的上级目录。</value>
+  </data>
+  <data name="Text_ed983dc704f183995a95999c" xml:space="preserve">
+    <value>清理已合并的工作树</value>
   </data>
   <data name="Text_379afe481ec4a23bd1363f12" xml:space="preserve">
     <value>无更改</value>
@@ -446,6 +470,9 @@
   </data>
   <data name="Text_f3d5b704f7933bd630896f34" xml:space="preserve">
     <value>删除本地源分支</value>
+  </data>
+  <data name="Text_1657cf8e970d972a16a611f3" xml:space="preserve">
+    <value>删除已合并的本地分支</value>
   </data>
   <data name="Text_01595e8f253bee9c7dd4cd6a" xml:space="preserve">
     <value>删除标签</value>
@@ -696,8 +723,14 @@
   <data name="Text_aeb0518b4bec58c35886a8f6" xml:space="preserve">
     <value>Git 返回了无效的 UTF-8 输出。</value>
   </data>
+  <data name="Text_0605bf17abe400712c4180a6" xml:space="preserve">
+    <value>Git 返回了无效的提交数量。</value>
+  </data>
   <data name="Text_580442d63271f2a52564e666" xml:space="preserve">
     <value>Git 返回了无效的合并信息。</value>
+  </data>
+  <data name="Text_1bcee393ac7318030d78cb3b" xml:space="preserve">
+    <value>Git 返回了无效的状态信息。</value>
   </data>
   <data name="Text_5d2e701ca0f1ef2dad59d311" xml:space="preserve">
     <value>Git 返回了无效的工作树信息。</value>
@@ -740,6 +773,9 @@
   </data>
   <data name="Text_32beb698702cf7e23838ff28" xml:space="preserve">
     <value>图标和文字</value>
+  </data>
+  <data name="Text_bf01d57e38b150941df8f070" xml:space="preserve">
+    <value>被忽略的文件也会被删除：{0}</value>
   </data>
   <data name="Text_c536b2d7c1205a80cd559b36" xml:space="preserve">
     <value>图片比较</value>
@@ -933,6 +969,9 @@
   <data name="Text_afed4cca114ed7a25b076b14" xml:space="preserve">
     <value>已合并到 {0}</value>
   </data>
+  <data name="Text_f8e588e3816ff860c51bb2bd" xml:space="preserve">
+    <value>已并入 {0}</value>
+  </data>
   <data name="Text_924bd3c445d9c613595beae6" xml:space="preserve">
     <value>工作树目录缺失</value>
   </data>
@@ -983,6 +1022,9 @@
   </data>
   <data name="Text_514cee61cf665c0adfbf0a61" xml:space="preserve">
     <value>新分支名称</value>
+  </data>
+  <data name="Text_bd7e4d73c5fa6ff0e3bead80" xml:space="preserve">
+    <value>预览后工作树中出现了新的被忽略文件，已保留。</value>
   </data>
   <data name="Text_4f8db0339aac07ba4c39f628" xml:space="preserve">
     <value>新标签名称</value>
@@ -1050,6 +1092,12 @@
   <data name="Text_822622a167cc9522df56237f" xml:space="preserve">
     <value>没有标签</value>
   </data>
+  <data name="Text_a53befb2563cd5bcdd5d81e1" xml:space="preserve">
+    <value>没有未提交的更改</value>
+  </data>
+  <data name="Text_0fe076d57a58c8baa924a5f2" xml:space="preserve">
+    <value>没有可清理的已合并工作树。</value>
+  </data>
   <data name="Text_56166423b7658edf33f7f8f4" xml:space="preserve">
     <value>尚未配置远程仓库。</value>
   </data>
@@ -1058,6 +1106,9 @@
   </data>
   <data name="Text_dc937b59892604f5a86ac969" xml:space="preserve">
     <value>无</value>
+  </data>
+  <data name="Text_8b8e6b38f1bc9cb6831fbb2d" xml:space="preserve">
+    <value>尚未并入 {0}</value>
   </data>
   <data name="Text_565339bc4d33d72817b58302" xml:space="preserve">
     <value>确定</value>
@@ -1182,6 +1233,9 @@
   <data name="Text_525212783dd88c8069b1d454" xml:space="preserve">
     <value>关闭最后一个窗口时退出应用</value>
   </data>
+  <data name="Text_f897c1672415f3654ae0f5be" xml:space="preserve">
+    <value>正在变基</value>
+  </data>
   <data name="Text_76ad8e11d3ba073a5c8210c0" xml:space="preserve">
     <value>最近添加</value>
   </data>
@@ -1215,6 +1269,9 @@
   <data name="Text_c3812fc4acb861d5182fc2b8" xml:space="preserve">
     <value>移除</value>
   </data>
+  <data name="Text_44dde435d5aa6377635632a0" xml:space="preserve">
+    <value>移除 {0} 个工作树</value>
+  </data>
   <data name="Text_54c8dbd8afc0b28bb01cac77" xml:space="preserve">
     <value>移除自定义应用</value>
   </data>
@@ -1235,6 +1292,21 @@
   </data>
   <data name="Text_acb594ffb7ba39e5cfee01ac" xml:space="preserve">
     <value>移除未使用的代码</value>
+  </data>
+  <data name="Text_b4df0c43b59cfbb146d94d56" xml:space="preserve">
+    <value>已移除。</value>
+  </data>
+  <data name="Text_eef6fe19d21f64da04d4c638" xml:space="preserve">
+    <value>已移除。分支仍在使用中，已保留。</value>
+  </data>
+  <data name="Text_3254270c7ccbf8f891d6bf05" xml:space="preserve">
+    <value>已移除。分支是通过 squash 或 rebase 合并的，已保留。</value>
+  </data>
+  <data name="Text_ce50a2d0579d1d107d8c4959" xml:space="preserve">
+    <value>已移除，分支已保留：{0}</value>
+  </data>
+  <data name="Text_6b8ea006e33209d4054364c8" xml:space="preserve">
+    <value>已移除，本地分支已删除。</value>
   </data>
   <data name="Text_3064d79a295cefe4b384b8fe" xml:space="preserve">
     <value>重命名</value>
@@ -1313,6 +1385,9 @@
   </data>
   <data name="Text_72b4ec02dc967cd1f9b710a0" xml:space="preserve">
     <value>还原所选提交</value>
+  </data>
+  <data name="Text_60bf207855b706e21b688e7a" xml:space="preserve">
+    <value>正在还原提交</value>
   </data>
   <data name="Text_4d20284363cf827c744380b6" xml:space="preserve">
     <value>以 {0} 为主线还原提交</value>
@@ -1415,6 +1490,9 @@
   </data>
   <data name="Text_a81279506a9593595764ef25" xml:space="preserve">
     <value>显示标签</value>
+  </data>
+  <data name="Text_ce3bb5ea4bc4071ac56de7d7" xml:space="preserve">
+    <value>在边栏显示工作树状态</value>
   </data>
   <data name="Text_c2a9c77acf9b329f25b32c6f" xml:space="preserve">
     <value>在文件资源管理器中显示</value>
@@ -1563,11 +1641,17 @@
   <data name="Text_bc939bd4404df8257c268b9e" xml:space="preserve">
     <value>合并前，目标目录会切换到所选分支。</value>
   </data>
+  <data name="Text_928417d9ab5415a532f7a52f" xml:space="preserve">
+    <value>预览后工作树发生了变化，已保留。</value>
+  </data>
   <data name="Text_f6c9dd3b5586ef02efe172c0" xml:space="preserve">
     <value>工作树已锁定、目录缺失，或分支仍被检出。请保留它，或解锁后再清理。</value>
   </data>
   <data name="Text_90d2f542b118d50055ff1e33" xml:space="preserve">
     <value>此文件或工作树没有进行中的合并。请刷新后重试。</value>
+  </data>
+  <data name="Text_de9c64042fdcda5329b7b63f" xml:space="preserve">
+    <value>这些关联工作树没有未提交的更改，提交也已在主干上。Git 移除每一个之前都会再检查一次，且不会强制移除。</value>
   </data>
   <data name="Text_9669e237ff17c8a204092a42" xml:space="preserve">
     <value>此文件包含过长的单行，无法流畅预览。请使用外部应用打开。</value>
@@ -1647,6 +1731,9 @@
   <data name="Text_9bc51f2f1a2a0998f6490334" xml:space="preserve">
     <value>未跟踪的文件</value>
   </data>
+  <data name="Text_5f61c3f8f7c5f5802be4769b" xml:space="preserve">
+    <value>上游：领先 {0}，落后 {1}</value>
+  </data>
   <data name="Text_fdad19b2db24f1a14a14f2f4" xml:space="preserve">
     <value>使用文件夹名称</value>
   </data>
@@ -1703,6 +1790,9 @@
   </data>
   <data name="Text_2f8b63e3720c7ffe01869aeb" xml:space="preserve">
     <value>工作树文件夹已移除</value>
+  </data>
+  <data name="Text_1ba4c75ec617f08429ecd534" xml:space="preserve">
+    <value>工作树状态</value>
   </data>
   <data name="Text_aec2f93d67b7c4c5fd9b9404" xml:space="preserve">
     <value>工作树</value>

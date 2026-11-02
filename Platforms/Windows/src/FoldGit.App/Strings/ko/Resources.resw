@@ -1068,6 +1068,9 @@
   <data name="Text_390f0870e9351ecffa6ec904" xml:space="preserve">
     <value>모든 저장소에서 끔</value>
   </data>
+  <data name="Text_7138baa6ea206661c85d50a2" xml:space="preserve">
+    <value>공식 웹사이트</value>
+  </data>
   <data name="Text_df6f468a735975e44b93f0df" xml:space="preserve">
     <value>기존 이름:</value>
   </data>

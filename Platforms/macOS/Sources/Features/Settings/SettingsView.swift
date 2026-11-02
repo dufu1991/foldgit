@@ -497,6 +497,7 @@ struct ApplicationSettingsPane: View {
 
 struct AboutSettingsPane: View {
     @State private var showsLicense = false
+    private let website = URL(string: "https://foldgit.com")!
     private let project = URL(string: "https://github.com/dufu1991/foldgit")!
     private var version: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
@@ -516,6 +517,7 @@ struct AboutSettingsPane: View {
                 }
             }
             Section("Project") {
+                Link("Official Website", destination: website)
                 Link("Project Homepage", destination: project)
                 Link("Send Feedback", destination: project.appending(path: "issues"))
                 Button("Open Source Licenses") { showsLicense = true }

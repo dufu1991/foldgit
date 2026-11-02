@@ -11,6 +11,7 @@ struct ProjectSidebarView: View {
     private var globalShowWorktreeInformation = PreferenceDefaults.showWorktreeInformation
     @AppStorage(PreferenceKey.repositoryWorktreeVisibility.rawValue)
     private var worktreePreferencesData = PreferenceDefaults.repositoryWorktreeVisibility
+    @AppStorage(PreferenceKey.showWorktreeStatus.rawValue) private var showWorktreeStatus = PreferenceDefaults.showWorktreeStatus
     @Binding var folders: [WorkspaceEntry]
     @Binding var selection: URL?
     let onError: (Error) -> Void
@@ -19,6 +20,7 @@ struct ProjectSidebarView: View {
     @State private var finishingWorktree: WorktreeSheetTarget?
     @State private var creatingWorktree: WorktreeSheetTarget?
     @State private var managingWorktrees: WorktreeSheetTarget?
+    @State private var cleaningWorktrees: WorktreeSheetTarget?
     @State private var collapsedWorktrees: Set<URL> = []
     @State private var collapsedGroups: Set<URL> = []
     @State private var expandedInfrequentGroups: Set<URL> = []
@@ -72,6 +74,11 @@ struct ProjectSidebarView: View {
                 relocateWorktree(old, destination, fallback: target.url)
             }
         }
+        .sheet(item: $cleaningWorktrees) { target in
+            WorktreeCleanupSheet(repository: target.url) { removed in
+                relocateWorktree(removed, nil, fallback: target.url)
+            }
+        }
         .sheet(item: $repositoryToName) { target in
             RepositoryDisplayNameSheet(
                 repository: target.repository,
@@ -123,10 +130,23 @@ struct ProjectSidebarView: View {
         }
         .task(id: WorktreeRefreshID(paths: folders.flatMap(\.repositories).map(\.identity), enabled: appearsActive)) {
             await worktrees.refreshRepositories(folders.flatMap(\.repositories).map(\.url))
+            await refreshWorktreeStatuses()
             guard appearsActive else { return }
             while !Task.isCancelled {
                 do { try await Task.sleep(for: .seconds(20)) } catch { return }
                 await worktrees.refreshRepositories(folders.flatMap(\.repositories).map(\.url))
+                await refreshWorktreeStatuses()
+            }
+        }
+        .task(id: WorktreeStatusMonitorID(paths: statusFamilies.flatMap { $0.map(\.url.path) },
+                                          enabled: appearsActive && showWorktreeStatus)) {
+            guard appearsActive && showWorktreeStatus else { return }
+            let families = statusFamilies
+            let paths = families.flatMap { $0.filter { !$0.isBare && !$0.isPrunable }.map(\.id.path) }
+            // File events only refresh the worktrees they touched; commits and staging are caught by the poll above.
+            for await changed in RepositoryChangeMonitor.changes(in: paths) {
+                guard !Task.isCancelled else { return }
+                await worktrees.statuses.refresh(families, onlyPaths: changed)
             }
         }
         .onChange(of: sort) { ascending = sort == .name || sort == .manual }
@@ -152,6 +172,22 @@ struct ProjectSidebarView: View {
                 try? await Task.sleep(for: .seconds(30))
             }
         }
+    }
+
+    /// Worktree families of repositories with worktrees enabled, each listed once.
+    private var statusFamilies: [[GitWorktree]] {
+        var seen: Set<URL> = []
+        return folders.flatMap(\.repositories).compactMap { repository in
+            guard showsWorktreeInformation(for: repository.url) else { return nil }
+            let trees = worktrees.list(for: repository.url)
+            guard let first = trees.first, seen.insert(first.id).inserted else { return nil }
+            return trees
+        }
+    }
+
+    private func refreshWorktreeStatuses() async {
+        guard showWorktreeStatus else { return }
+        await worktrees.statuses.refresh(statusFamilies)
     }
 
     private var sidebarContent: some View {
@@ -423,6 +459,9 @@ struct ProjectSidebarView: View {
                         : AnyShapeStyle(folder.repositoryIconColor.opacity(isInfrequent ? 0.6 : 1)))
             }
             Spacer(minLength: 4)
+            if showWorktreeInformation && showWorktreeStatus, let status = worktrees.statuses.status(for: folder.url) {
+                WorktreeStatusBadge(status: status, isOnTrunk: worktrees.statuses.isOnTrunk(folder.url))
+            }
             if showWorktreeInformation && isLinked { WorktreeIndicator(path: folder.url.path).fixedSize() }
             if showWorktreeInformation && tree?.isLocked == true {
                 Image(systemName: "lock.fill").font(.caption2).foregroundStyle(.secondary).help("Locked Worktree")
@@ -466,6 +505,11 @@ struct ProjectSidebarView: View {
                         }
                         Button("Manage Worktrees", systemImage: "square.stack.3d.up") {
                             managingWorktrees = WorktreeSheetTarget(url: worktrees.source(for: folder.url))
+                        }
+                        if worktrees.list(for: folder.url).count > 1 {
+                            Button("Clean Up Merged Worktrees", systemImage: "trash") {
+                                cleaningWorktrees = WorktreeSheetTarget(url: worktrees.source(for: folder.url))
+                            }
                         }
                         if isLinked && tree?.branch != nil {
                             Button("Finish Worktree", systemImage: "checkmark.circle") {
@@ -649,7 +693,7 @@ struct ProjectSidebarView: View {
     private var menuActions: MenuActions {
         var actions = MenuActions()
         guard !isAdding, cloneParent == nil, groupDraft == nil, groupToRename == nil,
-              repositoryToName == nil, creatingWorktree == nil, managingWorktrees == nil,
+              repositoryToName == nil, creatingWorktree == nil, managingWorktrees == nil, cleaningWorktrees == nil,
               finishingWorktree == nil else { return actions }
         actions[.openRepository] = chooseDirectory
         actions[.cloneRepository] = chooseCloneDirectory
@@ -781,5 +825,10 @@ private struct SidebarRowContext {
 
 private struct WorktreeRefreshID: Hashable {
     let paths: [URL]
+    let enabled: Bool
+}
+
+private struct WorktreeStatusMonitorID: Hashable {
+    let paths: [String]
     let enabled: Bool
 }

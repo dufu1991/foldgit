@@ -6,6 +6,8 @@ import Observation
 @Observable final class WorktreeStore {
     private(set) var families: [URL: [GitWorktree]] = [:]
     private(set) var errors: [URL: String] = [:]
+    /// Status lives beside the worktree list, so every view that has the list can read it.
+    let statuses = WorktreeStatusStore()
 
     func list(for url: URL) -> [GitWorktree] { families[key(url)] ?? [] }
     func worktree(at url: URL) -> GitWorktree? { list(for: url).first { $0.id == key(url) } }

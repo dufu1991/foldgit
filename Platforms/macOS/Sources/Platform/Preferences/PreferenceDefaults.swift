@@ -3,6 +3,7 @@ import Foundation
 
 struct PreferenceDefaults {
     static let showWorktreeInformation = true
+    static let showWorktreeStatus = true
     static let repositoryWorktreeVisibility = try! JSONEncoder().encode(RepositoryWorktreePreferences())
     static let repositoryDisplayNames = try! JSONEncoder().encode(RepositoryDisplayNames())
     static let sidebarDates = try! JSONEncoder().encode(SidebarDates())

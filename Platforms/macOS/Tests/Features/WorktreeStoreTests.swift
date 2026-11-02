@@ -6,6 +6,67 @@ import Testing
 @testable import FoldGit
 
 @MainActor
+struct WorktreeCleanupFeatureTests {
+    @Test func batchCleanupKeepsIgnoredAndChangedWorktreesAndContinuesAfterFailure() async throws {
+        let repository = try await TestRepository.create()
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("FoldGit-cleanup-ui-\(UUID())")
+        defer { repository.remove(); try? FileManager.default.removeItem(at: root) }
+        try repository.write(".gitignore", "build/\n")
+        try await repository.git(["add", "--force", ".gitignore"])
+        try await repository.commit("test: ignore build files")
+        let safe = root.appendingPathComponent("z-safe")
+        let changed = root.appendingPathComponent("a-changed")
+        let ignored = root.appendingPathComponent("ignored")
+        for url in [safe, changed, ignored] {
+            try await repository.git(["worktree", "add", "-b", url.lastPathComponent, url.path, "main"])
+        }
+        let key = ignored.appendingPathComponent("build/local-signing-key.pem")
+        try FileManager.default.createDirectory(at: key.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try "private test data".write(to: key, atomically: true, encoding: .utf8)
+        let model = WorktreeCleanupModel(repository: repository.url)
+        await model.load()
+        #expect(model.phase == .review)
+        #expect(model.candidates.count == 3)
+        let ignoredID = RepositoryLocation.canonical(ignored)
+        #expect(!model.selection.contains(ignoredID))
+        #expect(model.candidates.first { $0.id == ignoredID }?.ignoredEntries == ["build/local-signing-key.pem"])
+        model.selection = [RepositoryLocation.canonical(safe), RepositoryLocation.canonical(changed)]
+        try "new work".write(to: changed.appendingPathComponent("late.txt"), atomically: true, encoding: .utf8)
+        var removed: [URL] = []
+        await model.run { removed.append(RepositoryLocation.canonical($0)) }
+        #expect(model.phase == .finished)
+        #expect(removed == [RepositoryLocation.canonical(safe)])
+        #expect(model.outcomes[RepositoryLocation.canonical(safe)] == .removed(.deleted))
+        if case .failed = model.outcomes[RepositoryLocation.canonical(changed)] {} else { Issue.record("Changed worktree should be kept and reported.") }
+        #expect(FileManager.default.fileExists(atPath: changed.path))
+        #expect(try String(contentsOf: key, encoding: .utf8) == "private test data")
+    }
+
+    @Test func sidebarStatusRefreshTracksChangesAndMergedIntegration() async throws {
+        let repository = try await TestRepository.create()
+        let linked = repository.url.deletingLastPathComponent().appendingPathComponent("FoldGit-status-ui-\(UUID())")
+        defer { repository.remove(); try? FileManager.default.removeItem(at: linked) }
+        try await repository.git(["worktree", "add", "-b", "feature", linked.path, "main"])
+        let store = WorktreeStore()
+        try await store.refresh(repository.url)
+        await store.statuses.refresh([store.list(for: repository.url)])
+        #expect(store.statuses.status(for: linked)?.canBeCleanedUp == true)
+        #expect(store.statuses.isOnTrunk(repository.url))
+        #expect(!store.statuses.isOnTrunk(linked))
+        try "new work".write(to: linked.appendingPathComponent("new.txt"), atomically: true, encoding: .utf8)
+        await store.statuses.refresh([store.list(for: repository.url)], onlyPaths: [RepositoryLocation.canonical(linked).path])
+        #expect(store.statuses.status(for: linked)?.changes.untracked == 1)
+        #expect(store.statuses.status(for: linked)?.canBeCleanedUp == false)
+        try await GitRuntime.run(arguments: ["git", "add", "new.txt"], currentDirectoryURL: linked)
+        await store.statuses.refresh([store.list(for: repository.url)])
+        let status = try #require(store.statuses.status(for: linked))
+        #expect(status.changes.staged == 1)
+        #expect(status.changes.untracked == 0)
+        #expect(WorktreeStatusText.lines(for: status, isOnTrunk: false).count >= 2)
+    }
+}
+
+@MainActor
 struct WorktreeStoreTests {
     @Test func discoveryFromLinkedDirectoryFindsFamilyAndBranchDestination() async throws {
         let repository = try await TestRepository.create()

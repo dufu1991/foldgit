@@ -86,5 +86,19 @@
 			<string>%lld개 커밋 뒤처짐</string>
 		</dict>
 	</dict>
+	<key>Remove %lld Worktrees</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>other</key>
+			<string>워크트리 %lld개 제거</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

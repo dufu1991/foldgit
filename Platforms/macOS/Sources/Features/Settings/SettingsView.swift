@@ -322,6 +322,7 @@ struct ComparisonSettingsPane: View {
 struct RepositorySettingsPane: View {
     @AppStorage(PreferenceKey.showWorktreeInformation.rawValue)
     private var showWorktreeInformation = PreferenceDefaults.showWorktreeInformation
+    @AppStorage(PreferenceKey.showWorktreeStatus.rawValue) private var showWorktreeStatus = PreferenceDefaults.showWorktreeStatus
     @AppStorage(PreferenceKey.folder.rawValue) private var data: Data?
     @State private var autoFetch = AutoFetchScheduler.shared
     @State private var error: Error?
@@ -334,6 +335,10 @@ struct RepositorySettingsPane: View {
                 Toggle("Enable Worktrees", isOn: $showWorktreeInformation)
                     .toggleStyle(.switch)
                     .accessibilityIdentifier("showWorktreeInformationToggle")
+                Toggle("Show Worktree Status in Sidebar", isOn: $showWorktreeStatus)
+                    .toggleStyle(.switch)
+                    .disabled(!showWorktreeInformation)
+                    .accessibilityIdentifier("showWorktreeStatusToggle")
             } header: {
                 Text("Worktrees")
             } footer: {

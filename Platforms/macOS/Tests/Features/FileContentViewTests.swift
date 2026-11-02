@@ -7,6 +7,52 @@ import Testing
 
 @MainActor
 struct FileContentViewTests {
+    @Test func detailSwitchesInlineWithoutOpeningASheetOrResettingTheMode() async throws {
+        let repository = try await TestRepository.create(commits: 1)
+        defer { repository.remove() }
+        let store = FileHistoryStore()
+        defer { store.deactivate() }
+        store.activate(in: repository.url)
+        await store.refreshTask?.value
+        await store.treeTask?.value
+        let host = NSHostingView(rootView: FileHistoryDetailView(store: store).environment(\.folder, repository.url))
+        let window = makeWindow(host)
+        defer { window.close() }
+        try await Task.sleep(for: .milliseconds(100))
+        #expect(descendants(host).compactMap { $0 as? NSSegmentedControl }.isEmpty)
+        store.selectFile("example.swift")
+        await store.historyTask?.value
+        await store.diffTask?.value
+        try await Task.sleep(for: .milliseconds(100))
+        #expect(store.detailMode == .history)
+        #expect(store.content.url == nil)
+        let picker = try #require(descendants(host).compactMap { $0 as? NSSegmentedControl }.first {
+            $0.segmentCount == 2 && $0.label(forSegment: 0) == String(localized: "Commit History")
+        })
+        #expect(picker.segmentCount == 2)
+        #expect(picker.selectedSegment == 0)
+        #expect(window.attachedSheet == nil)
+
+        picker.selectedSegment = 1
+        _ = picker.sendAction(picker.action, to: picker.target)
+        await store.content.readTask?.value
+        try await Task.sleep(for: .milliseconds(100))
+        #expect(store.detailMode == .content)
+        #expect(descendants(host).contains { $0 is NSTextView && ($0 as? NSTextView)?.isEditable == false })
+        #expect(window.attachedSheet == nil)
+
+        picker.selectedSegment = 0
+        _ = picker.sendAction(picker.action, to: picker.target)
+        try await Task.sleep(for: .milliseconds(100))
+        #expect(store.detailMode == .history)
+        #expect(store.content.url == nil)
+        #expect(window.attachedSheet == nil)
+        #expect(picker.window === window)
+        store.selectFile(nil)
+        try await Task.sleep(for: .milliseconds(100))
+        #expect(descendants(host).compactMap { $0 as? NSSegmentedControl }.isEmpty)
+    }
+
     @Test func nativeFindAndCopyPreserveWhitespaceAndUnicode() async throws {
         let source = "\r\n\tlet greeting = \"中文 😀\"\r\n\r\n"
         guard case .text(_, _, let layout) = try FileContentReader.decode(Data(source.utf8), plain: false) else {
@@ -56,7 +102,12 @@ struct FileContentViewTests {
         #expect((text.string as NSString).substring(with: text.selectedRange()) == "中文 😀")
         let keywordColor = try #require(text.textStorage?.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? NSColor)
         #expect(keywordColor != .textColor)
-        #expect(text.enclosingScrollView?.rulersVisible == true)
+        let scroll = try #require(text.enclosingScrollView)
+        let lineNumbers = try #require(scroll.superview?.subviews.first { $0.identifier?.rawValue == "fileContentLineNumbers" })
+        #expect(!scroll.hasVerticalRuler)
+        #expect(!scroll.rulersVisible)
+        #expect(lineNumbers.frame.width >= 38)
+        #expect(lineNumbers.frame.maxX <= scroll.frame.minX + 1)
         #expect(text.usesFindBar)
         host.rootView = FileContentTextViewer(document: document, path: "test.swift", fontSize: 16, wraps: false)
         try await Task.sleep(for: .milliseconds(100))
@@ -156,7 +207,7 @@ struct FileContentViewTests {
                 try await Task.sleep(for: .milliseconds(20))
             }
             #expect(descendants(host).compactMap { $0 as? NSTextView }.contains { $0.string.contains("let greeting") })
-            #expect(descendants(host).compactMap { $0 as? NSSegmentedControl }.isEmpty)
+            #expect(descendants(host).compactMap { $0 as? NSSegmentedControl }.contains { $0.segmentCount == 2 })
             if let output = ProcessInfo.processInfo.environment["FILE_HISTORY_SNAPSHOT_DIRECTORY"] {
                 let bitmap = try #require(host.bitmapImageRepForCachingDisplay(in: host.bounds))
                 host.cacheDisplay(in: host.bounds, to: bitmap)

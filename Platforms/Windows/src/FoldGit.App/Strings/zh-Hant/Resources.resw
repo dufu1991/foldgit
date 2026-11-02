@@ -609,6 +609,9 @@
   <data name="Text_05991d91f152ae161f8c0c67" xml:space="preserve">
     <value>檔案已不存在</value>
   </data>
+  <data name="Text_62255042cf2e7d4ca6e60225" xml:space="preserve">
+    <value>檔案檢視</value>
+  </data>
   <data name="Text_abc7e9892806b047b4d4786b" xml:space="preserve">
     <value>檔案</value>
   </data>

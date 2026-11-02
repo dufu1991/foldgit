@@ -91,51 +91,65 @@ struct RepositoryFileTreeView: View {
 
 struct FileHistoryDetailView: View {
     @Bindable var store: FileHistoryStore
-    @State private var showingHistory = false
+    @State private var findRequest: UUID?
 
     var body: some View {
-        VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 8) {
-                if let path = store.selectedPath {
+        Group {
+            if let path = store.selectedPath {
+                VStack(spacing: 0) {
                     HStack {
-                        Text(verbatim: path).font(.callout).foregroundStyle(.secondary)
-                            .lineLimit(1).truncationMode(.middle).help(path)
-                        Spacer()
-                        Button("Commit History", systemImage: "clock.arrow.circlepath") {
-                            store.selectDetailMode(.history)
-                            showingHistory = true
+                        Picker("File View", selection: Binding(get: { store.detailMode }, set: store.selectDetailMode)) {
+                            Text("Commit History").tag(RepositoryFileDetailMode.history)
+                            Text("File Content").tag(RepositoryFileDetailMode.content)
                         }
-                        .controlSize(.small)
-                        .accessibilityIdentifier("showFileCommitHistory")
+                        .pickerStyle(.segmented)
+                        .labelsHidden()
+                        .fixedSize()
+                        .accessibilityIdentifier("fileDetailModePicker")
+                        Spacer()
+                        if store.detailMode == .content {
+                            Button("Find in File", systemImage: "magnifyingglass") { findRequest = UUID() }
+                                .labelStyle(.iconOnly).buttonStyle(.borderless)
+                                .disabled(!hasText)
+                                .help("Find in File")
+                            if let metadata = store.content.metadata {
+                                Text(verbatim: ByteCountFormatter.string(fromByteCount: metadata.size, countStyle: .file))
+                                    .font(.callout).monospacedDigit().foregroundStyle(.secondary)
+                            }
+                            OpenFileButton(filePath: path)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(12).background(.bar)
+                    switch store.detailMode {
+                    case .history:
+                        FileHistoryRecordsView(store: store)
+                    case .content:
+                        FileContentView(store: store.content, path: path, findRequest: findRequest)
                     }
                 }
-            }
-            .padding(12).background(.bar)
-            if let path = store.selectedPath {
-                FileContentView(store: store.content, path: path)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             } else {
                 ContentUnavailableView("Select a File", systemImage: "doc.text.magnifyingglass",
-                                       description: Text("Select a file to view its complete content."))
+                                       description: store.detailMode == .history
+                                           ? Text("Select a file to view its commit history.")
+                                           : Text("Select a file to view its complete content."))
             }
         }
         .background(Color(nsColor: .textBackgroundColor))
-        .onAppear { store.selectDetailMode(.content) }
-        .sheet(isPresented: $showingHistory, onDismiss: { store.selectDetailMode(.content) }) {
-            VStack(spacing: 0) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("File History").font(.headline)
-                        if let path = store.selectedPath { Text(verbatim: path).font(.callout).foregroundStyle(.secondary) }
-                    }
-                    Spacer()
-                    Button("Done") { showingHistory = false }.keyboardShortcut(.cancelAction)
-                }
-                .padding(12)
-                Divider()
-                FileHistoryRecordsView(store: store)
-            }
-            .frame(minWidth: 800, minHeight: 560)
-        }
+        .focusedSceneValue(\.fileMenu, fileMenu)
+    }
+
+    private var hasText: Bool {
+        if case .text(let document) = store.content.state { return !document.text.isEmpty }
+        return false
+    }
+
+    private var fileMenu: MenuActions? {
+        guard store.detailMode == .content, hasText else { return nil }
+        var actions = MenuActions()
+        actions[.findInFile] = { findRequest = UUID() }
+        return actions
     }
 }
 

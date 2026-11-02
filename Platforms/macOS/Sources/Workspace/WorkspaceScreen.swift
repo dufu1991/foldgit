@@ -80,33 +80,39 @@ struct WorkspaceScreen: View {
             .background(WorkspaceColumnConfiguration(historyWidth: Self.historyColumnWidth, sidebarWidth: Self.sidebarWidth))
             .navigationSplitViewColumnWidth(min: 320, ideal: Self.historyColumnWidth, max: 640)
         } detail: {
-            if browseMode == .files, selectionFolder != nil {
-                FileHistoryDetailView(store: fileHistory)
-                    .id(selectionFolder?.url)
-            } else if let selectionLog, let subSelectionLogID {
-                CommitDiffView(selectionLogID: selectionLog.id, subSelectionLogID: subSelectionLogID)
-            } else if let selectionFolder {
-                switch selectionLog {
-                case .notCommitted:
-                    CommitCreateView(
-                        folder: selectionFolder,
-                        isRefresh: $folderIsRefresh,
-                        onCommit: {
-                            self.selectionLog = nil
-                            folderIsRefresh = true
-                        },
-                        onStash: {
-                            self.selectionLog = nil
-                            folderIsRefresh = true
-                        }
-                    )
-                    .id(selectionFolder.url)
-                case .committed(let commit):
-                    CommitDetailStackView(commit: commit, folder: selectionFolder)
-                case nil:
-                    Text("No Selection")
-                        .foregroundColor(.secondary)
+            Group {
+                if browseMode == .files, selectionFolder != nil {
+                    FileHistoryDetailView(store: fileHistory)
+                        .id(selectionFolder?.url)
+                } else if let selectionLog, let subSelectionLogID {
+                    CommitDiffView(selectionLogID: selectionLog.id, subSelectionLogID: subSelectionLogID)
+                } else if let selectionFolder {
+                    switch selectionLog {
+                    case .notCommitted:
+                        CommitCreateView(
+                            folder: selectionFolder,
+                            isRefresh: $folderIsRefresh,
+                            onCommit: {
+                                self.selectionLog = nil
+                                folderIsRefresh = true
+                            },
+                            onStash: {
+                                self.selectionLog = nil
+                                folderIsRefresh = true
+                            }
+                        )
+                        .id(selectionFolder.url)
+                    case .committed(let commit):
+                        CommitDetailStackView(commit: commit, folder: selectionFolder)
+                    case nil:
+                        Text("No Selection")
+                            .foregroundColor(.secondary)
+                    }
                 }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .overlay(alignment: .top) {
+                Divider().allowsHitTesting(false)
             }
         }
         .navigationSplitViewStyle(.balanced)

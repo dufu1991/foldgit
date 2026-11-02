@@ -333,6 +333,7 @@
     "File Mode Changed": "文件权限变化",
     "File Mode: %@ → %@": "文件权限：%@ → %@",
     "File No Longer Exists": "文件已不存在",
+    "File View": "文件视图",
     "Files": "文件",
     "Files Changed": "已更改文件",
     "Files larger than 10 MiB must be opened externally.": "超过 10 MiB 的文件请使用外部应用打开。",

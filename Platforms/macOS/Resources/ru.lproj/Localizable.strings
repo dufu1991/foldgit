@@ -187,6 +187,7 @@
 "File Mode Changed" = "Изменён режим файла";
 "File Mode: %@ → %@" = "Режим файла: %@ → %@";
 "File No Longer Exists" = "Файл больше не существует";
+"File View" = "Просмотр файла";
 "Files" = "Файлы";
 "Files Changed" = "Изменённые файлы";
 "Files larger than 10 MiB must be opened externally." = "Файлы размером более 10 MiB следует открывать во внешнем приложении.";

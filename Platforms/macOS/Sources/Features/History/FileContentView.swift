@@ -7,25 +7,11 @@ struct FileContentView: View {
     let path: String
     @AppStorage(PreferenceKey.codeFontSize.rawValue) private var fontSize = AppPreferences.defaultCodeFontSize
     @AppStorage(PreferenceKey.wrapLongLines.rawValue) private var wraps = false
-    @State private var findRequest: UUID?
+    let findRequest: UUID?
     @State private var highlightingFailed = false
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                Text("Working Tree").font(.callout).foregroundStyle(.secondary)
-                Spacer()
-                Button("Find in File", systemImage: "magnifyingglass") { findRequest = UUID() }
-                    .labelStyle(.iconOnly).buttonStyle(.borderless)
-                    .disabled(!hasText)
-                    .help("Find in File")
-                if let metadata = store.metadata {
-                    Text(verbatim: ByteCountFormatter.string(fromByteCount: metadata.size, countStyle: .file))
-                        .font(.callout).monospacedDigit().foregroundStyle(.secondary)
-                }
-                OpenFileButton(filePath: path)
-            }
-            .padding(.horizontal, 12).padding(.vertical, 6).background(.bar)
             switch store.state {
             case .idle, .loading:
                 ProgressView().controlSize(.small).frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -70,20 +56,7 @@ struct FileContentView: View {
                 }
             }
         }
-        .focusedSceneValue(\.fileMenu, fileMenu)
         .onChange(of: path) { highlightingFailed = false }
-    }
-
-    private var hasText: Bool {
-        if case .text(let document) = store.state { return !document.text.isEmpty }
-        return false
-    }
-
-    private var fileMenu: MenuActions? {
-        guard hasText else { return nil }
-        var actions = MenuActions()
-        actions[.findInFile] = { findRequest = UUID() }
-        return actions
     }
 
     @State private var openingError: Error?
@@ -125,14 +98,18 @@ struct FileContentTextViewer: NSViewRepresentable {
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
-    func sizeThatFits(_ proposal: ProposedViewSize, nsView: NSScrollView, context: Context) -> CGSize? {
+    func sizeThatFits(_ proposal: ProposedViewSize, nsView: NSView, context: Context) -> CGSize? {
         let proposed = proposal.replacingUnspecifiedDimensions(by: CGSize(width: 640, height: 480))
         return CGSize(width: proposed.width.isFinite ? proposed.width : 640,
                       height: proposed.height.isFinite ? proposed.height : 480)
     }
 
-    func makeNSView(context: Context) -> NSScrollView {
+    func makeNSView(context: Context) -> NSView {
+        let container = NSView()
         let scroll = FileContentScrollView()
+        let lineNumbers = FileLineNumberView()
+        lineNumbers.identifier = NSUserInterfaceItemIdentifier("fileContentLineNumbers")
+        scroll.lineNumbers = lineNumbers
         scroll.hasVerticalScroller = true
         scroll.autohidesScrollers = true
         scroll.borderType = .noBorder
@@ -155,14 +132,29 @@ struct FileContentTextViewer: NSViewRepresentable {
         text.minSize = .zero
         text.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         scroll.documentView = text
-        scroll.hasVerticalRuler = true
-        scroll.verticalRulerView = FileLineNumberRuler(scrollView: scroll, orientation: .verticalRuler)
-        scroll.rulersVisible = true
-        return scroll
+        lineNumbers.textView = text
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        lineNumbers.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(lineNumbers)
+        container.addSubview(scroll)
+        let lineNumberWidth = lineNumbers.widthAnchor.constraint(equalToConstant: 38)
+        lineNumbers.widthConstraint = lineNumberWidth
+        NSLayoutConstraint.activate([
+            lineNumbers.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            lineNumbers.topAnchor.constraint(equalTo: container.topAnchor),
+            lineNumbers.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            lineNumberWidth,
+            scroll.leadingAnchor.constraint(equalTo: lineNumbers.trailingAnchor),
+            scroll.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            scroll.topAnchor.constraint(equalTo: container.topAnchor),
+            scroll.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+        ])
+        return container
     }
 
-    func updateNSView(_ scroll: NSScrollView, context: Context) {
-        guard let text = scroll.documentView as? NSTextView else { return }
+    func updateNSView(_ container: NSView, context: Context) {
+        guard let scroll = container.subviews.compactMap({ $0 as? FileContentScrollView }).first,
+              let text = scroll.documentView as? NSTextView else { return }
         let coordinator = context.coordinator
         if let findRequest, findRequest != coordinator.findRequest {
             coordinator.findRequest = findRequest
@@ -195,9 +187,7 @@ struct FileContentTextViewer: NSViewRepresentable {
         let font = NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
         let lineHeight = ceil(font.ascender - font.descender + font.leading) + 4
         let spaceWidth = (" " as NSString).size(withAttributes: [.font: font]).width
-        if let ruler = scroll.verticalRulerView as? FileLineNumberRuler {
-            ruler.update(lineStarts: document.layout.lineStarts, font: font)
-        }
+        scroll.lineNumbers?.update(lineStarts: document.layout.lineStarts, font: font)
         text.setFrameSize(NSSize(
             width: wraps ? max(1, scroll.contentSize.width) : max(scroll.contentSize.width, CGFloat(document.layout.maximumColumns) * spaceWidth + 32),
             height: wraps ? max(1, scroll.contentSize.height) : max(scroll.contentSize.height, CGFloat(document.layout.lineCount) * lineHeight + 16)))
@@ -224,7 +214,7 @@ struct FileContentTextViewer: NSViewRepresentable {
         }
     }
 
-    static func dismantleNSView(_ nsView: NSScrollView, coordinator: Coordinator) {
+    static func dismantleNSView(_ nsView: NSView, coordinator: Coordinator) {
         coordinator.highlightTask?.cancel()
     }
 
@@ -263,9 +253,11 @@ struct FileContentTextViewer: NSViewRepresentable {
 }
 
 private final class FileContentScrollView: NSScrollView {
+    weak var lineNumbers: FileLineNumberView?
+
     override func reflectScrolledClipView(_ clipView: NSClipView) {
         super.reflectScrolledClipView(clipView)
-        verticalRulerView?.needsDisplay = true
+        lineNumbers?.needsDisplay = true
     }
     override func tile() {
         super.tile()
@@ -277,7 +269,10 @@ private final class FileContentScrollView: NSScrollView {
     }
 }
 
-private final class FileLineNumberRuler: NSRulerView {
+/// A sibling of the scroll view avoids NSRulerView's window-level separator drawing.
+private final class FileLineNumberView: NSView {
+    weak var textView: NSTextView?
+    var widthConstraint: NSLayoutConstraint?
     private var lineStarts = [0]
     private var font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
     override var isFlipped: Bool { true }
@@ -285,18 +280,18 @@ private final class FileLineNumberRuler: NSRulerView {
     func update(lineStarts: [Int], font: NSFont) {
         self.lineStarts = lineStarts
         self.font = NSFont.monospacedSystemFont(ofSize: max(9, font.pointSize - 1), weight: .regular)
-        ruleThickness = max(38, CGFloat(String(lineStarts.count).count) * self.font.maximumAdvancement.width + 16)
+        widthConstraint?.constant = max(38, CGFloat(String(lineStarts.count).count) * self.font.maximumAdvancement.width + 16)
         needsDisplay = true
     }
 
-    override func drawHashMarksAndLabels(in rect: NSRect) {
+    override func draw(_ rect: NSRect) {
         NSGraphicsContext.saveGraphicsState()
         defer { NSGraphicsContext.restoreGraphicsState() }
-        let rulerBounds = NSRect(x: 0, y: bounds.minY, width: ruleThickness, height: bounds.height)
+        let rulerBounds = bounds
         NSBezierPath(rect: rulerBounds).addClip()
         NSColor.textBackgroundColor.setFill()
         rulerBounds.intersection(rect).fill()
-        guard let text = scrollView?.documentView as? NSTextView,
+        guard let text = textView,
               let manager = text.textLayoutManager, let content = text.textContentStorage,
               let viewport = manager.textViewportLayoutController.viewportRange else { return }
         let visible = text.visibleRect
@@ -317,7 +312,7 @@ private final class FileLineNumberRuler: NSRulerView {
                 y + $0.typographicBounds.minY + $0.glyphOrigin.y
             } ?? y + self.font.ascender
             let point = self.convert(NSPoint(x: 0, y: baseline - self.font.ascender), from: text)
-            label.draw(at: NSPoint(x: self.ruleThickness - label.size(withAttributes: attributes).width - 8, y: point.y),
+            label.draw(at: NSPoint(x: self.bounds.width - label.size(withAttributes: attributes).width - 8, y: point.y),
                        withAttributes: attributes)
             return true
         }

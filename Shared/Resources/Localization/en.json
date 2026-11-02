@@ -351,6 +351,7 @@
     "File Mode Changed": "File Mode Changed",
     "File Mode: %@ → %@": "File Mode: %@ → %@",
     "File No Longer Exists": "File No Longer Exists",
+    "File View": "File View",
     "Files": "Files",
     "Files Changed": "Files Changed",
     "Files larger than 10 MiB must be opened externally.": "Files larger than 10 MiB must be opened externally.",

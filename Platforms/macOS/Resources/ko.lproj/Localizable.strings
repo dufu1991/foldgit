@@ -187,6 +187,7 @@
 "File Mode Changed" = "파일 모드 변경됨";
 "File Mode: %@ → %@" = "파일 모드: %@ → %@";
 "File No Longer Exists" = "파일이 더 이상 존재하지 않습니다";
+"File View" = "파일 보기";
 "Files" = "파일";
 "Files Changed" = "변경된 파일";
 "Files larger than 10 MiB must be opened externally." = "10 MiB보다 큰 파일은 외부 앱에서 여세요.";

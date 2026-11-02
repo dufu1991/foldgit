@@ -333,6 +333,7 @@
     "File Mode Changed": "ファイルモード変更",
     "File Mode: %@ → %@": "ファイルモード：%@ → %@",
     "File No Longer Exists": "ファイルが存在しません",
+    "File View": "ファイル表示",
     "Files": "ファイル",
     "Files Changed": "変更ファイル",
     "Files larger than 10 MiB must be opened externally.": "10 MiB を超えるファイルは外部アプリで開いてください。",

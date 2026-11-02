@@ -645,6 +645,9 @@
   <data name="Text_05991d91f152ae161f8c0c67" xml:space="preserve">
     <value>Le fichier n’existe plus</value>
   </data>
+  <data name="Text_62255042cf2e7d4ca6e60225" xml:space="preserve">
+    <value>Affichage du fichier</value>
+  </data>
   <data name="Text_abc7e9892806b047b4d4786b" xml:space="preserve">
     <value>Fichiers</value>
   </data>

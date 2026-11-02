@@ -37,13 +37,13 @@ struct WorktreeStatusTests {
     @Test func statusReadsNeverTakeOptionalLocks() {
         let url = URL(fileURLWithPath: "/repo")
         #expect(GitWorkingTreeStatusQuery(directory: url).arguments.starts(with: ["git", "--no-optional-locks", "status"]))
-        #expect(GitIgnoredEntriesQuery(directory: url).arguments.starts(with: ["git", "--no-optional-locks", "status"]))
+        #expect(GitIgnoredEntriesQuery(directory: url).arguments == ["git", "--no-optional-locks", "ls-files", "--others", "--ignored", "--exclude-standard", "-z"])
     }
 
-    @Test func ignoredEntriesCollapseToTopLevelPaths() {
+    @Test func ignoredEntriesPreserveCompletePathsAndUnusualNames() {
         let query = GitIgnoredEntriesQuery(directory: URL(fileURLWithPath: "/repo"))
-        let entries = query.parse(for: "!! node_modules/\0!! .env.local\0?? new.txt\0!! build/cache/a\0!! build/b\0")
-        #expect(entries == ["node_modules", ".env.local", "build"])
+        let entries = query.parse(for: "node_modules/a/index.js\0.env.local\0build/local-signing-key.pem\0build/cache/a\0build/中文 file\nname.pem\0.env.local\0")
+        #expect(entries == [".env.local", "build/cache/a", "build/local-signing-key.pem", "build/中文 file\nname.pem", "node_modules/a/index.js"])
     }
 
     @Test func integrationRecognizesFastForwardSquashAndUnmergedBranches() async throws {
@@ -199,10 +199,11 @@ struct WorktreeCleanupTests {
         let byBranch = Dictionary(uniqueKeysWithValues: candidates.map { ($0.tree.branch ?? "", $0) })
         #expect(byBranch["merged"]?.trunk.integration == .ancestor)
         #expect(byBranch["squashed"]?.trunk.integration == .contentMerged)
-        #expect(byBranch["merged"]?.notableIgnored == [])
-        #expect(byBranch["secrets"]?.notableIgnored == [".env"])
+        #expect(byBranch["merged"]?.ignoredEntries == ["node_modules/a/index.js"])
+        #expect(byBranch["secrets"]?.ignoredEntries == [".env", "node_modules/a/index.js"])
         let later = Date.now.addingTimeInterval(3600)
-        #expect(byBranch["merged"]?.isSelectedByDefault(at: later) == true)
+        #expect(byBranch["merged"]?.isSelectedByDefault(at: later) == false)
+        #expect(byBranch["squashed"]?.isSelectedByDefault(at: later) == true)
         #expect(byBranch["secrets"]?.isSelectedByDefault(at: later) == false)
         // Every worktree here was just written to.
         #expect(byBranch["merged"]?.isSelectedByDefault() == false)
@@ -229,6 +230,79 @@ struct WorktreeCleanupTests {
         #expect(trunk == TrunkReference(local: nil, remote: "refs/remotes/origin/main"))
         let candidates = try await WorktreeCleanup.candidates(in: fixture.repository.url)
         #expect(candidates.map(\.id) == [detached.resolvingSymlinksInPath()])
+        let candidate = try #require(candidates.first)
+        #expect(try await WorktreeCleanup.remove(candidate, deletingBranch: true) == .keptDetached)
+        #expect(!FileManager.default.fileExists(atPath: detached.path))
+    }
+
+    @Test func everyIgnoredFileRequiresSelectionIncludingBuildAndEnvironmentDirectories() async throws {
+        let fixture = try await Fixture.create()
+        defer { fixture.remove() }
+        let feature = try await fixture.worktree("ignored-files", commits: [])
+        let paths = ["build/local-signing-key.pem", "dist/local.env", ".venv/credentials.json",
+                     "node_modules/private.pem", "build/nested/中文 file\nname.pem"]
+        for path in paths { try fixture.write(in: feature, path, "local data\n") }
+        let candidate = try #require(try await WorktreeCleanup.candidates(in: fixture.repository.url).first)
+        #expect(candidate.ignoredEntries == paths.sorted())
+        #expect(!candidate.isSelectedByDefault(at: Date.now.addingTimeInterval(3600)))
+    }
+
+    @Test func newIgnoredFilesInsideAnAlreadyIgnoredDirectoryKeepTheWorktree() async throws {
+        let fixture = try await Fixture.create()
+        defer { fixture.remove() }
+        let feature = try await fixture.worktree("ignored-race", commits: [])
+        try fixture.write(in: feature, "build/cache.bin", "cache\n")
+        let candidate = try #require(try await WorktreeCleanup.candidates(in: fixture.repository.url).first)
+        try fixture.write(in: feature, "build/local-signing-key.pem", "private test data\n")
+        await #expect(throws: WorktreeCleanupError.ignoredFilesChanged) {
+            try await WorktreeCleanup.remove(candidate, deletingBranch: true)
+        }
+        #expect(try String(contentsOf: feature.appendingPathComponent("build/local-signing-key.pem"), encoding: .utf8) == "private test data\n")
+        #expect(try await fixture.git(in: feature, ["rev-parse", "HEAD"]).trimmingCharacters(in: .newlines) == candidate.head)
+    }
+
+    @Test(arguments: [false, true])
+    func preparedHeadLeaseBlocksConcurrentCommitsAndHeadSwitches(detached: Bool) async throws {
+        let fixture = try await Fixture.create()
+        defer { fixture.remove() }
+        let feature = try await fixture.worktree("head-lease", commits: [])
+        if detached { try await fixture.git(in: feature, ["switch", "--detach"]) }
+        let candidate = try #require(try await WorktreeCleanup.candidates(in: fixture.repository.url).first)
+        try await WorktreeCleanup.withLockedHead(candidate) {
+            await #expect(throws: (any Error).self) {
+                try await fixture.git(in: feature, ["commit", "--allow-empty", "-m", "test: concurrent commit"])
+            }
+            await #expect(throws: (any Error).self) {
+                try await fixture.git(in: feature, ["switch", detached ? "head-lease" : "--detach"])
+            }
+            let head = try await fixture.git(in: feature, ["rev-parse", "HEAD"])
+            #expect(head.trimmingCharacters(in: .newlines) == candidate.head)
+        }
+        // The transaction releases every lock when the protected operation finishes.
+        try await fixture.git(in: feature, ["commit", "--allow-empty", "-m", "test: commit after lease"])
+        await #expect(throws: (any Error).self) {
+            try await WorktreeCleanup.remove(candidate, deletingBranch: true)
+        }
+        #expect(FileManager.default.fileExists(atPath: feature.path))
+    }
+
+    @Test func cancellingHeadLeaseReleasesGitLocks() async throws {
+        let fixture = try await Fixture.create()
+        defer { fixture.remove() }
+        let feature = try await fixture.worktree("cancel-lease", commits: [])
+        let candidate = try #require(try await WorktreeCleanup.candidates(in: fixture.repository.url).first)
+        let (ready, signal) = AsyncStream<Void>.makeStream()
+        let task = Task {
+            try await WorktreeCleanup.withLockedHead(candidate) {
+                signal.yield(())
+                try await Task.sleep(for: .seconds(30))
+            }
+        }
+        var events = ready.makeAsyncIterator()
+        _ = await events.next()
+        task.cancel()
+        await #expect(throws: (any Error).self) { try await task.value }
+        try await fixture.git(in: feature, ["commit", "--allow-empty", "-m", "test: commit after cancellation"])
     }
 
     @Test func removalDeletesMergedBranchesAndKeepsSquashedOnes() async throws {
@@ -276,13 +350,15 @@ struct WorktreeCleanupTests {
 
 // MARK: - Fixture
 
-private struct Fixture {
+private struct Fixture: Sendable {
     let repository: TestRepository
     let root: URL
 
     static func create() async throws -> Self {
         let repository = try await TestRepository.create(commits: 1)
-        try repository.write(".gitignore", ".env\nnode_modules/\n")
+        try repository.write(".gitignore", ".env\nnode_modules/\nbuild/\ndist/\n.venv/\n")
+        // A user's global ignore rules must not hide this fixture's ignore file.
+        try await repository.git(["add", "--force", ".gitignore"])
         try await repository.commit("chore: ignore files")
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("FoldGit-status-\(UUID())")
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)

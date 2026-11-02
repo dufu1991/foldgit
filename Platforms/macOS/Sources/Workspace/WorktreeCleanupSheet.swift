@@ -94,10 +94,12 @@ struct WorktreeCleanupSheet: View {
                 if let integration = WorktreeStatusText.integration(candidate.trunk) {
                     Text(integration).font(.caption).foregroundStyle(.secondary)
                 }
-                if !candidate.notableIgnored.isEmpty {
-                    Label("Ignored files will be deleted: \(candidate.notableIgnored.joined(separator: ", "))",
+                if !candidate.ignoredEntries.isEmpty {
+                    Label("Ignored files will be deleted: \(candidate.ignoredEntries.joined(separator: ", "))",
                           systemImage: "exclamationmark.triangle")
                         .font(.caption).foregroundStyle(.orange)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .textSelection(.enabled)
                 }
                 if candidate.isRecentlyActive() {
                     Label("Active in the last 15 minutes", systemImage: "clock")

@@ -1,4 +1,5 @@
 import Foundation
+internal import Subprocess
 
 /// A linked worktree whose commit is already on the trunk and whose folder holds nothing Git would refuse to remove.
 public struct WorktreeCleanupCandidate: Hashable, Sendable, Identifiable {
@@ -6,21 +7,18 @@ public struct WorktreeCleanupCandidate: Hashable, Sendable, Identifiable {
     public let head: String
     public let trunkReference: TrunkReference
     public let trunk: TrunkComparison
-    /// Top-level ignored paths. `git worktree remove` deletes them without asking.
+    /// Complete paths of all ignored files. `git worktree remove` deletes them without asking.
     public let ignoredEntries: [String]
     /// Latest change to the worktree's HEAD, index or reflog.
     public let lastActivity: Date?
     public var id: URL { tree.id }
 
-    /// Ignored paths that a build or install cannot recreate, such as `.env.local`.
-    public var notableIgnored: [String] { ignoredEntries.filter { !WorktreeCleanup.regenerableEntries.contains($0) } }
-
     public func isRecentlyActive(at now: Date = .now) -> Bool {
         lastActivity.map { now.timeIntervalSince($0) < WorktreeCleanup.recentActivityInterval } ?? false
     }
 
-    /// Worktrees with irreplaceable ignored files or recent activity need an explicit choice.
-    public func isSelectedByDefault(at now: Date = .now) -> Bool { notableIgnored.isEmpty && !isRecentlyActive(at: now) }
+    /// Every worktree containing ignored files or recent activity needs an explicit choice.
+    public func isSelectedByDefault(at now: Date = .now) -> Bool { ignoredEntries.isEmpty && !isRecentlyActive(at: now) }
 }
 
 public enum WorktreeBranchOutcome: Hashable, Sendable {
@@ -35,9 +33,6 @@ public enum WorktreeBranchOutcome: Hashable, Sendable {
 }
 
 public enum WorktreeCleanup {
-    public static let regenerableEntries: Set<String> = [
-        "node_modules", ".build", "DerivedData", "dist", "build", ".next", ".turbo", ".venv", "__pycache__", "target", ".gradle", ".DS_Store",
-    ]
     public static let recentActivityInterval: TimeInterval = 15 * 60
 
     public static func candidates(in repository: URL, preferredTrunk: String? = nil) async throws -> [WorktreeCleanupCandidate] {
@@ -68,15 +63,22 @@ public enum WorktreeCleanup {
         guard let runner = others.first(where: { $0.branch != nil && $0.branch == trunkBranch }) ?? others.first else {
             throw WorktreeCleanupError.noRemainingWorktree
         }
-        let status = try await WorktreeStatus.read(candidate.tree.url, trunk: candidate.trunkReference, untracked: .all)
-        guard status.head == candidate.head, status.canBeCleanedUp, let integration = status.trunk?.integration else {
-            throw WorktreeCleanupError.changed
+        // Keep Git's HEAD and referent locks from the final check through removal. A detached
+        // commit cannot land between the status snapshot and deletion and lose its only reference.
+        let integration = try await withLockedHead(candidate) {
+            let status = try await WorktreeStatus.read(candidate.tree.url, trunk: candidate.trunkReference, untracked: .all)
+            guard status.head == candidate.head, status.working.branch == candidate.tree.branch,
+                  status.canBeCleanedUp, let integration = status.trunk?.integration else {
+                throw WorktreeCleanupError.changed
+            }
+            let ignored = try await GitRuntime.run(GitIgnoredEntriesQuery(directory: candidate.tree.url))
+            guard Set(ignored).isSubset(of: Set(candidate.ignoredEntries)) else {
+                throw WorktreeCleanupError.ignoredFilesChanged
+            }
+            try Task.checkCancellation()
+            try await GitRuntime.run(GitWorktreeCommand(directory: runner.url, operation: .remove(candidate.tree.url)))
+            return integration
         }
-        let ignored = try await GitRuntime.run(GitIgnoredEntriesQuery(directory: candidate.tree.url))
-        guard Set(ignored.filter { !regenerableEntries.contains($0) }).isSubset(of: Set(candidate.notableIgnored)) else {
-            throw WorktreeCleanupError.ignoredFilesChanged
-        }
-        try await GitRuntime.run(GitWorktreeCommand(directory: runner.url, operation: .remove(candidate.tree.url)))
 
         guard deletingBranch else { return .notRequested }
         guard let branch = candidate.tree.branch else { return .keptDetached }
@@ -90,6 +92,37 @@ public enum WorktreeCleanup {
         } catch {
             return .failed(error.localizedDescription)
         }
+    }
+
+    /// A prepared verification transaction locks HEAD and its symbolic target without changing
+    /// either reference. Git releases the locks on abort, EOF, cancellation or an error.
+    static func withLockedHead<Value: Sendable>(_ candidate: WorktreeCleanupCandidate,
+        operation: @Sendable () async throws -> Value) async throws -> Value {
+        var options = Subprocess.PlatformOptions()
+        #if !os(Windows)
+        // Give Git time to remove its lock files before Subprocess escalates cancellation.
+        options.teardownSequence = [.send(signal: .terminate, allowedDurationToNextStep: .seconds(2))]
+        #endif
+        let result = try await Subprocess.run(
+            .name("git"), arguments: ["update-ref", "--stdin"],
+            environment: .inherit.updating(["LC_ALL": "en_US.UTF-8", "LANG": "en_US.UTF-8", "GIT_TERMINAL_PROMPT": "0"]),
+            workingDirectory: .init(candidate.tree.url.path),
+            platformOptions: options,
+            input: .inputWriter, output: .sequence, error: .discarded
+        ) { execution in
+            var responses = execution.standardOutput.strings().makeAsyncIterator()
+            _ = try await execution.standardInputWriter.write(Array("start\nverify HEAD \(candidate.head)\nprepare\n".utf8))
+            guard try await responses.next() == "start: ok",
+                  try await responses.next() == "prepare: ok" else { throw WorktreeCleanupError.changed }
+            try Task.checkCancellation()
+            let value = try await operation()
+            _ = try await execution.standardInputWriter.write(Array("abort\n".utf8))
+            guard try await responses.next() == "abort: ok" else { throw WorktreeCleanupError.changed }
+            try await execution.standardInputWriter.finish()
+            return value
+        }
+        guard result.terminationStatus.isSuccess else { throw WorktreeCleanupError.changed }
+        return result.closureResult
     }
 
     static func isRemovable(_ tree: GitWorktree) -> Bool {
@@ -112,7 +145,7 @@ private struct GitAbsoluteGitDirectory: RepositoryCommand {
     func parse(for standardOutput: String) -> String { standardOutput.trimmingCharacters(in: .newlines) }
 }
 
-public enum WorktreeCleanupError: LocalizedError {
+public enum WorktreeCleanupError: LocalizedError, Equatable {
     case changed, ignoredFilesChanged, noRemainingWorktree
     public var errorDescription: String? {
         switch self {

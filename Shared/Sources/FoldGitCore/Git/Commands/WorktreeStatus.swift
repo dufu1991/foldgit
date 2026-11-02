@@ -102,22 +102,16 @@ public struct GitWorkingTreeStatusQuery: RepositoryCommand {
     public func parse(for standardOutput: String) throws -> GitWorkingTreeStatus { try GitWorkingTreeStatus.parse(standardOutput) }
 }
 
-/// Top-level ignored paths, which `git worktree remove` deletes without asking.
+/// Every ignored file, with its complete repository-relative path.
 public struct GitIgnoredEntriesQuery: RepositoryCommand {
     public var directory: URL
     public init(directory: URL) { self.directory = directory }
     public var isReadOnly: Bool { true }
     public var arguments: [String] {
-        ["git", "--no-optional-locks", "status", "--porcelain", "-z", "--ignored=matching", "--untracked-files=normal"]
+        ["git", "--no-optional-locks", "ls-files", "--others", "--ignored", "--exclude-standard", "-z"]
     }
     public func parse(for standardOutput: String) -> [String] {
-        var seen: Set<String> = []
-        return standardOutput.split(separator: "\0").compactMap { record -> String? in
-            guard record.hasPrefix("!! ") else { return nil }
-            let path = record.dropFirst(3)
-            let top = String(path.split(separator: "/", maxSplits: 1).first ?? path)
-            return seen.insert(top).inserted ? top : nil
-        }
+        Array(Set(standardOutput.split(separator: "\0").map(String.init))).sorted()
     }
 }
 

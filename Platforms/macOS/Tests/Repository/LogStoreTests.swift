@@ -37,7 +37,9 @@ struct HistoryStoreTests {
             folder: WorkspaceEntry(url: repository.url),
             selectionLog: Binding(get: { selection }, set: { selection = $0 }),
             subSelectionLogID: .constant(nil),
-            isRefresh: .constant(false)
+            isRefresh: .constant(false),
+            browseMode: .constant(.commits),
+            fileHistory: FileHistoryStore()
         )
         .environment(\.folder, repository.url)
         .environment(WorktreeStore())

@@ -156,6 +156,9 @@
   <data name="Text_2709a726a7ca8186057b5d9e" xml:space="preserve">
     <value>바이너리 파일 — 외부에서 열기</value>
   </data>
+  <data name="Text_e933201f877529db2a73d033" xml:space="preserve">
+    <value>바이너리 파일과 이미지는 외부 앱에서 여세요.</value>
+  </data>
   <data name="Text_7f216915ec37e5cc746e9f31" xml:space="preserve">
     <value>바이너리 출력（{0} 바이트）</value>
   </data>
@@ -176,6 +179,9 @@
   </data>
   <data name="Text_d353a99eb4556847ceeb3c30" xml:space="preserve">
     <value>취소됨</value>
+  </data>
+  <data name="Text_2f8469edfa515641288e651b" xml:space="preserve">
+    <value>파일을 미리 볼 수 없습니다</value>
   </data>
   <data name="Text_b585b9ae2b811e9c591c9d00" xml:space="preserve">
     <value>변경 파일 표시</value>
@@ -270,6 +276,9 @@
   <data name="Text_ffe95143bc990ee850df6607" xml:space="preserve">
     <value>모든 파일 접기</value>
   </data>
+  <data name="Text_f2aa1c5c5bab76b36e450ae8" xml:space="preserve">
+    <value>모든 폴더 접기</value>
+  </data>
   <data name="Text_624e3d714b392ee74e912c9d" xml:space="preserve">
     <value>차이 접기</value>
   </data>
@@ -315,6 +324,9 @@
   <data name="Text_d617aeda3a4656fd657ab6f8" xml:space="preserve">
     <value>커밋 메시지</value>
   </data>
+  <data name="Text_8714c3fe7ae5de6d8b50d95c" xml:space="preserve">
+    <value>커밋 보기</value>
+  </data>
   <data name="Text_041d3c070151e15e382d3360" xml:space="preserve">
     <value>병합 전에 {0}의 변경 사항을 커밋하거나 스태시하세요.</value>
   </data>
@@ -338,6 +350,9 @@
   </data>
   <data name="Text_80138e9720f0a101716742d1" xml:space="preserve">
     <value>리비전 비교</value>
+  </data>
+  <data name="Text_fe3a5d6d57e78779398236c5" xml:space="preserve">
+    <value>첫 번째 부모 커밋과 비교</value>
   </data>
   <data name="Text_916a464e6cfffe51cd6f9bf4" xml:space="preserve">
     <value>충돌</value>
@@ -365,6 +380,9 @@
   </data>
   <data name="Text_dba23f14c1094cbd338b8288" xml:space="preserve">
     <value>로그 복사</value>
+  </data>
+  <data name="Text_dbd09ebbc21c49c7385c5fd4" xml:space="preserve">
+    <value>파일을 읽을 수 없습니다</value>
   </data>
   <data name="Text_04a05d81cc5c997a10f7ab9e" xml:space="preserve">
     <value>차이에서 변경된 파일을 읽을 수 없습니다.</value>
@@ -429,6 +447,9 @@
   <data name="Text_25523ba32c7136d9f0713a70" xml:space="preserve">
     <value>디렉터리 트리</value>
   </data>
+  <data name="Text_23419cbd88e6d332cf6100d2" xml:space="preserve">
+    <value>디렉터리 보기</value>
+  </data>
   <data name="Text_18d67c992b71ce69eb924554" xml:space="preserve">
     <value>표시 이름</value>
   </data>
@@ -452,6 +473,9 @@
   </data>
   <data name="Text_464c4ffd019e1e9691dcf053" xml:space="preserve">
     <value>편집</value>
+  </data>
+  <data name="Text_61ff6d21d7a0ef059cf4e44b" xml:space="preserve">
+    <value>빈 파일</value>
   </data>
   <data name="Text_c0ad208d2b3de165ce2b2ff2" xml:space="preserve">
     <value>워크트리 활성화</value>
@@ -540,8 +564,17 @@
   <data name="Text_b602a9170fa36600b5e30f38" xml:space="preserve">
     <value>페치하는 중</value>
   </data>
+  <data name="Text_3c03cf5341a1e078c438f318" xml:space="preserve">
+    <value>파일 내용</value>
+  </data>
   <data name="Text_41d284eaa312e2d9762e3cd6" xml:space="preserve">
     <value>이 버전에서 파일 삭제됨</value>
+  </data>
+  <data name="Text_bbffb57962a3a9a6e8750bdb" xml:space="preserve">
+    <value>파일 세부 정보</value>
+  </data>
+  <data name="Text_fd2296a4cf1bad18c9e5db5e" xml:space="preserve">
+    <value>파일 기록</value>
   </data>
   <data name="Text_87b780becb04b497e32de414" xml:space="preserve">
     <value>파일 모드 변경됨</value>
@@ -549,11 +582,23 @@
   <data name="Text_83bde8a6cc497012103c2b51" xml:space="preserve">
     <value>파일 모드: {0} → {1}</value>
   </data>
+  <data name="Text_05991d91f152ae161f8c0c67" xml:space="preserve">
+    <value>파일이 더 이상 존재하지 않습니다</value>
+  </data>
   <data name="Text_abc7e9892806b047b4d4786b" xml:space="preserve">
     <value>파일</value>
   </data>
   <data name="Text_47aa7d820cf5618322fc8a2f" xml:space="preserve">
     <value>변경된 파일</value>
+  </data>
+  <data name="Text_8aa6cab5b2066f12b2685c99" xml:space="preserve">
+    <value>10 MiB보다 큰 파일은 외부 앱에서 여세요.</value>
+  </data>
+  <data name="Text_47e898ee5ba3180365f28ba0" xml:space="preserve">
+    <value>100,000줄을 초과하는 파일은 외부 앱에서 여세요.</value>
+  </data>
+  <data name="Text_ec212e8604cd601082836d51" xml:space="preserve">
+    <value>파일 수: {0}</value>
   </data>
   <data name="Text_638e249f4a15ebb84957da13" xml:space="preserve">
     <value>필터</value>
@@ -563,6 +608,9 @@
   </data>
   <data name="Text_899d861562c6c0dc927c2e67" xml:space="preserve">
     <value>저장소 필터링</value>
+  </data>
+  <data name="Text_2d35ba196b7fe921301ed6b3" xml:space="preserve">
+    <value>파일 내 찾기</value>
   </data>
   <data name="Text_488fac89f9cd379a93ebaabd" xml:space="preserve">
     <value>정리 완료</value>
@@ -593,6 +641,9 @@
   </data>
   <data name="Text_67a5454cfa4113b2e0387a12" xml:space="preserve">
     <value>폴더 이름</value>
+  </data>
+  <data name="Text_c511b7fd9aa256fca7b19533" xml:space="preserve">
+    <value>폴더, 심볼릭 링크 및 특수 파일은 외부 앱에서 여세요.</value>
   </data>
   <data name="Text_f1c65e14817efef2b77973a4" xml:space="preserve">
     <value>앞으로</value>
@@ -678,6 +729,9 @@
   <data name="Text_d1c76800f0871fca0f06e6eb" xml:space="preserve">
     <value>인터페이스 언어</value>
   </data>
+  <data name="Text_8feab9c59d5a299d1c2c4faf" xml:space="preserve">
+    <value>Git에서 반환한 파일 기록이 올바르지 않습니다.</value>
+  </data>
   <data name="Text_d874348942aed4fb5c4563a4" xml:space="preserve">
     <value>HEAD로 이동</value>
   </data>
@@ -695,6 +749,9 @@
   </data>
   <data name="Text_0546a0f575e59b7bbb4eb736" xml:space="preserve">
     <value>언어 변경 사항은 앱을 다시 시작한 후 완전히 적용됩니다.</value>
+  </data>
+  <data name="Text_aacf3861aac3adc59794ca41" xml:space="preserve">
+    <value>큰 텍스트 파일</value>
   </data>
   <data name="Text_856a3723d543e02279010aa3" xml:space="preserve">
     <value>마지막 페치 성공</value>
@@ -747,6 +804,9 @@
   <data name="Text_3f06cd334f4811b2130b13a8" xml:space="preserve">
     <value>더 불러오기</value>
   </data>
+  <data name="Text_5040bdc2439e282ce3af126a" xml:space="preserve">
+    <value>일반 텍스트 불러오기</value>
+  </data>
   <data name="Text_d552e677f008d8f7274647bd" xml:space="preserve">
     <value>저장소 불러오기</value>
   </data>
@@ -761,6 +821,9 @@
   </data>
   <data name="Text_a4dde47d9a5883ce34f9b8af" xml:space="preserve">
     <value>워크트리 불러오기</value>
+  </data>
+  <data name="Text_46e5226d4a88b99696438fc4" xml:space="preserve">
+    <value>전체 파일을 일반 텍스트로 불러옵니다. 성능을 위해 구문 강조와 줄 바꿈이 비활성화됩니다.</value>
   </data>
   <data name="Text_322b540df1e8e7eaf9b0fec3" xml:space="preserve">
     <value>앱을 불러오는 중</value>
@@ -903,6 +966,9 @@
   <data name="Text_8efc136c63bb000de52f680d" xml:space="preserve">
     <value>명령 없음</value>
   </data>
+  <data name="Text_41174bbe9db118ccdef36a3e" xml:space="preserve">
+    <value>커밋 기록 없음</value>
+  </data>
   <data name="Text_7098b38e487832dbf337e43d" xml:space="preserve">
     <value>커밋 메시지 스니펫이 없습니다</value>
   </data>
@@ -911,6 +977,9 @@
   </data>
   <data name="Text_4e47ec927670bb96ab007a75" xml:space="preserve">
     <value>내용 없음</value>
+  </data>
+  <data name="Text_4250acb1b00d66d0dd74affc" xml:space="preserve">
+    <value>파일 없음</value>
   </data>
   <data name="Text_4d08108d77ca80d5115faa3c" xml:space="preserve">
     <value>선택한 폴더 없음</value>
@@ -1158,6 +1227,9 @@
   <data name="Text_7cee67ef67c2a67b61154916" xml:space="preserve">
     <value>저장소 표시 이름</value>
   </data>
+  <data name="Text_1210945406b8e4bd7eb0024d" xml:space="preserve">
+    <value>저장소 보기</value>
+  </data>
   <data name="Text_ac51a40e0c992b7c1d8696fb" xml:space="preserve">
     <value>저장소 워크트리</value>
   </data>
@@ -1187,6 +1259,9 @@
   </data>
   <data name="Text_f031a34fa5b9037b9fb8c29c" xml:space="preserve">
     <value>이전 저장소 및 윈도우 복원</value>
+  </data>
+  <data name="Text_942087cc2d41e01304b71955" xml:space="preserve">
+    <value>다시 시도</value>
   </data>
   <data name="Text_c37a127ac163579d43b97e0e" xml:space="preserve">
     <value>처리 흐름으로 돌아가기</value>
@@ -1242,11 +1317,17 @@
   <data name="Text_3a93f31e545c049a2864a25b" xml:space="preserve">
     <value>커밋 검색</value>
   </data>
+  <data name="Text_5a5bc0c4ce6ead658eba716c" xml:space="preserve">
+    <value>파일 검색</value>
+  </data>
   <data name="Text_d416f4340be478fabb6757d5" xml:space="preserve">
     <value>저장소 검색</value>
   </data>
   <data name="Text_1ce37f395d7aa7aaa8076d0f" xml:space="preserve">
     <value>브랜치 선택</value>
+  </data>
+  <data name="Text_35f879a077a64495a7aefc95" xml:space="preserve">
+    <value>파일 선택</value>
   </data>
   <data name="Text_4cdbc0085ed2ef1b491b6445" xml:space="preserve">
     <value>아래에서 브랜치나 태그를 선택하여 {0} 변경</value>
@@ -1256,6 +1337,15 @@
   </data>
   <data name="Text_019f06fe83f16a392cb22c82" xml:space="preserve">
     <value>비교할 브랜치 또는 태그를 선택하세요</value>
+  </data>
+  <data name="Text_6447782b2359a5ee5b7bee75" xml:space="preserve">
+    <value>파일을 선택하여 커밋 기록을 확인하세요.</value>
+  </data>
+  <data name="Text_2ebbedc5e1c2fb4925c14c3a" xml:space="preserve">
+    <value>파일을 선택하여 전체 내용을 확인하세요.</value>
+  </data>
+  <data name="Text_80c2792102417ef9e590f1d4" xml:space="preserve">
+    <value>파일을 선택하여 기록이나 내용을 확인하세요.</value>
   </data>
   <data name="Text_30f90a5d8d345e0ebf7582b1" xml:space="preserve">
     <value>선택한 저장소</value>
@@ -1374,6 +1464,12 @@
   <data name="Text_37fe872ceff82cba889900b3" xml:space="preserve">
     <value>저장소 동기화</value>
   </data>
+  <data name="Text_e186ee4e633d23df13d05741" xml:space="preserve">
+    <value>이 큰 파일에서는 구문 강조와 줄 바꿈이 비활성화됩니다.</value>
+  </data>
+  <data name="Text_bdebc0e1b92273ce668b20a7" xml:space="preserve">
+    <value>구문 강조를 사용할 수 없어 원본 텍스트를 표시합니다.</value>
+  </data>
   <data name="Text_4a32b016fa3839ad18caaf9b" xml:space="preserve">
     <value>태그 이름:</value>
   </data>
@@ -1413,6 +1509,9 @@
   <data name="Text_d2d65881343a6a2476f09c9a" xml:space="preserve">
     <value>릴리스 페이지를 열 수 없습니다.</value>
   </data>
+  <data name="Text_c0a7d406f7fcf3fdf5e86f8d" xml:space="preserve">
+    <value>선택한 파일을 작업 트리에서 더 이상 찾을 수 없습니다.</value>
+  </data>
   <data name="Text_bc99b8cb8fa3244d8eca96af" xml:space="preserve">
     <value>아래 설정이 기본값으로 복원됩니다. 사용자 지정 스니펫과 직접 추가한 앱 설정이 초기화됩니다. 저장소, 그룹, 이름 및 로컬 파일은 유지됩니다.</value>
   </data>
@@ -1427,6 +1526,15 @@
   </data>
   <data name="Text_90d2f542b118d50055ff1e33" xml:space="preserve">
     <value>이 파일 또는 워크트리에서 진행 중인 병합이 없습니다. 새로 고친 후 다시 시도하세요.</value>
+  </data>
+  <data name="Text_9669e237ff17c8a204092a42" xml:space="preserve">
+    <value>이 파일에는 미리 보기에 너무 긴 줄이 있습니다. 외부 앱에서 여세요.</value>
+  </data>
+  <data name="Text_2783b0265c5d26efd3f98a11" xml:space="preserve">
+    <value>이 파일에는 텍스트가 없습니다.</value>
+  </data>
+  <data name="Text_a1345911829ce853a7325ebc" xml:space="preserve">
+    <value>이 파일은 지원하지 않는 텍스트 인코딩을 사용합니다. 외부 앱에서 여세요.</value>
   </data>
   <data name="Text_118a470931669215bde94f22" xml:space="preserve">
     <value>{0} 폴더를 제거하며 브랜치는 유지됩니다. 커밋하지 않은 변경 사항이나 추적되지 않은 파일이 있으면 Git이 제거를 거부합니다.</value>
@@ -1451,6 +1559,9 @@
   </data>
   <data name="Text_ee72274fbfae999effb293e8" xml:space="preserve">
     <value>도구 막대 표시</value>
+  </data>
+  <data name="Text_4c5590336b40eebb87a80e42" xml:space="preserve">
+    <value>이 작업 트리의 전체 파일 수입니다. 추적 중인 파일과 무시되지 않은 미추적 파일을 포함합니다. 폴더는 제외하며 검색 중에도 전체 수를 표시합니다.</value>
   </data>
   <data name="Text_f68ef174d62b538a19a3ea7f" xml:space="preserve">
     <value>검색어나 필터를 변경해 보세요.</value>
@@ -1520,6 +1631,9 @@
   </data>
   <data name="Text_a76646e2d2c239a7863cd9c7" xml:space="preserve">
     <value>로그 보기</value>
+  </data>
+  <data name="Text_0e4ced90ee7c15f8fe32a2d4" xml:space="preserve">
+    <value>작업 트리 파일 보기</value>
   </data>
   <data name="Text_9f287c62537ba21a5bf91041" xml:space="preserve">
     <value>지금 다시 페치하는 것을 권장합니다. 계속하시겠습니까?</value>

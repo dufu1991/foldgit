@@ -9,6 +9,8 @@ options:
 packages:
   FoldGitShared:
     path: ../..
+  HighlightSwift:
+    path: ../../Vendor/HighlightSwift
 settings:
   base:
     ARCHS: arm64
@@ -44,6 +46,8 @@ targets:
     dependencies:
       - package: FoldGitShared
         product: FoldGitCore
+      - package: HighlightSwift
+        product: HighlightSwift
     preBuildScripts:
       - name: Validate shared resources
         script: python3 "$SRCROOT/../../Scripts/generate-resources.py" --check

@@ -31,6 +31,8 @@ struct WorkspaceScreen: View {
         let isRelated = repositories.contains { entry in worktrees.list(for: entry.url).contains { $0.id == identity } }
         return isRelated ? WorkspaceEntry(url: selectionFolderURL) : nil
     }
+    @State private var browseMode = RepositoryBrowseMode.commits
+    @State private var fileHistory = FileHistoryStore()
     @State private var selectionLog: Log?
     @State private var subSelectionLogID: String?
     @State private var folderIsRefresh = false
@@ -65,7 +67,9 @@ struct WorkspaceScreen: View {
                         folder: folder,
                         selectionLog: $selectionLog,
                         subSelectionLogID: $subSelectionLogID,
-                        isRefresh: $folderIsRefresh
+                        isRefresh: $folderIsRefresh,
+                        browseMode: $browseMode,
+                        fileHistory: fileHistory
                     )
                     .id(folder)
                 } else {
@@ -76,7 +80,10 @@ struct WorkspaceScreen: View {
             .background(WorkspaceColumnConfiguration(historyWidth: Self.historyColumnWidth, sidebarWidth: Self.sidebarWidth))
             .navigationSplitViewColumnWidth(min: 320, ideal: Self.historyColumnWidth, max: 640)
         } detail: {
-            if let selectionLog, let subSelectionLogID {
+            if browseMode == .files, selectionFolder != nil {
+                FileHistoryDetailView(store: fileHistory)
+                    .id(selectionFolder?.url)
+            } else if let selectionLog, let subSelectionLogID {
                 CommitDiffView(selectionLogID: selectionLog.id, subSelectionLogID: subSelectionLogID)
             } else if let selectionFolder {
                 switch selectionLog {
@@ -140,6 +147,8 @@ struct WorkspaceScreen: View {
             if selectionFolder == nil { selectionFolderURL = nil }
         }
         .onChange(of: selectionFolder, {
+            fileHistory.deactivate()
+            fileHistory = FileHistoryStore()
             selectionLog = nil
             commandLogSelection = nil
             if selectionFolder == nil { showCommandLog = false }
@@ -150,6 +159,14 @@ struct WorkspaceScreen: View {
                 preferences: worktreePreferencesCache.value(for: worktreePreferencesData))))
         .environment(\.openWorktree, OpenWorktreeAction { url in selectionFolderURL = url.standardizedFileURL.resolvingSymlinksInPath() })
         .environment(\.folder, selectionFolder?.url)
+        .environment(\.openWorkspaceFile, selectionFolder.map { folder in
+            OpenWorkspaceFileAction { path in
+                browseMode = .files
+                fileHistory.activate(in: folder.url)
+                fileHistory.selectDetailMode(.content)
+                fileHistory.revealFile(path)
+            }
+        })
         .environment(\.expandAllFiles, expandAllFiles)
         .environment(\.collapseAllFiles, collapseAllFiles)
         .environment(\.toggleCommandLog, ToggleCommandLogAction {

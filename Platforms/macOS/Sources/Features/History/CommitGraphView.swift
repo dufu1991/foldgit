@@ -158,42 +158,15 @@ struct CommitGraphContentView: View {
             CommitGraphLaneView(positioned: positioned, isSelected: selected)
                 .frame(width: textLeading, height: CommitGraphStyle.rowHeight)
                 .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 3) {
-                Text(positioned.commit.title)
-                    .font(.callout)
-                    .fontWeight(selected ? .medium : .regular)
-                    .foregroundStyle(logStore.isOutsideCurrentBranch(positioned.id) && !selected ? .secondary : .primary)
-                    .lineLimit(2)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                HStack(spacing: 6) {
-                    CommitSyncBadge(incoming: logStore.isIncoming(positioned.id), outgoing: logStore.isOutgoing(positioned.id))
-                    Text(positioned.id.prefix(7))
-                        .font(.system(size: 10, design: .monospaced))
-                        .foregroundStyle(.secondary)
-                        .fixedSize()
-                    Text(positioned.commit.author)
-                        .font(.system(size: 10))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                        .help(Text(verbatim: "\(positioned.commit.author) <\(positioned.commit.authorEmail)>"))
-                    TimelineView(.periodic(from: .now, by: 60)) { _ in
-                        Text(positioned.commit.authorDateRelative)
-                            .font(.system(size: 10))
-                            .foregroundStyle(.secondary)
-                            .fixedSize()
-                            .help(positioned.commit.authorDateDisplay)
-                    }
-                    if let name = worktreeVisibility.decorations(positioned.commit.branches).first {
-                        Label(name, image: "git.branch")
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(CommitGraphStyle.color(index: positioned.colorIndex))
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                            .layoutPriority(-1)
-                    }
-                }
-            }
+            CommitSummaryView(
+                commit: positioned.commit,
+                isSelected: selected,
+                outsideCurrentBranch: logStore.isOutsideCurrentBranch(positioned.id),
+                incoming: logStore.isIncoming(positioned.id),
+                outgoing: logStore.isOutgoing(positioned.id),
+                branchName: worktreeVisibility.decorations(positioned.commit.branches).first,
+                branchColor: CommitGraphStyle.color(index: positioned.colorIndex)
+            )
             .frame(width: textWidth, alignment: .leading)
             .padding(.top, CommitGraphStyle.titleTop)
             Spacer(minLength: 10)

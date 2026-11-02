@@ -4,7 +4,7 @@ import SwiftUI
 
 enum MenuCommand: String {
     case openRepository, cloneRepository, newGroup, newWorktree, manageWorktrees, finishWorktree
-    case toggleSidebar, toggleCommandLog, expandAll, collapseAll, searchCommits, revealHead, showChanges
+    case toggleSidebar, toggleCommandLog, expandAll, collapseAll, searchCommits, findInFile, revealHead, showChanges
     case expandDirectories, collapseDirectories
     case refresh, fetch, pull, push, stash, showStashes, showBranches, newBranch, renameBranch, mergeBranch, openTerminal
     case compare, showTags, newTag, checkoutCommit, revertCommit, copyCommitHash, amendCommit
@@ -17,7 +17,7 @@ enum MenuCommand: String {
         case .openRepository: MenuShortcut("o")
         case .cloneRepository: MenuShortcut("n", [.command, .shift])
         case .copyCommitHash: MenuShortcut("c", [.command, .shift])
-        case .searchCommits: MenuShortcut("f")
+        case .searchCommits, .findInFile: MenuShortcut("f")
         case .toggleSidebar: MenuShortcut("s", [.command, .control])
         case .showChanges: MenuShortcut("1")
         case .revealHead: MenuShortcut("0")
@@ -98,8 +98,13 @@ private struct RepositoryMenuKey: FocusedValueKey { typealias Value = Repository
 private struct StagingMenuKey: FocusedValueKey { typealias Value = MenuActions }
 private struct DiffMenuKey: FocusedValueKey { typealias Value = MenuActions }
 private struct EditorMenuKey: FocusedValueKey { typealias Value = MenuActions }
+private struct FileMenuKey: FocusedValueKey { typealias Value = MenuActions }
 
 extension FocusedValues {
+    var fileMenu: MenuActions? {
+        get { self[FileMenuKey.self] }
+        set { self[FileMenuKey.self] = newValue }
+    }
     var workspaceMenu: WorkspaceMenuContext? {
         get { self[WorkspaceMenuKey.self] }
         set { self[WorkspaceMenuKey.self] = newValue }
@@ -133,6 +138,7 @@ struct AppMenuCommands: Commands {
     @FocusedValue(\.stagingMenu) private var staging
     @FocusedValue(\.diffMenu) private var diff
     @FocusedValue(\.editorMenu) private var editor
+    @FocusedValue(\.fileMenu) private var file
     @AppStorage(PreferenceKey.showCommitGraph.rawValue) private var showGraph = true
     @AppStorage(PreferenceKey.diffLayout.rawValue) private var diffLayout = DiffLayout.automatic
     @Environment(\.openWindow) private var openWindow
@@ -158,7 +164,8 @@ struct AppMenuCommands: Commands {
         }
         CommandGroup(after: .pasteboard) {
             Divider()
-            command("Search Commits", .searchCommits)
+            if file != nil { command("Find in File", .findInFile) }
+            else { command("Search Commits", .searchCommits) }
             command("Copy Commit Hash", .copyCommitHash)
         }
         CommandGroup(replacing: .sidebar) {
@@ -256,6 +263,7 @@ struct AppMenuCommands: Commands {
 
     private func handler(_ command: MenuCommand) -> (@MainActor () -> Void)? {
         switch command {
+        case .findInFile: return file?[command]
         case .commit, .amendCommit:
             if let editor { return editor[command] }
         case .stageAll, .unstageAll:

@@ -12,6 +12,8 @@ struct RepositoryScreen: View {
     @Binding var selectionLog: Log?
     @Binding var subSelectionLogID: String?
     @Binding var isRefresh: Bool
+    @Binding var browseMode: RepositoryBrowseMode
+    var fileHistory: FileHistoryStore
     @State private var session = RepositorySession()
     private var logStore: HistoryStore { session.history }
     private var syncState: RemoteSyncState { session.remote }
@@ -30,121 +32,36 @@ struct RepositoryScreen: View {
     @State private var menuApplications = OpenInStore()
     private static let terminalURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.apple.Terminal")
 
-    var body: some View {
-        @Bindable var session = session
-        VStack(spacing: 0) {
-            // Shares the toolbar edge with the detail column, whose scroll view draws its line there.
-            Divider()
-            HStack(spacing: 8) {
-                NativeSearchField(text: $searchText, placeholder: String(localized: "Search Commits"),
-                                  accessibilityIdentifier: "commitSearchField", focusRequest: searchFocusRequest) { text, composing in
-                    logStore.search(text, isComposing: composing)
-                }
-                .frame(height: 26)
-                if logStore.isSearching { ProgressView().controlSize(.small) }
-                Menu {
-                    Picker("History Scope", selection: Binding(get: { logStore.scope }, set: { scope in
-                        Task { await logStore.setScope(scope) }
-                    })) {
-                        Text("Current Branch").tag(HistoryScope.currentBranch)
-                        Text("All Commits").tag(HistoryScope.allCommits)
-                    }
-                    .pickerStyle(.inline)
-                } label: {
-                    Text(logStore.scope == .currentBranch ? String(localized: "Current Branch") : String(localized: "All Commits"))
-                }
-                .fixedSize()
-                .accessibilityIdentifier("historyScopeMenu")
-                .help("History Scope")
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(.bar)
-            if let tracking = syncState.tracking, tracking.behind > 0 {
-                HStack(spacing: 8) {
-                    Text("Behind by \(tracking.behind) commits")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                    Spacer(minLength: 0)
-                    if logStore.isRevealingIncoming { ProgressView().controlSize(.small) }
-                    Button("Show") {
-                        searchText = ""
-                        Task {
-                            if let target = await logStore.revealIncoming() {
-                                subSelectionLogID = nil
-                                selectionLogID = target
-                            }
-                        }
-                    }
-                    .help("View Incoming Commits")
-                    .disabled(logStore.isRevealingIncoming)
-                    .accessibilityIdentifier("viewIncomingCommitsButton")
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(.bar)
-            }
-            if showGraph {
-                CommitGraphView(
-                    logStore: session.history,
-                    selectionLogID: $selectionLogID,
-                    subSelectionLogID: $subSelectionLogID,
-                    showing: $showing,
-                    isRefresh: $isRefresh
-                )
-            } else {
-                CommitLogView(
-                    logStore: session.history,
-                    selectionLogID: $selectionLogID,
-                    subSelectionLogID: $subSelectionLogID,
-                    showing: $showing,
-                    isRefresh: $isRefresh,
-                    error: $error
-                )
-            }
-        }
-        .safeAreaInset(edge: .top, spacing: 0) {
-            if session.mergeState?.isMerging == true {
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("Merge in Progress", systemImage: "arrow.trianglehead.merge").font(.callout.weight(.medium))
-                    Button("Resolve Merge") { showing.mergeResolution = true }
-                }
-                .padding(12).frame(maxWidth: .infinity, alignment: .leading).background(.bar)
-            }
-        }
-        .scrollEdgeEffectStyle(.hard, for: .vertical)
-        .safeAreaBar(edge: .bottom, spacing: 0) {
-            HStack(spacing: 0) {
-                Spacer()
-                countText()
-                    .font(.callout)
-                Spacer()
-            }
-            .overlay(alignment: .trailing, content: {
-                Toggle(isOn: $showGraph) {
-                    Label("Commit Graph", systemImage: "arrow.trianglehead.branch")
-                        .labelStyle(.iconOnly)
-                        .font(.system(size: 14, weight: .medium))
-                        .frame(width: 20, height: 20)
-                }
-                .toggleStyle(.button)
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-                .padding(.horizontal)
-                .help("Commit Graph")
-                .accessibilityLabel(Text("Commit Graph"))
-            })
-            .frame(height: 40)
-        }
-        .overlay {
-            if logStore.commits.isEmpty && !logStore.searchText.isEmpty && !logStore.isSearching {
-                Text("No Results").foregroundStyle(.secondary)
-            }
-        }
+    private var observedContent: some View {
+        repositoryContent
         .focusedSceneValue(\.repositoryMenu, menuContext)
-        .onDisappear { logStore.cancelSearch() }
+        .onDisappear { logStore.cancelSearch(); fileHistory.deactivate() }
+        .onChange(of: browseMode) { _, mode in
+            if mode == .files {
+                logStore.cancelSearch()
+                fileHistory.activate(in: folder.url)
+            } else {
+                fileHistory.deactivate()
+                Task {
+                    await logStore.refresh()
+                    logStore.scroll(to: selectionLogID)
+                }
+            }
+        }
+        .onChange(of: showing.isPresented) { _, presented in
+            if presented { fileHistory.suspendQueries() }
+            else { fileHistory.refresh() }
+        }
         .task {
             await refreshModels(fetchRemote: true)
+        }
+        .task(id: browseMode) {
+            guard browseMode == .files else { return }
+            fileHistory.activate(in: folder.url)
+            for await _ in RepositoryChangeMonitor.changes(in: [folder.url.path]) {
+                guard !Task.isCancelled else { return }
+                fileHistory.refresh()
+            }
         }
         .loadsApplications(menuApplications, for: folder.url)
         .onChange(of: logStore.logs()) { syncHistorySelection() }
@@ -177,6 +94,10 @@ struct RepositoryScreen: View {
         .onReceive(NotificationCenter.default.publisher(for: .settingsDidRestoreDefaults)) { _ in
             Task { await logStore.setScope(.currentBranch) }
         }
+    }
+
+    private var presentedContent: some View {
+        observedContent
         .sheet(isPresented: $showing.mergeResolution, onDismiss: {
             Task { await refreshModels() }
         }) { MergeResolutionSheet(directory: folder.url) }
@@ -246,6 +167,10 @@ struct RepositoryScreen: View {
         .sheet(isPresented: $showing.compareRevisions) {
             CompareRevisionsView(folder: folder)
         }
+    }
+
+    var body: some View {
+        presentedContent
         .navigationTitle(branch?.name ?? folder.displayName)
         .toolbar(removing: .title)
         .toolbar {
@@ -314,6 +239,28 @@ struct RepositoryScreen: View {
                 OpenInMenu(directory: folder.url, store: menuApplications, onError: { error = $0 })
             }
             ToolbarSpacer(.flexible, placement: .primaryAction)
+            ToolbarItem(id: "repositoryBrowseMode", placement: .primaryAction) {
+                Menu {
+                    Picker("Repository View", selection: $browseMode) {
+                        Label("Commit View", systemImage: "clock.arrow.circlepath")
+                            .tag(RepositoryBrowseMode.commits)
+                        Label("Directory View", systemImage: "folder")
+                            .tag(RepositoryBrowseMode.files)
+                    }
+                    .pickerStyle(.inline)
+                } label: {
+                    Label {
+                        Text(browseMode == .commits ? String(localized: "Commit View") : String(localized: "Directory View"))
+                    } icon: {
+                        Image(systemName: browseMode == .commits ? "clock.arrow.circlepath" : "folder")
+                    }
+                }
+                .help("Repository View")
+                .accessibilityLabel(Text("Repository View"))
+                .accessibilityValue(Text(browseMode == .commits ? String(localized: "Commit View") : String(localized: "Directory View")))
+                .accessibilityIdentifier("repositoryBrowseMode")
+            }
+            ToolbarSpacer(.fixed, placement: .primaryAction)
             ToolbarItem(id: "commandLog", placement: .primaryAction) {
                 Button { toggleCommandLog() } label: {
                     Label("Log", systemImage: "terminal")
@@ -344,6 +291,124 @@ struct RepositoryScreen: View {
         }
     }
 
+    private var repositoryContent: some View {
+        VStack(spacing: 0) {
+            // Shares the toolbar edge with the detail column, whose scroll view draws its line there.
+            Divider()
+            if browseMode == .files {
+                RepositoryFileTreeView(store: fileHistory)
+            } else {
+                HStack(spacing: 8) {
+                    NativeSearchField(text: $searchText, placeholder: String(localized: "Search Commits"),
+                                      accessibilityIdentifier: "commitSearchField", focusRequest: searchFocusRequest) { text, composing in
+                        logStore.search(text, isComposing: composing)
+                    }
+                    .frame(height: 26)
+                    if logStore.isSearching { ProgressView().controlSize(.small) }
+                    Menu {
+                        Picker("History Scope", selection: Binding(get: { logStore.scope }, set: { scope in
+                            Task { await logStore.setScope(scope) }
+                        })) {
+                            Text("Current Branch").tag(HistoryScope.currentBranch)
+                            Text("All Commits").tag(HistoryScope.allCommits)
+                        }
+                        .pickerStyle(.inline)
+                    } label: {
+                        Text(logStore.scope == .currentBranch ? String(localized: "Current Branch") : String(localized: "All Commits"))
+                    }
+                    .fixedSize()
+                    .accessibilityIdentifier("historyScopeMenu")
+                    .help("History Scope")
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(.bar)
+                if let tracking = syncState.tracking, tracking.behind > 0 {
+                    HStack(spacing: 8) {
+                        Text("Behind by \(tracking.behind) commits")
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+                        Spacer(minLength: 0)
+                        if logStore.isRevealingIncoming { ProgressView().controlSize(.small) }
+                        Button("Show") {
+                            searchText = ""
+                            Task {
+                                if let target = await logStore.revealIncoming() {
+                                    subSelectionLogID = nil
+                                    selectionLogID = target
+                                }
+                            }
+                        }
+                        .help("View Incoming Commits")
+                        .disabled(logStore.isRevealingIncoming)
+                        .accessibilityIdentifier("viewIncomingCommitsButton")
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(.bar)
+                }
+                if showGraph {
+                    CommitGraphView(
+                        logStore: session.history,
+                        selectionLogID: $selectionLogID,
+                        subSelectionLogID: $subSelectionLogID,
+                        showing: $showing,
+                        isRefresh: $isRefresh
+                    )
+                } else {
+                    CommitLogView(
+                        logStore: session.history,
+                        selectionLogID: $selectionLogID,
+                        subSelectionLogID: $subSelectionLogID,
+                        showing: $showing,
+                        isRefresh: $isRefresh,
+                        error: $error
+                    )
+                }
+            }
+        }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            if session.mergeState?.isMerging == true {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("Merge in Progress", systemImage: "arrow.trianglehead.merge").font(.callout.weight(.medium))
+                    Button("Resolve Merge") { showing.mergeResolution = true }
+                }
+                .padding(12).frame(maxWidth: .infinity, alignment: .leading).background(.bar)
+            }
+        }
+        .scrollEdgeEffectStyle(.hard, for: .vertical)
+        .safeAreaBar(edge: .bottom, spacing: 0) {
+            if browseMode == .commits {
+                HStack(spacing: 0) {
+                    Spacer()
+                    countText()
+                        .font(.callout)
+                    Spacer()
+                }
+                .overlay(alignment: .trailing, content: {
+                    Toggle(isOn: $showGraph) {
+                        Label("Commit Graph", systemImage: "arrow.trianglehead.branch")
+                            .labelStyle(.iconOnly)
+                            .font(.system(size: 14, weight: .medium))
+                            .frame(width: 20, height: 20)
+                    }
+                    .toggleStyle(.button)
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .padding(.horizontal)
+                    .help("Commit Graph")
+                    .accessibilityLabel(Text("Commit Graph"))
+                })
+                .frame(height: 40)
+            }
+        }
+        .overlay {
+            if browseMode == .commits && logStore.commits.isEmpty && !logStore.searchText.isEmpty && !logStore.isSearching {
+                Text("No Results").foregroundStyle(.secondary)
+            }
+        }
+    }
+
     private func syncHistorySelection() {
         guard !logStore.isSearching else { return }
         let logs = logStore.logs()
@@ -361,7 +426,7 @@ struct RepositoryScreen: View {
         if !isLoading && !isFetching && !showing.isPresented && checkoutConfirmation == nil && revertConfirmation == nil {
             actions[.refresh] = { Task { await refreshModels() } }
             actions[.fetch] = fetchChanges
-            actions[.searchCommits] = { searchFocusRequest = UUID() }
+            actions[.searchCommits] = { browseMode = .commits; searchFocusRequest = UUID() }
             actions[.showBranches] = { showing.branches = true }
             actions[.newBranch] = { showing.createNewBranchFrom = branch ?? Branch(name: "HEAD", isCurrent: true) }
             actions[.showTags] = { showing.tags = true }
@@ -369,6 +434,7 @@ struct RepositoryScreen: View {
             actions[.compare] = { showing.compareRevisions = true }
             if !menuApplications.isOpening { actions[.chooseApplication] = chooseMenuApplication }
             actions[.showChanges] = {
+                browseMode = .commits
                 searchText = ""
                 Task {
                     await logStore.revealWorkingTree()
@@ -379,6 +445,7 @@ struct RepositoryScreen: View {
             }
             if logStore.snapshot?.headHash != nil {
                 actions[.revealHead] = {
+                    browseMode = .commits
                     searchText = ""
                     Task {
                         if let target = await logStore.revealHead() {
@@ -455,12 +522,13 @@ struct RepositoryScreen: View {
     }
 
     private var selectedCommit: Commit? {
-        guard subSelectionLogID == nil, case let .committed(commit) = selectionLog else { return nil }
+        guard browseMode == .commits, subSelectionLogID == nil, case let .committed(commit) = selectionLog else { return nil }
         return commit
     }
 
     private func runMenuOperation(_ name: LocalizedStringResource, _ operation: @escaping @MainActor () async throws -> Void) {
         guard !isLoading, !isFetching else { return }
+        fileHistory.suspendQueries()
         isLoading = true
         Task {
             defer { isLoading = false }
@@ -471,6 +539,7 @@ struct RepositoryScreen: View {
 
     private func mergeBranch(_ branch: Branch) {
         guard !isLoading, !isFetching else { return }
+        fileHistory.suspendQueries()
         isLoading = true
         Task {
             defer { isLoading = false }
@@ -487,10 +556,13 @@ struct RepositoryScreen: View {
 
     /// Only opening the repository fetches; local operations refresh from local refs.
     private func refreshModels(fetchRemote: Bool = false) async {
-        await session.refresh(in: folder.url, fetchRemote: fetchRemote)
+        await session.refresh(in: folder.url, fetchRemote: fetchRemote, loadHistory: browseMode == .commits)
         guard !Task.isCancelled else { return }
         if let error = session.error { self.error = OperationFailure("Load Repository", error) }
-        if let selectionLog { self.selectionLog = logStore.logs().first { $0.id == selectionLog.id } }
+        if browseMode == .files {
+            fileHistory.activate(in: folder.url)
+        }
+        if browseMode == .commits, let selectionLog { self.selectionLog = logStore.logs().first { $0.id == selectionLog.id } }
     }
 
     fileprivate func branchesButton() -> some View {
@@ -633,6 +705,7 @@ struct RepositoryScreen: View {
 
     private func fetchChanges() {
         guard !isFetching, !isLoading else { return }
+        fileHistory.suspendQueries()
         isFetching = true
         Task {
             defer { isFetching = false }
@@ -654,6 +727,7 @@ struct RepositoryScreen: View {
 
     private func pullChanges() {
         guard !isLoading, !isFetching else { return }
+        fileHistory.suspendQueries()
         isLoading = true
         Task {
             defer { isLoading = false }
@@ -706,6 +780,7 @@ struct RepositoryScreen: View {
 
     private func pushChanges() {
         guard !isLoading, !isFetching else { return }
+        fileHistory.suspendQueries()
         isLoading = true
         Task {
             defer { isLoading = false }
@@ -774,7 +849,9 @@ struct PushToolbarButton: View {
         folder: .init(url: URL(string: "file:///tmp/FoldGit/")!),
         selectionLog: $selection,
         subSelectionLogID: $subSelection,
-        isRefresh: $refresh
+        isRefresh: $refresh,
+        browseMode: .constant(.commits),
+        fileHistory: FileHistoryStore()
     )
     .environment(WorktreeStore())
 }

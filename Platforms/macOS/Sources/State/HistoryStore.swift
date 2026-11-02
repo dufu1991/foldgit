@@ -43,6 +43,11 @@ import Observation
         await reload(limit: number)
     }
 
+    func scroll(to id: String?) {
+        guard let id, logs().contains(where: { $0.id == id }) else { return }
+        scrollRequest = ScrollRequest(target: id)
+    }
+
     func isOutsideCurrentBranch(_ hash: String) -> Bool { snapshot?.outsideCurrentBranch.contains(hash) == true }
     func isIncoming(_ hash: String) -> Bool { snapshot?.incomingHashes.contains(hash) == true }
     func isOutgoing(_ hash: String) -> Bool { snapshot?.outgoing.contains(hash) == true }

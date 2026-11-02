@@ -174,6 +174,9 @@
   <data name="Text_2709a726a7ca8186057b5d9e" xml:space="preserve">
     <value>Fichier binaire — ouvrir ailleurs</value>
   </data>
+  <data name="Text_e933201f877529db2a73d033" xml:space="preserve">
+    <value>Les fichiers binaires et les images doivent être ouverts dans une application externe.</value>
+  </data>
   <data name="Text_7f216915ec37e5cc746e9f31" xml:space="preserve">
     <value>Sortie binaire ({0} octets)</value>
   </data>
@@ -194,6 +197,9 @@
   </data>
   <data name="Text_d353a99eb4556847ceeb3c30" xml:space="preserve">
     <value>Annulé</value>
+  </data>
+  <data name="Text_2f8469edfa515641288e651b" xml:space="preserve">
+    <value>Aperçu du fichier indisponible</value>
   </data>
   <data name="Text_b585b9ae2b811e9c591c9d00" xml:space="preserve">
     <value>Affichage des fichiers modifiés</value>
@@ -288,6 +294,9 @@
   <data name="Text_ffe95143bc990ee850df6607" xml:space="preserve">
     <value>Replier tous les fichiers</value>
   </data>
+  <data name="Text_f2aa1c5c5bab76b36e450ae8" xml:space="preserve">
+    <value>Réduire tous les dossiers</value>
+  </data>
   <data name="Text_624e3d714b392ee74e912c9d" xml:space="preserve">
     <value>Réduire les différences</value>
   </data>
@@ -333,6 +342,9 @@
   <data name="Text_d617aeda3a4656fd657ab6f8" xml:space="preserve">
     <value>Messages de commit</value>
   </data>
+  <data name="Text_8714c3fe7ae5de6d8b50d95c" xml:space="preserve">
+    <value>Vue des commits</value>
+  </data>
   <data name="Text_041d3c070151e15e382d3360" xml:space="preserve">
     <value>Validez ou remisez les modifications de {0} avant la fusion.</value>
   </data>
@@ -356,6 +368,9 @@
   </data>
   <data name="Text_80138e9720f0a101716742d1" xml:space="preserve">
     <value>Comparer les révisions</value>
+  </data>
+  <data name="Text_fe3a5d6d57e78779398236c5" xml:space="preserve">
+    <value>Comparaison avec le premier parent</value>
   </data>
   <data name="Text_916a464e6cfffe51cd6f9bf4" xml:space="preserve">
     <value>En conflit</value>
@@ -383,6 +398,9 @@
   </data>
   <data name="Text_dba23f14c1094cbd338b8288" xml:space="preserve">
     <value>Copier le journal</value>
+  </data>
+  <data name="Text_dbd09ebbc21c49c7385c5fd4" xml:space="preserve">
+    <value>Impossible de lire le fichier</value>
   </data>
   <data name="Text_04a05d81cc5c997a10f7ab9e" xml:space="preserve">
     <value>Impossible de lire le fichier modifié dans les différences.</value>
@@ -447,6 +465,9 @@
   <data name="Text_25523ba32c7136d9f0713a70" xml:space="preserve">
     <value>Arborescence</value>
   </data>
+  <data name="Text_23419cbd88e6d332cf6100d2" xml:space="preserve">
+    <value>Vue des dossiers</value>
+  </data>
   <data name="Text_18d67c992b71ce69eb924554" xml:space="preserve">
     <value>Nom affiché</value>
   </data>
@@ -470,6 +491,9 @@
   </data>
   <data name="Text_464c4ffd019e1e9691dcf053" xml:space="preserve">
     <value>Modifier</value>
+  </data>
+  <data name="Text_61ff6d21d7a0ef059cf4e44b" xml:space="preserve">
+    <value>Fichier vide</value>
   </data>
   <data name="Text_c0ad208d2b3de165ce2b2ff2" xml:space="preserve">
     <value>Activer les worktrees</value>
@@ -558,8 +582,17 @@
   <data name="Text_b602a9170fa36600b5e30f38" xml:space="preserve">
     <value>Récupération</value>
   </data>
+  <data name="Text_3c03cf5341a1e078c438f318" xml:space="preserve">
+    <value>Contenu du fichier</value>
+  </data>
   <data name="Text_41d284eaa312e2d9762e3cd6" xml:space="preserve">
     <value>Fichier supprimé dans cette version</value>
+  </data>
+  <data name="Text_bbffb57962a3a9a6e8750bdb" xml:space="preserve">
+    <value>Détails du fichier</value>
+  </data>
+  <data name="Text_fd2296a4cf1bad18c9e5db5e" xml:space="preserve">
+    <value>Historique du fichier</value>
   </data>
   <data name="Text_87b780becb04b497e32de414" xml:space="preserve">
     <value>Mode du fichier modifié</value>
@@ -567,11 +600,23 @@
   <data name="Text_83bde8a6cc497012103c2b51" xml:space="preserve">
     <value>Mode du fichier : {0} → {1}</value>
   </data>
+  <data name="Text_05991d91f152ae161f8c0c67" xml:space="preserve">
+    <value>Le fichier n’existe plus</value>
+  </data>
   <data name="Text_abc7e9892806b047b4d4786b" xml:space="preserve">
     <value>Fichiers</value>
   </data>
   <data name="Text_47aa7d820cf5618322fc8a2f" xml:space="preserve">
     <value>Fichiers modifiés</value>
+  </data>
+  <data name="Text_8aa6cab5b2066f12b2685c99" xml:space="preserve">
+    <value>Les fichiers de plus de 10 MiB doivent être ouverts dans une application externe.</value>
+  </data>
+  <data name="Text_47e898ee5ba3180365f28ba0" xml:space="preserve">
+    <value>Les fichiers de plus de 100 000 lignes doivent être ouverts dans une application externe.</value>
+  </data>
+  <data name="Text_ec212e8604cd601082836d51" xml:space="preserve">
+    <value>Fichiers : {0}</value>
   </data>
   <data name="Text_638e249f4a15ebb84957da13" xml:space="preserve">
     <value>Filtrer</value>
@@ -581,6 +626,9 @@
   </data>
   <data name="Text_899d861562c6c0dc927c2e67" xml:space="preserve">
     <value>Filtrer les dépôts</value>
+  </data>
+  <data name="Text_2d35ba196b7fe921301ed6b3" xml:space="preserve">
+    <value>Rechercher dans le fichier</value>
   </data>
   <data name="Text_488fac89f9cd379a93ebaabd" xml:space="preserve">
     <value>Terminer le nettoyage</value>
@@ -611,6 +659,9 @@
   </data>
   <data name="Text_67a5454cfa4113b2e0387a12" xml:space="preserve">
     <value>Nom du dossier</value>
+  </data>
+  <data name="Text_c511b7fd9aa256fca7b19533" xml:space="preserve">
+    <value>Les dossiers, liens symboliques et fichiers spéciaux doivent être ouverts dans une application externe.</value>
   </data>
   <data name="Text_f1c65e14817efef2b77973a4" xml:space="preserve">
     <value>Suivant</value>
@@ -696,6 +747,9 @@
   <data name="Text_d1c76800f0871fca0f06e6eb" xml:space="preserve">
     <value>Langue de l’interface</value>
   </data>
+  <data name="Text_8feab9c59d5a299d1c2c4faf" xml:space="preserve">
+    <value>Git a renvoyé des enregistrements d’historique de fichier invalides.</value>
+  </data>
   <data name="Text_d874348942aed4fb5c4563a4" xml:space="preserve">
     <value>Aller à HEAD</value>
   </data>
@@ -713,6 +767,9 @@
   </data>
   <data name="Text_0546a0f575e59b7bbb4eb736" xml:space="preserve">
     <value>La langue sera entièrement appliquée après le redémarrage de l’application.</value>
+  </data>
+  <data name="Text_aacf3861aac3adc59794ca41" xml:space="preserve">
+    <value>Fichier texte volumineux</value>
   </data>
   <data name="Text_856a3723d543e02279010aa3" xml:space="preserve">
     <value>Dernière récupération réussie</value>
@@ -765,6 +822,9 @@
   <data name="Text_3f06cd334f4811b2130b13a8" xml:space="preserve">
     <value>Charger la suite</value>
   </data>
+  <data name="Text_5040bdc2439e282ce3af126a" xml:space="preserve">
+    <value>Charger le texte brut</value>
+  </data>
   <data name="Text_d552e677f008d8f7274647bd" xml:space="preserve">
     <value>Charger le dépôt</value>
   </data>
@@ -779,6 +839,9 @@
   </data>
   <data name="Text_a4dde47d9a5883ce34f9b8af" xml:space="preserve">
     <value>Charger les arbres de travail</value>
+  </data>
+  <data name="Text_46e5226d4a88b99696438fc4" xml:space="preserve">
+    <value>Charger le fichier complet en texte brut. La coloration syntaxique et le retour à la ligne sont désactivés pour préserver les performances.</value>
   </data>
   <data name="Text_322b540df1e8e7eaf9b0fec3" xml:space="preserve">
     <value>Chargement des applications</value>
@@ -921,6 +984,9 @@
   <data name="Text_8efc136c63bb000de52f680d" xml:space="preserve">
     <value>Aucune commande</value>
   </data>
+  <data name="Text_41174bbe9db118ccdef36a3e" xml:space="preserve">
+    <value>Aucun historique de commits</value>
+  </data>
   <data name="Text_7098b38e487832dbf337e43d" xml:space="preserve">
     <value>Aucun extrait de message de commit</value>
   </data>
@@ -929,6 +995,9 @@
   </data>
   <data name="Text_4e47ec927670bb96ab007a75" xml:space="preserve">
     <value>Aucun contenu</value>
+  </data>
+  <data name="Text_4250acb1b00d66d0dd74affc" xml:space="preserve">
+    <value>Aucun fichier</value>
   </data>
   <data name="Text_4d08108d77ca80d5115faa3c" xml:space="preserve">
     <value>Aucun dossier sélectionné</value>
@@ -1176,6 +1245,9 @@
   <data name="Text_7cee67ef67c2a67b61154916" xml:space="preserve">
     <value>Nom affiché du dépôt</value>
   </data>
+  <data name="Text_1210945406b8e4bd7eb0024d" xml:space="preserve">
+    <value>Vue du dépôt</value>
+  </data>
   <data name="Text_ac51a40e0c992b7c1d8696fb" xml:space="preserve">
     <value>Worktrees par dépôt</value>
   </data>
@@ -1205,6 +1277,9 @@
   </data>
   <data name="Text_f031a34fa5b9037b9fb8c29c" xml:space="preserve">
     <value>Restaurer le dépôt et la fenêtre précédents</value>
+  </data>
+  <data name="Text_942087cc2d41e01304b71955" xml:space="preserve">
+    <value>Réessayer</value>
   </data>
   <data name="Text_c37a127ac163579d43b97e0e" xml:space="preserve">
     <value>Revenir au processus</value>
@@ -1260,11 +1335,17 @@
   <data name="Text_3a93f31e545c049a2864a25b" xml:space="preserve">
     <value>Rechercher des commits</value>
   </data>
+  <data name="Text_5a5bc0c4ce6ead658eba716c" xml:space="preserve">
+    <value>Rechercher des fichiers</value>
+  </data>
   <data name="Text_d416f4340be478fabb6757d5" xml:space="preserve">
     <value>Rechercher un dépôt</value>
   </data>
   <data name="Text_1ce37f395d7aa7aaa8076d0f" xml:space="preserve">
     <value>Choisir une branche</value>
+  </data>
+  <data name="Text_35f879a077a64495a7aefc95" xml:space="preserve">
+    <value>Sélectionner un fichier</value>
   </data>
   <data name="Text_4cdbc0085ed2ef1b491b6445" xml:space="preserve">
     <value>Sélectionnez une branche ou un tag ci-dessous pour modifier {0}</value>
@@ -1274,6 +1355,15 @@
   </data>
   <data name="Text_019f06fe83f16a392cb22c82" xml:space="preserve">
     <value>Choisissez une branche ou un tag à comparer</value>
+  </data>
+  <data name="Text_6447782b2359a5ee5b7bee75" xml:space="preserve">
+    <value>Sélectionnez un fichier pour consulter son historique de commits.</value>
+  </data>
+  <data name="Text_2ebbedc5e1c2fb4925c14c3a" xml:space="preserve">
+    <value>Sélectionnez un fichier pour afficher tout son contenu.</value>
+  </data>
+  <data name="Text_80c2792102417ef9e590f1d4" xml:space="preserve">
+    <value>Sélectionnez un fichier pour consulter son historique ou son contenu.</value>
   </data>
   <data name="Text_30f90a5d8d345e0ebf7582b1" xml:space="preserve">
     <value>Dépôts sélectionnés</value>
@@ -1392,6 +1482,12 @@
   <data name="Text_37fe872ceff82cba889900b3" xml:space="preserve">
     <value>Synchroniser le dépôt</value>
   </data>
+  <data name="Text_e186ee4e633d23df13d05741" xml:space="preserve">
+    <value>La coloration syntaxique et le retour à la ligne sont désactivés pour ce fichier volumineux.</value>
+  </data>
+  <data name="Text_bdebc0e1b92273ce668b20a7" xml:space="preserve">
+    <value>La coloration syntaxique est indisponible. Le texte original est affiché.</value>
+  </data>
   <data name="Text_4a32b016fa3839ad18caaf9b" xml:space="preserve">
     <value>Nom du tag :</value>
   </data>
@@ -1431,6 +1527,9 @@
   <data name="Text_d2d65881343a6a2476f09c9a" xml:space="preserve">
     <value>Impossible d’ouvrir la page de la version.</value>
   </data>
+  <data name="Text_c0a7d406f7fcf3fdf5e86f8d" xml:space="preserve">
+    <value>Le fichier sélectionné n’est plus disponible dans l’arbre de travail.</value>
+  </data>
   <data name="Text_bc99b8cb8fa3244d8eca96af" xml:space="preserve">
     <value>Les réglages ci-dessous seront rétablis. Les extraits personnalisés et les applications ajoutées seront réinitialisés. Les dépôts, groupes, noms et fichiers locaux seront conservés.</value>
   </data>
@@ -1445,6 +1544,15 @@
   </data>
   <data name="Text_90d2f542b118d50055ff1e33" xml:space="preserve">
     <value>Aucune fusion active pour ce fichier ou ce worktree. Actualisez puis réessayez.</value>
+  </data>
+  <data name="Text_9669e237ff17c8a204092a42" xml:space="preserve">
+    <value>Ce fichier contient une ligne trop longue pour l’aperçu. Ouvrez-le dans une application externe.</value>
+  </data>
+  <data name="Text_2783b0265c5d26efd3f98a11" xml:space="preserve">
+    <value>Ce fichier ne contient aucun texte.</value>
+  </data>
+  <data name="Text_a1345911829ce853a7325ebc" xml:space="preserve">
+    <value>L’encodage de ce fichier n’est pas pris en charge. Ouvrez-le dans une application externe.</value>
   </data>
   <data name="Text_118a470931669215bde94f22" xml:space="preserve">
     <value>Le dossier {0} sera supprimé et la branche conservée. Git refuse la suppression si le worktree contient des modifications non commitées ou des fichiers non suivis.</value>
@@ -1469,6 +1577,9 @@
   </data>
   <data name="Text_ee72274fbfae999effb293e8" xml:space="preserve">
     <value>Affichage de la barre d’outils</value>
+  </data>
+  <data name="Text_4c5590336b40eebb87a80e42" xml:space="preserve">
+    <value>Nombre total de fichiers de cet arbre de travail, y compris les fichiers suivis et les fichiers non suivis non ignorés. Les dossiers sont exclus. Le total reste affiché pendant la recherche.</value>
   </data>
   <data name="Text_f68ef174d62b538a19a3ea7f" xml:space="preserve">
     <value>Modifiez la recherche ou les filtres.</value>
@@ -1538,6 +1649,9 @@
   </data>
   <data name="Text_a76646e2d2c239a7863cd9c7" xml:space="preserve">
     <value>Afficher le journal</value>
+  </data>
+  <data name="Text_0e4ced90ee7c15f8fe32a2d4" xml:space="preserve">
+    <value>Afficher le fichier de travail</value>
   </data>
   <data name="Text_9f287c62537ba21a5bf91041" xml:space="preserve">
     <value>Nous vous recommandons de relancer la récupération maintenant. Continuer ?</value>

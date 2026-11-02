@@ -156,6 +156,9 @@
   <data name="Text_2709a726a7ca8186057b5d9e" xml:space="preserve">
     <value>二進位檔案，請在外部打開</value>
   </data>
+  <data name="Text_e933201f877529db2a73d033" xml:space="preserve">
+    <value>二進位檔案和圖片請使用外部應用程式開啟。</value>
+  </data>
   <data name="Text_7f216915ec37e5cc746e9f31" xml:space="preserve">
     <value>二進位輸出（{0} 位元組）</value>
   </data>
@@ -176,6 +179,9 @@
   </data>
   <data name="Text_d353a99eb4556847ceeb3c30" xml:space="preserve">
     <value>已取消</value>
+  </data>
+  <data name="Text_2f8469edfa515641288e651b" xml:space="preserve">
+    <value>無法預覽檔案</value>
   </data>
   <data name="Text_b585b9ae2b811e9c591c9d00" xml:space="preserve">
     <value>變更檔案顯示</value>
@@ -270,6 +276,9 @@
   <data name="Text_ffe95143bc990ee850df6607" xml:space="preserve">
     <value>收合全部</value>
   </data>
+  <data name="Text_f2aa1c5c5bab76b36e450ae8" xml:space="preserve">
+    <value>收合所有資料夾</value>
+  </data>
   <data name="Text_624e3d714b392ee74e912c9d" xml:space="preserve">
     <value>收合差異</value>
   </data>
@@ -315,6 +324,9 @@
   <data name="Text_d617aeda3a4656fd657ab6f8" xml:space="preserve">
     <value>提交訊息</value>
   </data>
+  <data name="Text_8714c3fe7ae5de6d8b50d95c" xml:space="preserve">
+    <value>提交視角</value>
+  </data>
   <data name="Text_041d3c070151e15e382d3360" xml:space="preserve">
     <value>請先提交或儲藏 {0} 中的變更，再進行合併。</value>
   </data>
@@ -338,6 +350,9 @@
   </data>
   <data name="Text_80138e9720f0a101716742d1" xml:space="preserve">
     <value>比較版本</value>
+  </data>
+  <data name="Text_fe3a5d6d57e78779398236c5" xml:space="preserve">
+    <value>與第一個父提交比較</value>
   </data>
   <data name="Text_916a464e6cfffe51cd6f9bf4" xml:space="preserve">
     <value>衝突</value>
@@ -365,6 +380,9 @@
   </data>
   <data name="Text_dba23f14c1094cbd338b8288" xml:space="preserve">
     <value>複製日誌</value>
+  </data>
+  <data name="Text_dbd09ebbc21c49c7385c5fd4" xml:space="preserve">
+    <value>無法讀取檔案</value>
   </data>
   <data name="Text_04a05d81cc5c997a10f7ab9e" xml:space="preserve">
     <value>無法讀取差異中的變更檔案。</value>
@@ -429,6 +447,9 @@
   <data name="Text_25523ba32c7136d9f0713a70" xml:space="preserve">
     <value>目錄樹</value>
   </data>
+  <data name="Text_23419cbd88e6d332cf6100d2" xml:space="preserve">
+    <value>目錄視角</value>
+  </data>
   <data name="Text_18d67c992b71ce69eb924554" xml:space="preserve">
     <value>顯示名稱</value>
   </data>
@@ -452,6 +473,9 @@
   </data>
   <data name="Text_464c4ffd019e1e9691dcf053" xml:space="preserve">
     <value>編輯</value>
+  </data>
+  <data name="Text_61ff6d21d7a0ef059cf4e44b" xml:space="preserve">
+    <value>空白檔案</value>
   </data>
   <data name="Text_c0ad208d2b3de165ce2b2ff2" xml:space="preserve">
     <value>啟用工作樹</value>
@@ -540,8 +564,17 @@
   <data name="Text_b602a9170fa36600b5e30f38" xml:space="preserve">
     <value>正在擷取</value>
   </data>
+  <data name="Text_3c03cf5341a1e078c438f318" xml:space="preserve">
+    <value>檔案內容</value>
+  </data>
   <data name="Text_41d284eaa312e2d9762e3cd6" xml:space="preserve">
     <value>此版本已刪除該檔案</value>
+  </data>
+  <data name="Text_bbffb57962a3a9a6e8750bdb" xml:space="preserve">
+    <value>檔案詳細資訊</value>
+  </data>
+  <data name="Text_fd2296a4cf1bad18c9e5db5e" xml:space="preserve">
+    <value>檔案歷史</value>
   </data>
   <data name="Text_87b780becb04b497e32de414" xml:space="preserve">
     <value>檔案權限變更</value>
@@ -549,11 +582,23 @@
   <data name="Text_83bde8a6cc497012103c2b51" xml:space="preserve">
     <value>檔案權限：{0} → {1}</value>
   </data>
+  <data name="Text_05991d91f152ae161f8c0c67" xml:space="preserve">
+    <value>檔案已不存在</value>
+  </data>
   <data name="Text_abc7e9892806b047b4d4786b" xml:space="preserve">
     <value>檔案</value>
   </data>
   <data name="Text_47aa7d820cf5618322fc8a2f" xml:space="preserve">
     <value>已變更檔案</value>
+  </data>
+  <data name="Text_8aa6cab5b2066f12b2685c99" xml:space="preserve">
+    <value>超過 10 MiB 的檔案請使用外部應用程式開啟。</value>
+  </data>
+  <data name="Text_47e898ee5ba3180365f28ba0" xml:space="preserve">
+    <value>超過 100000 行的檔案請使用外部應用程式開啟。</value>
+  </data>
+  <data name="Text_ec212e8604cd601082836d51" xml:space="preserve">
+    <value>共 {0} 個檔案</value>
   </data>
   <data name="Text_638e249f4a15ebb84957da13" xml:space="preserve">
     <value>篩選</value>
@@ -563,6 +608,9 @@
   </data>
   <data name="Text_899d861562c6c0dc927c2e67" xml:space="preserve">
     <value>篩選儲存庫</value>
+  </data>
+  <data name="Text_2d35ba196b7fe921301ed6b3" xml:space="preserve">
+    <value>檔案內尋找</value>
   </data>
   <data name="Text_488fac89f9cd379a93ebaabd" xml:space="preserve">
     <value>完成清理</value>
@@ -593,6 +641,9 @@
   </data>
   <data name="Text_67a5454cfa4113b2e0387a12" xml:space="preserve">
     <value>資料夾名稱</value>
+  </data>
+  <data name="Text_c511b7fd9aa256fca7b19533" xml:space="preserve">
+    <value>目錄、符號連結和特殊檔案請使用外部應用程式開啟。</value>
   </data>
   <data name="Text_f1c65e14817efef2b77973a4" xml:space="preserve">
     <value>前進</value>
@@ -678,6 +729,9 @@
   <data name="Text_d1c76800f0871fca0f06e6eb" xml:space="preserve">
     <value>介面語言</value>
   </data>
+  <data name="Text_8feab9c59d5a299d1c2c4faf" xml:space="preserve">
+    <value>Git 傳回的檔案歷史記錄無效。</value>
+  </data>
   <data name="Text_d874348942aed4fb5c4563a4" xml:space="preserve">
     <value>定位至 HEAD</value>
   </data>
@@ -695,6 +749,9 @@
   </data>
   <data name="Text_0546a0f575e59b7bbb4eb736" xml:space="preserve">
     <value>重新啟動應用程式後，語言變更將完整生效。</value>
+  </data>
+  <data name="Text_aacf3861aac3adc59794ca41" xml:space="preserve">
+    <value>大型文字檔案</value>
   </data>
   <data name="Text_856a3723d543e02279010aa3" xml:space="preserve">
     <value>上次成功擷取</value>
@@ -747,6 +804,9 @@
   <data name="Text_3f06cd334f4811b2130b13a8" xml:space="preserve">
     <value>載入更多</value>
   </data>
+  <data name="Text_5040bdc2439e282ce3af126a" xml:space="preserve">
+    <value>載入純文字</value>
+  </data>
   <data name="Text_d552e677f008d8f7274647bd" xml:space="preserve">
     <value>讀取儲存庫</value>
   </data>
@@ -761,6 +821,9 @@
   </data>
   <data name="Text_a4dde47d9a5883ce34f9b8af" xml:space="preserve">
     <value>讀取工作樹</value>
+  </data>
+  <data name="Text_46e5226d4a88b99696438fc4" xml:space="preserve">
+    <value>以純文字載入完整檔案。為維持效能，將關閉語法醒目提示和自動換行。</value>
   </data>
   <data name="Text_322b540df1e8e7eaf9b0fec3" xml:space="preserve">
     <value>正在讀取應用程式</value>
@@ -903,6 +966,9 @@
   <data name="Text_8efc136c63bb000de52f680d" xml:space="preserve">
     <value>暫無命令</value>
   </data>
+  <data name="Text_41174bbe9db118ccdef36a3e" xml:space="preserve">
+    <value>暫無提交歷史</value>
+  </data>
   <data name="Text_7098b38e487832dbf337e43d" xml:space="preserve">
     <value>暫無提交快捷輸入</value>
   </data>
@@ -911,6 +977,9 @@
   </data>
   <data name="Text_4e47ec927670bb96ab007a75" xml:space="preserve">
     <value>沒有內容</value>
+  </data>
+  <data name="Text_4250acb1b00d66d0dd74affc" xml:space="preserve">
+    <value>暫無檔案</value>
   </data>
   <data name="Text_4d08108d77ca80d5115faa3c" xml:space="preserve">
     <value>未選取資料夾</value>
@@ -1158,6 +1227,9 @@
   <data name="Text_7cee67ef67c2a67b61154916" xml:space="preserve">
     <value>儲存庫顯示名稱</value>
   </data>
+  <data name="Text_1210945406b8e4bd7eb0024d" xml:space="preserve">
+    <value>儲存庫檢視</value>
+  </data>
   <data name="Text_ac51a40e0c992b7c1d8696fb" xml:space="preserve">
     <value>各儲存庫工作樹</value>
   </data>
@@ -1187,6 +1259,9 @@
   </data>
   <data name="Text_f031a34fa5b9037b9fb8c29c" xml:space="preserve">
     <value>恢復上次的儲存庫與視窗狀態</value>
+  </data>
+  <data name="Text_942087cc2d41e01304b71955" xml:space="preserve">
+    <value>重試</value>
   </data>
   <data name="Text_c37a127ac163579d43b97e0e" xml:space="preserve">
     <value>返回處理流程</value>
@@ -1242,11 +1317,17 @@
   <data name="Text_3a93f31e545c049a2864a25b" xml:space="preserve">
     <value>搜尋提交</value>
   </data>
+  <data name="Text_5a5bc0c4ce6ead658eba716c" xml:space="preserve">
+    <value>搜尋檔案</value>
+  </data>
   <data name="Text_d416f4340be478fabb6757d5" xml:space="preserve">
     <value>搜尋儲存庫</value>
   </data>
   <data name="Text_1ce37f395d7aa7aaa8076d0f" xml:space="preserve">
     <value>選取分支</value>
+  </data>
+  <data name="Text_35f879a077a64495a7aefc95" xml:space="preserve">
+    <value>選擇檔案</value>
   </data>
   <data name="Text_4cdbc0085ed2ef1b491b6445" xml:space="preserve">
     <value>在下方選取分支或標籤以變更 {0}</value>
@@ -1256,6 +1337,15 @@
   </data>
   <data name="Text_019f06fe83f16a392cb22c82" xml:space="preserve">
     <value>請選取要比較的分支或標籤</value>
+  </data>
+  <data name="Text_6447782b2359a5ee5b7bee75" xml:space="preserve">
+    <value>選擇檔案以檢視其提交歷史。</value>
+  </data>
+  <data name="Text_2ebbedc5e1c2fb4925c14c3a" xml:space="preserve">
+    <value>選擇檔案以檢視完整內容。</value>
+  </data>
+  <data name="Text_80c2792102417ef9e590f1d4" xml:space="preserve">
+    <value>選擇檔案以檢視提交記錄或檔案內容。</value>
   </data>
   <data name="Text_30f90a5d8d345e0ebf7582b1" xml:space="preserve">
     <value>已選儲存庫</value>
@@ -1374,6 +1464,12 @@
   <data name="Text_37fe872ceff82cba889900b3" xml:space="preserve">
     <value>同步儲存庫</value>
   </data>
+  <data name="Text_e186ee4e633d23df13d05741" xml:space="preserve">
+    <value>此大型檔案已關閉語法醒目提示和自動換行。</value>
+  </data>
+  <data name="Text_bdebc0e1b92273ce668b20a7" xml:space="preserve">
+    <value>語法醒目提示暫時無法使用，目前顯示原始文字。</value>
+  </data>
   <data name="Text_4a32b016fa3839ad18caaf9b" xml:space="preserve">
     <value>標籤名稱：</value>
   </data>
@@ -1413,6 +1509,9 @@
   <data name="Text_d2d65881343a6a2476f09c9a" xml:space="preserve">
     <value>無法開啟版本發佈頁面。</value>
   </data>
+  <data name="Text_c0a7d406f7fcf3fdf5e86f8d" xml:space="preserve">
+    <value>所選檔案已不在目前工作區中。</value>
+  </data>
   <data name="Text_bc99b8cb8fa3244d8eca96af" xml:space="preserve">
     <value>以下設定將回復為預設值，自訂快捷輸入和手動加入的應用程式設定將被重置。儲存庫清單、群組、名稱和本機檔案會保留。</value>
   </data>
@@ -1427,6 +1526,15 @@
   </data>
   <data name="Text_90d2f542b118d50055ff1e33" xml:space="preserve">
     <value>此檔案或工作樹沒有進行中的合併。請重新整理後再試。</value>
+  </data>
+  <data name="Text_9669e237ff17c8a204092a42" xml:space="preserve">
+    <value>此檔案包含過長的單行，無法順暢預覽。請使用外部應用程式開啟。</value>
+  </data>
+  <data name="Text_2783b0265c5d26efd3f98a11" xml:space="preserve">
+    <value>此檔案沒有文字內容。</value>
+  </data>
+  <data name="Text_a1345911829ce853a7325ebc" xml:space="preserve">
+    <value>此檔案使用了不支援的文字編碼。請使用外部應用程式開啟。</value>
   </data>
   <data name="Text_118a470931669215bde94f22" xml:space="preserve">
     <value>此操作會移除 {0} 資料夾，並保留分支。如果工作樹包含未提交的變更或未追蹤檔案，Git 會拒絕移除。</value>
@@ -1451,6 +1559,9 @@
   </data>
   <data name="Text_ee72274fbfae999effb293e8" xml:space="preserve">
     <value>工具列顯示</value>
+  </data>
+  <data name="Text_4c5590336b40eebb87a80e42" xml:space="preserve">
+    <value>目前工作目錄的檔案總數，包含已追蹤檔案和未被忽略的未追蹤檔案。不包含資料夾，搜尋時仍顯示總數。</value>
   </data>
   <data name="Text_f68ef174d62b538a19a3ea7f" xml:space="preserve">
     <value>請嘗試其他搜尋內容或調整篩選條件。</value>
@@ -1520,6 +1631,9 @@
   </data>
   <data name="Text_a76646e2d2c239a7863cd9c7" xml:space="preserve">
     <value>檢視日誌</value>
+  </data>
+  <data name="Text_0e4ced90ee7c15f8fe32a2d4" xml:space="preserve">
+    <value>檢視工作區檔案</value>
   </data>
   <data name="Text_9f287c62537ba21a5bf91041" xml:space="preserve">
     <value>建議立即擷取一次，是否繼續？</value>

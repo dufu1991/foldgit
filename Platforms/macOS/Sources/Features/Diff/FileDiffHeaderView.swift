@@ -2,6 +2,7 @@ import FoldGitCore
 import SwiftUI
 
 struct FileDiffHeaderView: View {
+    @Environment(\.openWorkspaceFile) private var openWorkspaceFile
     @Environment(\.stageFlights) private var stageFlights
     @Environment(\.stageFlightPane) private var stageFlightPane
     @State private var frame = StageFlightFrame()
@@ -82,6 +83,15 @@ struct FileDiffHeaderView: View {
             .accessibilityHint(Text(verbatim: expansionTitle))
             .accessibilityIdentifier("fileDiffExpansion-" + fileDiff.changeTreePath)
 
+            if let openWorkspaceFile {
+                Button("View Working Tree File", systemImage: "doc.text.magnifyingglass") {
+                    let path = fileDiff.toFilePath == "/dev/null" ? fileDiff.fromFilePath : fileDiff.toFilePath
+                    openWorkspaceFile(path)
+                }
+                .labelStyle(.iconOnly).buttonStyle(.plain).controlSize(.small)
+                .help("View Working Tree File")
+                .accessibilityIdentifier("viewWorkingTreeFile-" + fileDiff.changeTreePath)
+            }
             OpenFileButton(filePath: fileDiff.toFilePath)
         }
     }

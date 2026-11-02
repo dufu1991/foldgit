@@ -12,7 +12,7 @@ import Observation
     private(set) var error: (any Error)?
     private var generation = 0
 
-    func refresh(in directory: URL, fetchRemote: Bool) async {
+    func refresh(in directory: URL, fetchRemote: Bool, loadHistory: Bool = true) async {
         generation += 1
         let request = generation
         do {
@@ -28,13 +28,13 @@ import Observation
             remote.folderURL = directory
             remote.branch = branch
             // Show cached local history immediately, then incorporate any fetched ref updates.
-            await history.refresh()
+            if loadHistory { await history.refresh() }
             guard request == generation, !Task.isCancelled else { return }
             await remote.sync(fetchRemote: fetchRemote)
             guard request == generation, !Task.isCancelled else { return }
-            if fetchRemote { await history.refresh() }
+            if fetchRemote && loadHistory { await history.refresh() }
             guard request == generation, !Task.isCancelled else { return }
-            error = history.error
+            error = loadHistory ? history.error : nil
         } catch {
             guard request == generation, !Task.isCancelled else { return }
             self.error = error

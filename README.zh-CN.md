@@ -7,6 +7,8 @@
 
 <h1 align="center">FoldGit</h1>
 
+> `full-featured` 分支在 macOS 上增加只读工作区文件浏览、行号、文件内查找和多语言高亮。`main` 分支保留简洁的 Git 提交流程。两个分支启动时均使用提交视角。
+
 <p align="center">
   把所有仓库，折进一个窗口。<br>
   原生、轻量的 macOS Git 客户端。

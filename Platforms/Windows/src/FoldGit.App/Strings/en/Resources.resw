@@ -171,8 +171,14 @@
   <data name="Text_15d5c7ad6b4b19a78d97273b" xml:space="preserve">
     <value>Automatic Fetch</value>
   </data>
+  <data name="Text_4208569d7ade41fa4d5f1e2d" xml:space="preserve">
+    <value>Automatic Fetch Failed</value>
+  </data>
   <data name="Text_c9156a4ced754ec967489b19" xml:space="preserve">
     <value>Automatic fetch continues while the application is running.</value>
+  </data>
+  <data name="Text_50722fd016c4716c1560a55c" xml:space="preserve">
+    <value>Automatic fetch failed. Click to retry.</value>
   </data>
   <data name="Text_8f0184ccd344ff0656dbefea" xml:space="preserve">
     <value>Automatic uses side-by-side layout when there is enough space.</value>
@@ -329,6 +335,9 @@
   </data>
   <data name="Text_7995322f8f50d43b0bd75061" xml:space="preserve">
     <value>Collapse Folder</value>
+  </data>
+  <data name="Text_35044c06f245c5fec615a13c" xml:space="preserve">
+    <value>Collapse Group</value>
   </data>
   <data name="Text_b322b65227bc3ec948893e32" xml:space="preserve">
     <value>Collapsed</value>
@@ -549,6 +558,9 @@
   <data name="Text_ce65cc8bc111022d3861c6ae" xml:space="preserve">
     <value>Expand Folder</value>
   </data>
+  <data name="Text_ed520c2c4b64e0907918d559" xml:space="preserve">
+    <value>Expand Group</value>
+  </data>
   <data name="Text_e72d5d8d0b167d21b4e4a89e" xml:space="preserve">
     <value>Expanded</value>
   </data>
@@ -572,6 +584,9 @@
   </data>
   <data name="Text_837c12c4f7ecd4c1dbbdd4df" xml:space="preserve">
     <value>Fetch Branches and Tags</value>
+  </data>
+  <data name="Text_cef8c278b293536c71edad3e" xml:space="preserve">
+    <value>Fetch Now</value>
   </data>
   <data name="Text_7514c6b66c4fa8b6a3d82afe" xml:space="preserve">
     <value>Fetch Tags</value>
@@ -1559,6 +1574,9 @@
   </data>
   <data name="Text_a76646e2d2c239a7863cd9c7" xml:space="preserve">
     <value>View Log</value>
+  </data>
+  <data name="Text_9f287c62537ba21a5bf91041" xml:space="preserve">
+    <value>We recommend fetching again now. Continue?</value>
   </data>
   <data name="Text_421dba311ad7c79b6a25aa38" xml:space="preserve">
     <value>When the Last Window Closes</value>

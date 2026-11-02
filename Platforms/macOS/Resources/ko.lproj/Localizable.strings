@@ -34,7 +34,9 @@
 "Ascending" = "오름차순";
 "Automatic" = "자동";
 "Automatic Fetch" = "자동 페치";
+"Automatic Fetch Failed" = "자동 페치 실패";
 "Automatic fetch continues while the application is running." = "앱이 실행 중인 동안 설정된 간격으로 자동 페치가 계속됩니다.";
+"Automatic fetch failed. Click to retry." = "자동 페치에 실패했습니다. 클릭하여 다시 시도하세요.";
 "Automatic uses side-by-side layout when there is enough space." = "자동 모드는 공간이 충분하면 나란히 표시합니다.";
 "Back" = "뒤로";
 "Base" = "기준";
@@ -82,6 +84,7 @@
 "Collapse Directories" = "디렉터리 접기";
 "Collapse File" = "파일 접기";
 "Collapse Folder" = "폴더 접기";
+"Collapse Group" = "그룹 접기";
 "Collapsed" = "접기";
 "Color Scheme" = "색상 모드";
 "Combined merge diffs use unified layout." = "병합의 결합 차이는 통합 레이아웃으로 표시됩니다.";
@@ -155,6 +158,7 @@
 "Expand Directories" = "디렉터리 펼치기";
 "Expand File" = "파일 펼치기";
 "Expand Folder" = "폴더 펼치기";
+"Expand Group" = "그룹 펼치기";
 "Expanded" = "펼치기";
 "Export Command Log" = "명령 로그 내보내기";
 "Export Log" = "로그 내보내기";
@@ -163,6 +167,7 @@
 "Failure Reason" = "실패 원인";
 "Fetch" = "페치";
 "Fetch Branches and Tags" = "브랜치 및 태그 페치";
+"Fetch Now" = "지금 페치";
 "Fetch Tags" = "태그 페치";
 "Fetching" = "페치하는 중";
 "File Deleted in This Version" = "이 버전에서 파일 삭제됨";
@@ -486,6 +491,7 @@
 "View Error Details" = "오류 세부 정보 보기";
 "View Incoming Commits" = "풀 대기 커밋 보기";
 "View Log" = "로그 보기";
+"We recommend fetching again now. Continue?" = "지금 다시 페치하는 것을 권장합니다. 계속하시겠습니까?";
 "When the Last Window Closes" = "마지막 윈도우를 닫을 때";
 "Windows" = "윈도우";
 "Work on another branch in a separate folder while keeping your current changes." = "현재 변경 사항을 유지하면서 별도 폴더에서 다른 브랜치로 작업합니다.";

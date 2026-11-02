@@ -196,6 +196,7 @@ struct ProjectSidebarView: View {
             NativeSearchField(text: $search, placeholder: String(localized: "Search Repositories"),
                               accessibilityIdentifier: "sidebarSearchField")
                 .frame(height: 26)
+                .immediateHelp(String(localized: "Search Repositories"))
             Menu {
                 Picker("Sort Repositories", selection: $sort) {
                     ForEach(SidebarSort.allCases) { mode in
@@ -216,7 +217,7 @@ struct ProjectSidebarView: View {
             }
             .menuIndicator(.hidden)
             .fixedSize()
-            .help("Sort Repositories")
+            .immediateHelp(String(localized: "Sort Repositories"))
             .accessibilityLabel(Text("Sort Repositories"))
             Menu {
                 Button("New Group", systemImage: "folder.badge.plus") {
@@ -244,7 +245,7 @@ struct ProjectSidebarView: View {
             .menuIndicator(.hidden)
             .fixedSize()
             .disabled(isAdding)
-            .help("Add Repository or Folder")
+            .immediateHelp(String(localized: "Add Repository or Folder"))
             .accessibilityLabel(Text("Add Repository or Folder"))
         }
         .buttonStyle(.borderless)
@@ -289,6 +290,7 @@ struct ProjectSidebarView: View {
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(.secondary)
+                    .immediateHelp(disclosureHelp(String(localized: "Inactive"), isExpanded: isInfrequentExpanded.wrappedValue))
                     .accessibilityLabel(Text("Inactive"))
                     .accessibilityValue(isInfrequentExpanded.wrappedValue ? Text("Expanded") : Text("Collapsed"))
                     .accessibilityIdentifier("sidebarInactiveDisclosure-" + folder.identity.absoluteString)
@@ -306,7 +308,7 @@ struct ProjectSidebarView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .help(folder.displayName)
+            .immediateHelp(disclosureHelp(folder.displayName, isExpanded: isExpanded.wrappedValue))
             .accessibilityLabel(Text(verbatim: folder.displayName))
             .accessibilityValue(isExpanded.wrappedValue ? Text("Expanded") : Text("Collapsed"))
             .accessibilityIdentifier("sidebarGroupDisclosure-" + folder.identity.absoluteString)
@@ -324,6 +326,10 @@ struct ProjectSidebarView: View {
                 .help("Repositories remain in the sidebar and their folders stay unchanged.")
             }
         }
+    }
+
+    private func disclosureHelp(_ name: String, isExpanded: Bool) -> String {
+        name + "\n" + (isExpanded ? String(localized: "Collapse Group") : String(localized: "Expand Group"))
     }
 
     private func moveFolders(from source: IndexSet, to destination: Int) {
@@ -422,25 +428,30 @@ struct ProjectSidebarView: View {
                         ? AnyShapeStyle(.primary)
                         : AnyShapeStyle(folder.repositoryIconColor.opacity(isInfrequent ? 0.6 : 1)))
             }
+            .immediateHelp(folder.url.path)
             Spacer(minLength: 4)
             if showWorktreeInformation && isLinked { WorktreeIndicator(path: folder.url.path).fixedSize() }
             if showWorktreeInformation && tree?.isLocked == true {
-                Image(systemName: "lock.fill").font(.caption2).foregroundStyle(.secondary).help("Locked Worktree")
+                Image(systemName: "lock.fill").font(.caption2).foregroundStyle(.secondary)
+                    .immediateHelp(String(localized: "Locked Worktree"))
+                    .accessibilityLabel(Text("Locked Worktree"))
             }
             if showWorktreeInformation && (tree?.isPrunable == true || worktrees.errors[folder.identity] != nil) {
                 warningButton("Load Worktrees", message: worktrees.errors[folder.identity] ?? String(localized: "Missing Worktree"), directory: folder.url)
             }
             if isSaved && interval != .off {
                 if let fetchError {
-                    warningButton("Automatic Fetch", message: fetchError, directory: folder.url)
-                        .accessibilityIdentifier("autoFetchWarning-" + folder.identity.path)
+                    ProjectAutoFetchWarning(folder: folder, repositoryName: displayNames.displayName(for: folder),
+                                            message: fetchError, onError: onError)
                 } else {
                     Image(systemName: "clock.arrow.circlepath")
-                        .font(.caption2).foregroundStyle(.secondary).help(interval.title)
+                        .font(.caption2).foregroundStyle(.secondary)
+                        .immediateHelp(String(localized: "Automatic Fetch") + "\n" + interval.title)
+                        .accessibilityLabel(Text("Automatic Fetch"))
+                        .accessibilityValue(Text(verbatim: interval.title))
                 }
             }
         }
-        .help(folder.url.path)
         .tag(folder.url)
         .contextMenu {
             let repositories = actionRepositories(clicked: folder)
@@ -508,7 +519,7 @@ struct ProjectSidebarView: View {
                 .padding(4).contentShape(Rectangle())
         }
         .buttonStyle(.borderless)
-        .help("View Error Details")
+        .immediateHelp(String(localized: operation) + "\n" + message + "\n" + String(localized: "View Error Details"))
         .accessibilityLabel(Text("View Error Details"))
         .accessibilityValue(Text(verbatim: String(localized: operation)))
     }

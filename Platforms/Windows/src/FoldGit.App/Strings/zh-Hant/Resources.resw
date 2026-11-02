@@ -126,8 +126,14 @@
   <data name="Text_15d5c7ad6b4b19a78d97273b" xml:space="preserve">
     <value>自動擷取</value>
   </data>
+  <data name="Text_4208569d7ade41fa4d5f1e2d" xml:space="preserve">
+    <value>自動擷取失敗</value>
+  </data>
   <data name="Text_c9156a4ced754ec967489b19" xml:space="preserve">
     <value>軟體執行期間會依設定間隔自動擷取。</value>
+  </data>
+  <data name="Text_50722fd016c4716c1560a55c" xml:space="preserve">
+    <value>自動擷取失敗，點擊可重試。</value>
   </data>
   <data name="Text_8f0184ccd344ff0656dbefea" xml:space="preserve">
     <value>自動模式會在空間充足時採用並排配置。</value>
@@ -275,6 +281,9 @@
   </data>
   <data name="Text_7995322f8f50d43b0bd75061" xml:space="preserve">
     <value>收合資料夾</value>
+  </data>
+  <data name="Text_35044c06f245c5fec615a13c" xml:space="preserve">
+    <value>收合群組</value>
   </data>
   <data name="Text_b322b65227bc3ec948893e32" xml:space="preserve">
     <value>收合</value>
@@ -495,6 +504,9 @@
   <data name="Text_ce65cc8bc111022d3861c6ae" xml:space="preserve">
     <value>展開資料夾</value>
   </data>
+  <data name="Text_ed520c2c4b64e0907918d559" xml:space="preserve">
+    <value>展開群組</value>
+  </data>
   <data name="Text_e72d5d8d0b167d21b4e4a89e" xml:space="preserve">
     <value>展開</value>
   </data>
@@ -518,6 +530,9 @@
   </data>
   <data name="Text_837c12c4f7ecd4c1dbbdd4df" xml:space="preserve">
     <value>擷取分支與標籤</value>
+  </data>
+  <data name="Text_cef8c278b293536c71edad3e" xml:space="preserve">
+    <value>立即擷取</value>
   </data>
   <data name="Text_7514c6b66c4fa8b6a3d82afe" xml:space="preserve">
     <value>擷取標籤</value>
@@ -1505,6 +1520,9 @@
   </data>
   <data name="Text_a76646e2d2c239a7863cd9c7" xml:space="preserve">
     <value>檢視日誌</value>
+  </data>
+  <data name="Text_9f287c62537ba21a5bf91041" xml:space="preserve">
+    <value>建議立即擷取一次，是否繼續？</value>
   </data>
   <data name="Text_421dba311ad7c79b6a25aa38" xml:space="preserve">
     <value>關閉最後一個視窗時</value>

@@ -34,7 +34,9 @@
 "Ascending" = "По возрастанию";
 "Automatic" = "Автоматически";
 "Automatic Fetch" = "Автоматическое получение";
+"Automatic Fetch Failed" = "Ошибка автоматического получения";
 "Automatic fetch continues while the application is running." = "Автоматическое получение продолжается, пока приложение работает.";
+"Automatic fetch failed. Click to retry." = "Автоматическое получение не удалось. Нажмите, чтобы повторить.";
 "Automatic uses side-by-side layout when there is enough space." = "В автоматическом режиме сравнение отображается рядом, если достаточно места.";
 "Back" = "Назад";
 "Base" = "База";
@@ -82,6 +84,7 @@
 "Collapse Directories" = "Свернуть каталоги";
 "Collapse File" = "Свернуть файл";
 "Collapse Folder" = "Свернуть папку";
+"Collapse Group" = "Свернуть группу";
 "Collapsed" = "Свёрнуты";
 "Color Scheme" = "Цветовая схема";
 "Combined merge diffs use unified layout." = "Объединённые различия слияния отображаются в едином виде.";
@@ -155,6 +158,7 @@
 "Expand Directories" = "Развернуть каталоги";
 "Expand File" = "Развернуть файл";
 "Expand Folder" = "Развернуть папку";
+"Expand Group" = "Развернуть группу";
 "Expanded" = "Развёрнуты";
 "Export Command Log" = "Экспорт журнала команд";
 "Export Log" = "Экспорт журнала";
@@ -163,6 +167,7 @@
 "Failure Reason" = "Причина ошибки";
 "Fetch" = "Получить";
 "Fetch Branches and Tags" = "Получить ветки и теги";
+"Fetch Now" = "Получить сейчас";
 "Fetch Tags" = "Получить теги";
 "Fetching" = "Получение";
 "File Deleted in This Version" = "Файл удалён в этой версии";
@@ -486,6 +491,7 @@
 "View Error Details" = "Показать сведения об ошибке";
 "View Incoming Commits" = "Показать входящие коммиты";
 "View Log" = "Открыть журнал";
+"We recommend fetching again now. Continue?" = "Рекомендуем повторить получение сейчас. Продолжить?";
 "When the Last Window Closes" = "При закрытии последнего окна";
 "Windows" = "Окна";
 "Work on another branch in a separate folder while keeping your current changes." = "Работайте с другой веткой в отдельной папке, сохранив текущие изменения.";

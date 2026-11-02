@@ -34,7 +34,9 @@
 "Ascending" = "升冪";
 "Automatic" = "自動";
 "Automatic Fetch" = "自動擷取";
+"Automatic Fetch Failed" = "自動擷取失敗";
 "Automatic fetch continues while the application is running." = "軟體執行期間會依設定間隔自動擷取。";
+"Automatic fetch failed. Click to retry." = "自動擷取失敗，點擊可重試。";
 "Automatic uses side-by-side layout when there is enough space." = "自動模式會在空間充足時採用並排配置。";
 "Back" = "返回";
 "Base" = "基準";
@@ -82,6 +84,7 @@
 "Collapse Directories" = "收合目錄";
 "Collapse File" = "收合檔案";
 "Collapse Folder" = "收合資料夾";
+"Collapse Group" = "收合群組";
 "Collapsed" = "收合";
 "Color Scheme" = "外觀模式";
 "Combined merge diffs use unified layout." = "合併衝突的組合差異使用單欄版面。";
@@ -155,6 +158,7 @@
 "Expand Directories" = "展開目錄";
 "Expand File" = "展開檔案";
 "Expand Folder" = "展開資料夾";
+"Expand Group" = "展開群組";
 "Expanded" = "展開";
 "Export Command Log" = "匯出命令記錄";
 "Export Log" = "匯出日誌";
@@ -163,6 +167,7 @@
 "Failure Reason" = "失敗原因";
 "Fetch" = "擷取";
 "Fetch Branches and Tags" = "擷取分支與標籤";
+"Fetch Now" = "立即擷取";
 "Fetch Tags" = "擷取標籤";
 "Fetching" = "正在擷取";
 "File Deleted in This Version" = "此版本已刪除該檔案";
@@ -486,6 +491,7 @@
 "View Error Details" = "檢視錯誤詳細資料";
 "View Incoming Commits" = "檢視待拉取提交";
 "View Log" = "檢視日誌";
+"We recommend fetching again now. Continue?" = "建議立即擷取一次，是否繼續？";
 "When the Last Window Closes" = "關閉最後一個視窗時";
 "Windows" = "視窗";
 "Work on another branch in a separate folder while keeping your current changes." = "在獨立資料夾中處理其他分支，同時保留目前變更。";

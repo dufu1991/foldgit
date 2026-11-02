@@ -34,7 +34,9 @@
 "Ascending" = "昇順";
 "Automatic" = "自動";
 "Automatic Fetch" = "自動フェッチ";
+"Automatic Fetch Failed" = "自動フェッチに失敗しました";
 "Automatic fetch continues while the application is running." = "アプリの実行中は設定した間隔で自動フェッチを続けます。";
+"Automatic fetch failed. Click to retry." = "自動フェッチに失敗しました。クリックして再試行します。";
 "Automatic uses side-by-side layout when there is enough space." = "自動モードでは、十分なスペースがある場合に左右分割で表示します。";
 "Back" = "戻る";
 "Base" = "比較元";
@@ -82,6 +84,7 @@
 "Collapse Directories" = "ディレクトリを折りたたむ";
 "Collapse File" = "ファイルを折りたたむ";
 "Collapse Folder" = "フォルダを折りたたむ";
+"Collapse Group" = "グループを折りたたむ";
 "Collapsed" = "折りたたみ";
 "Color Scheme" = "カラーモード";
 "Combined merge diffs use unified layout." = "マージの結合差分は統合レイアウトで表示します。";
@@ -155,6 +158,7 @@
 "Expand Directories" = "ディレクトリを展開";
 "Expand File" = "ファイルを展開";
 "Expand Folder" = "フォルダを展開";
+"Expand Group" = "グループを展開";
 "Expanded" = "展開";
 "Export Command Log" = "コマンドログを書き出す";
 "Export Log" = "ログを書き出す";
@@ -163,6 +167,7 @@
 "Failure Reason" = "失敗の原因";
 "Fetch" = "フェッチ";
 "Fetch Branches and Tags" = "ブランチとタグをフェッチ";
+"Fetch Now" = "今すぐフェッチ";
 "Fetch Tags" = "タグをフェッチ";
 "Fetching" = "フェッチ中";
 "File Deleted in This Version" = "このバージョンでは削除済み";
@@ -486,6 +491,7 @@
 "View Error Details" = "エラーの詳細を表示";
 "View Incoming Commits" = "プル待ちのコミットを表示";
 "View Log" = "ログを表示";
+"We recommend fetching again now. Continue?" = "今すぐ再度フェッチすることをおすすめします。続行しますか？";
 "When the Last Window Closes" = "最後のウインドウを閉じたとき";
 "Windows" = "ウインドウ";
 "Work on another branch in a separate folder while keeping your current changes." = "現在の変更を保持したまま、別のフォルダで他のブランチを操作します。";

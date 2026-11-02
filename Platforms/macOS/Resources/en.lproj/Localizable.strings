@@ -34,7 +34,9 @@
 "Ascending" = "Ascending";
 "Automatic" = "Automatic";
 "Automatic Fetch" = "Automatic Fetch";
+"Automatic Fetch Failed" = "Automatic Fetch Failed";
 "Automatic fetch continues while the application is running." = "Automatic fetch continues while the application is running.";
+"Automatic fetch failed. Click to retry." = "Automatic fetch failed. Click to retry.";
 "Automatic uses side-by-side layout when there is enough space." = "Automatic uses side-by-side layout when there is enough space.";
 "Back" = "Back";
 "Base" = "Base";
@@ -82,6 +84,7 @@
 "Collapse Directories" = "Collapse Directories";
 "Collapse File" = "Collapse File";
 "Collapse Folder" = "Collapse Folder";
+"Collapse Group" = "Collapse Group";
 "Collapsed" = "Collapsed";
 "Color Scheme" = "Color Scheme";
 "Combined merge diffs use unified layout." = "Combined merge diffs use unified layout.";
@@ -155,6 +158,7 @@
 "Expand Directories" = "Expand Directories";
 "Expand File" = "Expand File";
 "Expand Folder" = "Expand Folder";
+"Expand Group" = "Expand Group";
 "Expanded" = "Expanded";
 "Export Command Log" = "Export Command Log";
 "Export Log" = "Export Log";
@@ -163,6 +167,7 @@
 "Failure Reason" = "Failure Reason";
 "Fetch" = "Fetch";
 "Fetch Branches and Tags" = "Fetch Branches and Tags";
+"Fetch Now" = "Fetch Now";
 "Fetch Tags" = "Fetch Tags";
 "Fetching" = "Fetching";
 "File Deleted in This Version" = "File Deleted in This Version";
@@ -486,6 +491,7 @@
 "View Error Details" = "View Error Details";
 "View Incoming Commits" = "View Incoming Commits";
 "View Log" = "View Log";
+"We recommend fetching again now. Continue?" = "We recommend fetching again now. Continue?";
 "When the Last Window Closes" = "When the Last Window Closes";
 "Windows" = "Windows";
 "Work on another branch in a separate folder while keeping your current changes." = "Work on another branch in a separate folder while keeping your current changes.";

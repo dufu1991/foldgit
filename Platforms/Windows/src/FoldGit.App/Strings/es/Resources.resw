@@ -141,8 +141,14 @@
   <data name="Text_15d5c7ad6b4b19a78d97273b" xml:space="preserve">
     <value>Obtención automática</value>
   </data>
+  <data name="Text_4208569d7ade41fa4d5f1e2d" xml:space="preserve">
+    <value>Error en la obtención automática</value>
+  </data>
   <data name="Text_c9156a4ced754ec967489b19" xml:space="preserve">
     <value>La obtención automática continúa mientras la aplicación está en ejecución.</value>
+  </data>
+  <data name="Text_50722fd016c4716c1560a55c" xml:space="preserve">
+    <value>La obtención automática ha fallado. Haz clic para reintentar.</value>
   </data>
   <data name="Text_8f0184ccd344ff0656dbefea" xml:space="preserve">
     <value>El modo automático muestra las versiones en paralelo si hay espacio suficiente.</value>
@@ -293,6 +299,9 @@
   </data>
   <data name="Text_7995322f8f50d43b0bd75061" xml:space="preserve">
     <value>Contraer carpeta</value>
+  </data>
+  <data name="Text_35044c06f245c5fec615a13c" xml:space="preserve">
+    <value>Contraer grupo</value>
   </data>
   <data name="Text_b322b65227bc3ec948893e32" xml:space="preserve">
     <value>Contraídos</value>
@@ -513,6 +522,9 @@
   <data name="Text_ce65cc8bc111022d3861c6ae" xml:space="preserve">
     <value>Expandir carpeta</value>
   </data>
+  <data name="Text_ed520c2c4b64e0907918d559" xml:space="preserve">
+    <value>Expandir grupo</value>
+  </data>
   <data name="Text_e72d5d8d0b167d21b4e4a89e" xml:space="preserve">
     <value>Expandidos</value>
   </data>
@@ -536,6 +548,9 @@
   </data>
   <data name="Text_837c12c4f7ecd4c1dbbdd4df" xml:space="preserve">
     <value>Obtener ramas y etiquetas</value>
+  </data>
+  <data name="Text_cef8c278b293536c71edad3e" xml:space="preserve">
+    <value>Obtener ahora</value>
   </data>
   <data name="Text_7514c6b66c4fa8b6a3d82afe" xml:space="preserve">
     <value>Obtener etiquetas</value>
@@ -1523,6 +1538,9 @@
   </data>
   <data name="Text_a76646e2d2c239a7863cd9c7" xml:space="preserve">
     <value>Ver registro</value>
+  </data>
+  <data name="Text_9f287c62537ba21a5bf91041" xml:space="preserve">
+    <value>Recomendamos volver a obtener los cambios ahora. ¿Continuar?</value>
   </data>
   <data name="Text_421dba311ad7c79b6a25aa38" xml:space="preserve">
     <value>Al cerrar la última ventana</value>

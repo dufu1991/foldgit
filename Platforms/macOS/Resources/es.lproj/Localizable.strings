@@ -34,7 +34,9 @@
 "Ascending" = "Ascendente";
 "Automatic" = "Automático";
 "Automatic Fetch" = "Obtención automática";
+"Automatic Fetch Failed" = "Error en la obtención automática";
 "Automatic fetch continues while the application is running." = "La obtención automática continúa mientras la aplicación está en ejecución.";
+"Automatic fetch failed. Click to retry." = "La obtención automática ha fallado. Haz clic para reintentar.";
 "Automatic uses side-by-side layout when there is enough space." = "El modo automático muestra las versiones en paralelo si hay espacio suficiente.";
 "Back" = "Atrás";
 "Base" = "Base";
@@ -82,6 +84,7 @@
 "Collapse Directories" = "Contraer directorios";
 "Collapse File" = "Contraer archivo";
 "Collapse Folder" = "Contraer carpeta";
+"Collapse Group" = "Contraer grupo";
 "Collapsed" = "Contraídos";
 "Color Scheme" = "Modo de apariencia";
 "Combined merge diffs use unified layout." = "Las diferencias combinadas de fusión usan el diseño unificado.";
@@ -155,6 +158,7 @@
 "Expand Directories" = "Expandir directorios";
 "Expand File" = "Expandir archivo";
 "Expand Folder" = "Expandir carpeta";
+"Expand Group" = "Expandir grupo";
 "Expanded" = "Expandidos";
 "Export Command Log" = "Exportar registro de comandos";
 "Export Log" = "Exportar registro";
@@ -163,6 +167,7 @@
 "Failure Reason" = "Motivo del error";
 "Fetch" = "Obtener";
 "Fetch Branches and Tags" = "Obtener ramas y etiquetas";
+"Fetch Now" = "Obtener ahora";
 "Fetch Tags" = "Obtener etiquetas";
 "Fetching" = "Obteniendo";
 "File Deleted in This Version" = "Archivo eliminado en esta versión";
@@ -486,6 +491,7 @@
 "View Error Details" = "Ver detalles del error";
 "View Incoming Commits" = "Ver commits por recibir";
 "View Log" = "Ver registro";
+"We recommend fetching again now. Continue?" = "Recomendamos volver a obtener los cambios ahora. ¿Continuar?";
 "When the Last Window Closes" = "Al cerrar la última ventana";
 "Windows" = "Ventanas";
 "Work on another branch in a separate folder while keeping your current changes." = "Trabaja en otra rama en una carpeta separada conservando tus cambios actuales.";

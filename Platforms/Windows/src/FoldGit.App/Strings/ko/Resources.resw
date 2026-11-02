@@ -126,8 +126,14 @@
   <data name="Text_15d5c7ad6b4b19a78d97273b" xml:space="preserve">
     <value>자동 페치</value>
   </data>
+  <data name="Text_4208569d7ade41fa4d5f1e2d" xml:space="preserve">
+    <value>자동 페치 실패</value>
+  </data>
   <data name="Text_c9156a4ced754ec967489b19" xml:space="preserve">
     <value>앱이 실행 중인 동안 설정된 간격으로 자동 페치가 계속됩니다.</value>
+  </data>
+  <data name="Text_50722fd016c4716c1560a55c" xml:space="preserve">
+    <value>자동 페치에 실패했습니다. 클릭하여 다시 시도하세요.</value>
   </data>
   <data name="Text_8f0184ccd344ff0656dbefea" xml:space="preserve">
     <value>자동 모드는 공간이 충분하면 나란히 표시합니다.</value>
@@ -275,6 +281,9 @@
   </data>
   <data name="Text_7995322f8f50d43b0bd75061" xml:space="preserve">
     <value>폴더 접기</value>
+  </data>
+  <data name="Text_35044c06f245c5fec615a13c" xml:space="preserve">
+    <value>그룹 접기</value>
   </data>
   <data name="Text_b322b65227bc3ec948893e32" xml:space="preserve">
     <value>접기</value>
@@ -495,6 +504,9 @@
   <data name="Text_ce65cc8bc111022d3861c6ae" xml:space="preserve">
     <value>폴더 펼치기</value>
   </data>
+  <data name="Text_ed520c2c4b64e0907918d559" xml:space="preserve">
+    <value>그룹 펼치기</value>
+  </data>
   <data name="Text_e72d5d8d0b167d21b4e4a89e" xml:space="preserve">
     <value>펼치기</value>
   </data>
@@ -518,6 +530,9 @@
   </data>
   <data name="Text_837c12c4f7ecd4c1dbbdd4df" xml:space="preserve">
     <value>브랜치 및 태그 페치</value>
+  </data>
+  <data name="Text_cef8c278b293536c71edad3e" xml:space="preserve">
+    <value>지금 페치</value>
   </data>
   <data name="Text_7514c6b66c4fa8b6a3d82afe" xml:space="preserve">
     <value>태그 페치</value>
@@ -1505,6 +1520,9 @@
   </data>
   <data name="Text_a76646e2d2c239a7863cd9c7" xml:space="preserve">
     <value>로그 보기</value>
+  </data>
+  <data name="Text_9f287c62537ba21a5bf91041" xml:space="preserve">
+    <value>지금 다시 페치하는 것을 권장합니다. 계속하시겠습니까?</value>
   </data>
   <data name="Text_421dba311ad7c79b6a25aa38" xml:space="preserve">
     <value>마지막 윈도우를 닫을 때</value>

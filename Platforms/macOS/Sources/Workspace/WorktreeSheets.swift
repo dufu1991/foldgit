@@ -14,7 +14,7 @@ struct WorktreeIndicator: View {
         Image(systemName: "square.stack.3d.up")
             .font(.caption2)
             .foregroundStyle(.secondary)
-            .help(String(localized: "Linked Worktree") + "\n" + path)
+            .immediateHelp(String(localized: "Linked Worktree") + "\n" + path)
             .accessibilityLabel(Text("Linked Worktree"))
     }
 }

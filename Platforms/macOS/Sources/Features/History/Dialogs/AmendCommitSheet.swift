@@ -16,10 +16,9 @@ struct AmendCommitSheet: View {
             VStack(alignment: .leading) {
                 HStack {
                     TextEditor(text: $message)
+                        .font(.body)
                         .scrollContentBackground(.hidden)
                         .frame(height: 100)
-                     // .contentMargins(8, for: .scrollContent)
-                     // `contentMargins` not work on macOS. Xcode26.0  and macOS26
                 }
                 HStack {
                     Button("Cancel") {

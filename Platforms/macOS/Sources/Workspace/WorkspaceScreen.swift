@@ -55,7 +55,7 @@ struct WorkspaceScreen: View {
                 ToolbarSpacer(.flexible)
                 ToolbarItem(id: "workspaceSidebar", placement: .automatic) {
                     Button("Sidebar", systemImage: "sidebar.left", action: toggleSidebar)
-                    .help(columnVisibility == .all ? String(localized: "Hide Sidebar") : String(localized: "Show Sidebar"))
+                    .immediateHelp(columnVisibility == .all ? String(localized: "Hide Sidebar") : String(localized: "Show Sidebar"))
                 }
             }
         } content: {

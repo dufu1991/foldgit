@@ -20,7 +20,9 @@ struct FoldGitApp: App {
             WorkspaceScreen()
         }
         .windowToolbarStyle(.automatic)
-        .windowToolbarLabelStyle($toolbarLabelStyle)
+        // Window restoration can write its initial display mode back through a binding.
+        // Keep the application preference authoritative across launches and windows.
+        .windowToolbarLabelStyle(fixed: toolbarLabelStyle)
         .restorationBehavior(restoreSession ? .automatic : .disabled)
         .commands {
             AppMenuCommands()

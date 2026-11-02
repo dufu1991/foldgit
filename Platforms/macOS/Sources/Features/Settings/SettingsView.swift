@@ -43,6 +43,25 @@ enum SettingsTab: String, CaseIterable, Identifiable {
 }
 
 @MainActor
+enum SettingsLayout {
+    static let sidebarFontSize: CGFloat = 13
+    static let sidebarWidth: CGFloat = {
+        let font = NSFont.systemFont(ofSize: sidebarFontSize, weight: .semibold)
+        let titleWidth = SettingsTab.allCases.map {
+            ($0.title as NSString).size(withAttributes: [.font: font]).width
+        }.max() ?? 0
+        // Reserve space for the icon, label spacing, list insets and selection padding.
+        return max(180, ceil(titleWidth) + 80)
+    }()
+    static var minimumSize: NSSize {
+        NSSize(width: sidebarWidth + 540, height: 520)
+    }
+    static var initialSize: NSSize {
+        NSSize(width: minimumSize.width + 60, height: 600)
+    }
+}
+
+@MainActor
 @Observable
 final class SettingsNavigation {
     var tab: SettingsTab = .general
@@ -63,7 +82,8 @@ struct SettingsView: View {
                 ForEach(SettingsTab.allCases) { tab in
                     Label {
                         Text(tab.title)
-                            .font(.system(size: 13))
+                            .font(.system(size: SettingsLayout.sidebarFontSize))
+                            .fixedSize(horizontal: true, vertical: false)
                     } icon: {
                         Image(systemName: tab.symbol)
                             .font(.system(size: 11, weight: .semibold))
@@ -81,7 +101,12 @@ struct SettingsView: View {
             .environment(\.defaultMinListRowHeight, 28)
             .scrollEdgeEffectStyle(.soft, for: .all)
             .navigationTitle("Settings")
-            .navigationSplitViewColumnWidth(min: 180, ideal: 190, max: 220)
+            .frame(minWidth: SettingsLayout.sidebarWidth)
+            .navigationSplitViewColumnWidth(
+                min: SettingsLayout.sidebarWidth,
+                ideal: SettingsLayout.sidebarWidth,
+                max: max(280, SettingsLayout.sidebarWidth)
+            )
             .toolbar(removing: .sidebarToggle)
         } detail: {
             Group {
@@ -100,7 +125,7 @@ struct SettingsView: View {
         }
         .navigationTitle("Settings")
         .navigationSplitViewStyle(.balanced)
-        .frame(minWidth: 720, minHeight: 520)
+        .frame(minWidth: SettingsLayout.minimumSize.width, minHeight: SettingsLayout.minimumSize.height)
     }
 }
 

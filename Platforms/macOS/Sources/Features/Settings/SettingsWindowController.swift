@@ -44,7 +44,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
 
     private init() {
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 780, height: 600),
+            contentRect: NSRect(origin: .zero, size: SettingsLayout.initialSize),
             styleMask: [.titled, .closable, .resizable, .miniaturizable, .fullSizeContentView],
             backing: .buffered, defer: false
         )
@@ -52,7 +52,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         window.title = String(localized: "Settings")
         window.toolbar = NSToolbar(identifier: "FoldGitSettingsToolbar")
         window.toolbarStyle = .automatic
-        window.minSize = NSSize(width: 720, height: 520)
+        window.contentMinSize = SettingsLayout.minimumSize
         window.setFrameAutosaveName("FoldGitSettingsWindow")
         window.isReleasedWhenClosed = false
         window.center()

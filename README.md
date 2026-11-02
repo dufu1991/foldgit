@@ -7,7 +7,7 @@
 
 <h1 align="center">FoldGit</h1>
 
-> The `full-featured` branch adds read-only worktree file browsing, line numbers, in-file search, and multilingual syntax highlighting on macOS. The `main` branch keeps the compact Git commit workflow. Both start in Commit View.
+> On macOS, Directory View supports read-only worktree file browsing, line numbers, in-file search, and multilingual syntax highlighting. The app starts in Commit View; switch to Directory View when you want to browse complete files.
 
 <p align="center">
   Every repository, folded into one window.<br>

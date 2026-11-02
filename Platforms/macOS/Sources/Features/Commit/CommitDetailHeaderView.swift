@@ -10,7 +10,7 @@ struct CommitDetailHeaderView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
-                Text(commit.hash.prefix(5))
+                Text(commit.hash.prefix(7))
                     .textSelection(.disabled)
                     .help("Commit Hash: \(commit.hash)")
                     .contextMenu {
@@ -24,12 +24,12 @@ struct CommitDetailHeaderView: View {
                 HStack(spacing: 0) {
                     ForEach(commit.parentHashes, id: \.self) { hash in
                         if hash == commit.parentHashes.first {
-                            NavigationLink(commit.parentHashes[0].prefix(5), value: commit.parentHashes[0])
+                            NavigationLink(commit.parentHashes[0].prefix(7), value: commit.parentHashes[0])
                                 .foregroundColor(.accentColor)
                         } else {
                             Text(",")
                                 .padding(.trailing, 2)
-                            NavigationLink(commit.parentHashes[1].prefix(5), value: commit.parentHashes[1])
+                            NavigationLink(commit.parentHashes[1].prefix(7), value: commit.parentHashes[1])
                                 .foregroundColor(.accentColor)
                         }
                     }
@@ -40,10 +40,10 @@ struct CommitDetailHeaderView: View {
                         .frame(height: 10)
                     HStack {
                         Image(systemName: "arrow.trianglehead.pull")
-                        NavigationLink(mergedIn.hash.prefix(5), value: mergedIn.hash)
+                        NavigationLink(mergedIn.hash.prefix(7), value: mergedIn.hash)
                             .foregroundColor(.accentColor)
                     }
-                    .help("Merged in \(mergedIn.hash.prefix(5))")
+                    .help("Merged in \(mergedIn.hash.prefix(7))")
                 }
                 if !commit.tags.isEmpty {
                     Divider()

@@ -22,6 +22,26 @@
 			<string>%lld коммита</string>
 		</dict>
 	</dict>
+	<key>%lld days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld дня назад</string>
+			<key>many</key>
+			<string>%lld дней назад</string>
+			<key>one</key>
+			<string>%lld день назад</string>
+			<key>other</key>
+			<string>%lld дней назад</string>
+		</dict>
+	</dict>
 	<key>%lld deletions</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -62,6 +82,26 @@
 			<string>Изменено %lld файла</string>
 		</dict>
 	</dict>
+	<key>%lld hours ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld часа назад</string>
+			<key>many</key>
+			<string>%lld часов назад</string>
+			<key>one</key>
+			<string>%lld час назад</string>
+			<key>other</key>
+			<string>%lld часов назад</string>
+		</dict>
+	</dict>
 	<key>%lld insertions</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -80,6 +120,66 @@
 			<string>Добавлена %lld строка</string>
 			<key>other</key>
 			<string>Добавлено %lld строки</string>
+		</dict>
+	</dict>
+	<key>%lld minutes ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld минуты назад</string>
+			<key>many</key>
+			<string>%lld минут назад</string>
+			<key>one</key>
+			<string>%lld минуту назад</string>
+			<key>other</key>
+			<string>%lld минут назад</string>
+		</dict>
+	</dict>
+	<key>%lld months ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld месяца назад</string>
+			<key>many</key>
+			<string>%lld месяцев назад</string>
+			<key>one</key>
+			<string>%lld месяц назад</string>
+			<key>other</key>
+			<string>%lld месяцев назад</string>
+		</dict>
+	</dict>
+	<key>%lld seconds ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld секунды назад</string>
+			<key>many</key>
+			<string>%lld секунд назад</string>
+			<key>one</key>
+			<string>%lld секунду назад</string>
+			<key>other</key>
+			<string>%lld секунд назад</string>
 		</dict>
 	</dict>
 	<key>%lld untracked files</key>
@@ -102,6 +202,26 @@
 			<string>%lld неотслеживаемого файла</string>
 		</dict>
 	</dict>
+	<key>%lld years ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld года назад</string>
+			<key>many</key>
+			<string>%lld лет назад</string>
+			<key>one</key>
+			<string>%lld год назад</string>
+			<key>other</key>
+			<string>%lld лет назад</string>
+		</dict>
+	</dict>
 	<key>Behind by %lld commits</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -120,6 +240,126 @@
 			<string>Отставание на %lld коммит</string>
 			<key>other</key>
 			<string>Отставание на %lld коммита</string>
+		</dict>
+	</dict>
+	<key>in %lld days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>через %lld дня</string>
+			<key>many</key>
+			<string>через %lld дней</string>
+			<key>one</key>
+			<string>через %lld день</string>
+			<key>other</key>
+			<string>через %lld дней</string>
+		</dict>
+	</dict>
+	<key>in %lld hours</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>через %lld часа</string>
+			<key>many</key>
+			<string>через %lld часов</string>
+			<key>one</key>
+			<string>через %lld час</string>
+			<key>other</key>
+			<string>через %lld часов</string>
+		</dict>
+	</dict>
+	<key>in %lld minutes</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>через %lld минуты</string>
+			<key>many</key>
+			<string>через %lld минут</string>
+			<key>one</key>
+			<string>через %lld минуту</string>
+			<key>other</key>
+			<string>через %lld минут</string>
+		</dict>
+	</dict>
+	<key>in %lld months</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>через %lld месяца</string>
+			<key>many</key>
+			<string>через %lld месяцев</string>
+			<key>one</key>
+			<string>через %lld месяц</string>
+			<key>other</key>
+			<string>через %lld месяцев</string>
+		</dict>
+	</dict>
+	<key>in %lld seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>через %lld секунды</string>
+			<key>many</key>
+			<string>через %lld секунд</string>
+			<key>one</key>
+			<string>через %lld секунду</string>
+			<key>other</key>
+			<string>через %lld секунд</string>
+		</dict>
+	</dict>
+	<key>in %lld years</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>через %lld года</string>
+			<key>many</key>
+			<string>через %lld лет</string>
+			<key>one</key>
+			<string>через %lld год</string>
+			<key>other</key>
+			<string>через %lld лет</string>
 		</dict>
 	</dict>
 </dict>

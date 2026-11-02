@@ -9,6 +9,15 @@
         "other": "%lld commits"
       }
     },
+    "%lld days ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "hace %lld día",
+        "other": "hace %lld días"
+      }
+    },
     "%lld deletions": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
@@ -27,6 +36,15 @@
         "other": "%lld archivos modificados"
       }
     },
+    "%lld hours ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "hace %lld hora",
+        "other": "hace %lld horas"
+      }
+    },
     "%lld insertions": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
@@ -34,6 +52,33 @@
         "NSStringFormatValueTypeKey": "lld",
         "one": "%lld línea añadida",
         "other": "%lld líneas añadidas"
+      }
+    },
+    "%lld minutes ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "hace %lld minuto",
+        "other": "hace %lld minutos"
+      }
+    },
+    "%lld months ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "hace %lld mes",
+        "other": "hace %lld meses"
+      }
+    },
+    "%lld seconds ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "hace %lld segundo",
+        "other": "hace %lld segundos"
       }
     },
     "%lld untracked files": {
@@ -45,6 +90,15 @@
         "other": "%lld archivos sin seguimiento"
       }
     },
+    "%lld years ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "hace %lld año",
+        "other": "hace %lld años"
+      }
+    },
     "Behind by %lld commits": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
@@ -52,6 +106,60 @@
         "NSStringFormatValueTypeKey": "lld",
         "one": "Atrasado en %lld commit",
         "other": "Atrasado en %lld commits"
+      }
+    },
+    "in %lld days": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "dentro de %lld día",
+        "other": "dentro de %lld días"
+      }
+    },
+    "in %lld hours": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "dentro de %lld hora",
+        "other": "dentro de %lld horas"
+      }
+    },
+    "in %lld minutes": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "dentro de %lld minuto",
+        "other": "dentro de %lld minutos"
+      }
+    },
+    "in %lld months": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "dentro de %lld mes",
+        "other": "dentro de %lld meses"
+      }
+    },
+    "in %lld seconds": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "dentro de %lld segundo",
+        "other": "dentro de %lld segundos"
+      }
+    },
+    "in %lld years": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "dentro de %lld año",
+        "other": "dentro de %lld años"
       }
     }
   },
@@ -63,6 +171,7 @@
     "Abort Merge": "Cancelar fusión",
     "Abort Merge?": "¿Cancelar la fusión?",
     "About": "Acerca de",
+    "Absolute Time": "Fecha y hora",
     "Actual Size": "Tamaño real",
     "Add": "Añadir",
     "Add Local Repository or Directory": "Añadir repositorio local o carpeta",
@@ -154,6 +263,7 @@
     "Commit Message": "Mensaje del commit",
     "Commit Message Snippets": "Fragmentos de mensajes de commit",
     "Commit Messages": "Mensajes de commit",
+    "Commit Time": "Fecha del commit",
     "Commit View": "Vista de commits",
     "Commit or stash changes in %@ before merging.": "Confirma o guarda temporalmente los cambios de %@ antes de fusionar.",
     "Commit your work, merge into the target branch, then choose what to keep.": "Confirma los cambios, fusiónalos en la rama de destino y elige qué conservar.",
@@ -276,6 +386,8 @@
     "Hide Sidebar": "Ocultar barra lateral",
     "History Scope": "Alcance del historial",
     "History and Diffs": "Historial y diferencias",
+    "Hybrid": "Visualización mixta",
+    "Hybrid shows relative times for the last 7 days and exact dates and times for older commits.": "El modo mixto muestra tiempos relativos durante los últimos 7 días y fechas y horas exactas para commits anteriores.",
     "Icons Only": "Solo iconos",
     "Icons and Text": "Iconos y texto",
     "Image Comparison": "Comparación de imágenes",
@@ -286,6 +398,7 @@
     "Interface Language": "Idioma de la interfaz",
     "Invalid file history records from Git.": "Git devolvió registros de historial de archivo no válidos.",
     "Jump to HEAD": "Ir a HEAD",
+    "Just now": "Ahora mismo",
     "Keep Running": "Seguir ejecutando",
     "Keep Version": "Conservar versión",
     "Keyboard Shortcuts": "Atajos de teclado",
@@ -428,6 +541,7 @@
     "Refresh": "Actualizar",
     "Refresh Applications": "Actualizar aplicaciones",
     "Refresh Repositories": "Actualizar repositorios",
+    "Relative Time": "Tiempo relativo",
     "Remote Branches": "Ramas remotas",
     "Remotes": "Remotas",
     "Remove": "Quitar",

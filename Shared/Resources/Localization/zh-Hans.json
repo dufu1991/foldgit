@@ -8,6 +8,14 @@
         "other": "%lld 个提交"
       }
     },
+    "%lld days ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld 天前"
+      }
+    },
     "%lld deletions": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
@@ -24,12 +32,44 @@
         "other": "%lld 个文件已更改"
       }
     },
+    "%lld hours ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld 小时前"
+      }
+    },
     "%lld insertions": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
         "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
         "NSStringFormatValueTypeKey": "lld",
         "other": "新增 %lld 行"
+      }
+    },
+    "%lld minutes ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld 分钟前"
+      }
+    },
+    "%lld months ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld 个月前"
+      }
+    },
+    "%lld seconds ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld 秒前"
       }
     },
     "%lld untracked files": {
@@ -40,12 +80,68 @@
         "other": "%lld 个未跟踪文件"
       }
     },
+    "%lld years ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld 年前"
+      }
+    },
     "Behind by %lld commits": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
         "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
         "NSStringFormatValueTypeKey": "lld",
         "other": "落后 %lld 个提交"
+      }
+    },
+    "in %lld days": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld 天后"
+      }
+    },
+    "in %lld hours": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld 小时后"
+      }
+    },
+    "in %lld minutes": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld 分钟后"
+      }
+    },
+    "in %lld months": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld 个月后"
+      }
+    },
+    "in %lld seconds": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld 秒后"
+      }
+    },
+    "in %lld years": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld 年后"
       }
     }
   },
@@ -57,6 +153,7 @@
     "Abort Merge": "中止合并",
     "Abort Merge?": "中止合并？",
     "About": "关于",
+    "Absolute Time": "具体时间",
     "Actual Size": "原始尺寸",
     "Add": "添加",
     "Add Local Repository or Directory": "添加本地仓库或目录",
@@ -148,6 +245,7 @@
     "Commit Message": "提交信息",
     "Commit Message Snippets": "提交快捷输入",
     "Commit Messages": "提交信息",
+    "Commit Time": "提交时间",
     "Commit View": "提交视角",
     "Commit or stash changes in %@ before merging.": "请先提交或贮藏 %@ 中的更改，再进行合并。",
     "Commit your work, merge into the target branch, then choose what to keep.": "先提交更改，合并到目标分支，再选择要保留的内容。",
@@ -270,6 +368,8 @@
     "Hide Sidebar": "隐藏边栏",
     "History Scope": "历史范围",
     "History and Diffs": "历史与差异",
+    "Hybrid": "混合显示",
+    "Hybrid shows relative times for the last 7 days and exact dates and times for older commits.": "混合显示在最近 7 天内使用相对时间，更早的提交显示具体日期和时间。",
     "Icons Only": "仅图标",
     "Icons and Text": "图标和文字",
     "Image Comparison": "图片比较",
@@ -280,6 +380,7 @@
     "Interface Language": "界面语言",
     "Invalid file history records from Git.": "Git 返回的文件历史记录无效。",
     "Jump to HEAD": "定位到 HEAD",
+    "Just now": "刚刚",
     "Keep Running": "继续运行",
     "Keep Version": "保留版本",
     "Keyboard Shortcuts": "快捷键",
@@ -422,6 +523,7 @@
     "Refresh": "刷新",
     "Refresh Applications": "刷新应用",
     "Refresh Repositories": "刷新仓库列表",
+    "Relative Time": "相对时间",
     "Remote Branches": "远程分支",
     "Remotes": "远程",
     "Remove": "移除",

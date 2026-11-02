@@ -1,6 +1,33 @@
 import FoldGitCore
 import SwiftUI
 
+/// The same single-line metadata order is used in every commit presentation.
+struct CommitMetadataView: View {
+    let commit: Commit
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
+            Text(verbatim: String(commit.hash.prefix(7)))
+                .monospaced()
+                .fixedSize()
+                .help(commit.hash)
+                .contextMenu {
+                    Button("Copy \(commit.hash)") {
+                        let pasteboard = NSPasteboard.general
+                        pasteboard.clearContents()
+                        pasteboard.setString(commit.hash, forType: .string)
+                    }
+                }
+            Text(verbatim: commit.author)
+                .truncationMode(.middle)
+                .help(Text(verbatim: "\(commit.author) <\(commit.authorEmail)>"))
+            CommitTimeView(commit: commit)
+        }
+        .lineLimit(1)
+        .foregroundStyle(.secondary)
+    }
+}
+
 /// Shared text layout for the commit graph and the file history list.
 struct CommitSummaryView: View {
     let commit: Commit
@@ -20,25 +47,10 @@ struct CommitSummaryView: View {
                 .lineLimit(2)
                 .frame(maxWidth: .infinity, alignment: .leading)
             HStack(spacing: 6) {
-                CommitSyncBadge(incoming: incoming, outgoing: outgoing)
-                Text(verbatim: String(commit.hash.prefix(7)))
-                    .font(.system(size: 10, design: .monospaced))
-                    .foregroundStyle(.secondary)
-                    .fixedSize()
-                    .help(commit.hash)
-                Text(verbatim: commit.author)
+                CommitMetadataView(commit: commit)
                     .font(.system(size: 10))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-                    .help(Text(verbatim: "\(commit.author) <\(commit.authorEmail)>"))
-                TimelineView(.periodic(from: .now, by: 60)) { _ in
-                    Text(verbatim: commit.authorDateRelative)
-                        .font(.system(size: 10))
-                        .foregroundStyle(.secondary)
-                        .fixedSize()
-                        .help(commit.authorDateDisplay)
-                }
+                    .layoutPriority(1)
+                CommitSyncBadge(incoming: incoming, outgoing: outgoing)
                 if let branchName {
                     Label(branchName, image: "git.branch")
                         .font(.system(size: 10, weight: .medium))
@@ -73,20 +85,10 @@ struct CommitRowView: View {
                         .font(.caption)
                 }
             }
-            HStack {
-                Icon(size: .small, authorEmail: commit.authorEmail, authorInitial: String(commit.author.initial.prefix(1)))
-                Text(commit.author)
-                Spacer()
-                TimelineView(.periodic(from: .now, by: 60)) { _ in
-                    Text(commit.authorDateRelative)
-                }
-            }
-            .lineLimit(1)
-            .foregroundStyle(.tertiary)
+            CommitMetadataView(commit: commit)
+                .font(.system(size: 10))
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(Text(commit.title))
-        .accessibilityValue(Text("\(commit.author), \(commit.authorDateRelative)"))
+        .modifier(CommitAccessibilityModifier(commit: commit))
     }
 }
 

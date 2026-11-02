@@ -12,20 +12,38 @@
   <data name="Text_1ee89c2c01e0ed612af30945" xml:space="preserve">
     <value>커밋 {0}개</value>
   </data>
+  <data name="Text_af67965632cb6191b27758e3" xml:space="preserve">
+    <value>{0}일 전</value>
+  </data>
   <data name="Text_40c21e81080887d4e08b2f47" xml:space="preserve">
     <value>{0}줄 삭제</value>
   </data>
   <data name="Text_f25e4ef0c8b33f9e4cc58313" xml:space="preserve">
     <value>파일 {0}개 변경</value>
   </data>
+  <data name="Text_2a070e86b55e5283a28bfb33" xml:space="preserve">
+    <value>{0}시간 전</value>
+  </data>
   <data name="Text_708bb9e67151379d61d962e5" xml:space="preserve">
     <value>{0}줄 추가</value>
+  </data>
+  <data name="Text_3305c13edcf6f245f552ad34" xml:space="preserve">
+    <value>{0}분 전</value>
+  </data>
+  <data name="Text_197455cd9aa162fd42d61636" xml:space="preserve">
+    <value>{0}개월 전</value>
   </data>
   <data name="Text_6eab9a992b09c76e9007c854" xml:space="preserve">
     <value>{0} pt</value>
   </data>
+  <data name="Text_e8aab922c2daa933825ad6b5" xml:space="preserve">
+    <value>{0}초 전</value>
+  </data>
   <data name="Text_5965971091a0aa30ada96adc" xml:space="preserve">
     <value>추적하지 않는 파일 {0}개</value>
+  </data>
+  <data name="Text_b7a35306fde36122e155bedf" xml:space="preserve">
+    <value>{0}년 전</value>
   </data>
   <data name="Text_0fe10860c13b461a63bcbf69" xml:space="preserve">
     <value>새로운 FoldGit 버전이 있습니다</value>
@@ -41,6 +59,9 @@
   </data>
   <data name="Text_4efca0d10c5feb8e9b35eb1d" xml:space="preserve">
     <value>정보</value>
+  </data>
+  <data name="Text_5f61a448b53339af755c8585" xml:space="preserve">
+    <value>날짜 및 시간</value>
   </data>
   <data name="Text_ef37f4e061bb04ce93b664ae" xml:space="preserve">
     <value>실제 크기</value>
@@ -323,6 +344,9 @@
   </data>
   <data name="Text_d617aeda3a4656fd657ab6f8" xml:space="preserve">
     <value>커밋 메시지</value>
+  </data>
+  <data name="Text_8223dda77bdf7ce8775d70c4" xml:space="preserve">
+    <value>커밋 시간</value>
   </data>
   <data name="Text_8714c3fe7ae5de6d8b50d95c" xml:space="preserve">
     <value>커밋 보기</value>
@@ -702,6 +726,12 @@
   <data name="Text_c6040c57a0e14641107e3a4f" xml:space="preserve">
     <value>기록 및 차이</value>
   </data>
+  <data name="Text_6c67dc13f83949fe089ca862" xml:space="preserve">
+    <value>혼합 표시</value>
+  </data>
+  <data name="Text_d09a731d988a17accc54df6f" xml:space="preserve">
+    <value>혼합 표시는 최근 7일 동안 상대 시간을 표시하고 이전 커밋에는 정확한 날짜와 시간을 표시합니다.</value>
+  </data>
   <data name="Text_365819e56f8313cb63ef6aa9" xml:space="preserve">
     <value>아이콘만</value>
   </data>
@@ -734,6 +764,9 @@
   </data>
   <data name="Text_d874348942aed4fb5c4563a4" xml:space="preserve">
     <value>HEAD로 이동</value>
+  </data>
+  <data name="Text_66f53417d3b7797ae3d8ca9b" xml:space="preserve">
+    <value>방금</value>
   </data>
   <data name="Text_c8e6e5971f22af759bda624d" xml:space="preserve">
     <value>계속 실행</value>
@@ -1163,6 +1196,9 @@
   </data>
   <data name="Text_db010f388106692884f127c8" xml:space="preserve">
     <value>저장소 새로 고침</value>
+  </data>
+  <data name="Text_2f6b889f1e27f1328d570126" xml:space="preserve">
+    <value>상대 시간</value>
   </data>
   <data name="Text_7b4e821d0727567e66f8f8ca" xml:space="preserve">
     <value>원격 브랜치</value>
@@ -1685,6 +1721,24 @@
   </data>
   <data name="Text_0e20b49616ad76d78e80a4c0" xml:space="preserve">
     <value>시작점:</value>
+  </data>
+  <data name="Text_b17ff027e82394bcdab8b865" xml:space="preserve">
+    <value>{0}일 후</value>
+  </data>
+  <data name="Text_1f76178e0419b70607153941" xml:space="preserve">
+    <value>{0}시간 후</value>
+  </data>
+  <data name="Text_cf5f5d5b5cc8973e1c87bf8f" xml:space="preserve">
+    <value>{0}분 후</value>
+  </data>
+  <data name="Text_40e48353b4098d5b5294443b" xml:space="preserve">
+    <value>{0}개월 후</value>
+  </data>
+  <data name="Text_728823acee0267a2dc998d54" xml:space="preserve">
+    <value>{0}초 후</value>
+  </data>
+  <data name="Text_1b7c1e29aa1caf6a498d8286" xml:space="preserve">
+    <value>{0}년 후</value>
   </data>
   <data name="Text_55708cb7df70bc7b32e7aaab" xml:space="preserve">
     <value>새 브랜치:</value>

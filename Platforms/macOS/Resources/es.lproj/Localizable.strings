@@ -7,6 +7,7 @@
 "Abort Merge" = "Cancelar fusión";
 "Abort Merge?" = "¿Cancelar la fusión?";
 "About" = "Acerca de";
+"Absolute Time" = "Fecha y hora";
 "Actual Size" = "Tamaño real";
 "Add" = "Añadir";
 "Add Local Repository or Directory" = "Añadir repositorio local o carpeta";
@@ -98,6 +99,7 @@
 "Commit Message" = "Mensaje del commit";
 "Commit Message Snippets" = "Fragmentos de mensajes de commit";
 "Commit Messages" = "Mensajes de commit";
+"Commit Time" = "Fecha del commit";
 "Commit View" = "Vista de commits";
 "Commit or stash changes in %@ before merging." = "Confirma o guarda temporalmente los cambios de %@ antes de fusionar.";
 "Commit your work, merge into the target branch, then choose what to keep." = "Confirma los cambios, fusiónalos en la rama de destino y elige qué conservar.";
@@ -220,6 +222,8 @@
 "Hide Sidebar" = "Ocultar barra lateral";
 "History Scope" = "Alcance del historial";
 "History and Diffs" = "Historial y diferencias";
+"Hybrid" = "Visualización mixta";
+"Hybrid shows relative times for the last 7 days and exact dates and times for older commits." = "El modo mixto muestra tiempos relativos durante los últimos 7 días y fechas y horas exactas para commits anteriores.";
 "Icons Only" = "Solo iconos";
 "Icons and Text" = "Iconos y texto";
 "Image Comparison" = "Comparación de imágenes";
@@ -230,6 +234,7 @@
 "Interface Language" = "Idioma de la interfaz";
 "Invalid file history records from Git." = "Git devolvió registros de historial de archivo no válidos.";
 "Jump to HEAD" = "Ir a HEAD";
+"Just now" = "Ahora mismo";
 "Keep Running" = "Seguir ejecutando";
 "Keep Version" = "Conservar versión";
 "Keyboard Shortcuts" = "Atajos de teclado";
@@ -372,6 +377,7 @@
 "Refresh" = "Actualizar";
 "Refresh Applications" = "Actualizar aplicaciones";
 "Refresh Repositories" = "Actualizar repositorios";
+"Relative Time" = "Tiempo relativo";
 "Remote Branches" = "Ramas remotas";
 "Remotes" = "Remotas";
 "Remove" = "Quitar";

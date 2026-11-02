@@ -1,5 +1,7 @@
 using FoldGit.App.ViewModels;
 using FoldGit.Core.Git;
+using FoldGit.Core.History;
+using System.Text.Json;
 using FoldGit.Platform.Windows;
 
 var root = Path.Combine(Path.GetTempPath(), "FoldGit-workbench-" + Guid.NewGuid());
@@ -34,7 +36,49 @@ async Task<string> CreateRepository(string name)
 }
 try
 {
+    await Test("Commit time settings upgrade, persistence and reset", async () =>
+    {
+        Assert(JsonSerializer.Deserialize<AppSettings>("{\"Version\":1}")!.CommitTimeDisplayMode == CommitTimeDisplayMode.Hybrid,
+            "Existing settings should default to hybrid.");
+        foreach (var mode in Enum.GetValues<CommitTimeDisplayMode>())
+        {
+            await model.UpdateSettingsAsync(model.Settings with { CommitTimeDisplayMode = mode });
+            Assert((await store.LoadAsync()).CommitTimeDisplayMode == mode, "Time mode should survive reloading settings.");
+        }
+        await model.UpdateSettingsAsync(model.Settings with { CommitTimeDisplayMode = CommitTimeDisplayMode.Absolute });
+        await model.ResetAsync();
+        Assert(model.Settings.CommitTimeDisplayMode == CommitTimeDisplayMode.Hybrid, "Reset should restore hybrid mode.");
+    });
     var repository = await CreateRepository("first");
+    await Test("Time mode changes refresh the selected commit without reloading its diff", async () =>
+    {
+        await model.SelectRepositoryAsync(repository);
+        await model.ShowCommitAsync(model.History[0].Commit);
+        var row = model.History[0];
+        var commit = model.SelectedCommit!;
+        var diff = model.Detail;
+        await model.UpdateSettingsAsync(model.Settings with { CommitTimeDisplayMode = CommitTimeDisplayMode.Absolute });
+        Assert(model.DetailCommitTime.Length == 19 && model.DetailCommitTime[4] == '-', "Absolute time should use the fixed format.");
+        Assert(row.Time.Text == model.DetailCommitTime && row.Time.Tooltip == model.DetailCommitTimeTooltip, "History and detail metadata should use the same time display.");
+        Assert(model.DetailTitle == commit.Message.TrimEnd(), "Author metadata should be separate from the original commit message.");
+        var tooltip = model.DetailCommitTimeTooltip;
+        await model.UpdateSettingsAsync(model.Settings with { CommitTimeDisplayMode = CommitTimeDisplayMode.Relative });
+        Assert(model.DetailCommitTime.Length > 0 && model.DetailCommitTimeTooltip == tooltip, "Relative mode should keep the exact tooltip.");
+        Assert(model.SelectedCommit == commit && ReferenceEquals(model.Detail, diff), "Time changes should preserve the current selection and diff.");
+        Assert(ReferenceEquals(model.History[0], row), "Time changes should update the existing history row without rebuilding selection or graph data.");
+        var timeUpdates = 0;
+        row.PropertyChanged += (_, args) => { if (args.PropertyName == nameof(row.Time)) timeUpdates++; };
+        model.RefreshCommitTime(commit.Date.AddHours(2));
+        Assert(model.DetailCommitTime == "2 hours ago", "Clock refresh should update relative text.");
+        Assert(row.Time.Text == "2 hours ago" && timeUpdates == 1, "Clock refresh should notify the visible history metadata.");
+        await model.UpdateSettingsAsync(model.Settings with { CommitTimeDisplayMode = CommitTimeDisplayMode.Hybrid });
+        model.RefreshCommitTime(commit.Date.AddDays(7));
+        Assert(model.DetailCommitTime.Length == 19, "Hybrid should switch to an absolute time at seven days.");
+        model.ShowChanges();
+        Assert(model.DetailCommitTime.Length == 0 && model.DetailCommitTimeTooltip.Length == 0, "Other views must not retain commit timestamps.");
+        model.RefreshCommitTime(commit.Date.AddHours(3));
+        Assert(row.Time.Text == "3 hours ago", "History timestamps should keep updating while another workspace view is active.");
+    });
     await Test("Repository opens without implicitly entering the commit editor", async () =>
     {
         await model.SelectRepositoryAsync(repository);

@@ -22,6 +22,7 @@ enum PreferenceKey: String, CaseIterable {
     case interfaceLanguage
     case launchAtLoginConfigured
     case appAppearance
+    case commitTimeDisplayMode
     case restoreSession
     case lastSelectedRepository
     case quitAfterLastWindow

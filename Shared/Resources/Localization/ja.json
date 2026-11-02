@@ -8,6 +8,14 @@
         "other": "%lld 件のコミット"
       }
     },
+    "%lld days ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld日前"
+      }
+    },
     "%lld deletions": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
@@ -24,12 +32,44 @@
         "other": "%lld 件のファイルを変更"
       }
     },
+    "%lld hours ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld時間前"
+      }
+    },
     "%lld insertions": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
         "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
         "NSStringFormatValueTypeKey": "lld",
         "other": "%lld 行追加"
+      }
+    },
+    "%lld minutes ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld分前"
+      }
+    },
+    "%lld months ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lldか月前"
+      }
+    },
+    "%lld seconds ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld秒前"
       }
     },
     "%lld untracked files": {
@@ -40,12 +80,68 @@
         "other": "未追跡ファイル %lld 件"
       }
     },
+    "%lld years ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld年前"
+      }
+    },
     "Behind by %lld commits": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
         "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
         "NSStringFormatValueTypeKey": "lld",
         "other": "%lld コミット遅れ"
+      }
+    },
+    "in %lld days": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld日後"
+      }
+    },
+    "in %lld hours": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld時間後"
+      }
+    },
+    "in %lld minutes": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld分後"
+      }
+    },
+    "in %lld months": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lldか月後"
+      }
+    },
+    "in %lld seconds": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld秒後"
+      }
+    },
+    "in %lld years": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld年後"
       }
     }
   },
@@ -57,6 +153,7 @@
     "Abort Merge": "マージを中止",
     "Abort Merge?": "マージを中止しますか？",
     "About": "このアプリについて",
+    "Absolute Time": "日時",
     "Actual Size": "実際のサイズ",
     "Add": "追加",
     "Add Local Repository or Directory": "ローカルリポジトリやフォルダを追加",
@@ -148,6 +245,7 @@
     "Commit Message": "コミットメッセージ",
     "Commit Message Snippets": "コミットメッセージのスニペット",
     "Commit Messages": "コミットメッセージ",
+    "Commit Time": "コミット時刻",
     "Commit View": "コミット表示",
     "Commit or stash changes in %@ before merging.": "マージ前に %@ の変更をコミットまたはスタッシュしてください。",
     "Commit your work, merge into the target branch, then choose what to keep.": "変更をコミットして対象ブランチにマージし、残す項目を選びます。",
@@ -270,6 +368,8 @@
     "Hide Sidebar": "サイドバーを非表示",
     "History Scope": "履歴の範囲",
     "History and Diffs": "履歴と差分",
+    "Hybrid": "混合表示",
+    "Hybrid shows relative times for the last 7 days and exact dates and times for older commits.": "混合表示では、過去 7 日間は相対時刻、それ以前は正確な日時を表示します。",
     "Icons Only": "アイコンのみ",
     "Icons and Text": "アイコンとテキスト",
     "Image Comparison": "画像の比較",
@@ -280,6 +380,7 @@
     "Interface Language": "表示言語",
     "Invalid file history records from Git.": "Git が返したファイル履歴が無効です。",
     "Jump to HEAD": "HEAD に移動",
+    "Just now": "たった今",
     "Keep Running": "実行を続ける",
     "Keep Version": "バージョンを採用",
     "Keyboard Shortcuts": "キーボードショートカット",
@@ -422,6 +523,7 @@
     "Refresh": "更新",
     "Refresh Applications": "アプリを更新",
     "Refresh Repositories": "リポジトリを再読み込み",
+    "Relative Time": "相対時刻",
     "Remote Branches": "リモートブランチ",
     "Remotes": "リモート",
     "Remove": "削除",

@@ -285,3 +285,133 @@ struct AppPreferencesTests {
         }
     }
 }
+
+@MainActor
+struct CommitTimePresentationTests {
+    private let now = Date(timeIntervalSince1970: 1_730_678_400) // 2024-11-04 00:00:00 UTC
+    private let utc = TimeZone(secondsFromGMT: 0)!
+
+    @Test func hybridUsesElapsedSevenDaysAndShowsFutureDatesExactly() {
+        for (age, absolute) in [(0.0, false), (604_799.0, false), (604_800.0, true), (604_801.0, true), (-1.0, true)] {
+            let result = CommitTimeFormatter.display(now.addingTimeInterval(-age), mode: .hybrid, now: now,
+                                                     locale: Locale(identifier: "en"), timeZone: utc)
+            #expect(result.isAbsolute == absolute)
+            #expect(result.tooltip.hasSuffix("UTC+00:00"))
+        }
+    }
+
+    @Test func explicitModesIgnoreAgeAndRelativeTimesAreLocalized() {
+        for age: Double in [-3600, 0, 3600, 604_800, 400 * 86_400] {
+            let date = now.addingTimeInterval(-age)
+            let absolute = CommitTimeFormatter.display(date, mode: .absolute, now: now, locale: Locale(identifier: "en"), timeZone: utc)
+            let relative = CommitTimeFormatter.display(date, mode: .relative, now: now, locale: Locale(identifier: "en"), timeZone: utc)
+            #expect(absolute.isAbsolute)
+            #expect(!relative.isAbsolute)
+            #expect(relative.text != absolute.text)
+            #expect(relative.tooltip == absolute.tooltip)
+        }
+        let english = CommitTimeFormatter.display(now.addingTimeInterval(-3600), mode: .relative, now: now, locale: Locale(identifier: "en"), timeZone: utc)
+        let chinese = CommitTimeFormatter.display(now.addingTimeInterval(-3600), mode: .relative, now: now, locale: Locale(identifier: "zh-Hans"), timeZone: utc)
+        #expect(english.text == "1 hour ago")
+        #expect(chinese.text.contains("前"))
+        #expect(CommitTimeFormatter.display(now.addingTimeInterval(3600), mode: .relative, now: now, locale: Locale(identifier: "en"), timeZone: utc).text == "in 1 hour")
+        #expect(!CommitTimeFormatter.display(now, mode: .relative, now: now, locale: Locale(identifier: "en"), timeZone: utc).text.isEmpty)
+    }
+
+    @Test func absoluteTimesUseGregorianCalendarYearAndHistoricalOffsets() throws {
+        let date = try Date("2021-01-01T00:00:00Z", strategy: .iso8601)
+        let result = CommitTimeFormatter.display(date, mode: .absolute, now: now,
+            locale: Locale(identifier: "th_TH@calendar=buddhist"), timeZone: TimeZone(secondsFromGMT: 8 * 3600)!)
+        #expect(result.text == "2021-01-01 08:00:00")
+        #expect(result.tooltip == "2021-01-01 08:00:00 UTC+08:00")
+        let zone = try #require(TimeZone(identifier: "America/Los_Angeles"))
+        let before = try Date("2024-03-10T09:59:59Z", strategy: .iso8601)
+        let after = before.addingTimeInterval(1)
+        #expect(CommitTimeFormatter.display(before, mode: .absolute, now: now, locale: .init(identifier: "en"), timeZone: zone).tooltip == "2024-03-10 01:59:59 UTC−08:00")
+        #expect(CommitTimeFormatter.display(after, mode: .absolute, now: now, locale: .init(identifier: "en"), timeZone: zone).tooltip == "2024-03-10 03:00:00 UTC−07:00")
+        #expect(CommitTimeFormatter.display(now.addingTimeInterval(-604_800), mode: .hybrid, now: now, locale: .init(identifier: "en"), timeZone: zone).isAbsolute)
+    }
+
+    @Test func timeModeDefaultsPersistsAndResetsWithAppearanceSettings() throws {
+        let name = "FoldGit.CommitTime.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: name))
+        defer { defaults.removePersistentDomain(forName: name) }
+        #expect(AppPreferences.commitTimeDisplayMode(in: defaults) == .hybrid)
+        let preference = AppStorage(wrappedValue: AppPreferences.defaultCommitTimeDisplayMode, PreferenceKey.commitTimeDisplayMode.rawValue, store: defaults)
+        for mode in CommitTimeDisplayMode.allCases {
+            preference.wrappedValue = mode
+            #expect(defaults.string(forKey: PreferenceKey.commitTimeDisplayMode.rawValue) == mode.rawValue)
+            #expect(AppPreferences.commitTimeDisplayMode(in: UserDefaults(suiteName: name)!) == mode)
+        }
+        #expect(SettingsReset.preferenceKeys.contains(.commitTimeDisplayMode))
+        try SettingsReset.restore(in: defaults) {}
+        #expect(AppPreferences.commitTimeDisplayMode(in: defaults) == .hybrid)
+    }
+}
+
+@MainActor
+struct CommitTimeLiveTests {
+    @Test func sharedClockStopsForAbsoluteAndRefreshesTheSevenDayBoundary() throws {
+        let name = "FoldGit.CommitClock.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: name))
+        defer { defaults.removePersistentDomain(forName: name) }
+        let clock = CommitTimeClock(defaults: defaults)
+        #expect(clock.isTicking)
+        defaults.set("absolute", forKey: PreferenceKey.commitTimeDisplayMode.rawValue)
+        clock.refresh()
+        #expect(!clock.isTicking)
+        defaults.set("hybrid", forKey: PreferenceKey.commitTimeDisplayMode.rawValue)
+        let date = Date(timeIntervalSince1970: 1_730_678_400)
+        clock.refresh(now: date.addingTimeInterval(604_799))
+        #expect(clock.isTicking)
+        #expect(!CommitTimeDisplayMode.hybrid.usesAbsoluteTime(for: date, now: clock.now))
+        clock.refresh(now: date.addingTimeInterval(604_800))
+        #expect(CommitTimeDisplayMode.hybrid.usesAbsoluteTime(for: date, now: clock.now))
+    }
+
+    @Test func twoOpenWindowsFollowTimeModeChangesAndKeepExactTextReadable() async throws {
+        let name = "FoldGit.CommitTimeWindows.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: name))
+        defer { defaults.removePersistentDomain(forName: name) }
+        let commit = Commit(hash: "abc1234", parentHashes: [], author: "Developer", authorEmail: "dev@example.com",
+                            authorDate: "2021-01-01T00:00:00Z", title: "Commit", body: "", branches: [], tags: [])
+        var english = ""
+        var chinese = ""
+        let first = NSHostingView(rootView: CommitTimePreferenceProbe(commit: commit) { english = $0 }
+            .environment(\.locale, Locale(identifier: "en")) .defaultAppStorage(defaults))
+        let second = NSHostingView(rootView: CommitTimePreferenceProbe(commit: commit) { chinese = $0 }
+            .environment(\.locale, Locale(identifier: "zh-Hans")) .defaultAppStorage(defaults))
+        let windows = [first, second].map { view in
+            let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 260, height: 60), styleMask: [.borderless], backing: .buffered, defer: false)
+            window.isReleasedWhenClosed = false
+            window.contentView = view
+            window.orderBack(nil)
+            return window
+        }
+        defer { windows.forEach { $0.close() } }
+        try await Task.sleep(for: .milliseconds(150))
+        #expect(english.count == 19 && english == chinese)
+        defaults.set("relative", forKey: PreferenceKey.commitTimeDisplayMode.rawValue)
+        try await Task.sleep(for: .milliseconds(150))
+        #expect(english.contains("ago"))
+        #expect(chinese.contains("前"))
+        defaults.set("absolute", forKey: PreferenceKey.commitTimeDisplayMode.rawValue)
+        try await Task.sleep(for: .milliseconds(150))
+        #expect(english.count == 19 && english == chinese)
+        #expect(first.fittingSize.width <= 260 && second.fittingSize.width <= 260)
+    }
+}
+
+private struct CommitTimePreferenceProbe: View {
+    let commit: Commit
+    let changed: (String) -> Void
+    @AppStorage(PreferenceKey.commitTimeDisplayMode.rawValue) private var mode = AppPreferences.defaultCommitTimeDisplayMode
+    @Environment(\.locale) private var locale
+
+    var body: some View {
+        let display = CommitTimeFormatter.display(commit.date!, mode: mode, now: CommitTimeClock.shared.now,
+                                                 locale: locale, timeZone: .current)
+        CommitTimeView(commit: commit)
+            .onChange(of: display.text, initial: true) { _, value in changed(value) }
+    }
+}

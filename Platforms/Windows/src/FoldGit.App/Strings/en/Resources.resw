@@ -21,6 +21,18 @@
   <data name="Text_1ee89c2c01e0ed612af30945" xml:space="preserve">
     <value>{0} commits</value>
   </data>
+  <data name="Text_929cc6d1b51b89a272e7c54f" xml:space="preserve">
+    <value>{0} days ago</value>
+  </data>
+  <data name="Text_5921b51090e47418326468b4" xml:space="preserve">
+    <value>{0} days ago</value>
+  </data>
+  <data name="Text_73d73f250433a32028995b3e" xml:space="preserve">
+    <value>{0} day ago</value>
+  </data>
+  <data name="Text_af67965632cb6191b27758e3" xml:space="preserve">
+    <value>{0} days ago</value>
+  </data>
   <data name="Text_6b11b289ad14732a9ea2e651" xml:space="preserve">
     <value>{0} deletions</value>
   </data>
@@ -45,6 +57,18 @@
   <data name="Text_f25e4ef0c8b33f9e4cc58313" xml:space="preserve">
     <value>{0} files changed</value>
   </data>
+  <data name="Text_f4d828333e2d26d7e093cd42" xml:space="preserve">
+    <value>{0} hours ago</value>
+  </data>
+  <data name="Text_f708f52e41737eb927b5cd7a" xml:space="preserve">
+    <value>{0} hours ago</value>
+  </data>
+  <data name="Text_40480077dbca7dc831630f1d" xml:space="preserve">
+    <value>{0} hour ago</value>
+  </data>
+  <data name="Text_2a070e86b55e5283a28bfb33" xml:space="preserve">
+    <value>{0} hours ago</value>
+  </data>
   <data name="Text_f652a54e75a53403cd3bd09c" xml:space="preserve">
     <value>{0} insertions</value>
   </data>
@@ -57,8 +81,44 @@
   <data name="Text_708bb9e67151379d61d962e5" xml:space="preserve">
     <value>{0} insertions</value>
   </data>
+  <data name="Text_18db4519a9dae08a2575b93e" xml:space="preserve">
+    <value>{0} minutes ago</value>
+  </data>
+  <data name="Text_5e483b71555a1271d956ac59" xml:space="preserve">
+    <value>{0} minutes ago</value>
+  </data>
+  <data name="Text_642c2a366a67e83e1f8f654e" xml:space="preserve">
+    <value>{0} minute ago</value>
+  </data>
+  <data name="Text_3305c13edcf6f245f552ad34" xml:space="preserve">
+    <value>{0} minutes ago</value>
+  </data>
+  <data name="Text_8e7fe088a750d1a4a2cc47f2" xml:space="preserve">
+    <value>{0} months ago</value>
+  </data>
+  <data name="Text_27f033dafdd7a5e3f743bae6" xml:space="preserve">
+    <value>{0} months ago</value>
+  </data>
+  <data name="Text_e773456d9150f399eff0fc2a" xml:space="preserve">
+    <value>{0} month ago</value>
+  </data>
+  <data name="Text_197455cd9aa162fd42d61636" xml:space="preserve">
+    <value>{0} months ago</value>
+  </data>
   <data name="Text_6eab9a992b09c76e9007c854" xml:space="preserve">
     <value>{0} pt</value>
+  </data>
+  <data name="Text_363ac14b557a7e5db335be20" xml:space="preserve">
+    <value>{0} seconds ago</value>
+  </data>
+  <data name="Text_a671205d25bdc163f65ad549" xml:space="preserve">
+    <value>{0} seconds ago</value>
+  </data>
+  <data name="Text_cee5bac7704aa9cd605019c0" xml:space="preserve">
+    <value>{0} second ago</value>
+  </data>
+  <data name="Text_e8aab922c2daa933825ad6b5" xml:space="preserve">
+    <value>{0} seconds ago</value>
   </data>
   <data name="Text_c6baba69b0499eeecc276b5c" xml:space="preserve">
     <value>{0} untracked files</value>
@@ -71,6 +131,18 @@
   </data>
   <data name="Text_5965971091a0aa30ada96adc" xml:space="preserve">
     <value>{0} untracked files</value>
+  </data>
+  <data name="Text_04d8813cc58394cedaab7189" xml:space="preserve">
+    <value>{0} years ago</value>
+  </data>
+  <data name="Text_20b857a8af3236212e2f6b94" xml:space="preserve">
+    <value>{0} years ago</value>
+  </data>
+  <data name="Text_4d273f6c7b5a348694bb4912" xml:space="preserve">
+    <value>{0} year ago</value>
+  </data>
+  <data name="Text_b7a35306fde36122e155bedf" xml:space="preserve">
+    <value>{0} years ago</value>
   </data>
   <data name="Text_0fe10860c13b461a63bcbf69" xml:space="preserve">
     <value>A New Version of FoldGit Is Available</value>
@@ -86,6 +158,9 @@
   </data>
   <data name="Text_4efca0d10c5feb8e9b35eb1d" xml:space="preserve">
     <value>About</value>
+  </data>
+  <data name="Text_5f61a448b53339af755c8585" xml:space="preserve">
+    <value>Absolute Time</value>
   </data>
   <data name="Text_ef37f4e061bb04ce93b664ae" xml:space="preserve">
     <value>Actual Size</value>
@@ -377,6 +452,9 @@
   </data>
   <data name="Text_d617aeda3a4656fd657ab6f8" xml:space="preserve">
     <value>Commit Messages</value>
+  </data>
+  <data name="Text_8223dda77bdf7ce8775d70c4" xml:space="preserve">
+    <value>Commit Time</value>
   </data>
   <data name="Text_8714c3fe7ae5de6d8b50d95c" xml:space="preserve">
     <value>Commit View</value>
@@ -756,6 +834,12 @@
   <data name="Text_c6040c57a0e14641107e3a4f" xml:space="preserve">
     <value>History and Diffs</value>
   </data>
+  <data name="Text_6c67dc13f83949fe089ca862" xml:space="preserve">
+    <value>Hybrid</value>
+  </data>
+  <data name="Text_d09a731d988a17accc54df6f" xml:space="preserve">
+    <value>Hybrid shows relative times for the last 7 days and exact dates and times for older commits.</value>
+  </data>
   <data name="Text_365819e56f8313cb63ef6aa9" xml:space="preserve">
     <value>Icons Only</value>
   </data>
@@ -788,6 +872,9 @@
   </data>
   <data name="Text_d874348942aed4fb5c4563a4" xml:space="preserve">
     <value>Jump to HEAD</value>
+  </data>
+  <data name="Text_66f53417d3b7797ae3d8ca9b" xml:space="preserve">
+    <value>Just now</value>
   </data>
   <data name="Text_c8e6e5971f22af759bda624d" xml:space="preserve">
     <value>Keep Running</value>
@@ -1217,6 +1304,9 @@
   </data>
   <data name="Text_db010f388106692884f127c8" xml:space="preserve">
     <value>Refresh Repositories</value>
+  </data>
+  <data name="Text_2f6b889f1e27f1328d570126" xml:space="preserve">
+    <value>Relative Time</value>
   </data>
   <data name="Text_7b4e821d0727567e66f8f8ca" xml:space="preserve">
     <value>Remote Branches</value>
@@ -1739,6 +1829,78 @@
   </data>
   <data name="Text_0e20b49616ad76d78e80a4c0" xml:space="preserve">
     <value>from:</value>
+  </data>
+  <data name="Text_e98c3316b559ba65461c89fc" xml:space="preserve">
+    <value>in {0} days</value>
+  </data>
+  <data name="Text_05aff35cc4c8427ea92dcaac" xml:space="preserve">
+    <value>in {0} days</value>
+  </data>
+  <data name="Text_cc3667522eb5a6e0b196cfb1" xml:space="preserve">
+    <value>in {0} day</value>
+  </data>
+  <data name="Text_b17ff027e82394bcdab8b865" xml:space="preserve">
+    <value>in {0} days</value>
+  </data>
+  <data name="Text_da80e8c2f1b6c86398a7e8e6" xml:space="preserve">
+    <value>in {0} hours</value>
+  </data>
+  <data name="Text_339850f8186b136503c7a431" xml:space="preserve">
+    <value>in {0} hours</value>
+  </data>
+  <data name="Text_860485a025f946667bfb1b3e" xml:space="preserve">
+    <value>in {0} hour</value>
+  </data>
+  <data name="Text_1f76178e0419b70607153941" xml:space="preserve">
+    <value>in {0} hours</value>
+  </data>
+  <data name="Text_5a8c239a87c5c49f94d40f27" xml:space="preserve">
+    <value>in {0} minutes</value>
+  </data>
+  <data name="Text_0ac566b114f35852293b0a28" xml:space="preserve">
+    <value>in {0} minutes</value>
+  </data>
+  <data name="Text_a01b3f0567ac46a770ea84c8" xml:space="preserve">
+    <value>in {0} minute</value>
+  </data>
+  <data name="Text_cf5f5d5b5cc8973e1c87bf8f" xml:space="preserve">
+    <value>in {0} minutes</value>
+  </data>
+  <data name="Text_e67e6b53430fa6570c59dac8" xml:space="preserve">
+    <value>in {0} months</value>
+  </data>
+  <data name="Text_bdc7cfec6b09aa9438a4d210" xml:space="preserve">
+    <value>in {0} months</value>
+  </data>
+  <data name="Text_87bd69484986f440cb655c90" xml:space="preserve">
+    <value>in {0} month</value>
+  </data>
+  <data name="Text_40e48353b4098d5b5294443b" xml:space="preserve">
+    <value>in {0} months</value>
+  </data>
+  <data name="Text_a188b932e5afc8014b165975" xml:space="preserve">
+    <value>in {0} seconds</value>
+  </data>
+  <data name="Text_d533ab4d47376812e79b48dd" xml:space="preserve">
+    <value>in {0} seconds</value>
+  </data>
+  <data name="Text_903b217f6ff83f8be048e443" xml:space="preserve">
+    <value>in {0} second</value>
+  </data>
+  <data name="Text_728823acee0267a2dc998d54" xml:space="preserve">
+    <value>in {0} seconds</value>
+  </data>
+  <data name="Text_b0271c025a651fe111e53a96" xml:space="preserve">
+    <value>in {0} years</value>
+  </data>
+  <data name="Text_19d1d5032d870bcadc1c5054" xml:space="preserve">
+    <value>in {0} years</value>
+  </data>
+  <data name="Text_351a7cf878e28c48077c4acf" xml:space="preserve">
+    <value>in {0} year</value>
+  </data>
+  <data name="Text_1b7c1e29aa1caf6a498d8286" xml:space="preserve">
+    <value>in {0} years</value>
   </data>
   <data name="Text_55708cb7df70bc7b32e7aaab" xml:space="preserve">
     <value>to:</value>

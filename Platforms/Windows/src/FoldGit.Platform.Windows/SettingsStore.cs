@@ -1,5 +1,6 @@
 using System.Text.Json;
 using FoldGit.Core.Git;
+using FoldGit.Core.History;
 using FoldGit.Core.Workspace;
 
 namespace FoldGit.Platform.Windows;
@@ -12,6 +13,7 @@ public sealed record AppSettings
     public string? GitPath { get; init; }
     public string Language { get; init; } = "automatic";
     public string Appearance { get; init; } = "automatic";
+    public CommitTimeDisplayMode CommitTimeDisplayMode { get; init; } = CommitTimeDisplayMode.Hybrid;
     public bool RestoreSession { get; init; } = true;
     public bool WorktreesEnabled { get; init; } = true;
     public bool SideBySide { get; init; }

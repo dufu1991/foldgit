@@ -80,6 +80,13 @@ enum DiffFileExpansion: String, CaseIterable, Identifiable {
 }
 
 enum AppPreferences {
+    static let defaultCommitTimeDisplayMode = CommitTimeDisplayMode.hybrid
+
+    static func commitTimeDisplayMode(in defaults: UserDefaults = .standard) -> CommitTimeDisplayMode {
+        defaults.string(forKey: PreferenceKey.commitTimeDisplayMode.rawValue)
+            .flatMap(CommitTimeDisplayMode.init(rawValue:)) ?? defaultCommitTimeDisplayMode
+    }
+
     static let defaultCodeFontSize = 12.0
     static let defaultToolbarLabelStyle: ToolbarLabelStyle = .titleAndIcon
     static let defaultDiffFileExpansion = DiffFileExpansion.collapsed

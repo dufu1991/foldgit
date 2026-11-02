@@ -78,8 +78,17 @@
           <ListView.ItemContainerStyle><Style TargetType="ListViewItem"><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Padding" Value="8,0"/><Setter Property="Margin" Value="0"/><Setter Property="MinHeight" Value="56"/></Style></ListView.ItemContainerStyle>
           <ListView.ItemTemplate><DataTemplate><Grid>
             <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-            <controls:GraphCell Row="{Binding}"/>
-            <StackPanel Grid.Column="1" Spacing="3" Margin="0,4"><TextBlock Text="{Binding Commit.Subject}" MaxLines="2" TextWrapping="Wrap"/><StackPanel Orientation="Horizontal" Spacing="8"><TextBlock Text="{Binding Commit.Author}" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/><TextBlock Text="{Binding Commit.ShortHash}" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/></StackPanel><TextBlock Text="{Binding Commit.Decorations}" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/></StackPanel>
+            <controls:GraphCell Row="{Binding Graph}"/>
+            <StackPanel Grid.Column="1" Spacing="3" Margin="0,4">
+              <TextBlock Text="{Binding Commit.Subject}" MaxLines="2" TextWrapping="Wrap"/>
+              <Grid ColumnSpacing="8" HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Commit.ShortHash}" FontFamily="Consolas" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" ToolTipService.ToolTip="{Binding Commit.Hash}"/>
+                <TextBlock Grid.Column="1" Text="{Binding Commit.Author}" TextTrimming="CharacterEllipsis" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" ToolTipService.ToolTip="{Binding Commit.Email}"/>
+                <TextBlock Grid.Column="2" Text="{Binding Time.Text}" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" ToolTipService.ToolTip="{Binding Time.Tooltip}"/>
+              </Grid>
+              <TextBlock Text="{Binding Commit.Decorations}" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+            </StackPanel>
           </Grid></DataTemplate></ListView.ItemTemplate>
         </ListView>
         <Grid Grid.Row="4" Padding="12,4" ColumnSpacing="8"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
@@ -94,7 +103,16 @@
         <TextBlock x:Name="EmptySelection" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
         <Grid x:Name="DetailPane" Grid.Row="1" Visibility="Collapsed">
           <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-          <StackPanel Padding="16,12" Spacing="8"><StackPanel x:Name="ParentLinks" Orientation="Horizontal" Spacing="8"/><TextBlock Text="{Binding DetailTitle}" TextWrapping="Wrap" IsTextSelectionEnabled="True"/></StackPanel>
+          <StackPanel Padding="16,12" Spacing="8">
+            <StackPanel x:Name="ParentLinks" Orientation="Horizontal" Spacing="8"/>
+            <TextBlock Text="{Binding DetailTitle}" TextWrapping="Wrap" IsTextSelectionEnabled="True"/>
+            <Grid ColumnSpacing="8" HorizontalAlignment="Left">
+              <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+              <TextBlock Text="{Binding SelectedCommit.ShortHash}" FontFamily="Consolas" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" IsTextSelectionEnabled="True" ToolTipService.ToolTip="{Binding SelectedCommit.Hash}"/>
+              <TextBlock Grid.Column="1" Text="{Binding SelectedCommit.Author}" TextTrimming="CharacterEllipsis" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" IsTextSelectionEnabled="True" ToolTipService.ToolTip="{Binding SelectedCommit.Email}"/>
+              <TextBlock Grid.Column="2" Text="{Binding DetailCommitTime}" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" IsTextSelectionEnabled="True" ToolTipService.ToolTip="{Binding DetailCommitTimeTooltip}"/>
+            </Grid>
+          </StackPanel>
           <controls:DiffViewer x:Name="DiffContent" Grid.Row="1" Margin="12,0"/>
           <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" Padding="12,8">
             <Button x:Name="LayoutButton" Click="LayoutClicked"><FontIcon Glyph="&#xE8A9;" FontSize="14"/></Button><Button x:Name="ExpandButton" Click="ExpandClicked"><FontIcon Glyph="&#xE8A3;" FontSize="14"/></Button><Button x:Name="CollapseButton" Click="CollapseClicked"><FontIcon Glyph="&#xE8A4;" FontSize="14"/></Button><TextBlock x:Name="DetailStatistics" VerticalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>

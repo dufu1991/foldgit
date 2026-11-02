@@ -7,6 +7,7 @@
 "Abort Merge" = "Abort Merge";
 "Abort Merge?" = "Abort Merge?";
 "About" = "About";
+"Absolute Time" = "Absolute Time";
 "Actual Size" = "Actual Size";
 "Add" = "Add";
 "Add Local Repository or Directory" = "Add Local Repository or Directory";
@@ -98,6 +99,7 @@
 "Commit Message" = "Commit Message";
 "Commit Message Snippets" = "Commit Message Snippets";
 "Commit Messages" = "Commit Messages";
+"Commit Time" = "Commit Time";
 "Commit View" = "Commit View";
 "Commit or stash changes in %@ before merging." = "Commit or stash changes in %@ before merging.";
 "Commit your work, merge into the target branch, then choose what to keep." = "Commit your work, merge into the target branch, then choose what to keep.";
@@ -220,6 +222,8 @@
 "Hide Sidebar" = "Hide Sidebar";
 "History Scope" = "History Scope";
 "History and Diffs" = "History and Diffs";
+"Hybrid" = "Hybrid";
+"Hybrid shows relative times for the last 7 days and exact dates and times for older commits." = "Hybrid shows relative times for the last 7 days and exact dates and times for older commits.";
 "Icons Only" = "Icons Only";
 "Icons and Text" = "Icons and Text";
 "Image Comparison" = "Image Comparison";
@@ -230,6 +234,7 @@
 "Interface Language" = "Interface Language";
 "Invalid file history records from Git." = "Invalid file history records from Git.";
 "Jump to HEAD" = "Jump to HEAD";
+"Just now" = "Just now";
 "Keep Running" = "Keep Running";
 "Keep Version" = "Keep Version";
 "Keyboard Shortcuts" = "Keyboard Shortcuts";
@@ -372,6 +377,7 @@
 "Refresh" = "Refresh";
 "Refresh Applications" = "Refresh Applications";
 "Refresh Repositories" = "Refresh Repositories";
+"Relative Time" = "Relative Time";
 "Remote Branches" = "Remote Branches";
 "Remotes" = "Remotes";
 "Remove" = "Remove";

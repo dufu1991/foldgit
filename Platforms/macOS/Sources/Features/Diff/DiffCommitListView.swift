@@ -19,11 +19,11 @@ struct DiffCommitListView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     if commits.count > 1 {
                         Text("\(commits.count) commits")
-                        Text(commits.first!.authorDateDisplayShort)
+                        CommitTimeView(commit: commits.first!)
                         Image(systemName: "arrow.right")
                             .imageScale(.small)
                             .foregroundStyle(.tertiary)
-                        Text(commits.last!.authorDateDisplayShort)
+                        CommitTimeView(commit: commits.last!)
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]) {
                             ForEach(authorEmailAndNames, id: \.0) { element in
                                 Icon(size: .medium, authorEmail: element.0, authorInitial: String(element.1.initial.prefix(2)))
@@ -37,7 +37,8 @@ struct DiffCommitListView: View {
                 }
                 Spacer(minLength: 0)
             }
-            .frame(width: 120)
+            .frame(minWidth: 170, idealWidth: 180)
+            .fixedSize(horizontal: true, vertical: false)
         }
     }
 }

@@ -198,13 +198,8 @@ private struct FileHistoryPatchView: View {
                         Text(verbatim: entry.commit.body.trimmingCharacters(in: .whitespacesAndNewlines))
                             .font(.callout).foregroundStyle(.secondary).lineLimit(3).textSelection(.enabled)
                     }
-                    HStack {
-                        Text(verbatim: entry.commit.author)
-                        Text(verbatim: entry.commit.authorDateDisplay)
-                        Spacer()
-                        Text(verbatim: String(entry.id.prefix(12))).monospaced()
-                    }
-                    .font(.caption).foregroundStyle(.secondary)
+                    CommitMetadataView(commit: entry.commit)
+                        .font(.caption)
                     if entry.commit.parentHashes.count > 1 {
                         Text("Compared with the first parent").font(.caption).foregroundStyle(.secondary)
                     }

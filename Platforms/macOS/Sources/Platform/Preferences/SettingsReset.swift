@@ -39,6 +39,7 @@ enum SettingsReset {
                 Item(id: "quit", title: String(localized: "Quit When the Last Window Closes"), value: off, keys: [.quitAfterLastWindow]),
             ]),
             Group(id: "appearance", title: String(localized: "Appearance"), items: [
+                Item(id: "commitTime", title: String(localized: "Commit Time"), value: AppPreferences.defaultCommitTimeDisplayMode.title, keys: [.commitTimeDisplayMode]),
                 Item(id: "appearance", title: String(localized: "Color Scheme"), value: automatic, keys: [.appAppearance]),
                 Item(id: "toolbar", title: String(localized: "Toolbar Display"), value: String(localized: "Icons and Text"), keys: [.toolbarLabelStyle]),
             ]),

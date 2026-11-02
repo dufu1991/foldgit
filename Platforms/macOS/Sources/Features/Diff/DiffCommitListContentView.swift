@@ -7,38 +7,23 @@ struct DiffCommitListContentView: View {
     var body: some View {
         LazyVStack(spacing: 4) {
             ForEach(commits) { commit in
+                let listBody = commit.listBody
                 NavigationLink(value: commit.hash) {
                     VStack (alignment: .leading, spacing: 6) {
-                        HStack(alignment: .firstTextBaseline) {
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(commit.title)
-                                if !commit.body.isEmpty {
-                                    Text(commit.body.trimmingCharacters(in: .whitespacesAndNewlines))
-                                        .foregroundStyle(.secondary)
-                                        .font(.callout)
-                                }
-                            }
-                            Spacer()
-                            Text(commit.hash.prefix(5))
-                                .foregroundStyle(.tertiary)
+                        Text(verbatim: commit.title)
+                        if !listBody.isEmpty {
+                            Text(verbatim: listBody)
+                                .foregroundStyle(.secondary)
+                                .font(.callout)
                         }
-                        HStack {
-                            Icon(size: .small, authorEmail: commit.authorEmail, authorInitial: String(commit.author.initial.prefix(1)))
-                            Text(commit.author)
-                            Spacer()
-                            Text(commit.authorDateRelative)
-                        }
-                        .lineLimit(1)
-                        .foregroundStyle(.tertiary)
+                        CommitMetadataView(commit: commit)
+                            .font(.system(size: 10))
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
-                .accessibilityLabel(Text(commit.title))
-                .accessibilityValue(Text("\(commit.author), \(commit.authorDateRelative)"))
-                if commits.last != commit {
-                    Divider()
-                }
+                .modifier(CommitAccessibilityModifier(commit: commit))
             }
             .accentColor(.primary)
         }

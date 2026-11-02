@@ -31,7 +31,7 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
     public RepositoryService? Repositories { get; private set; }
     public WorktreeService? Trees { get; private set; }
     public ObservableCollection<RepositoryRow> RepositoryRows { get; } = [];
-    public ObservableCollection<GraphCommit> History { get; } = [];
+    public ObservableCollection<HistoryCommitRow> History { get; } = [];
     public ObservableCollection<Branch> Branches { get; } = [];
     public ObservableCollection<Branch> LocalBranches { get; } = [];
     public ObservableCollection<Branch> RemoteBranches { get; } = [];
@@ -45,6 +45,8 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
     [ObservableProperty] public partial RepositorySnapshot? Snapshot { get; set; }
     [ObservableProperty] public partial Diff? Detail { get; set; }
     [ObservableProperty] public partial string DetailTitle { get; set; } = "";
+    [ObservableProperty] public partial string DetailCommitTime { get; private set; } = "";
+    [ObservableProperty] public partial string DetailCommitTimeTooltip { get; private set; } = "";
     [ObservableProperty] public partial string CommitMessage { get; set; } = "";
     [ObservableProperty] public partial bool Amend { get; set; }
     [ObservableProperty] public partial bool Busy { get; set; }
@@ -97,6 +99,7 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
         if (gitChanged) await ConfigureGitAsync();
         RebuildRepositories();
         ResourcesChanged?.Invoke();
+        RefreshCommitTime();
     }
     public Task SaveAsync() => store.SaveAsync(Settings);
     public async Task ResetAsync()
@@ -202,7 +205,8 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
         var all = more ? History.Select(row => row.Commit).Concat(commits).ToArray() : commits;
         HasMoreHistory = commits.Length == 100;
         HistoryChanging?.Invoke();
-        Replace(History, CommitGraph.Layout(all));
+        Replace(History, CommitGraph.Layout(all).Select(graph => new HistoryCommitRow(graph)));
+        RefreshCommitTime();
         HistoryChanged?.Invoke();
     }
     public async Task SearchAsync(string text)
@@ -263,7 +267,8 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
         SelectedCommit = commit;
         DetailOldVersion = commit.Parents.FirstOrDefault() ?? "absent";
         DetailNewVersion = commit.Hash;
-        DetailTitle = commit.Message.TrimEnd() + "\n\n" + commit.Author + " <" + commit.Email + "> · " + commit.Date.ToLocalTime().ToString("g");
+        DetailTitle = commit.Message.TrimEnd();
+        RefreshCommitTime();
         var diff = await Repositories.CommitDiffAsync(Directory, commit, token);
         if (!token.IsCancellationRequested) Detail = diff;
     }
@@ -324,6 +329,26 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
         }
         if (!RepositoryRows.SequenceEqual(result)) { Replace(RepositoryRows, result); RepositoriesChanged?.Invoke(); }
     }
+    public void RefreshCommitTime(DateTimeOffset? now = null)
+    {
+        var currentTime = now ?? DateTimeOffset.UtcNow;
+        foreach (var row in History)
+            row.Time = CommitTimeFormatter.Format(row.Commit.Date, Settings.CommitTimeDisplayMode,
+                currentTime, Text, TimeZoneInfo.Local);
+        if (Mode != WorkbenchMode.Commit || SelectedCommit is not { } commit)
+        {
+            DetailCommitTime = "";
+            DetailCommitTimeTooltip = "";
+            return;
+        }
+        var display = CommitTimeFormatter.Format(commit.Date, Settings.CommitTimeDisplayMode,
+            currentTime, Text, TimeZoneInfo.Local);
+        DetailCommitTime = display.Text;
+        DetailCommitTimeTooltip = display.Tooltip;
+    }
+
+    partial void OnModeChanged(WorkbenchMode value) => RefreshCommitTime();
+
     private async Task AutoFetchAsync()
     {
         using var timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
@@ -360,6 +385,13 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
         historyRequest?.Dispose(); detailRequest?.Dispose(); lifetime.Dispose();
         await SaveAsync();
     }
+}
+
+public sealed partial class HistoryCommitRow(GraphCommit graph) : ObservableObject
+{
+    public GraphCommit Graph { get; } = graph;
+    public Commit Commit => Graph.Commit;
+    [ObservableProperty] public partial CommitTimeDisplay Time { get; set; } = new("", "", false);
 }
 
 public sealed record RepositoryRow(string Name, string? Path, string Id, bool Group, bool Infrequent, string State = "", bool Linked = false)

@@ -26,6 +26,14 @@ public struct Commit: Hashable, Identifiable, Sendable {
     public private(set) var date: Date?
     public var title: String
     public var body: String
+    /// List previews omit coauthor attribution while the original message stays intact.
+    public var listBody: String {
+        body.replacingOccurrences(
+            of: #"(?im)^[\t ]*co-(?:authored|developed|committed)-by[\t ]*:[^\r\n]*(?:\r?\n[\t ]+[^\r\n]+)*(?:\r?\n|$)"#,
+            with: "",
+            options: .regularExpression
+        ).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
     public var rawBody: String {
         guard !body.isEmpty else {
             return title

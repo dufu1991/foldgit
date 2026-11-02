@@ -1,5 +1,6 @@
 using System.Text;
 using FoldGit.Core.Git;
+using FoldGit.Core.History;
 using FoldGit.Core.Resources;
 using FoldGit.Core.Workspace;
 using FoldGit.Platform.Windows;
@@ -301,6 +302,10 @@ public sealed partial class MainWindow
         var chooseGit = new Button { Content = L("Choose Git") }; chooseGit.Click += async (_, _) => { var path = await FileAsync(".exe"); if (path is not null) git.Text = path; }; general.Children.Add(chooseGit);
         var appearance = Tab("Appearance");
         var theme = new ComboBox { Header = L("Color Scheme"), ItemsSource = new[] { L("Automatic"), L("Light"), L("Dark") }, SelectedIndex = Array.IndexOf(new[] { "automatic", "light", "dark" }, settings.Appearance), HorizontalAlignment = HorizontalAlignment.Stretch }; appearance.Children.Add(theme);
+        var timeModes = new[] { CommitTimeDisplayMode.Relative, CommitTimeDisplayMode.Absolute, CommitTimeDisplayMode.Hybrid };
+        var commitTime = new ComboBox { Header = L("Commit Time"), ItemsSource = new[] { L("Relative Time"), L("Absolute Time"), L("Hybrid") }, SelectedIndex = Array.IndexOf(timeModes, settings.CommitTimeDisplayMode), HorizontalAlignment = HorizontalAlignment.Stretch };
+        appearance.Children.Add(commitTime);
+        appearance.Children.Add(new TextBlock { Text = L("Hybrid shows relative times for the last 7 days and exact dates and times for older commits."), TextWrapping = TextWrapping.Wrap });
         var comparison = Tab("Diff Display");
         var side = Toggle(comparison, "Side by Side", settings.SideBySide); var wrap = Toggle(comparison, "Wrap Long Lines", settings.WordWrap);
         var lines = Toggle(comparison, "Line Numbers", settings.LineNumbers); var expanded = Toggle(comparison, "Expanded", settings.ExpandFiles);
@@ -341,6 +346,7 @@ public sealed partial class MainWindow
         {
             RestoreSession = restore.IsChecked == true, SelectedRepository = restore.IsChecked == true ? Model.Directory : null,
             Language = languages[language.SelectedIndex], Appearance = new[] { "automatic", "light", "dark" }[theme.SelectedIndex],
+            CommitTimeDisplayMode = timeModes[commitTime.SelectedIndex],
             GitPath = git.Text.Length > 0 ? git.Text : null, SideBySide = side.IsChecked == true, WordWrap = wrap.IsChecked == true,
             LineNumbers = lines.IsChecked == true, ExpandFiles = expanded.IsChecked == true, FontSize = double.IsFinite(size.Value) ? Math.Clamp(size.Value, 11, 18) : 12,
             WorktreesEnabled = worktrees.IsChecked == true,

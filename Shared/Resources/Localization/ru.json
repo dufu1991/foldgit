@@ -11,6 +11,17 @@
         "other": "%lld коммита"
       }
     },
+    "%lld days ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "few": "%lld дня назад",
+        "many": "%lld дней назад",
+        "one": "%lld день назад",
+        "other": "%lld дней назад"
+      }
+    },
     "%lld deletions": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
@@ -33,6 +44,17 @@
         "other": "Изменено %lld файла"
       }
     },
+    "%lld hours ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "few": "%lld часа назад",
+        "many": "%lld часов назад",
+        "one": "%lld час назад",
+        "other": "%lld часов назад"
+      }
+    },
     "%lld insertions": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
@@ -42,6 +64,39 @@
         "many": "Добавлено %lld строк",
         "one": "Добавлена %lld строка",
         "other": "Добавлено %lld строки"
+      }
+    },
+    "%lld minutes ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "few": "%lld минуты назад",
+        "many": "%lld минут назад",
+        "one": "%lld минуту назад",
+        "other": "%lld минут назад"
+      }
+    },
+    "%lld months ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "few": "%lld месяца назад",
+        "many": "%lld месяцев назад",
+        "one": "%lld месяц назад",
+        "other": "%lld месяцев назад"
+      }
+    },
+    "%lld seconds ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "few": "%lld секунды назад",
+        "many": "%lld секунд назад",
+        "one": "%lld секунду назад",
+        "other": "%lld секунд назад"
       }
     },
     "%lld untracked files": {
@@ -55,6 +110,17 @@
         "other": "%lld неотслеживаемого файла"
       }
     },
+    "%lld years ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "few": "%lld года назад",
+        "many": "%lld лет назад",
+        "one": "%lld год назад",
+        "other": "%lld лет назад"
+      }
+    },
     "Behind by %lld commits": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
@@ -64,6 +130,72 @@
         "many": "Отставание на %lld коммитов",
         "one": "Отставание на %lld коммит",
         "other": "Отставание на %lld коммита"
+      }
+    },
+    "in %lld days": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "few": "через %lld дня",
+        "many": "через %lld дней",
+        "one": "через %lld день",
+        "other": "через %lld дней"
+      }
+    },
+    "in %lld hours": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "few": "через %lld часа",
+        "many": "через %lld часов",
+        "one": "через %lld час",
+        "other": "через %lld часов"
+      }
+    },
+    "in %lld minutes": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "few": "через %lld минуты",
+        "many": "через %lld минут",
+        "one": "через %lld минуту",
+        "other": "через %lld минут"
+      }
+    },
+    "in %lld months": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "few": "через %lld месяца",
+        "many": "через %lld месяцев",
+        "one": "через %lld месяц",
+        "other": "через %lld месяцев"
+      }
+    },
+    "in %lld seconds": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "few": "через %lld секунды",
+        "many": "через %lld секунд",
+        "one": "через %lld секунду",
+        "other": "через %lld секунд"
+      }
+    },
+    "in %lld years": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "few": "через %lld года",
+        "many": "через %lld лет",
+        "one": "через %lld год",
+        "other": "через %lld лет"
       }
     }
   },
@@ -75,6 +207,7 @@
     "Abort Merge": "Прервать слияние",
     "Abort Merge?": "Прервать слияние?",
     "About": "О программе",
+    "Absolute Time": "Дата и время",
     "Actual Size": "Исходный размер",
     "Add": "Добавить",
     "Add Local Repository or Directory": "Добавить локальный репозиторий или папку",
@@ -166,6 +299,7 @@
     "Commit Message": "Сообщение коммита",
     "Commit Message Snippets": "Шаблоны сообщений коммитов",
     "Commit Messages": "Сообщения коммитов",
+    "Commit Time": "Время коммита",
     "Commit View": "Просмотр коммитов",
     "Commit or stash changes in %@ before merging.": "Перед слиянием закоммитьте изменения в %@ или сохраните их в stash.",
     "Commit your work, merge into the target branch, then choose what to keep.": "Сначала закоммитьте изменения, объедините их с целевой веткой и выберите, что сохранить.",
@@ -288,6 +422,8 @@
     "Hide Sidebar": "Скрыть боковую панель",
     "History Scope": "Область истории",
     "History and Diffs": "История и различия",
+    "Hybrid": "Смешанный режим",
+    "Hybrid shows relative times for the last 7 days and exact dates and times for older commits.": "В смешанном режиме за последние 7 дней отображается относительное время, а для более старых коммитов — точные дата и время.",
     "Icons Only": "Только значки",
     "Icons and Text": "Значки и текст",
     "Image Comparison": "Сравнение изображений",
@@ -298,6 +434,7 @@
     "Interface Language": "Язык интерфейса",
     "Invalid file history records from Git.": "Git вернул недопустимые записи истории файла.",
     "Jump to HEAD": "Перейти к HEAD",
+    "Just now": "Только что",
     "Keep Running": "Продолжать работу",
     "Keep Version": "Выбрать версию",
     "Keyboard Shortcuts": "Сочетания клавиш",
@@ -440,6 +577,7 @@
     "Refresh": "Обновить",
     "Refresh Applications": "Обновить список приложений",
     "Refresh Repositories": "Обновить список репозиториев",
+    "Relative Time": "Относительное время",
     "Remote Branches": "Удалённые ветки",
     "Remotes": "Удалённые",
     "Remove": "Удалить",

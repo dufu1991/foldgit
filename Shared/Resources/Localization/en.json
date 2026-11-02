@@ -9,6 +9,15 @@
         "other": "%lld commits"
       }
     },
+    "%lld days ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "%lld day ago",
+        "other": "%lld days ago"
+      }
+    },
     "%lld deletions": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
@@ -27,6 +36,15 @@
         "other": "%lld files changed"
       }
     },
+    "%lld hours ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "%lld hour ago",
+        "other": "%lld hours ago"
+      }
+    },
     "%lld insertions": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
@@ -34,6 +52,33 @@
         "NSStringFormatValueTypeKey": "lld",
         "one": "%lld insertion",
         "other": "%lld insertions"
+      }
+    },
+    "%lld minutes ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "%lld minute ago",
+        "other": "%lld minutes ago"
+      }
+    },
+    "%lld months ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "%lld month ago",
+        "other": "%lld months ago"
+      }
+    },
+    "%lld seconds ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "%lld second ago",
+        "other": "%lld seconds ago"
       }
     },
     "%lld untracked files": {
@@ -45,6 +90,15 @@
         "other": "%lld untracked files"
       }
     },
+    "%lld years ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "%lld year ago",
+        "other": "%lld years ago"
+      }
+    },
     "Behind by %lld commits": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
@@ -52,6 +106,60 @@
         "NSStringFormatValueTypeKey": "lld",
         "one": "Behind by %lld commit",
         "other": "Behind by %lld commits"
+      }
+    },
+    "in %lld days": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "in %lld day",
+        "other": "in %lld days"
+      }
+    },
+    "in %lld hours": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "in %lld hour",
+        "other": "in %lld hours"
+      }
+    },
+    "in %lld minutes": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "in %lld minute",
+        "other": "in %lld minutes"
+      }
+    },
+    "in %lld months": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "in %lld month",
+        "other": "in %lld months"
+      }
+    },
+    "in %lld seconds": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "in %lld second",
+        "other": "in %lld seconds"
+      }
+    },
+    "in %lld years": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "one": "in %lld year",
+        "other": "in %lld years"
       }
     }
   },
@@ -63,6 +171,7 @@
     "Abort Merge": "Abort Merge",
     "Abort Merge?": "Abort Merge?",
     "About": "About",
+    "Absolute Time": "Absolute Time",
     "Actual Size": "Actual Size",
     "Add": "Add",
     "Add Local Repository or Directory": "Add Local Repository or Directory",
@@ -154,6 +263,7 @@
     "Commit Message": "Commit Message",
     "Commit Message Snippets": "Commit Message Snippets",
     "Commit Messages": "Commit Messages",
+    "Commit Time": "Commit Time",
     "Commit View": "Commit View",
     "Commit or stash changes in %@ before merging.": "Commit or stash changes in %@ before merging.",
     "Commit your work, merge into the target branch, then choose what to keep.": "Commit your work, merge into the target branch, then choose what to keep.",
@@ -276,6 +386,8 @@
     "Hide Sidebar": "Hide Sidebar",
     "History Scope": "History Scope",
     "History and Diffs": "History and Diffs",
+    "Hybrid": "Hybrid",
+    "Hybrid shows relative times for the last 7 days and exact dates and times for older commits.": "Hybrid shows relative times for the last 7 days and exact dates and times for older commits.",
     "Icons Only": "Icons Only",
     "Icons and Text": "Icons and Text",
     "Image Comparison": "Image Comparison",
@@ -286,6 +398,7 @@
     "Interface Language": "Interface Language",
     "Invalid file history records from Git.": "Invalid file history records from Git.",
     "Jump to HEAD": "Jump to HEAD",
+    "Just now": "Just now",
     "Keep Running": "Keep Running",
     "Keep Version": "Keep Version",
     "Keyboard Shortcuts": "Keyboard Shortcuts",
@@ -428,6 +541,7 @@
     "Refresh": "Refresh",
     "Refresh Applications": "Refresh Applications",
     "Refresh Repositories": "Refresh Repositories",
+    "Relative Time": "Relative Time",
     "Remote Branches": "Remote Branches",
     "Remotes": "Remotes",
     "Remove": "Remove",

@@ -8,6 +8,14 @@
         "other": "커밋 %lld개"
       }
     },
+    "%lld days ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld일 전"
+      }
+    },
     "%lld deletions": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
@@ -24,12 +32,44 @@
         "other": "파일 %lld개 변경"
       }
     },
+    "%lld hours ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld시간 전"
+      }
+    },
     "%lld insertions": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
         "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
         "NSStringFormatValueTypeKey": "lld",
         "other": "%lld줄 추가"
+      }
+    },
+    "%lld minutes ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld분 전"
+      }
+    },
+    "%lld months ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld개월 전"
+      }
+    },
+    "%lld seconds ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld초 전"
       }
     },
     "%lld untracked files": {
@@ -40,12 +80,68 @@
         "other": "추적하지 않는 파일 %lld개"
       }
     },
+    "%lld years ago": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld년 전"
+      }
+    },
     "Behind by %lld commits": {
       "NSStringLocalizedFormatKey": "%#@count@",
       "count": {
         "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
         "NSStringFormatValueTypeKey": "lld",
         "other": "%lld개 커밋 뒤처짐"
+      }
+    },
+    "in %lld days": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld일 후"
+      }
+    },
+    "in %lld hours": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld시간 후"
+      }
+    },
+    "in %lld minutes": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld분 후"
+      }
+    },
+    "in %lld months": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld개월 후"
+      }
+    },
+    "in %lld seconds": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld초 후"
+      }
+    },
+    "in %lld years": {
+      "NSStringLocalizedFormatKey": "%#@count@",
+      "count": {
+        "NSStringFormatSpecTypeKey": "NSStringPluralRuleType",
+        "NSStringFormatValueTypeKey": "lld",
+        "other": "%lld년 후"
       }
     }
   },
@@ -57,6 +153,7 @@
     "Abort Merge": "병합 중단",
     "Abort Merge?": "병합을 중단할까요?",
     "About": "정보",
+    "Absolute Time": "날짜 및 시간",
     "Actual Size": "실제 크기",
     "Add": "추가",
     "Add Local Repository or Directory": "로컬 저장소 또는 폴더 추가",
@@ -148,6 +245,7 @@
     "Commit Message": "커밋 메시지",
     "Commit Message Snippets": "커밋 메시지 스니펫",
     "Commit Messages": "커밋 메시지",
+    "Commit Time": "커밋 시간",
     "Commit View": "커밋 보기",
     "Commit or stash changes in %@ before merging.": "병합 전에 %@의 변경 사항을 커밋하거나 스태시하세요.",
     "Commit your work, merge into the target branch, then choose what to keep.": "변경 사항을 커밋하고 대상 브랜치에 병합한 다음 유지할 항목을 선택하세요.",
@@ -270,6 +368,8 @@
     "Hide Sidebar": "사이드바 가리기",
     "History Scope": "기록 범위",
     "History and Diffs": "기록 및 차이",
+    "Hybrid": "혼합 표시",
+    "Hybrid shows relative times for the last 7 days and exact dates and times for older commits.": "혼합 표시는 최근 7일 동안 상대 시간을 표시하고 이전 커밋에는 정확한 날짜와 시간을 표시합니다.",
     "Icons Only": "아이콘만",
     "Icons and Text": "아이콘 및 텍스트",
     "Image Comparison": "이미지 비교",
@@ -280,6 +380,7 @@
     "Interface Language": "인터페이스 언어",
     "Invalid file history records from Git.": "Git에서 반환한 파일 기록이 올바르지 않습니다.",
     "Jump to HEAD": "HEAD로 이동",
+    "Just now": "방금",
     "Keep Running": "계속 실행",
     "Keep Version": "버전 유지",
     "Keyboard Shortcuts": "키보드 단축키",
@@ -422,6 +523,7 @@
     "Refresh": "새로 고침",
     "Refresh Applications": "앱 새로 고침",
     "Refresh Repositories": "저장소 새로 고침",
+    "Relative Time": "상대 시간",
     "Remote Branches": "원격 브랜치",
     "Remotes": "원격",
     "Remove": "제거",

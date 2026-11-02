@@ -36,32 +36,10 @@ struct CommitDetailContentView: View {
                             .font(.body)
                             .padding(.top, 4)
                     }
-                    HStack {
-                        Icon(size: .medium, authorEmail: commit.authorEmail, authorInitial: String(commit.author.initial.prefix(2)))
-                        Text(commit.author)
-                        Divider()
-                            .frame(height: 10)
-                        Text(commit.authorEmail)
-                        Spacer()
-                        HStack(alignment: .firstTextBaseline, spacing: 6) {
-                            Text(commit.authorDateDisplay)
-                                .monospacedDigit()
-                            if !commit.authorTimeZoneDisplay.isEmpty {
-                                Text(verbatim: commit.authorTimeZoneDisplay)
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                    .padding(.horizontal, 5)
-                                    .padding(.vertical, 2)
-                                    .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 4))
-                                    .help(TimeZone.current.identifier)
-                            }
-                        }
-                        .fixedSize(horizontal: true, vertical: false)
-                        .accessibilityElement(children: .combine)
-                    }
-                    .padding(.top)
-                    .padding(.top, 2)
-                    .foregroundStyle(.secondary)
+                    CommitMetadataView(commit: commit)
+                        .font(.caption)
+                        .padding(.top)
+                        .padding(.top, 2)
                     Divider()
                         .padding(.top)
                     if commit.parentHashes.count == 2 {

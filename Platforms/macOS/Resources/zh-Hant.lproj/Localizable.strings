@@ -7,6 +7,7 @@
 "Abort Merge" = "中止合併";
 "Abort Merge?" = "中止合併？";
 "About" = "關於";
+"Absolute Time" = "具體時間";
 "Actual Size" = "原始尺寸";
 "Add" = "加入";
 "Add Local Repository or Directory" = "加入本機儲存庫或目錄";
@@ -98,6 +99,7 @@
 "Commit Message" = "提交訊息";
 "Commit Message Snippets" = "提交快捷輸入";
 "Commit Messages" = "提交訊息";
+"Commit Time" = "提交時間";
 "Commit View" = "提交視角";
 "Commit or stash changes in %@ before merging." = "請先提交或儲藏 %@ 中的變更，再進行合併。";
 "Commit your work, merge into the target branch, then choose what to keep." = "先提交變更，合併到目標分支，再選擇要保留的內容。";
@@ -220,6 +222,8 @@
 "Hide Sidebar" = "隱藏側邊欄";
 "History Scope" = "歷史範圍";
 "History and Diffs" = "歷史與差異";
+"Hybrid" = "混合顯示";
+"Hybrid shows relative times for the last 7 days and exact dates and times for older commits." = "混合顯示在最近 7 天內使用相對時間，更早的提交顯示具體日期和時間。";
 "Icons Only" = "僅圖像";
 "Icons and Text" = "圖像與文字";
 "Image Comparison" = "圖片比較";
@@ -230,6 +234,7 @@
 "Interface Language" = "介面語言";
 "Invalid file history records from Git." = "Git 傳回的檔案歷史記錄無效。";
 "Jump to HEAD" = "定位至 HEAD";
+"Just now" = "剛剛";
 "Keep Running" = "繼續執行";
 "Keep Version" = "保留版本";
 "Keyboard Shortcuts" = "快速鍵";
@@ -372,6 +377,7 @@
 "Refresh" = "重新整理";
 "Refresh Applications" = "重新整理應用程式";
 "Refresh Repositories" = "重新整理儲存庫列表";
+"Relative Time" = "相對時間";
 "Remote Branches" = "遠端分支";
 "Remotes" = "遠端";
 "Remove" = "移除";

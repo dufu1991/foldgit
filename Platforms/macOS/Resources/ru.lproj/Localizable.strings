@@ -7,6 +7,7 @@
 "Abort Merge" = "Прервать слияние";
 "Abort Merge?" = "Прервать слияние?";
 "About" = "О программе";
+"Absolute Time" = "Дата и время";
 "Actual Size" = "Исходный размер";
 "Add" = "Добавить";
 "Add Local Repository or Directory" = "Добавить локальный репозиторий или папку";
@@ -98,6 +99,7 @@
 "Commit Message" = "Сообщение коммита";
 "Commit Message Snippets" = "Шаблоны сообщений коммитов";
 "Commit Messages" = "Сообщения коммитов";
+"Commit Time" = "Время коммита";
 "Commit View" = "Просмотр коммитов";
 "Commit or stash changes in %@ before merging." = "Перед слиянием закоммитьте изменения в %@ или сохраните их в stash.";
 "Commit your work, merge into the target branch, then choose what to keep." = "Сначала закоммитьте изменения, объедините их с целевой веткой и выберите, что сохранить.";
@@ -220,6 +222,8 @@
 "Hide Sidebar" = "Скрыть боковую панель";
 "History Scope" = "Область истории";
 "History and Diffs" = "История и различия";
+"Hybrid" = "Смешанный режим";
+"Hybrid shows relative times for the last 7 days and exact dates and times for older commits." = "В смешанном режиме за последние 7 дней отображается относительное время, а для более старых коммитов — точные дата и время.";
 "Icons Only" = "Только значки";
 "Icons and Text" = "Значки и текст";
 "Image Comparison" = "Сравнение изображений";
@@ -230,6 +234,7 @@
 "Interface Language" = "Язык интерфейса";
 "Invalid file history records from Git." = "Git вернул недопустимые записи истории файла.";
 "Jump to HEAD" = "Перейти к HEAD";
+"Just now" = "Только что";
 "Keep Running" = "Продолжать работу";
 "Keep Version" = "Выбрать версию";
 "Keyboard Shortcuts" = "Сочетания клавиш";
@@ -372,6 +377,7 @@
 "Refresh" = "Обновить";
 "Refresh Applications" = "Обновить список приложений";
 "Refresh Repositories" = "Обновить список репозиториев";
+"Relative Time" = "Относительное время";
 "Remote Branches" = "Удалённые ветки";
 "Remotes" = "Удалённые";
 "Remove" = "Удалить";

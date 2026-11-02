@@ -41,6 +41,47 @@ async Task<string> Repository(string name)
 }
 try
 {
+    await Test("Commit time modes, elapsed boundaries, localization and time zones", () =>
+    {
+        var now = DateTimeOffset.Parse("2024-11-04T00:00:00Z");
+        var english = new TextCatalog("en");
+        foreach (var (age, exact) in new[] { (0d, false), (604799d, false), (604800d, true), (604801d, true), (-1d, true) })
+        {
+            var date = now.AddSeconds(-age);
+            var hybrid = CommitTimeFormatter.Format(date, CommitTimeDisplayMode.Hybrid, now, english, TimeZoneInfo.Utc);
+            Assert(hybrid.IsAbsolute == exact);
+            Assert(CommitTimeFormatter.Format(date, CommitTimeDisplayMode.Absolute, now, english, TimeZoneInfo.Utc).IsAbsolute);
+            Assert(!CommitTimeFormatter.Format(date, CommitTimeDisplayMode.Relative, now, english, TimeZoneInfo.Utc).IsAbsolute);
+            Assert(hybrid.Tooltip.EndsWith("UTC+00:00"));
+        }
+        Assert(CommitTimeFormatter.Format(now, CommitTimeDisplayMode.Relative, now, english, TimeZoneInfo.Utc).Text == "Just now");
+        Assert(CommitTimeFormatter.Format(now.AddHours(-1), CommitTimeDisplayMode.Relative, now, english, TimeZoneInfo.Utc).Text == "1 hour ago");
+        Assert(CommitTimeFormatter.Format(now.AddHours(1), CommitTimeDisplayMode.Relative, now, english, TimeZoneInfo.Utc).Text == "in 1 hour");
+        foreach (var language in TextCatalog.Languages)
+        {
+            var catalog = new TextCatalog(language);
+            foreach (var age in new[] { 10d, 120, 7200, 3 * 86400, 60 * 86400, 400 * 86400 })
+                foreach (var direction in new[] { -1, 1 })
+                {
+                    var text = CommitTimeFormatter.Format(now.AddSeconds(direction * age), CommitTimeDisplayMode.Relative, now, catalog, TimeZoneInfo.Utc).Text;
+                    Assert(text.Length > 0 && !text.Contains('%'));
+                }
+        }
+        Assert(CommitTimeFormatter.Format(now.AddHours(-1), CommitTimeDisplayMode.Relative, now, new("zh-Hans"), TimeZoneInfo.Utc).Text == "1 小时前");
+        var shanghai = TimeZoneInfo.FindSystemTimeZoneById("Asia/Shanghai");
+        Assert(CommitTimeFormatter.Format(DateTimeOffset.Parse("2021-01-01T00:00:00Z"), CommitTimeDisplayMode.Absolute, now, new("zh-Hans"), shanghai).Text == "2021-01-01 08:00:00");
+        var pacific = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles");
+        var before = DateTimeOffset.Parse("2024-03-10T09:59:59Z");
+        Assert(CommitTimeFormatter.Format(before, CommitTimeDisplayMode.Absolute, now, english, pacific).Tooltip == "2024-03-10 01:59:59 UTC-08:00");
+        Assert(CommitTimeFormatter.Format(before.AddSeconds(1), CommitTimeDisplayMode.Absolute, now, english, pacific).Tooltip == "2024-03-10 03:00:00 UTC-07:00");
+        Assert(CommitTimeFormatter.Format(now.AddDays(-7), CommitTimeDisplayMode.Hybrid, now, english, pacific).IsAbsolute);
+        foreach (var (mode, identifier) in new[] { (CommitTimeDisplayMode.Relative, "relative"), (CommitTimeDisplayMode.Absolute, "absolute"), (CommitTimeDisplayMode.Hybrid, "hybrid") })
+        {
+            Assert(JsonSerializer.Serialize(mode) == "\"" + identifier + "\"");
+            Assert(JsonSerializer.Deserialize<CommitTimeDisplayMode>("\"" + identifier + "\"") == mode);
+        }
+        return Task.CompletedTask;
+    });
     await Test("Shared fixtures, icons and graph", () =>
     {
         using var fixture = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", "behavior.json")));

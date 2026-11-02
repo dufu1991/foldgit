@@ -18,6 +18,22 @@
 			<string>%lld commits</string>
 		</dict>
 	</dict>
+	<key>%lld days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>hace %lld día</string>
+			<key>other</key>
+			<string>hace %lld días</string>
+		</dict>
+	</dict>
 	<key>%lld deletions</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -50,6 +66,22 @@
 			<string>%lld archivos modificados</string>
 		</dict>
 	</dict>
+	<key>%lld hours ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>hace %lld hora</string>
+			<key>other</key>
+			<string>hace %lld horas</string>
+		</dict>
+	</dict>
 	<key>%lld insertions</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -64,6 +96,54 @@
 			<string>%lld línea añadida</string>
 			<key>other</key>
 			<string>%lld líneas añadidas</string>
+		</dict>
+	</dict>
+	<key>%lld minutes ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>hace %lld minuto</string>
+			<key>other</key>
+			<string>hace %lld minutos</string>
+		</dict>
+	</dict>
+	<key>%lld months ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>hace %lld mes</string>
+			<key>other</key>
+			<string>hace %lld meses</string>
+		</dict>
+	</dict>
+	<key>%lld seconds ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>hace %lld segundo</string>
+			<key>other</key>
+			<string>hace %lld segundos</string>
 		</dict>
 	</dict>
 	<key>%lld untracked files</key>
@@ -82,6 +162,22 @@
 			<string>%lld archivos sin seguimiento</string>
 		</dict>
 	</dict>
+	<key>%lld years ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>hace %lld año</string>
+			<key>other</key>
+			<string>hace %lld años</string>
+		</dict>
+	</dict>
 	<key>Behind by %lld commits</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -96,6 +192,102 @@
 			<string>Atrasado en %lld commit</string>
 			<key>other</key>
 			<string>Atrasado en %lld commits</string>
+		</dict>
+	</dict>
+	<key>in %lld days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>dentro de %lld día</string>
+			<key>other</key>
+			<string>dentro de %lld días</string>
+		</dict>
+	</dict>
+	<key>in %lld hours</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>dentro de %lld hora</string>
+			<key>other</key>
+			<string>dentro de %lld horas</string>
+		</dict>
+	</dict>
+	<key>in %lld minutes</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>dentro de %lld minuto</string>
+			<key>other</key>
+			<string>dentro de %lld minutos</string>
+		</dict>
+	</dict>
+	<key>in %lld months</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>dentro de %lld mes</string>
+			<key>other</key>
+			<string>dentro de %lld meses</string>
+		</dict>
+	</dict>
+	<key>in %lld seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>dentro de %lld segundo</string>
+			<key>other</key>
+			<string>dentro de %lld segundos</string>
+		</dict>
+	</dict>
+	<key>in %lld years</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>dentro de %lld año</string>
+			<key>other</key>
+			<string>dentro de %lld años</string>
 		</dict>
 	</dict>
 </dict>

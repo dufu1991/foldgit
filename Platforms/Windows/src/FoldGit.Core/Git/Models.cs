@@ -4,7 +4,7 @@ public sealed record Commit(string Hash, string[] Parents, string Author, string
     DateTimeOffset Date, string Message, string Decorations)
 {
     public string Subject => Message.Split('\n')[0];
-    public string ShortHash => Hash[..Math.Min(8, Hash.Length)];
+    public string ShortHash => Hash[..Math.Min(7, Hash.Length)];
 }
 
 public sealed record FileStatus(string Path, string? OriginalPath, char Index, char WorkingTree, bool Conflict)

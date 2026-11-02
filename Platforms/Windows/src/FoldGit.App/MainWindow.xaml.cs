@@ -35,6 +35,7 @@ public sealed partial class MainWindow : Window
     private readonly ListView StashList = new();
     private string[] draggedRepositories = [];
     private readonly SemaphoreSlim dialogs = new(1, 1);
+    private readonly Microsoft.UI.Dispatching.DispatcherQueueTimer commitTimeTimer;
     private string L(string key) => Model.Text.Get(key);
 
     public MainWindow()
@@ -44,11 +45,19 @@ public sealed partial class MainWindow : Window
         ExtendsContentIntoTitleBar = true; SetTitleBar(TitleRegion);
         SystemBackdrop = new MicaBackdrop();
         Model = new(DispatchAsync);
+        commitTimeTimer = DispatcherQueue.CreateTimer();
+        commitTimeTimer.Interval = TimeSpan.FromMinutes(1);
+        commitTimeTimer.Tick += (_, _) => Model.RefreshCommitTime();
+        Closed += (_, _) => commitTimeTimer.Stop();
+        Activated += (_, args) =>
+        {
+            if (args.WindowActivationState != WindowActivationState.Deactivated) Model.RefreshCommitTime();
+        };
         Root.DataContext = Model;
         BranchList.ItemsSource = Model.LocalBranches; RemoteBranchList.ItemsSource = Model.RemoteBranches; WorktreeList.ItemsSource = Model.Worktrees;
         Model.ResourcesChanged += ApplyResources;
         Model.PropertyChanged += ModelChanged;
-        Model.HistoryChanging += () => { historySelection = HistoryList.SelectedItems.OfType<GraphCommit>().Select(row => row.Commit.Hash).ToArray(); updatingSelection = true; };
+        Model.HistoryChanging += () => { historySelection = HistoryList.SelectedItems.OfType<HistoryCommitRow>().Select(row => row.Commit.Hash).ToArray(); updatingSelection = true; };
         Model.HistoryChanged += () =>
         {
             foreach (var row in Model.History.Where(row => historySelection.Contains(row.Commit.Hash))) HistoryList.SelectedItems.Add(row);
@@ -126,6 +135,8 @@ public sealed partial class MainWindow : Window
     }
     private void ApplyResources()
     {
+        if (Model.Settings.CommitTimeDisplayMode == CommitTimeDisplayMode.Absolute) commitTimeTimer.Stop();
+        else commitTimeTimer.Start();
         Root.RequestedTheme = Model.Settings.Appearance switch { "light" => ElementTheme.Light, "dark" => ElementTheme.Dark, _ => ElementTheme.Default };
         foreach (var (item, key) in new (MenuFlyoutItem, string)[] { (AddButton, "Add"), (CloneButton, "Clone"), (RefreshButton, "Refresh"), (TagsButton, "Tags"), (StashesButton, "Stashed Changes"), (CompareButton, "Compare Branches or Tags") }) item.Text = L(key);
         foreach (var (button, key) in new (Button, string)[] { (BranchButton, "New Branch"), (MoreButton, "More"), (NewWorktreeButton, "New Worktree"), (PruneButton, "Prune Missing Worktrees"), (ResolveButton, "Resolve Merge"), (CommitButton, "Commit"), (StageAllButton, "Stage All"), (UnstageAllButton, "Unstage All"), (StashButton, "Stash All Changes"), (TemplatesButton, "Commit Message Snippets") }) button.Content = L(key);
@@ -232,7 +243,7 @@ public sealed partial class MainWindow : Window
             ToolTipService.SetToolTip(hash, commit.Hash); ParentLinks.Children.Add(hash);
             foreach (var parent in commit.Parents)
             {
-                var link = new HyperlinkButton { Content = "→ " + parent[..Math.Min(8, parent.Length)], Padding = new(4, 0, 4, 0) };
+                var link = new HyperlinkButton { Content = "→ " + parent[..Math.Min(7, parent.Length)], Padding = new(4, 0, 4, 0) };
                 link.Click += async (_, _) => await Model.RunAsync(() => Model.NavigateToCommitAsync(parent));
                 ParentLinks.Children.Add(link);
             }
@@ -323,7 +334,7 @@ public sealed partial class MainWindow : Window
     private async void CommitSelected(object sender, SelectionChangedEventArgs args)
     {
         if (updatingSelection) return;
-        var rows = HistoryList.SelectedItems.OfType<GraphCommit>().ToArray();
+        var rows = HistoryList.SelectedItems.OfType<HistoryCommitRow>().ToArray();
         if (rows.Length == 1) await Model.RunAsync(() => Model.ShowCommitAsync(rows[0].Commit));
         else if (rows.Length == 2)
         {
@@ -430,7 +441,7 @@ public sealed partial class MainWindow : Window
     private void ShowMenu(MenuFlyout menu, RightTappedRoutedEventArgs args, FrameworkElement target) { menu.ShowAt(target, args.GetPosition(target)); args.Handled = true; }
     private void CommitRightTapped(object sender, RightTappedRoutedEventArgs args)
     {
-        if (ItemAt<GraphCommit>(args) is not { } row) return;
+        if (ItemAt<HistoryCommitRow>(args) is not { } row) return;
         var menu = new MenuFlyout();
         menu.Items.Add(Menu("New Branch", () => CreateBranchAsync(row.Commit.Hash)));
         menu.Items.Add(Menu("New Tag", () => CreateTagAsync(row.Commit.Hash)));

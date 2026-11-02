@@ -231,6 +231,7 @@ struct GeneralSettingsPane: View {
 }
 
 struct AppearanceSettingsPane: View {
+    @AppStorage(PreferenceKey.commitTimeDisplayMode.rawValue) private var commitTimeMode = AppPreferences.defaultCommitTimeDisplayMode
     @AppStorage(PreferenceKey.appAppearance.rawValue) private var appearance = AppAppearance.automatic
     @AppStorage(PreferenceKey.toolbarLabelStyle.rawValue) private var toolbarStyle = AppPreferences.defaultToolbarLabelStyle
 
@@ -254,9 +255,19 @@ struct AppearanceSettingsPane: View {
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier("toolbarDisplayPicker")
             }
+            Section {
+                Picker("Commit Time", selection: $commitTimeMode) {
+                    ForEach(CommitTimeDisplayMode.allCases) { Text($0.title).tag($0) }
+                }
+                .pickerStyle(.menu)
+                .accessibilityIdentifier("commitTimeDisplayModePicker")
+            } footer: {
+                Text("Hybrid shows relative times for the last 7 days and exact dates and times for older commits.")
+            }
         }
         .settingsForm()
         .onChange(of: appearance) { AppDelegate.applyAppearance() }
+        .onChange(of: commitTimeMode) { CommitTimeClock.shared.refresh() }
     }
 }
 

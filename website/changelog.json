@@ -1,5 +1,23 @@
 [
   {
+    "version": "0.4.0",
+    "date": "2026-11-03",
+    "zh": [
+      "macOS 新增目录视角，可浏览完整文件、使用语法高亮和文件内搜索，并从差异页跳转到对应文件。",
+      "macOS 侧栏实时显示工作树状态，支持批量清理已合并的工作树，并在删除忽略文件前确认。",
+      "macOS 在暂存或取消暂存后定位并高亮文件，提交信息区可按需隐藏。",
+      "macOS 可设置全局自动抓取间隔，也可为单个仓库单独设置。",
+      "macOS 和 Windows 支持以相对时间、完整日期或混合模式显示提交时间。"
+    ],
+    "en": [
+      "Add Directory View on macOS to browse full files with syntax highlighting and in-file search, and jump to the corresponding file from a diff.",
+      "Show live worktree status in the macOS sidebar and clean up merged worktrees in batches, with confirmation before deleting ignored files.",
+      "Scroll to and highlight files after staging or unstaging on macOS, and let users hide the commit message area.",
+      "Set a default auto-fetch interval on macOS and override it for individual repositories.",
+      "Choose relative times, exact dates and times, or a hybrid format for commit timestamps on macOS and Windows."
+    ]
+  },
+  {
     "version": "0.3.0",
     "date": "2026-10-30",
     "zh": [

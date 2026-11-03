@@ -32,7 +32,7 @@ struct FoldGitApp: App {
                 }
             }
             CommandGroup(replacing: .appSettings) {
-                Button("Settings") { SettingsWindowController.show() }
+                Button("Settings…") { SettingsWindowController.show() }
                     .keyboardShortcut(",", modifiers: .command)
                 Button("Check for Updates") { UpdateChecker.shared.checkNow() }
             }

@@ -111,6 +111,14 @@ struct SettingsResetTests {
         }
     }
 
+    @Test func settingsReopenLastViewedCategory() {
+        withDefaults { defaults, _ in
+            #expect(SettingsNavigation(defaults: defaults).tab == .general)
+            SettingsNavigation(defaults: defaults).select(.repositories)
+            #expect(SettingsNavigation(defaults: defaults).tab == .repositories)
+        }
+    }
+
     @Test func confirmationShowsEveryCategoryAndAllDefaultSnippets() {
         let groups = SettingsReset.groups
         #expect(groups.map(\.id) == ["general", "appearance", "comparison", "snippets", "repositories", "applications", "sidebar"])

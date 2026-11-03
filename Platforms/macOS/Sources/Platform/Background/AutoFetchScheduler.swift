@@ -11,7 +11,9 @@ struct AutoFetchEvent: Sendable {
 @Observable final class AutoFetchScheduler {
     static let shared = AutoFetchScheduler()
 
+    /// Repository-specific choices; repositories without one follow `defaultInterval`.
     private(set) var intervals: [String: AutoFetchInterval] = [:]
+    private(set) var defaultInterval: AutoFetchInterval = .off
     private(set) var errors: [String: String] = [:]
     private(set) var lastSuccess: [String: Date] = [:]
     private(set) var fetching: Set<String> = []
@@ -33,6 +35,7 @@ struct AutoFetchEvent: Sendable {
         self.sleep = sleep
         self.fetch = fetch
         intervals = Self.readIntervals(defaults)
+        defaultInterval = Self.readDefaultInterval(defaults)
     }
 
     nonisolated static func key(for directory: URL) -> String {
@@ -40,7 +43,12 @@ struct AutoFetchEvent: Sendable {
     }
 
     func interval(for folder: WorkspaceEntry) -> AutoFetchInterval {
-        intervals[Self.key(for: folder.url)] ?? .off
+        intervals[Self.key(for: folder.url)] ?? defaultInterval
+    }
+
+    /// Returns nil when the repository follows the default interval.
+    func override(for folder: WorkspaceEntry) -> AutoFetchInterval? {
+        intervals[Self.key(for: folder.url)]
     }
 
     func recordFetchSuccess(for directory: URL, at date: Date = .now) {
@@ -49,11 +57,17 @@ struct AutoFetchEvent: Sendable {
         errors.removeValue(forKey: key)
     }
 
-    func setInterval(_ interval: AutoFetchInterval, for folder: WorkspaceEntry) {
+    /// Passing nil makes the repository follow the default interval again.
+    func setInterval(_ interval: AutoFetchInterval?, for folder: WorkspaceEntry) {
         let key = Self.key(for: folder.url)
         var saved = Self.readIntervals(defaults)
-        saved[key] = interval == .off ? nil : interval
+        saved[key] = interval
         defaults.set(saved.mapValues(\.rawValue), forKey: PreferenceKey.projectAutoFetch.rawValue)
+        reload()
+    }
+
+    func setDefaultInterval(_ interval: AutoFetchInterval) {
+        defaults.set(interval.rawValue, forKey: PreferenceKey.defaultAutoFetchInterval.rawValue)
         reload()
     }
 
@@ -83,9 +97,12 @@ struct AutoFetchEvent: Sendable {
     func reload() {
         let updated = Self.readIntervals(defaults)
         if intervals != updated { intervals = updated }
+        let updatedDefault = Self.readDefaultInterval(defaults)
+        if defaultInterval != updatedDefault { defaultInterval = updatedDefault }
         guard isRunning else { return }
         // Any preference change posts a notification; most of them leave the schedule unchanged.
-        let settings = ScheduledSettings(folders: defaults.data(forKey: PreferenceKey.folder.rawValue), intervals: updated)
+        let settings = ScheduledSettings(folders: defaults.data(forKey: PreferenceKey.folder.rawValue),
+                                         intervals: updated, defaultInterval: updatedDefault)
         guard settings != scheduledSettings else { return }
         scheduledSettings = settings
         let folders = settings.folders.flatMap { try? JSONDecoder().decode([WorkspaceEntry].self, from: $0) } ?? []
@@ -137,9 +154,14 @@ struct AutoFetchEvent: Sendable {
         let saved = defaults.dictionary(forKey: PreferenceKey.projectAutoFetch.rawValue) as? [String: Int] ?? [:]
         return saved.compactMapValues { AutoFetchInterval(rawValue: $0) }
     }
+
+    private static func readDefaultInterval(_ defaults: UserDefaults) -> AutoFetchInterval {
+        AutoFetchInterval(rawValue: defaults.integer(forKey: PreferenceKey.defaultAutoFetchInterval.rawValue)) ?? .off
+    }
 }
 
 private struct ScheduledSettings: Equatable {
     let folders: Data?
     let intervals: [String: AutoFetchInterval]
+    let defaultInterval: AutoFetchInterval
 }

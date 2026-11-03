@@ -1,3 +1,4 @@
+import FoldGitCore
 import Foundation
 import ServiceManagement
 
@@ -39,12 +40,12 @@ enum SettingsReset {
                 Item(id: "quit", title: String(localized: "Quit When the Last Window Closes"), value: off, keys: [.quitAfterLastWindow]),
             ]),
             Group(id: "appearance", title: String(localized: "Appearance"), items: [
-                Item(id: "commitTime", title: String(localized: "Commit Time"), value: AppPreferences.defaultCommitTimeDisplayMode.title, keys: [.commitTimeDisplayMode]),
                 Item(id: "appearance", title: String(localized: "Color Scheme"), value: automatic, keys: [.appAppearance]),
                 Item(id: "toolbar", title: String(localized: "Toolbar Display"), value: String(localized: "Icons and Text"), keys: [.toolbarLabelStyle]),
             ]),
             Group(id: "comparison", title: String(localized: "History and Diffs"), items: [
                 Item(id: "graph", title: String(localized: "Show Commit Graph"), value: on, keys: [.showCommitGraph]),
+                Item(id: "commitTime", title: String(localized: "Commit Time"), value: AppPreferences.defaultCommitTimeDisplayMode.title, keys: [.commitTimeDisplayMode]),
                 Item(id: "historyScope", title: String(localized: "History Scope"), value: String(localized: "Current Branch"), keys: [.repositoryHistoryScopes]),
                 Item(id: "layout", title: String(localized: "Diff Layout"), value: automatic, keys: [.diffLayout]),
                 Item(id: "expansion", title: String(localized: "Default File Expansion"), value: AppPreferences.defaultDiffFileExpansion.title, keys: [.diffFileExpansion]),
@@ -62,7 +63,8 @@ enum SettingsReset {
                 Item(id: "worktrees", title: String(localized: "Enable Worktrees"), value: on, keys: [.showWorktreeInformation]),
                 Item(id: "worktreeStatus", title: String(localized: "Show Worktree Status in Sidebar"), value: on, keys: [.showWorktreeStatus]),
                 Item(id: "worktreeOverrides", title: String(localized: "Repository Worktrees"), value: String(localized: "Off for All Repositories"), keys: [.repositoryWorktreeVisibility]),
-                Item(id: "fetch", title: String(localized: "Automatic Fetch"), value: String(localized: "Off for All Repositories"), keys: [.projectAutoFetch]),
+                Item(id: "defaultFetch", title: String(localized: "Default Interval"), value: AutoFetchInterval.off.title, keys: [.defaultAutoFetchInterval]),
+                Item(id: "fetch", title: String(localized: "Automatic Fetch"), value: String(localized: "Use Default for All Repositories"), keys: [.projectAutoFetch]),
             ]),
             Group(id: "applications", title: String(localized: "External Applications"), items: [
                 Item(id: "pinned", title: String(localized: "Pinned Applications"), value: none, keys: [.openInPinnedApplications]),

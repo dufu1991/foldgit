@@ -26,7 +26,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .snippets: "text.bubble.fill"
         case .repositories: "book.closed.fill"
         case .applications: "square.grid.2x2.fill"
-        case .about: "info"
+        case .about: "info.circle.fill"
         }
     }
     var tint: Color {
@@ -64,7 +64,16 @@ enum SettingsLayout {
 @MainActor
 @Observable
 final class SettingsNavigation {
-    var tab: SettingsTab = .general
+    @ObservationIgnored private let defaults: UserDefaults
+    var tab: SettingsTab {
+        didSet { defaults.set(tab.rawValue, forKey: PreferenceKey.lastSettingsTab.rawValue) }
+    }
+
+    /// Reopens the category the user last viewed.
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        tab = defaults.string(forKey: PreferenceKey.lastSettingsTab.rawValue).flatMap(SettingsTab.init(rawValue:)) ?? .general
+    }
 
     func select(_ selected: SettingsTab?) {
         guard let selected else { return }
@@ -156,13 +165,10 @@ struct GeneralSettingsPane: View {
             } header: {
                 Text("Language")
             } footer: {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Language changes take full effect after restarting the application.")
-                    if languageSession.requiresRestart(for: language) {
-                        Button("Restart Now") { restartApplication() }
-                            .disabled(isRestarting)
-                            .accessibilityIdentifier("restartForLanguageButton")
-                    }
+                if languageSession.requiresRestart(for: language) {
+                    Button("Restart Now") { restartApplication() }
+                        .disabled(isRestarting)
+                        .accessibilityIdentifier("restartForLanguageButton")
                 }
             }
             Section("Startup") {
@@ -182,24 +188,16 @@ struct GeneralSettingsPane: View {
                 Toggle("Check for Updates at Launch", isOn: $checkForUpdatesAtLaunch)
                     .accessibilityIdentifier("checkForUpdatesAtLaunchToggle")
             }
-            Section {
+            Section("Windows") {
                 Toggle("Quit When the Last Window Closes", isOn: $quitAfterLastWindow)
                     .accessibilityIdentifier("quitAfterLastWindowToggle")
-            } header: {
-                Text("Windows")
-            } footer: {
-                Text("Automatic fetch continues while the application is running.")
             }
             Section {
-                Button("Restore Defaults", role: .destructive) {
+                Button("Restore Defaults…", role: .destructive) {
                     isShowingRestoreDefaults = true
                     showsRestoreDefaults = true
                 }
                 .accessibilityIdentifier("restoreDefaultsButton")
-            } header: {
-                Text("Reset Settings")
-            } footer: {
-                Text("Review all default values before restoring settings.")
             }
         }
         .settingsForm()
@@ -256,13 +254,12 @@ struct GeneralSettingsPane: View {
 }
 
 struct AppearanceSettingsPane: View {
-    @AppStorage(PreferenceKey.commitTimeDisplayMode.rawValue) private var commitTimeMode = AppPreferences.defaultCommitTimeDisplayMode
     @AppStorage(PreferenceKey.appAppearance.rawValue) private var appearance = AppAppearance.automatic
     @AppStorage(PreferenceKey.toolbarLabelStyle.rawValue) private var toolbarStyle = AppPreferences.defaultToolbarLabelStyle
 
     var body: some View {
         Form {
-            Section("Appearance") {
+            Section("Theme") {
                 Picker("Color Scheme", selection: $appearance) {
                     ForEach(AppAppearance.allCases) { Text($0.title).tag($0) }
                 }
@@ -280,24 +277,15 @@ struct AppearanceSettingsPane: View {
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier("toolbarDisplayPicker")
             }
-            Section {
-                Picker("Commit Time", selection: $commitTimeMode) {
-                    ForEach(CommitTimeDisplayMode.allCases) { Text($0.title).tag($0) }
-                }
-                .pickerStyle(.menu)
-                .accessibilityIdentifier("commitTimeDisplayModePicker")
-            } footer: {
-                Text("Hybrid shows relative times for the last 7 days and exact dates and times for older commits.")
-            }
         }
         .settingsForm()
         .onChange(of: appearance) { AppDelegate.applyAppearance() }
-        .onChange(of: commitTimeMode) { CommitTimeClock.shared.refresh() }
     }
 }
 
 struct ComparisonSettingsPane: View {
     @AppStorage(PreferenceKey.showCommitGraph.rawValue) private var showGraph = true
+    @AppStorage(PreferenceKey.commitTimeDisplayMode.rawValue) private var commitTimeMode = AppPreferences.defaultCommitTimeDisplayMode
     @AppStorage(PreferenceKey.diffLayout.rawValue) private var layout = DiffLayout.automatic
     @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = AppPreferences.defaultDiffFileExpansion
     @AppStorage(PreferenceKey.codeFontSize.rawValue) private var fontSize = AppPreferences.defaultCodeFontSize
@@ -305,32 +293,30 @@ struct ComparisonSettingsPane: View {
 
     var body: some View {
         Form {
-            Section("Commit History") {
+            Section {
                 Toggle("Show Commit Graph", isOn: $showGraph)
                     .accessibilityIdentifier("showCommitGraphToggle")
+                Picker("Commit Time", selection: $commitTimeMode) {
+                    ForEach(CommitTimeDisplayMode.allCases) { Text($0.title).tag($0) }
+                }
+                .pickerStyle(.menu)
+                .accessibilityIdentifier("commitTimeDisplayModePicker")
+            } header: {
+                Text("Commit History")
+            } footer: {
+                Text("Hybrid: relative times within 7 days, exact dates before that.")
             }
-            Section {
+            Section("Diff Display") {
                 Picker("Diff Layout", selection: $layout) {
                     ForEach(DiffLayout.allCases, id: \.self) { Text($0.title).tag($0) }
                 }
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier("settingsDiffLayoutPicker")
-            } header: {
-                Text("Diff Display")
-            } footer: {
-                Text("Automatic uses side-by-side layout when there is enough space.")
-                Text("Layout changes are shared with the controls in the diff view.")
-            }
-            Section {
                 Picker("Default File Expansion", selection: $fileExpansion) {
                     ForEach(DiffFileExpansion.allCases) { Text($0.title).tag($0) }
                 }
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier("defaultDiffFileExpansionPicker")
-            } header: {
-                Text("Files")
-            } footer: {
-                Text("Applies to newly opened diffs. Files you expand or collapse manually keep their state.")
             }
             Section("Code Display") {
                 LabeledContent("Code Font Size") {
@@ -344,12 +330,13 @@ struct ComparisonSettingsPane: View {
                 }
                 Toggle("Wrap Long Lines", isOn: $wrapLongLines)
                     .accessibilityIdentifier("wrapLongLinesToggle")
-            }
-            Section {
+                // Kept next to the code options so font and wrapping changes are visible immediately.
                 ChunkView(chunk: Self.preview, filePath: "Example.swift")
-            } header: { Text("Preview") }
+                    .accessibilityLabel(Text("Preview"))
+            }
         }
         .settingsForm()
+        .onChange(of: commitTimeMode) { CommitTimeClock.shared.refresh() }
     }
 
     private static let preview = Chunk(raw: "@@ -1,3 +1,3 @@\n func greeting() {\n-    let message = \"Hello\"\n+    let message = \"Welcome to FoldGit\"\n }")
@@ -378,11 +365,20 @@ struct RepositorySettingsPane: View {
             } header: {
                 Text("Worktrees")
             } footer: {
-                Text("After enabling worktrees globally, enable them for each repository in its context menu. Worktree information and management actions appear only for enabled repositories. Turning this off preserves repository choices.")
+                Text("Also enable worktrees per repository from its context menu.")
             }
-            Section("Automatic Fetch") {
-                Text("Choose a fetch interval for each repository. Fetch downloads remote updates without merging them.")
-                    .foregroundStyle(.secondary)
+            Section {
+                Picker("Default Interval", selection: Binding(get: { autoFetch.defaultInterval }, set: {
+                    autoFetch.setDefaultInterval($0)
+                })) {
+                    ForEach(AutoFetchInterval.allCases) { Text($0.title).tag($0) }
+                }
+                .pickerStyle(.menu)
+                .accessibilityIdentifier("defaultAutoFetchIntervalPicker")
+            } header: {
+                Text("Automatic Fetch")
+            } footer: {
+                Text("Repositories without their own interval use the default.")
             }
             if groups.isEmpty {
                 Section { Text("No Repositories").foregroundStyle(.secondary) }
@@ -391,17 +387,13 @@ struct RepositorySettingsPane: View {
                 Section(entry.displayName) {
                     ForEach(entry.repositories, id: \.url) { repository in
                         VStack(alignment: .leading, spacing: 6) {
-                            Picker(selection: Binding(get: { autoFetch.interval(for: repository) }, set: {
+                            Picker(selection: Binding(get: { autoFetch.override(for: repository) }, set: {
                                 autoFetch.setInterval($0, for: repository)
                             })) {
-                                ForEach(AutoFetchInterval.allCases) { Text($0.title).tag($0) }
+                                AutoFetchIntervalOptions(defaultInterval: autoFetch.defaultInterval)
                             } label: {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(verbatim: repository.displayName)
-                                    Text(verbatim: repository.url.path)
-                                        .font(.caption).foregroundStyle(.secondary)
-                                        .lineLimit(1).truncationMode(.middle)
-                                }
+                                Text(verbatim: repository.displayName)
+                                    .lineLimit(1).truncationMode(.middle)
                             }
                             .pickerStyle(.menu)
                             let key = AutoFetchScheduler.key(for: repository.url)
@@ -442,19 +434,7 @@ struct ApplicationSettingsPane: View {
 
     var body: some View {
         Form {
-            Section("Open in") {
-                Text("Pinned applications appear first in the Open in menu.")
-                    .font(.caption).foregroundStyle(.secondary)
-                HStack {
-                    Button("Choose Application", systemImage: "plus") { chooseApplication() }
-                    Button("Refresh Applications", systemImage: "arrow.clockwise") {
-                        Task { await store.reload(for: directory, force: true) }
-                    }
-                    .disabled(store.isLoading)
-                    if store.isLoading { ProgressView().controlSize(.small) }
-                }
-            }
-            Section("Applications") {
+            Section {
                 ForEach(store.applications.filter { !$0.isFinder }) { application in
                     HStack(spacing: 8) {
                         Image(nsImage: store.icon(for: application))
@@ -474,17 +454,29 @@ struct ApplicationSettingsPane: View {
                         }
                     }
                 }
+                HStack {
+                    Button("Add Application…", systemImage: "plus") { chooseApplication() }
+                    Button("Refresh Applications", systemImage: "arrow.clockwise") {
+                        Task { await store.reload(for: directory, force: true) }
+                    }
+                    .disabled(store.isLoading)
+                    if store.isLoading { ProgressView().controlSize(.small) }
+                }
+            } header: {
+                Text("Open in")
+            } footer: {
+                Text("Checked applications are pinned to the top of the Open in menu.")
             }
         }
         .settingsForm()
         .task { await store.reload(for: directory) }
         .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in store.reloadPreferences() }
-        .errorSheet($error, operation: "Choose Application")
+        .errorSheet($error, operation: "Add Application")
     }
 
     private func chooseApplication() {
         let panel = NSOpenPanel()
-        panel.title = String(localized: "Choose Application")
+        panel.title = String(localized: "Add Application")
         panel.allowedContentTypes = [.applicationBundle]
         panel.canChooseDirectories = false
         panel.allowsMultipleSelection = false
@@ -507,6 +499,9 @@ struct AboutSettingsPane: View {
     private var version: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
     }
+    private var build: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""
+    }
 
     var body: some View {
         Form {
@@ -516,16 +511,20 @@ struct AboutSettingsPane: View {
                         .resizable().scaledToFit().frame(width: 64, height: 64)
                     VStack(alignment: .leading, spacing: 6) {
                         Text(verbatim: "FoldGit").font(.title.bold())
-                        Text("Version \(version)").foregroundStyle(.secondary)
+                        Text("Version \(version) (\(build))").foregroundStyle(.secondary)
+                            .textSelection(.enabled)
                         Text("A native Git client for macOS.").foregroundStyle(.secondary)
                     }
+                    Spacer()
+                    Button("Check for Updates") { UpdateChecker.shared.checkNow() }
+                        .accessibilityIdentifier("checkForUpdatesButton")
                 }
             }
             Section("Project") {
                 Link("Official Website", destination: website)
-                Link("Project Homepage", destination: project)
+                Link("GitHub Repository", destination: project)
                 Link("Send Feedback", destination: project.appending(path: "issues"))
-                Button("Open Source Licenses") { showsLicense = true }
+                Button("Open Source Licenses…") { showsLicense = true }
             }
         }
         .settingsForm()

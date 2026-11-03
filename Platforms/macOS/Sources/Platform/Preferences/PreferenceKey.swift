@@ -17,6 +17,8 @@ enum PreferenceKey: String, CaseIterable {
     case changeFileLayout
     case toolbarLabelStyle
     case projectAutoFetch
+    case defaultAutoFetchInterval
+    case lastSettingsTab
     case openInPinnedApplications
     case openInRecentApplications
     case openInCustomApplications

@@ -114,6 +114,23 @@ final class ProjectAutoFetchTests: XCTestCase {
         XCTAssertEqual(harness.manager.interval(for: second), .twentyFourHours)
     }
 
+    func testRepositoriesFollowDefaultIntervalUnlessOverridden() async throws {
+        let harness = try harness([first, second])
+        defer { harness.close() }
+        harness.manager.setInterval(.off, for: second)
+        harness.manager.setDefaultInterval(.tenMinutes)
+        XCTAssertNil(harness.manager.override(for: first))
+        XCTAssertEqual(harness.manager.interval(for: first), .tenMinutes)
+        XCTAssertEqual(harness.manager.interval(for: second), .off)
+        XCTAssertEqual(AutoFetchScheduler(defaults: harness.defaults).interval(for: first), .tenMinutes)
+        harness.manager.start()
+        try await eventually { await harness.clock.durations.count == 1 }
+        let durations = await harness.clock.durations
+        XCTAssertEqual(durations, [.seconds(600)])
+        harness.manager.setInterval(nil, for: second)
+        XCTAssertEqual(harness.manager.interval(for: second), .tenMinutes)
+    }
+
     func testAllEnabledProjectsRunWithoutAnySelectedProject() async throws {
         let harness = try harness([first, second, third])
         defer { harness.close() }

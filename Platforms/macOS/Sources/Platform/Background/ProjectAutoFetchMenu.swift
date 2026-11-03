@@ -8,17 +8,28 @@ struct ProjectAutoFetchMenu: View {
     var body: some View {
         Menu {
             Picker("Automatic Fetch", selection: Binding(
-                get: { autoFetch.interval(for: folder) },
+                get: { autoFetch.override(for: folder) },
                 set: { autoFetch.setInterval($0, for: folder) }
             )) {
-                ForEach(AutoFetchInterval.allCases) { interval in
-                    Text(interval.title).tag(interval)
-                }
+                AutoFetchIntervalOptions(defaultInterval: autoFetch.defaultInterval)
             }
             .pickerStyle(.inline)
             .labelsHidden()
         } label: {
             Label("Automatic Fetch", systemImage: "clock.arrow.circlepath")
+        }
+    }
+}
+
+/// Picker options for a repository; the nil tag follows the default interval.
+struct AutoFetchIntervalOptions: View {
+    let defaultInterval: AutoFetchInterval
+
+    var body: some View {
+        Text("Use Default (\(defaultInterval.title))").tag(AutoFetchInterval?.none)
+        Divider()
+        ForEach(AutoFetchInterval.allCases) { interval in
+            Text(interval.title).tag(Optional(interval))
         }
     }
 }

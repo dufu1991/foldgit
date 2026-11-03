@@ -175,9 +175,9 @@
           <div class="fs-canvas" id="fs-canvas">
             <!-- Rows are positioned by main.js for each step. -->
             <div class="fs-row fs-head" data-id="studio"><i class="chev"></i><i class="ic ic-group"></i><b>Studio</b><em>3</em></div>
-            <div class="fs-row fs-repo" data-id="aurora"><i class="ic ic-repo c1"></i><b>aurora-ui</b><span class="tag">main</span></div>
+            <div class="fs-row fs-repo" data-id="foldgit"><i class="ic ic-repo c1"></i><b>foldgit</b><span class="tag">main</span></div>
+            <div class="fs-row fs-wt" data-id="foldgit-wt"><i class="ic ic-wt"></i><b>foldgit-status</b><span class="tag wt">feat/status</span></div>
             <div class="fs-row fs-repo" data-id="tide"><i class="ic ic-repo c2"></i><b>tide-api</b><span class="tag">main</span></div>
-            <div class="fs-row fs-wt" data-id="tide-wt"><i class="ic ic-wt"></i><b>tide-api-release</b><span class="tag wt">release/1.1</span></div>
             <div class="fs-row fs-repo" data-id="pebble"><i class="ic ic-repo c3"></i><b>pebble-notes</b><span class="tag">main</span></div>
             <div class="fs-row fs-head" data-id="oss"><i class="chev"></i><i class="ic ic-dir"></i><b>~/Code/oss</b><em>4</em></div>
             <div class="fs-row fs-repo" data-id="harbor"><i class="ic ic-repo c4"></i><b>harbor-docs</b><span class="tag">main</span></div>
@@ -188,22 +188,20 @@
           </div>
           <div class="fs-browser code-mock">
             <div class="fs-file-tree">
-              <div class="fs-file-root"><i class="chev"></i><i class="ic ic-dir"></i><b>aurora-ui</b></div>
-              <div class="fs-file-folder"><i class="chev"></i><i class="ic ic-group"></i><span>src</span></div>
-              <div class="fs-file is-selected"><span>App.vue</span></div>
-              <div class="fs-file"><span>package.json</span></div>
+              <div class="fs-file-root"><i class="chev"></i><i class="ic ic-dir"></i><b>foldgit</b></div>
+              <div class="fs-file-folder"><i class="chev"></i><i class="ic ic-group"></i><span>Platforms/macOS/Sources/App</span></div>
+              <div class="fs-file is-selected"><span>WindowID.swift</span></div>
+              <div class="fs-file"><span>LICENSE</span></div>
               <div class="fs-file"><span>README.md</span></div>
             </div>
             <div class="fs-file-content">
-              <div class="cm-bar"><span class="cm-seg is-on" data-i18n="fold.content">文件内容</span><span class="cm-path">src/App.vue</span></div>
+              <div class="cm-bar"><span class="cm-seg is-on" data-i18n="fold.content">文件内容</span><span class="cm-path" title="Platforms/macOS/Sources/App/WindowID.swift">App/WindowID.swift</span></div>
               <ol class="cm-lines">
-                <li>&lt;<i class="k">script setup</i>&gt;</li>
-                <li><i class="k">import</i> { ref } <i class="k">from</i> <i class="t">'vue'</i></li>
-                <li><i class="k">const</i> query = <i class="f">ref</i>(<i class="t">''</i>)</li>
-                <li>&lt;/<i class="k">script</i>&gt;</li>
-                <li>&lt;<i class="k">template</i>&gt;</li>
-                <li>  &lt;<i class="k">input</i> <i class="p">v-model</i>=<i class="t">"query"</i> /&gt;</li>
-                <li>&lt;/<i class="k">template</i>&gt;</li>
+                <li><i class="k">import</i> Foundation</li>
+                <li></li>
+                <li><i class="k">enum</i> <i class="t">WindowID</i>: <i class="t">String</i> {</li>
+                <li>    <i class="k">case</i> commitMessageSnippets</li>
+                <li>}</li>
               </ol>
             </div>
           </div>
@@ -246,17 +244,14 @@
       <div class="feature-grid">
         <article class="feature glass" data-reveal="fold" style="--d:0">
           <div class="feature-mock code-mock" aria-hidden="true">
-            <div class="cm-bar"><span class="cm-seg is-on" data-i18n="rv.files.mockContent">文件内容</span><span class="cm-seg" data-i18n="rv.files.mockHistory">提交记录</span><span class="cm-path">Sources/Search/Index.swift</span></div>
-            <ol class="cm-lines">
-              <li><i class="k">struct</i> <i class="t">SearchIndex</i> {</li>
-              <li>  <i class="k">private var</i> pages: [<i class="t">Page</i>] = []</li>
-              <li>  <i class="c">// Reuse the index; new input cancels old queries.</i></li>
-              <li>  <i class="k">func</i> <i class="f">query</i>(<i class="p">_</i> text: <i class="t">String</i>) <i class="k">async</i> -&gt; [<i class="t">Hit</i>] {</li>
-              <li>    <i class="k">try</i>? <i class="t">Task</i>.<i class="f">checkCancellation</i>()</li>
-              <li>    <i class="k">return</i> pages.<i class="f">matches</i>(text, limit: <i class="n">50</i>)</li>
-              <li>  }</li>
-              <li>}</li>
-            </ol>
+            <div class="cm-bar"><span class="cm-seg is-on" data-i18n="rv.files.mockContent">文件内容</span><span class="cm-seg" data-i18n="rv.files.mockHistory">提交记录</span><span class="cm-path" title="Platforms/macOS/Sources/App/WindowID.swift">App/WindowID.swift</span></div>
+              <ol class="cm-lines">
+                <li><i class="k">import</i> Foundation</li>
+                <li></li>
+                <li><i class="k">enum</i> <i class="t">WindowID</i>: <i class="t">String</i> {</li>
+                <li>    <i class="k">case</i> commitMessageSnippets</li>
+                <li>}</li>
+              </ol>
           </div>
           <h3 data-i18n="rv.files.title">目录视角：完整文件与它的历史</h3>
           <p data-i18n="rv.files.body">在工具栏切换到「目录视角」，整个工作目录按文件夹展开，包括未跟踪的新文件。选中文件即可阅读全文，或查看它被修改过的每一次提交。</p>
@@ -270,11 +265,11 @@
         </article>
         <article class="feature glass" data-reveal="fold" style="--d:1">
           <div class="feature-mock wt-mock" aria-hidden="true">
-            <div class="wt-row"><span class="wt-ic main"></span><b>tide-api</b><em>main</em><span class="wt-note" data-i18n="rv.wt.mockClean">无更改</span></div>
-            <div class="wt-row"><span class="wt-ic is-modified"></span><b>agent-search</b><em>feat/search</em><span class="wt-note" data-i18n="rv.wt.mockModified">7 个文件有改动</span></div>
-            <div class="wt-row"><span class="wt-ic is-conflicted"></span><b>agent-login</b><em>fix/login</em><span class="wt-note" data-i18n="rv.wt.mockConflicted">冲突</span></div>
-            <div class="wt-row"><span class="wt-ic is-operating"></span><b>agent-cache</b><em>refactor/cache</em><span class="wt-note" data-i18n="rv.wt.mockOperating">正在变基</span></div>
-            <div class="wt-row"><span class="wt-ic is-integrated"></span><b>tide-api-docs</b><em>docs/api</em><span class="wt-note" data-i18n="rv.wt.mockIntegrated">已并入 origin/main</span></div>
+            <div class="wt-row"><span class="wt-ic main"></span><b>foldgit</b><em>main</em><span class="wt-note" data-i18n="rv.wt.mockClean">无更改</span></div>
+            <div class="wt-row"><span class="wt-ic is-modified"></span><b>foldgit-status</b><em>feat/status</em><span class="wt-note" data-i18n="rv.wt.mockModified">7 个文件有改动</span></div>
+            <div class="wt-row"><span class="wt-ic is-conflicted"></span><b>foldgit-file-history</b><em>fix/file-history</em><span class="wt-note" data-i18n="rv.wt.mockConflicted">冲突</span></div>
+            <div class="wt-row"><span class="wt-ic is-operating"></span><b>foldgit-status-cache</b><em>refactor/status-cache</em><span class="wt-note" data-i18n="rv.wt.mockOperating">正在变基</span></div>
+            <div class="wt-row"><span class="wt-ic is-integrated"></span><b>foldgit-manual</b><em>docs/manual</em><span class="wt-note" data-i18n="rv.wt.mockIntegrated">已并入 origin/main</span></div>
           </div>
           <h3 data-i18n="rv.wt.title">每个工作树的状态，一眼看清</h3>
           <p data-i18n="rv.wt.body">一个仓库开多个工作树、让几个 Agent 并行工作时，侧边栏图标的角标直接告诉你：哪个有改动、哪个冲突了、哪个正在变基，哪个已经合并。</p>

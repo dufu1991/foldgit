@@ -155,10 +155,10 @@
 
   // Loose positions for the scattered state, as fractions of the free canvas area.
   var scatter = {
-    aurora: [0.02, 0.0, -6], tide: [0.36, 0.13, 5], pebble: [0.06, 0.3, 3], harbor: [0.38, 0.45, -4],
+    foldgit: [0.02, 0.0, -6], tide: [0.36, 0.13, 5], pebble: [0.06, 0.3, 3], harbor: [0.38, 0.45, -4],
     lumen: [0.0, 0.6, -3], kite: [0.33, 0.76, 6], moss: [0.08, 0.93, -5]
   };
-  var indents = { aurora: 22, tide: 22, "tide-wt": 44, pebble: 22, harbor: 22, lumen: 22, kite: 22, moss: 22, infrequent: 22 };
+  var indents = { foldgit: 22, tide: 22, "foldgit-wt": 44, pebble: 22, harbor: 22, lumen: 22, kite: 22, moss: 22, infrequent: 22 };
 
   function set(el, s) {
     el.style.setProperty("--x", (s.x || 0) + "px");
@@ -174,16 +174,16 @@
   function layoutFold(step) {
     var W = canvas.clientWidth, H = canvas.clientHeight;
     var pitch = H < 380 ? 34 : 42;
-    var order = ["studio", "aurora", "tide"];
-    if (step >= 2) order.push("tide-wt");
-    order.push("pebble", "oss", "harbor", "lumen");
+    var order = ["studio", "foldgit"];
+    if (step >= 2) order.push("foldgit-wt");
+    order.push("tide", "pebble", "oss", "harbor", "lumen");
     if (step >= 3) order.push("infrequent"); else order.push("kite", "moss");
     var y = {};
     order.forEach(function (id, n) { y[id] = n * pitch; });
 
     Object.keys(rows).forEach(function (id) {
       var el = rows[id];
-      el.classList.toggle("is-selected", step >= 1 && id === "aurora");
+      el.classList.toggle("is-selected", step >= 1 && id === "foldgit");
       if (step === 0) {
         var p = scatter[id];
         if (p) {
@@ -195,8 +195,8 @@
       }
       if (id in y) {
         set(el, { y: y[id], indent: indents[id] || 0, i: order.indexOf(id) });
-      } else if (id === "tide-wt") {
-        set(el, { y: y.tide, indent: 44, o: 0, fx: -90, s: 0.98 });
+      } else if (id === "foldgit-wt") {
+        set(el, { y: y.foldgit, indent: 44, o: 0, fx: -90, s: 0.98 });
       } else if (id === "infrequent") {
         set(el, { y: y.lumen + pitch, indent: 22, o: 0, fx: -90 });
       } else {

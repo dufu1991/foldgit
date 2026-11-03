@@ -31,9 +31,9 @@ struct TextEditorLayoutTests {
     func commitMessageFirstLineFitsInsideEditor(message: String) async throws {
         let root = CommitMessageEditor(folder: .init(url: URL(fileURLWithPath: "/tmp")),
                                        commitMessage: .constant(message), cachedDiffStat: .constant(nil),
-                                       isAmend: .constant(false), error: .constant(nil), cachedDiffRaw: .constant(""),
-                                       amendCommit: .constant(nil), onCommit: {})
-            .frame(width: 680, height: 160)
+                                       error: .constant(nil), cachedDiffRaw: .constant(""),
+                                       onCommit: {})
+            .frame(width: 680, height: CommitMessageEditor.height)
         try await verifyFirstLine(root, message: message)
     }
 

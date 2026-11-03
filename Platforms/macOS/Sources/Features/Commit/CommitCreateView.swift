@@ -5,11 +5,12 @@ import SwiftUI
 struct CommitCreateView: View {
     @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = AppPreferences.defaultDiffFileExpansion
     @AppStorage(PreferenceKey.changeFileLayout.rawValue) private var changeFileLayout = AppPreferences.defaultChangeFileLayout
+    @AppStorage(PreferenceKey.showCommitMessageArea.rawValue)
+    private var showCommitMessageArea = PreferenceDefaults.showCommitMessageArea
     @Environment(\.expandAllFiles) private var expandAllFilesID: UUID?
     @Environment(\.collapseAllFiles) private var collapseAllFilesID: UUID?
     @Environment(\.openSettings) var openSettings: OpenSettingsAction
     @Environment(\.appearsActive) private var appearsActive
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var folder: WorkspaceEntry
     @State private var cachedDiffShortStat = ""
@@ -49,8 +50,6 @@ struct CommitCreateView: View {
     @State private var imageDiffRefreshID = 0
     @State private var commitMessage = ""
     @State private var error: Error?
-    @State private var isAmend = false
-    @State private var amendCommit: Commit?
     @State private var isStagingChanges = false
     @State private var stagedPaneHeight: CGFloat = 180
     @State private var stagedTree = ChangeFileTree()
@@ -63,7 +62,11 @@ struct CommitCreateView: View {
     @State private var isUnstagedExpanded = true
     @State private var isUntrackedExpanded = false
     @State private var expandedUntrackedImages: Set<String> = []
-    @State private var stageFlights = StageFlightCoordinator()
+    @State private var stagedLanding: Set<String> = []
+    @State private var unstagedLanding: Set<String> = []
+    @State private var landingGeneration = 0
+    @State private var stagedScrollTarget: AnyHashable?
+    @State private var unstagedScrollTarget: AnyHashable?
     @Binding var isRefresh: Bool
     var onCommit: () -> Void
     var onStash: () -> Void
@@ -76,21 +79,21 @@ struct CommitCreateView: View {
                 let stagedHeight = cachedExpandableFileDiffs.isEmpty
                     ? 44 : min(max(72, stagedPaneHeight), max(72, geometry.size.height - 73))
                 VStack(spacing: 0) {
-                    ScrollView {
-                        unstagedChanges
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            unstagedChanges
 
-                        if let updateChangesError {
-                            Label(updateChangesError.localizedDescription, systemImage: "exclamationmark.octagon")
-                            Text(cachedDiffRaw + diffRaw)
-                                .padding()
-                                .font(Font.system(.body, design: .monospaced))
+                            if let updateChangesError {
+                                Label(updateChangesError.localizedDescription, systemImage: "exclamationmark.octagon")
+                                Text(cachedDiffRaw + diffRaw)
+                                    .padding()
+                                    .font(Font.system(.body, design: .monospaced))
+                            }
                         }
-                    }
-                    .scrollEdgeEffectStyle(.hard, for: .vertical)
-                    .frame(maxHeight: .infinity)
-                    .accessibilityIdentifier("unstagedChangesPane")
-                    .onGeometryChange(for: CGRect.self) { $0.frame(in: .named(StageFlightCoordinator.coordinateSpace)) } action: {
-                        stageFlights.paneFrames[.unstaged] = $0
+                        .scrollEdgeEffectStyle(.hard, for: .vertical)
+                        .frame(maxHeight: .infinity)
+                        .accessibilityIdentifier("unstagedChangesPane")
+                        .scrollsToStageLanding(unstagedScrollTarget, with: proxy)
                     }
 
                     PaneResizeHandle(height: $stagedPaneHeight, current: stagedHeight, defaultHeight: 180,
@@ -99,18 +102,6 @@ struct CommitCreateView: View {
                         .frame(height: stagedHeight, alignment: .top)
                         .clipped()
                         .accessibilityIdentifier("stagedChangesPane")
-                        .onGeometryChange(for: CGRect.self) { $0.frame(in: .named(StageFlightCoordinator.coordinateSpace)) } action: {
-                            stageFlights.paneFrames[.staged] = $0
-                        }
-                }
-            }
-            .coordinateSpace(.named(StageFlightCoordinator.coordinateSpace))
-            .overlay {
-                ZStack {
-                    ForEach(stageFlights.flights) { flight in
-                        StageFlightGhost(flight: flight)
-                            .transition(.opacity)
-                    }
                 }
             }
 
@@ -136,18 +127,18 @@ struct CommitCreateView: View {
                 .padding(.vertical, 10)
                 .padding(.horizontal)
 
-                CommitMessageEditor(
-                    folder: folder,
-                    commitMessage: $commitMessage,
-                    cachedDiffStat: $cachedDiffStat,
-                    isAmend: $isAmend,
-                    error: $error,
-                    cachedDiffRaw: $cachedDiffRaw,
-                    amendCommit: $amendCommit) {
-                        onCommit()
-                    }
-                    .frame(height: 112)
-                    .disabled(isStagingChanges)
+                if showCommitMessageArea {
+                    CommitMessageEditor(
+                        folder: folder,
+                        commitMessage: $commitMessage,
+                        cachedDiffStat: $cachedDiffStat,
+                        error: $error,
+                        cachedDiffRaw: $cachedDiffRaw) {
+                            onCommit()
+                        }
+                        .frame(height: CommitMessageEditor.height)
+                        .disabled(isStagingChanges)
+                }
             }
             .background(.bar)
         }
@@ -161,14 +152,6 @@ struct CommitCreateView: View {
                 }
             }
         })
-        .onChange(of: isStagingChanges) { _, isStaging in
-            // Refreshed rows replace the ones that left; a failed update brings them back undimmed.
-            if !isStaging { stageFlights.indexDidUpdate() }
-        }
-        .onChange(of: reduceMotion, initial: true) { _, reduceMotion in
-            stageFlights.reduceMotion = reduceMotion
-        }
-        .environment(\.stageFlights, stageFlights)
         .onChange(of: appearsActive, { oldValue, newValue in
             if newValue {
                 Task {
@@ -178,12 +161,6 @@ struct CommitCreateView: View {
         })
         .task {
             await updateChanges()
-
-            do {
-                amendCommit = try await GitRuntime.run(GitLog(directory: folder.url, number: 1)).first
-            } catch {
-                self.error = OperationFailure("Load Commit Details", error)
-            }
         }
         .errorSheet($error, operation: "Load Changes")
         .environment(\.imageDiffRefreshID, imageDiffRefreshID)
@@ -201,16 +178,18 @@ struct CommitCreateView: View {
                 untrackedFiles: status?.untrackedFiles ?? [],
                 onSelectFileDiff: isStagingChanges ? nil : { fileDiff in
                     if let newDiff = self.diff?.updateFileDiffStage(fileDiff, stage: true) {
-                        addPatch(newDiff)
+                        addPatch(newDiff, landing: fileDiff.changeTreePath)
                     }
                 },
                 onSelectChunk: isStagingChanges || status?.unmergedFiles.isEmpty == false ? nil : { fileDiff, chunk in
                     if let newDiff = self.diff?.updateChunkStage(chunk, in: fileDiff, stage: true) {
-                        addPatch(newDiff)
+                        addPatch(newDiff, landing: fileDiff.changeTreePath)
                     }
                 },
                 onSelectUntrackedFile: isStagingChanges ? nil : { file in
-                    updateIndex("Stage Changes") { try await GitRuntime.run(GitAddPathspec(directory: folder.url, pathspec: file)) }
+                    updateIndex("Stage Changes", staging: true, landing: [file]) {
+                        try await GitRuntime.run(GitAddPathspec(directory: folder.url, pathspec: file))
+                    }
                 },
                 layout: changeFileLayout,
                 tree: unstagedTree,
@@ -223,7 +202,7 @@ struct CommitCreateView: View {
                 onSelectDirectory: isStagingChanges ? nil : { stageDirectory($0, staging: true) }
             )
             .padding(.top)
-            .environment(\.stageFlightPane, .unstaged)
+            .environment(\.stageLandingPaths, unstagedLanding)
         } else if updateChangesError == nil {
             ProgressView()
                 .controlSize(.small)
@@ -240,21 +219,22 @@ struct CommitCreateView: View {
                 status: cachedDiffShortStat,
                 onSelectFileDiff: isStagingChanges ? nil : { fileDiff in
                     if let newDiff = self.cachedDiff?.updateFileDiffStage(fileDiff, stage: false) {
-                        restorePatch(newDiff)
+                        restorePatch(newDiff, landing: fileDiff.changeTreePath)
                     }
                 },
                 onSelectChunk: isStagingChanges || status?.unmergedFiles.isEmpty == false ? nil : { fileDiff, chunk in
                     if let newDiff = self.cachedDiff?.updateChunkStage(chunk, in: fileDiff, stage: false) {
-                        restorePatch(newDiff)
+                        restorePatch(newDiff, landing: fileDiff.changeTreePath)
                     }
                 },
                 layout: changeFileLayout,
                 tree: stagedTree,
                 collapsedDirectories: $collapsedStagedDirectories,
                 isExpanded: $isStagedExpanded,
-                onSelectDirectory: isStagingChanges ? nil : { stageDirectory($0, staging: false) }
+                onSelectDirectory: isStagingChanges ? nil : { stageDirectory($0, staging: false) },
+                scrollTarget: stagedScrollTarget
             )
-            .environment(\.stageFlightPane, .staged)
+            .environment(\.stageLandingPaths, stagedLanding)
         }
     }
 
@@ -315,11 +295,11 @@ struct CommitCreateView: View {
     }
 
     private func stageAll() {
-        updateIndex("Stage Changes") { try await GitRuntime.run(GitAdd(directory: folder.url)) }
+        updateIndex("Stage Changes", staging: true) { try await GitRuntime.run(GitAdd(directory: folder.url)) }
     }
 
     private func unstageAll() {
-        updateIndex("Unstage Changes") { try await GitRuntime.run(GitRestore(directory: folder.url)) }
+        updateIndex("Unstage Changes", staging: false) { try await GitRuntime.run(GitRestore(directory: folder.url)) }
     }
 
     private func stageDirectory(_ path: String, staging: Bool) {
@@ -327,7 +307,7 @@ struct CommitCreateView: View {
         let selection = ChangeDirectoryStaging.selection(in: path, diff: diff,
                                                         untrackedFiles: status?.untrackedFiles ?? [], staging: staging)
         guard !selection.isEmpty else { return }
-        updateIndex(staging ? "Stage Changes" : "Unstage Changes") { try await IndexStaging.apply(selection, staging: staging, in: folder.url) }
+        updateIndex(staging ? "Stage Changes" : "Unstage Changes", staging: staging) { try await IndexStaging.apply(selection, staging: staging, in: folder.url) }
     }
 
     private func stashChanges() {
@@ -338,16 +318,77 @@ struct CommitCreateView: View {
         }
     }
 
-    private func updateIndex(_ name: LocalizedStringResource, refreshing: Bool = true, _ operation: @escaping @MainActor () async throws -> Void) {
+    /// `staging` names the pane files move into, so the rows that land there can be highlighted once the lists refresh.
+    private func updateIndex(_ name: LocalizedStringResource, refreshing: Bool = true, staging: Bool? = nil,
+                             landing: Set<String> = [], _ operation: @escaping @MainActor () async throws -> Void) {
         guard !isStagingChanges else { return }
         isStagingChanges = true
+        let before = staging.map { paneFiles(staged: $0) }
         Task {
             defer { isStagingChanges = false }
             do {
                 try await operation()
                 if refreshing { await updateChanges() }
-            } catch { self.error = OperationFailure(name, error) }
+            } catch {
+                self.error = OperationFailure(name, error)
+                return
+            }
+            if let staging, let before {
+                highlightLanding(paneFiles(staged: staging).subtracting(before).union(landing), staged: staging)
+            }
         }
+    }
+
+    private func paneFiles(staged: Bool) -> Set<String> {
+        if staged { return Set(cachedExpandableFileDiffs.map(\.model.changeTreePath)) }
+        return Set(expandableFileDiffs.map(\.model.changeTreePath)).union(status?.untrackedFiles ?? [])
+    }
+
+    private func highlightLanding(_ paths: Set<String>, staged: Bool) {
+        guard !paths.isEmpty else { return }
+        landingGeneration += 1
+        let generation = landingGeneration
+        let target = paths.sorted().lazy.compactMap { scrollTarget(for: $0, staged: staged) }.first
+        if staged {
+            stagedLanding = paths
+            stagedScrollTarget = target
+        } else {
+            unstagedLanding = paths
+            unstagedScrollTarget = target
+        }
+        Task {
+            try? await Task.sleep(for: .milliseconds(900))
+            // A later update owns the highlight now; leave its rows lit.
+            guard generation == landingGeneration else { return }
+            stagedLanding = []
+            unstagedLanding = []
+            stagedScrollTarget = nil
+            unstagedScrollTarget = nil
+        }
+    }
+
+    /// The row that shows `path`: its own, or the collapsed folder or section that hides it.
+    private func scrollTarget(for path: String, staged: Bool) -> AnyHashable? {
+        if !staged, status?.untrackedFiles.contains(path) == true {
+            guard isUntrackedExpanded else { return AnyHashable(StageLandingAnchor.untrackedFiles) }
+            return changeFileLayout == .tree
+                ? treeRowID(path, fileID: path, collapsed: collapsedUntrackedDirectories)
+                : AnyHashable(path)
+        }
+        let files = staged ? cachedExpandableFileDiffs : expandableFileDiffs
+        guard let id = files.first(where: { $0.model.changeTreePath == path })?.model.id else { return nil }
+        return changeFileLayout == .tree
+            ? treeRowID(path, fileID: id, collapsed: staged ? collapsedStagedDirectories : collapsedUnstagedDirectories)
+            : AnyHashable(id)
+    }
+
+    private func treeRowID(_ path: String, fileID: String, collapsed: Set<String>) -> AnyHashable {
+        var directory = ""
+        for part in path.split(separator: "/").dropLast() {
+            directory += directory.isEmpty ? String(part) : "/" + part
+            if collapsed.contains(directory) { return AnyHashable(ChangeFileTree.Row.ID.directory(directory)) }
+        }
+        return AnyHashable(ChangeFileTree.Row.ID.file(fileID))
     }
 
     private func updateChanges() async {
@@ -410,12 +451,12 @@ struct CommitCreateView: View {
         return true
     }
 
-    private func restorePatch(_ newDiff: Diff) {
-        updateIndex("Unstage Changes") { try await IndexStaging.apply(newDiff.indexSelection(staging: false), staging: false, in: folder.url) }
+    private func restorePatch(_ newDiff: Diff, landing: String) {
+        updateIndex("Unstage Changes", staging: false, landing: [landing]) { try await IndexStaging.apply(newDiff.indexSelection(staging: false), staging: false, in: folder.url) }
     }
 
-    private func addPatch(_ newDiff: Diff) {
-        updateIndex("Stage Changes") { try await IndexStaging.apply(newDiff.indexSelection(staging: true), staging: true, in: folder.url) }
+    private func addPatch(_ newDiff: Diff, landing: String) {
+        updateIndex("Stage Changes", staging: true, landing: [landing]) { try await IndexStaging.apply(newDiff.indexSelection(staging: true), staging: true, in: folder.url) }
     }
 }
 

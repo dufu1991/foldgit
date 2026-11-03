@@ -75,7 +75,53 @@ struct ChangeFileTreeRows<FileContent: View>: View {
             .accessibilityIdentifier("changeDirectory-" + row.path)
         }
         .padding(.leading, CGFloat(row.depth) * 16 + 3)
-        .stageFlightRow(path: row.path)
+        .stageLandingRow(path: row.path, isCollapsedDirectory: !isExpanded)
+    }
+}
+
+extension EnvironmentValues {
+    /// Files that just moved into this change pane by staging or unstaging.
+    @Entry var stageLandingPaths: Set<String> = []
+}
+
+extension View {
+    /// Briefly tints a row whose file just moved into its pane. A collapsed folder stands in for the files it hides;
+    /// expanded folders stay plain, since the file's own row shows the move.
+    func stageLandingRow(path: String, isCollapsedDirectory: Bool = false) -> some View {
+        modifier(StageLandingRowModifier(path: path, isCollapsedDirectory: isCollapsedDirectory))
+    }
+}
+
+private struct StageLandingRowModifier: ViewModifier {
+    @Environment(\.stageLandingPaths) private var paths
+    var path: String
+    var isCollapsedDirectory: Bool
+
+    func body(content: Content) -> some View {
+        let hasLanded = isCollapsedDirectory
+            ? paths.contains { $0.hasPrefix(path + "/") }
+            : paths.contains(path)
+        content.stageLandingTint(hasLanded)
+    }
+}
+
+extension View {
+    // Rows paint an opaque background, so the tint sits on top of it.
+    func stageLandingTint(_ isOn: Bool) -> some View {
+        overlay {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.accentColor.opacity(isOn ? 0.18 : 0))
+                .allowsHitTesting(false)
+        }
+        .animation(.easeOut(duration: 0.4), value: isOn)
+    }
+
+    /// Scrolls only as far as needed to show the row files just landed on.
+    func scrollsToStageLanding(_ target: AnyHashable?, with proxy: ScrollViewProxy) -> some View {
+        onChange(of: target) { _, target in
+            guard let target else { return }
+            withAnimation(.easeOut(duration: 0.25)) { proxy.scrollTo(target) }
+        }
     }
 }
 

@@ -3,13 +3,13 @@ import FoldGitCore
 import SwiftUI
 
 struct CommitMessageEditor: View {
+    static let height: CGFloat = 72
+
     var folder: WorkspaceEntry
     @Binding var commitMessage: String
     @Binding var cachedDiffStat: DiffStat?
-    @Binding var isAmend: Bool
     @Binding var error: Error?
     @Binding var cachedDiffRaw: String
-    @Binding var amendCommit: Commit?
     @FocusState private var focused: Bool
     @State private var snippetFocusRequest: UUID?
     @State private var isCommitting = false
@@ -19,55 +19,39 @@ struct CommitMessageEditor: View {
     var body: some View {
         VStack(spacing: 0) {
             Divider()
-            HStack(alignment: .bottom, spacing: 0) {
-                VStack(spacing: 0) {
-                    ZStack(alignment: .topLeading) {
-                            TextEditor(text: $commitMessage)
-                                .focused($focused)
-                                .accessibilityIdentifier("commitMessageEditor")
-                                .scrollContentBackground(.hidden)
-                                .padding(.top, 16)
-                                .padding(.horizontal, 12)
-                                .font(.body)
-                            if commitMessage.isEmpty && !focused {
-                                Text("Commit Message")
-                                    .foregroundColor(.secondary)
-                                    .allowsHitTesting(false)
-                                    .padding(.top, 16)
-                                    .padding(.horizontal, 17)
-                            }
-                    }
-                    CommitMessageSnippetSuggestionView()
-                        .padding(.trailing)
-                        .font(.callout)
+            ZStack(alignment: .topLeading) {
+                TextEditor(text: $commitMessage)
+                    .focused($focused)
+                    .accessibilityIdentifier("commitMessageEditor")
+                    .scrollContentBackground(.hidden)
+                    .padding(.top, 16)
+                    .padding(.horizontal, 12)
+                    .font(.body)
+                if commitMessage.isEmpty && !focused {
+                    Text("Commit Message")
+                        .foregroundColor(.secondary)
+                        .allowsHitTesting(false)
+                        .padding(.top, 16)
+                        .padding(.horizontal, 17)
                 }
-                Divider()
-                VStack(alignment: .center, spacing: 6) {
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Label(cachedDiffStat?.files.count.formatted() ?? "-" , systemImage: "doc")
-                        Label(cachedDiffStat?.insertionsTotal.formatted() ?? "-", systemImage: "plus")
-                        Label(cachedDiffStat?.deletionsTotal.formatted() ?? "-", systemImage: "minus")
-                    }
-                    .font(.caption)
-                    Button("Commit", action: commitChanges)
-                    .buttonStyle(.borderedProminent)
-                    .disabled(!canCommit)
-                    Toggle("Amend", isOn: $isAmend)
-                        .disabled(isCommitting)
-                        .font(.caption)
-                        .padding(.trailing, 6)
-                }
-                .onChange(of: isAmend) {
-                    if isAmend {
-                        commitMessage = amendCommit?.rawBody ?? ""
-                    } else {
-                        commitMessage = ""
-                    }
-                }
-                .fixedSize(horizontal: true, vertical: false)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
             }
+            HStack(spacing: 12) {
+                CommitMessageSnippetSuggestionView()
+                    .font(.callout)
+                HStack(spacing: 8) {
+                    Label(cachedDiffStat?.files.count.formatted() ?? "-", systemImage: "doc")
+                    Label(cachedDiffStat?.insertionsTotal.formatted() ?? "-", systemImage: "plus")
+                    Label(cachedDiffStat?.deletionsTotal.formatted() ?? "-", systemImage: "minus")
+                }
+                .font(.caption)
+                .fixedSize()
+                Button("Commit", action: commitChanges)
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.small)
+                    .disabled(!canCommit)
+                    .fixedSize()
+            }
+            .padding(.horizontal, 12)
         }
         .focusedSceneValue(\.editorMenu, menuActions)
         .onReceive(NotificationCenter.default.publisher(for: .didSelectCommitMessageSnippetNotification), perform: { notification in
@@ -101,9 +85,6 @@ struct CommitMessageEditor: View {
         var actions = MenuActions()
         actions.isEditingText = focused
         if canCommit { actions[.commit] = commitChanges }
-        if isEnabled && !isCommitting && amendCommit != nil {
-            actions[.amendCommit] = { isAmend = true; focused = true }
-        }
         return actions
     }
 
@@ -113,9 +94,9 @@ struct CommitMessageEditor: View {
         Task {
             defer { isCommitting = false }
             do {
-                try await GitRuntime.run(GitCommit(directory: folder.url, message: commitMessage, amend: isAmend))
+                try await GitRuntime.run(GitCommit(directory: folder.url, message: commitMessage))
                 onCommit()
-            } catch { self.error = OperationFailure(isAmend ? "Amend Last Commit" : "Commit", error) }
+            } catch { self.error = OperationFailure("Commit", error) }
         }
     }
 }

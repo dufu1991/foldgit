@@ -11,6 +11,7 @@ struct StagedView: View {
     @Binding var collapsedDirectories: Set<String>
     @Binding var isExpanded: Bool
     var onSelectDirectory: ((String) -> Void)? = nil
+    var scrollTarget: AnyHashable? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -27,25 +28,28 @@ struct StagedView: View {
                 .fixedSize(horizontal: false, vertical: true)
 
                 if isExpanded {
-                    ScrollView {
-                        StageFileDiffsView(
-                            expandableFileDiffs: $fileDiffs,
-                            selectButtonImageSystemName: "minus",
-                            selectFileButtonHelp: String(localized: "Unstage This File"),
-                            selectButtonHelp: String(localized: "Unstage This Hunk"),
-                            onSelectFileDiff: onSelectFileDiff,
-                            onSelectChunk: onSelectChunk,
-                            layout: layout,
-                            tree: tree,
-                            collapsedDirectories: $collapsedDirectories,
-                            onSelectDirectory: onSelectDirectory,
-                            selectDirectoryButtonHelp: String(localized: "Unstage This Directory")
-                        )
-                        .environment(\.imageDiffContext, .staged)
-                        .padding(.leading, 4)
-                        .padding(.top)
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            StageFileDiffsView(
+                                expandableFileDiffs: $fileDiffs,
+                                selectButtonImageSystemName: "minus",
+                                selectFileButtonHelp: String(localized: "Unstage This File"),
+                                selectButtonHelp: String(localized: "Unstage This Hunk"),
+                                onSelectFileDiff: onSelectFileDiff,
+                                onSelectChunk: onSelectChunk,
+                                layout: layout,
+                                tree: tree,
+                                collapsedDirectories: $collapsedDirectories,
+                                onSelectDirectory: onSelectDirectory,
+                                selectDirectoryButtonHelp: String(localized: "Unstage This Directory")
+                            )
+                            .environment(\.imageDiffContext, .staged)
+                            .padding(.leading, 4)
+                            .padding(.top)
+                        }
+                        .scrollEdgeEffectStyle(.hard, for: .vertical)
+                        .scrollsToStageLanding(scrollTarget, with: proxy)
                     }
-                    .scrollEdgeEffectStyle(.hard, for: .vertical)
                 }
             }
         }

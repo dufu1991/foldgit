@@ -56,6 +56,7 @@ enum SettingsReset {
                 Item(id: "snippets", title: String(localized: "Commit Message Snippets"), value: snippetText(snippets),
                      keys: [.commitMessageSnippet, .commitMessageSnippetEntries]),
                 Item(id: "favorites", title: String(localized: "Show in Quick Input"), value: snippetText(snippets.filter(\.isFavorite))),
+                Item(id: "commitMessageArea", title: String(localized: "Show Commit Message Area"), value: on, keys: [.showCommitMessageArea]),
             ]),
             Group(id: "repositories", title: String(localized: "Repositories"), items: [
                 Item(id: "worktrees", title: String(localized: "Enable Worktrees"), value: on, keys: [.showWorktreeInformation]),

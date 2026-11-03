@@ -8,30 +8,25 @@ struct CommitMessageSnippetSuggestionView: View {
     }
 
     var body: some View {
-        HStack {
-            ScrollView(.horizontal) {
-                LazyHStack {
-                    ForEach(favorites) { snippet in
-                        Button(snippet.text) {
-                            NotificationCenter.default.post(name: .didSelectCommitMessageSnippetNotification, object: snippet.text)
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
+        ScrollView(.horizontal) {
+            LazyHStack {
+                ForEach(favorites) { snippet in
+                    Button(snippet.text) {
+                        NotificationCenter.default.post(name: .didSelectCommitMessageSnippetNotification, object: snippet.text)
                     }
                 }
-                .padding(.leading)
+                Button {
+                    SettingsWindowController.show(tab: .snippets)
+                } label: {
+                    Label("Commit Message Snippets", systemImage: "slider.horizontal.3")
+                        .labelStyle(.iconOnly)
+                }
+                .help("Commit Message Snippets")
             }
-            .frame(height: 40)
-            Button {
-                SettingsWindowController.show(tab: .snippets)
-            } label: {
-                Label("Commit Message Snippets", systemImage: "slider.horizontal.3")
-                    .labelStyle(.iconOnly)
-            }
-            .help("Commit Message Snippets")
+            .buttonStyle(.bordered)
+            .controlSize(.small)
         }
-        .buttonStyle(.bordered)
-        .controlSize(.small)
+        .frame(height: 28)
     }
 }
 

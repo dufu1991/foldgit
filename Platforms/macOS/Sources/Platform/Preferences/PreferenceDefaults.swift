@@ -7,6 +7,7 @@ struct PreferenceDefaults {
     static let repositoryWorktreeVisibility = try! JSONEncoder().encode(RepositoryWorktreePreferences())
     static let repositoryDisplayNames = try! JSONEncoder().encode(RepositoryDisplayNames())
     static let sidebarDates = try! JSONEncoder().encode(SidebarDates())
+    static let showCommitMessageArea = true
     static let commitMessageSnippets = try! JSONEncoder().encode(CommitMessageSnippet.defaultPrefixes)
     static let commitMessageSnippetEntries = try! JSONEncoder().encode(CommitMessageSnippetEntry.defaults)
 

@@ -8,6 +8,7 @@ enum PreferenceKey: String, CaseIterable {
     case sidebarSort
     case sidebarSortAscending
     case sidebarDates
+    case showCommitMessageArea
     case commitMessageSnippet
     case commitMessageSnippetEntries
     case searchTokenHisrtory

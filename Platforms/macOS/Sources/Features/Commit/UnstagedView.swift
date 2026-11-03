@@ -1,7 +1,13 @@
 import FoldGitCore
 import SwiftUI
 
+/// Stands in for untracked files while their section is collapsed.
+enum StageLandingAnchor: Hashable {
+    case untrackedFiles
+}
+
 struct UnstagedView: View {
+    @Environment(\.stageLandingPaths) private var landingPaths
     @Binding var fileDiffs: [ExpandableModel<FileDiff>]
     var status: String
     var untrackedFiles: [String]
@@ -69,7 +75,9 @@ struct UnstagedView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .foregroundStyle(.secondary)
                     .font(.callout)
+                    .stageLandingTint(!isUntrackedExpanded && untrackedFiles.contains(where: landingPaths.contains))
                 }
+                .id(StageLandingAnchor.untrackedFiles)
                 .padding(.top)
                 .padding(.leading, 12)
                 .padding(.trailing, 2)
@@ -101,16 +109,9 @@ struct UnstagedView: View {
     }
 
     private func untrackedFileRow(_ file: String, treeDepth: Int?, imageExpansion: Binding<Bool>? = nil) -> some View {
-        UntrackedFileRow(path: file, onSelect: onSelectUntrackedFile) { stage in
-            untrackedFileRowContent(file, treeDepth: treeDepth, imageExpansion: imageExpansion, stage: stage)
-        }
-    }
-
-    private func untrackedFileRowContent(_ file: String, treeDepth: Int?, imageExpansion: Binding<Bool>?,
-                                         stage: @escaping () -> Void) -> some View {
         HStack {
             Button {
-                stage()
+                onSelectUntrackedFile?(file)
             } label: {
                 Image(systemName: "plus")
                     .font(.system(size: 11, weight: .medium))
@@ -139,9 +140,11 @@ struct UnstagedView: View {
             } else {
                 untrackedFileName(file, treeDepth: treeDepth)
             }
+            ViewWorkingTreeFileButton(filePath: file)
             OpenFileButton(filePath: file)
         }
         .padding(.leading, CGFloat(treeDepth ?? 0) * 16)
+        .stageLandingRow(path: file)
     }
 
     private func untrackedFileName(_ file: String, treeDepth: Int?) -> some View {
@@ -154,24 +157,6 @@ struct UnstagedView: View {
             .help(file)
     }
 
-}
-
-/// Keeps the untracked row's frame so staging it can launch a flight from where it sits.
-private struct UntrackedFileRow<Content: View>: View {
-    @Environment(\.stageFlights) private var stageFlights
-    @State private var frame = StageFlightFrame()
-    var path: String
-    var onSelect: ((String) -> Void)?
-    @ViewBuilder var content: (_ stage: @escaping () -> Void) -> Content
-
-    var body: some View {
-        content {
-            guard let onSelect else { return }
-            stageFlights?.launch(StageFlightItem(path: path, title: path, change: nil), from: frame.rect, leaving: .unstaged)
-            onSelect(path)
-        }
-        .stageFlightRow(path: path, frame: frame)
-    }
 }
 
 #Preview {

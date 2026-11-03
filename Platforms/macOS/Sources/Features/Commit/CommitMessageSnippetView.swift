@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct CommitMessageSnippetView: View {
+    @AppStorage(PreferenceKey.showCommitMessageArea.rawValue)
+    private var showCommitMessageArea = PreferenceDefaults.showCommitMessageArea
     @AppStorage(PreferenceKey.commitMessageSnippetEntries.rawValue)
     private var data = PreferenceDefaults.commitMessageSnippetEntries
     @State private var editingSnippet: CommitMessageSnippetEntry?
@@ -9,12 +11,12 @@ struct CommitMessageSnippetView: View {
 
     var body: some View {
         Form {
-            Section {
-                Text("Check frequently used snippets to show them below the commit message editor.")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
+            Section("Layout") {
+                Toggle("Show Commit Message Area", isOn: $showCommitMessageArea)
+                    .toggleStyle(.switch)
+                    .accessibilityIdentifier("showCommitMessageAreaToggle")
             }
-            Section("Commit Message Snippets") {
+            Section {
                 if snippets.isEmpty {
                     Text("No Commit Message Snippets")
                         .foregroundStyle(.secondary)
@@ -45,14 +47,18 @@ struct CommitMessageSnippetView: View {
                         .help("Delete")
                     }
                 }
-                Button("Add", systemImage: "plus") {
+                Button("Add Snippet…", systemImage: "plus") {
                     editingSnippet = CommitMessageSnippetEntry(text: "", isFavorite: true)
                 }
+            } header: {
+                Text("Commit Message Snippets")
+            } footer: {
+                Text("Checked snippets appear below the commit message editor.")
             }
         }
         .settingsForm()
         .sheet(item: $editingSnippet) { snippet in
-            CommitMessageSnippetEditSheet(snippet: snippet, onSave: update)
+            CommitMessageSnippetEditSheet(snippet: snippet, isNew: !snippets.contains { $0.id == snippet.id }, onSave: update)
         }
         .errorSheet($error, operation: "Save Commit Message Snippets")
     }
@@ -79,14 +85,13 @@ struct CommitMessageSnippetView: View {
 private struct CommitMessageSnippetEditSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State var snippet: CommitMessageSnippetEntry
+    var isNew = false
     var onSave: (CommitMessageSnippetEntry) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Commit Message Snippets")
+            Text(isNew ? "New Snippet" : "Edit Snippet")
                 .font(.headline)
-            Text("Enter commit message snippet here")
-                .foregroundStyle(.secondary)
             TextEditor(text: $snippet.text)
                 .font(.body)
                 .frame(height: 120)

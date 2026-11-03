@@ -129,3 +129,6 @@ output/
 
 # Python tooling
 __pycache__/
+
+# Local Claude launch configuration
+/.claude/launch.json

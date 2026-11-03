@@ -7,8 +7,6 @@
 
 <h1 align="center">FoldGit</h1>
 
-> On macOS, Directory View supports read-only worktree file browsing, line numbers, in-file search, and multilingual syntax highlighting. The app starts in Commit View; switch to Directory View when you want to browse complete files.
-
 <p align="center">
   Every repository, folded into one window.<br>
   A native, lightweight Git client for macOS.
@@ -32,14 +30,15 @@ FoldGit is a small, quiet window for exactly that. It keeps all your repositorie
 ## Features
 
 - **Fold repositories, not folders.** Every repository stays in the sidebar. Import a folder and its repositories become a group, or create groups that gather repositories from anywhere. Groups never move anything on disk. Inactive repositories fold one level deeper.
-- **Worktrees, first-class.** Linked worktrees are discovered automatically and appear under their repository with the branch name. Create, move, lock, remove and prune them, and use *Finish Worktree* to merge into a target branch and clean up. Conflicts are resolved in native sheets.
-- **Review and commit.** Commit graph for the current branch or all commits, unified and side-by-side diffs (switching automatically with the window width), hunk staging, amend, revert, and commit message templates.
+- **Worktrees, first-class.** Linked worktrees are discovered automatically and appear under their repository with the branch name. Create, move, lock, remove and prune them, and use *Finish Worktree* to merge into a target branch and clean up. The sidebar shows each worktree's status, and merged ones can be cleaned up in one pass. Conflicts are resolved in native sheets.
+- **Review and commit.** Commit graph for the current branch or all commits, unified and side-by-side diffs (switching automatically with the window width), hunk staging, amend, revert, commit message templates and snippets.
+- **Commit View and Directory View.** Review changes by commit, or browse complete files with syntax highlighting and jump to them from any diff (macOS).
 - **Branches, tags and comparison.** Switch, merge, rename and delete branches, manage tags, and compare any two branches or tags.
 - **Native menus and shortcuts.** Open recent repositories, run repository and commit actions, navigate to HEAD, and control diff views from the menu bar. Find the shortcut reference under Help.
 - **Fast search.** Filter history by author, email or message as you type. Search runs in the background, reuses its index, pages results and cancels stale queries. It works with CJK input methods.
 - **Sidebar that scales.** Filter by folder, repository or custom display name. Sort by name, recently opened, modified or added, or keep a manual order.
-- **Everyday extras.** Push and pull, stash, per-repository Auto Fetch (download only, never merge), *Open in* your editor or terminal, light and dark appearances, and eight interface languages.
-- **Native and small.** Written in SwiftUI and AppKit, no Electron. The installer is about 4 MB.
+- **Everyday extras.** Push and pull, stash, Auto Fetch (download only, never merge), *Open in* your editor or terminal, light and dark appearances, and eight interface languages.
+- **Native and small.** Written in SwiftUI and AppKit, no Electron. The installer is just a few MB.
 
 ## Install
 

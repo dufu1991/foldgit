@@ -257,7 +257,7 @@
       var rect = foldSection.getBoundingClientRect();
       var fp = clamp(-rect.top / Math.max(1, rect.height - vh), 0, 1);
       steps[0].parentNode.style.setProperty("--fold-progress", fp.toFixed(4));
-      setFoldStep(fp < 0.2 ? 0 : fp < 0.46 ? 1 : fp < 0.72 ? 2 : 3);
+      setFoldStep(Math.min(steps.length - 1, Math.floor(fp * steps.length)));
     }
 
     if (smoothY !== target) {

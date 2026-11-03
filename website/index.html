@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>FoldGit — 把仓库折进一个窗口</title>
-  <meta name="description" content="FoldGit 是原生、轻量的 macOS Git 客户端：按目录或分组折叠仓库，工作树收在所属仓库之下，约 4 MB。">
+  <meta name="description" content="FoldGit 是原生、轻量的 macOS Git 客户端：按目录或分组折叠仓库，工作树收在所属仓库之下，安装包仅几 MB。">
   <link rel="canonical" href="https://foldgit.com/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="FoldGit">
@@ -39,7 +39,7 @@
       root.dataset.scheme = root.dataset.theme || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=16">
+  <link rel="stylesheet" href="styles.css?v=18">
 </head>
 <body>
   <div class="backdrop" aria-hidden="true">
@@ -77,11 +77,8 @@
         <span>FoldGit</span>
       </a>
       <div class="nav-links">
-        <a href="#fold" data-i18n="nav.fold">折叠</a>
-        <a href="#why" data-i18n="nav.why">理念</a>
-        <a href="#compare" data-i18n="nav.compare">差异</a>
-        <a href="#windows">Windows</a>
-        <a href="manual.html" data-i18n="nav.manual">使用手册</a>
+        <a href="manual.html" data-i18n="nav.manual">手册</a>
+        <a href="changelog.html" data-i18n="nav.changelog">日志</a>
       </div>
       <div class="nav-actions">
         <a class="pill-btn" href="#support" data-i18n="nav.support">支持</a>
@@ -120,7 +117,7 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
           </a>
         </div>
-        <p class="meta" data-reveal data-i18n="hero.meta">macOS 26 及以上 · Apple Silicon · 约 4 MB · MIT 开源</p>
+        <p class="meta" data-reveal data-i18n="hero.meta">macOS 26 及以上 · Apple Silicon · 仅几 MB · MIT 开源</p>
         <div class="brew-install" data-reveal>
           <p data-i18n="brew.title">也可以通过 Homebrew 安装</p>
           <pre class="cmd"><code>brew install --cask dufu1991/tap/foldgit</code></pre>
@@ -156,11 +153,15 @@
             </li>
             <li>
               <h3 data-i18n="fold.s2.title">工作树收在仓库之下</h3>
-              <p data-i18n="fold.s2.body">自动发现工作树，带着分支名折叠在仓库下方。新建、锁定、合并收尾，一处完成。</p>
+              <p data-i18n="fold.s2.body">自动发现工作树，带着分支名和实时状态折叠在仓库下方。新建、锁定、合并收尾、清理，一处完成。</p>
             </li>
             <li>
               <h3 data-i18n="fold.s3.title">不活跃的，再折一层</h3>
               <p data-i18n="fold.s3.body">不活跃的仓库再折一层，活跃的始终在眼前。配合过滤和排序，几十个仓库也一目了然。</p>
+            </li>
+            <li>
+              <h3 data-i18n="fold.s4.title">展开目录，查看完整文件</h3>
+              <p data-i18n="fold.s4.body">切换到「目录视角」，按文件夹浏览整个项目。选中文件即可阅读全文，配合语法高亮和文件内查找，看清改动前后的上下文。</p>
             </li>
           </ol>
         </div>
@@ -169,6 +170,7 @@
           <div class="fs-toolbar">
             <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
             <span class="fs-search" data-i18n="fold.search">搜索仓库</span>
+            <span class="fs-view" data-i18n="fold.directory">目录视角</span>
           </div>
           <div class="fs-canvas" id="fs-canvas">
             <!-- Rows are positioned by main.js for each step. -->
@@ -183,6 +185,27 @@
             <div class="fs-row fs-repo" data-id="kite"><i class="ic ic-repo c1"></i><b>kite-site</b><span class="tag">main</span></div>
             <div class="fs-row fs-repo" data-id="moss"><i class="ic ic-repo c3"></i><b>moss-sketches</b><span class="tag">main</span></div>
             <div class="fs-row fs-more" data-id="infrequent"><i class="chev closed"></i><b data-i18n="fold.infrequent">不活跃</b><em>2</em></div>
+          </div>
+          <div class="fs-browser code-mock">
+            <div class="fs-file-tree">
+              <div class="fs-file-root"><i class="chev"></i><i class="ic ic-dir"></i><b>aurora-ui</b></div>
+              <div class="fs-file-folder"><i class="chev"></i><i class="ic ic-group"></i><span>src</span></div>
+              <div class="fs-file is-selected"><span>App.vue</span></div>
+              <div class="fs-file"><span>package.json</span></div>
+              <div class="fs-file"><span>README.md</span></div>
+            </div>
+            <div class="fs-file-content">
+              <div class="cm-bar"><span class="cm-seg is-on" data-i18n="fold.content">文件内容</span><span class="cm-path">src/App.vue</span></div>
+              <ol class="cm-lines">
+                <li>&lt;<i class="k">script setup</i>&gt;</li>
+                <li><i class="k">import</i> { ref } <i class="k">from</i> <i class="t">'vue'</i></li>
+                <li><i class="k">const</i> query = <i class="f">ref</i>(<i class="t">''</i>)</li>
+                <li>&lt;/<i class="k">script</i>&gt;</li>
+                <li>&lt;<i class="k">template</i>&gt;</li>
+                <li>  &lt;<i class="k">input</i> <i class="p">v-model</i>=<i class="t">"query"</i> /&gt;</li>
+                <li>&lt;/<i class="k">template</i>&gt;</li>
+              </ol>
+            </div>
           </div>
         </div>
       </div>
@@ -213,6 +236,59 @@
       </div>
     </section>
 
+    <!-- Review: full files and worktree status for agent-written code -->
+    <section class="section" id="review">
+      <div class="section-head">
+        <p class="kicker" data-reveal data-i18n="rv.kicker">不开编辑器，也能看完代码</p>
+        <h2 data-reveal data-i18n="rv.title">Agent 写完，<br>在这里从头看到尾。</h2>
+        <p class="section-lede" data-reveal data-i18n="rv.lede">不止看差异。完整文件、每个文件的提交记录、每个工作树的状态，都在同一个窗口里。</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature glass" data-reveal="fold" style="--d:0">
+          <div class="feature-mock code-mock" aria-hidden="true">
+            <div class="cm-bar"><span class="cm-seg is-on" data-i18n="rv.files.mockContent">文件内容</span><span class="cm-seg" data-i18n="rv.files.mockHistory">提交记录</span><span class="cm-path">Sources/Search/Index.swift</span></div>
+            <ol class="cm-lines">
+              <li><i class="k">struct</i> <i class="t">SearchIndex</i> {</li>
+              <li>  <i class="k">private var</i> pages: [<i class="t">Page</i>] = []</li>
+              <li>  <i class="c">// Reuse the index; new input cancels old queries.</i></li>
+              <li>  <i class="k">func</i> <i class="f">query</i>(<i class="p">_</i> text: <i class="t">String</i>) <i class="k">async</i> -&gt; [<i class="t">Hit</i>] {</li>
+              <li>    <i class="k">try</i>? <i class="t">Task</i>.<i class="f">checkCancellation</i>()</li>
+              <li>    <i class="k">return</i> pages.<i class="f">matches</i>(text, limit: <i class="n">50</i>)</li>
+              <li>  }</li>
+              <li>}</li>
+            </ol>
+          </div>
+          <h3 data-i18n="rv.files.title">目录视角：完整文件与它的历史</h3>
+          <p data-i18n="rv.files.body">在工具栏切换到「目录视角」，整个工作目录按文件夹展开，包括未跟踪的新文件。选中文件即可阅读全文，或查看它被修改过的每一次提交。</p>
+          <ul class="feature-list">
+            <li data-i18n="rv.files.l1">语法高亮覆盖 50 多种常用语言，支持文件内查找</li>
+            <li data-i18n="rv.files.l2">「提交记录」逐条列出改过这个文件的提交，点开即看当次差异</li>
+            <li data-i18n="rv.files.l3">按名称或路径搜索文件，数千个文件也能快速定位</li>
+            <li data-i18n="rv.files.l4">大文件按需加载为纯文本，二进制文件一键交给外部应用</li>
+          </ul>
+          <a class="tile-link" href="manual.html#browse" data-i18n="rv.files.guide">查看目录视角说明 ↗</a>
+        </article>
+        <article class="feature glass" data-reveal="fold" style="--d:1">
+          <div class="feature-mock wt-mock" aria-hidden="true">
+            <div class="wt-row"><span class="wt-ic main"></span><b>tide-api</b><em>main</em><span class="wt-note" data-i18n="rv.wt.mockClean">无更改</span></div>
+            <div class="wt-row"><span class="wt-ic is-modified"></span><b>agent-search</b><em>feat/search</em><span class="wt-note" data-i18n="rv.wt.mockModified">7 个文件有改动</span></div>
+            <div class="wt-row"><span class="wt-ic is-conflicted"></span><b>agent-login</b><em>fix/login</em><span class="wt-note" data-i18n="rv.wt.mockConflicted">冲突</span></div>
+            <div class="wt-row"><span class="wt-ic is-operating"></span><b>agent-cache</b><em>refactor/cache</em><span class="wt-note" data-i18n="rv.wt.mockOperating">正在变基</span></div>
+            <div class="wt-row"><span class="wt-ic is-integrated"></span><b>tide-api-docs</b><em>docs/api</em><span class="wt-note" data-i18n="rv.wt.mockIntegrated">已并入 origin/main</span></div>
+          </div>
+          <h3 data-i18n="rv.wt.title">每个工作树的状态，一眼看清</h3>
+          <p data-i18n="rv.wt.body">一个仓库开多个工作树、让几个 Agent 并行工作时，侧边栏图标的角标直接告诉你：哪个有改动、哪个冲突了、哪个正在变基，哪个已经合并。</p>
+          <ul class="feature-list">
+            <li data-i18n="rv.wt.l1">悬停查看已暂存、未暂存、未跟踪的数量，以及相对主干或上游领先、落后多少提交</li>
+            <li data-i18n="rv.wt.l2">文件一变就自动更新；只读取状态、不占用 Git 锁，不打断正在工作的 Agent 和终端</li>
+            <li data-i18n="rv.wt.l3">「清理已合并的工作树」识别普通合并与 squash、rebase 合并，删除前再核对一次，从不强制</li>
+            <li data-i18n="rv.wt.l4">被忽略的文件（如 node_modules、.env）会提前列出，需你确认才随目录删除</li>
+          </ul>
+          <a class="tile-link" href="manual.html#worktrees" data-i18n="rv.wt.guide">查看工作树说明 ↗</a>
+        </article>
+      </div>
+    </section>
+
     <!-- Differentiators -->
     <section class="section" id="compare">
       <div class="section-head">
@@ -228,11 +304,11 @@
         <article class="tile glass" data-reveal="fold" style="--d:1">
           <div class="tile-icon"><svg viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="9" r="2"/><path d="M6 7v10M18 11c0 4-6 3-12 6"/></svg></div>
           <h3 data-i18n="d.wt.title">工作树是一等公民</h3>
-          <p data-i18n="d.wt.body">自动发现，检查分支占用，完成时合并并清理；冲突在原生弹窗里处理。</p>
+          <p data-i18n="d.wt.body">自动发现，侧边栏实时显示每个工作树的状态；完成时合并，已合并的可安全批量清理，冲突在原生弹窗里处理。</p>
         </article>
         <article class="tile glass" data-reveal="fold" style="--d:2">
           <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7Z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg></div>
-          <h3 data-i18n="d.size.title">约 4 MB</h3>
+          <h3 data-i18n="d.size.title">仅几 MB</h3>
           <p data-i18n="d.size.body">SwiftUI 与 AppKit 原生实现，不含 Electron；同类 Electron 应用常上百 MB。</p>
         </article>
         <article class="tile glass" data-reveal="fold" style="--d:0">
@@ -260,8 +336,8 @@
           <span data-i18n="cmp.them">常见 Git 客户端</span>
         </div>
         <div class="cmp-row"><span data-i18n="cmp.r1">多仓库</span><span data-i18n="cmp.r1a">目录 / 分组折叠，全部常驻</span><span data-i18n="cmp.r1b">一次打开一个，来回切换</span></div>
-        <div class="cmp-row"><span data-i18n="cmp.r2">工作树</span><span data-i18n="cmp.r2a">自动发现，新建到完成全流程</span><span data-i18n="cmp.r2b">支持有限，常需回到命令行</span></div>
-        <div class="cmp-row"><span data-i18n="cmp.r3">体积</span><span data-i18n="cmp.r3a">约 4 MB，原生</span><span data-i18n="cmp.r3b">Electron 应用常在百 MB 以上</span></div>
+        <div class="cmp-row"><span data-i18n="cmp.r2">工作树</span><span data-i18n="cmp.r2a">自动发现，状态实时可见，新建到清理全流程</span><span data-i18n="cmp.r2b">支持有限，常需回到命令行</span></div>
+        <div class="cmp-row"><span data-i18n="cmp.r3">体积</span><span data-i18n="cmp.r3a">仅几 MB，原生</span><span data-i18n="cmp.r3b">Electron 应用常在百 MB 以上</span></div>
         <div class="cmp-row"><span data-i18n="cmp.r4">界面</span><span data-i18n="cmp.r4a">系统材质与控件，信息克制</span><span data-i18n="cmp.r4b">自绘界面，按钮与面板堆叠</span></div>
         <div class="cmp-row"><span data-i18n="cmp.r5">价格</span><span data-i18n="cmp.r5a">免费，MIT 开源</span><span data-i18n="cmp.r5b">付费或订阅居多</span></div>
       </div>
@@ -335,14 +411,11 @@
   </main>
 
   <footer class="footer">
-    <nav class="footer-links" aria-label="Footer">
-      <a href="changelog.html"><span class="show-zh">更新日志</span><span class="show-en">Changelog</span></a>
-    </nav>
     <p data-i18n="footer.text">FoldGit 由 dufu 独立维护，采用 MIT 许可证开源。</p>
     <p class="footer-note" data-i18n="footer.note">截图来自真实 macOS 界面，展示演示仓库。</p>
   </footer>
 
-  <script src="i18n.js?v=14"></script>
-  <script src="main.js?v=10"></script>
+  <script src="i18n.js?v=20"></script>
+  <script src="main.js?v=11"></script>
 </body>
 </html>

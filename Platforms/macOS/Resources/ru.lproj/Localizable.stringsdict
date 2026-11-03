@@ -122,6 +122,26 @@
 			<string>Добавлено %lld строки</string>
 		</dict>
 	</dict>
+	<key>%lld items</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld элемента</string>
+			<key>many</key>
+			<string>%lld элементов</string>
+			<key>one</key>
+			<string>%lld элемент</string>
+			<key>other</key>
+			<string>%lld элемента</string>
+		</dict>
+	</dict>
 	<key>%lld minutes ago</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

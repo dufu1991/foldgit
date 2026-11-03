@@ -86,6 +86,20 @@
 			<string>新增 %lld 行</string>
 		</dict>
 	</dict>
+	<key>%lld items</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>other</key>
+			<string>%lld 项</string>
+		</dict>
+	</dict>
 	<key>%lld minutes ago</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

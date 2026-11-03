@@ -9,9 +9,6 @@
   <data name="Text_29b70cff605762a55098daac" xml:space="preserve">
     <value>{0}、{1}</value>
   </data>
-  <data name="Text_3ae9086abfdeb0c12fab11c7" xml:space="preserve">
-    <value>{0}：{1} 件先行、{2} 件遅れ</value>
-  </data>
   <data name="Text_1ee89c2c01e0ed612af30945" xml:space="preserve">
     <value>{0} 件のコミット</value>
   </data>
@@ -29,6 +26,9 @@
   </data>
   <data name="Text_708bb9e67151379d61d962e5" xml:space="preserve">
     <value>{0} 行追加</value>
+  </data>
+  <data name="Text_5d3ee8251bab6d8d190b8b24" xml:space="preserve">
+    <value>{0} 件</value>
   </data>
   <data name="Text_3305c13edcf6f245f552ad34" xml:space="preserve">
     <value>{0}分前</value>
@@ -66,14 +66,17 @@
   <data name="Text_5f61a448b53339af755c8585" xml:space="preserve">
     <value>日時</value>
   </data>
-  <data name="Text_cc90f78e0ad41d4be95ae13c" xml:space="preserve">
-    <value>直近 15 分以内に操作あり</value>
-  </data>
   <data name="Text_ef37f4e061bb04ce93b664ae" xml:space="preserve">
     <value>実際のサイズ</value>
   </data>
   <data name="Text_9fd728c66c9a256b121472da" xml:space="preserve">
     <value>追加</value>
+  </data>
+  <data name="Text_a2f525c334a21b835f3f36cf" xml:space="preserve">
+    <value>アプリを追加</value>
+  </data>
+  <data name="Text_e625002698b3a73b38a47812" xml:space="preserve">
+    <value>アプリを追加…</value>
   </data>
   <data name="Text_ea528a6bdfe1e5ad0ffad19a" xml:space="preserve">
     <value>ローカルリポジトリやフォルダを追加</value>
@@ -86,6 +89,9 @@
   </data>
   <data name="Text_982b949c4f27a7a39d28c02b" xml:space="preserve">
     <value>リポジトリまたはフォルダを追加</value>
+  </data>
+  <data name="Text_d58efc2be26ea88d0e7e3b5d" xml:space="preserve">
+    <value>スニペットを追加…</value>
   </data>
   <data name="Text_9869756b6df4c05e05b955eb" xml:space="preserve">
     <value>Git リポジトリ、または複数のリポジトリを含むフォルダを追加してください。</value>
@@ -102,6 +108,12 @@
   <data name="Text_ad35c6e38245aae843b1abba" xml:space="preserve">
     <value>全体で有効にした後、各リポジトリのコンテキストメニューからワークツリーを有効にしてください。有効にしたリポジトリだけに情報と管理操作が表示されます。この設定をオフにしても、各リポジトリの選択は保持されます。</value>
   </data>
+  <data name="Text_a8f94e9869fad501623408d9" xml:space="preserve">
+    <value>先行</value>
+  </data>
+  <data name="Text_ba3a40fbc6af451c87af2ddb" xml:space="preserve">
+    <value>{0} より先行</value>
+  </data>
   <data name="Text_d5bc88a55761ffdd57820fcf" xml:space="preserve">
     <value>すべてのコミット</value>
   </data>
@@ -110,6 +122,9 @@
   </data>
   <data name="Text_deeea29ce36247f50671549a" xml:space="preserve">
     <value>システム設定で FoldGit のログイン時起動を許可してください。</value>
+  </data>
+  <data name="Text_9064c12f8647e163f3ad899d" xml:space="preserve">
+    <value>各リポジトリのコンテキストメニューでも有効にしてください。</value>
   </data>
   <data name="Text_4475f5152487261533c54976" xml:space="preserve">
     <value>直前のコミットを修正</value>
@@ -131,9 +146,6 @@
   </data>
   <data name="Text_98e33b0f3104fcf1b812ba2c" xml:space="preserve">
     <value>アプリ</value>
-  </data>
-  <data name="Text_868cdc6ea50ad80ee6876d2f" xml:space="preserve">
-    <value>新しく開く差分に適用されます。手動で展開または折りたたんだファイルの状態は保持されます。</value>
   </data>
   <data name="Text_31e392d1c0378beca611de66" xml:space="preserve">
     <value>適用</value>
@@ -159,14 +171,8 @@
   <data name="Text_4208569d7ade41fa4d5f1e2d" xml:space="preserve">
     <value>自動フェッチに失敗しました</value>
   </data>
-  <data name="Text_c9156a4ced754ec967489b19" xml:space="preserve">
-    <value>アプリの実行中は設定した間隔で自動フェッチを続けます。</value>
-  </data>
   <data name="Text_50722fd016c4716c1560a55c" xml:space="preserve">
     <value>自動フェッチに失敗しました。クリックして再試行します。</value>
-  </data>
-  <data name="Text_8f0184ccd344ff0656dbefea" xml:space="preserve">
-    <value>自動モードでは、十分なスペースがある場合に左右分割で表示します。</value>
   </data>
   <data name="Text_76900f1bfd16c8d4dd3d25e6" xml:space="preserve">
     <value>戻る</value>
@@ -176,6 +182,12 @@
   </data>
   <data name="Text_9bb725005055412c75a8e8d1" xml:space="preserve">
     <value>変更前</value>
+  </data>
+  <data name="Text_a2e92848319a4248d57e0aae" xml:space="preserve">
+    <value>遅延</value>
+  </data>
+  <data name="Text_4d622ad4b95f41e0e17befcf" xml:space="preserve">
+    <value>{0} より遅延</value>
   </data>
   <data name="Text_b8d413ef5ae09a42d7fce8bf" xml:space="preserve">
     <value>{0} コミット遅れ</value>
@@ -191,6 +203,9 @@
   </data>
   <data name="Text_7f216915ec37e5cc746e9f31" xml:space="preserve">
     <value>バイナリ出力（{0} バイト）</value>
+  </data>
+  <data name="Text_073b69639276a014b110d736" xml:space="preserve">
+    <value>二分探索中</value>
   </data>
   <data name="Text_52656e8104eef3fddd3d4546" xml:space="preserve">
     <value>ブランチ</value>
@@ -225,17 +240,17 @@
   <data name="Text_da9fc80016b0ff1af0d679e5" xml:space="preserve">
     <value>変更をローカルでマージしました。対象ワークツリーを開いて確認、テスト、プッシュを行えます。</value>
   </data>
-  <data name="Text_3653683990bc494a1ed4680b" xml:space="preserve">
-    <value>変更：ステージ済み {0}、未ステージ {1}、未追跡 {2}、競合 {3}</value>
-  </data>
   <data name="Text_9ed79ee9b2129b5dc855c5dc" xml:space="preserve">
     <value>アップデートを確認</value>
   </data>
   <data name="Text_2431f04103810e7ba0dc9657" xml:space="preserve">
     <value>起動時にアップデートを確認</value>
   </data>
-  <data name="Text_57e4d74626635008f6a0ced2" xml:space="preserve">
-    <value>よく使うスニペットを選択すると、コミットメッセージエディタの下に表示されます。</value>
+  <data name="Text_cf1d52517abe733a47cc0134" xml:space="preserve">
+    <value>チェックしたアプリは「ほかのアプリで開く」メニューの先頭に固定されます。</value>
+  </data>
+  <data name="Text_84ceb89b62bb510a4a2d9c41" xml:space="preserve">
+    <value>チェックしたスニペットはコミットメッセージエディタの下に表示されます。</value>
   </data>
   <data name="Text_99e71f48c48f121baddd4def" xml:space="preserve">
     <value>チェックアウト</value>
@@ -263,9 +278,6 @@
   </data>
   <data name="Text_1294a7b7953f139691a8d978" xml:space="preserve">
     <value>別の対象ブランチを選んでください。</value>
-  </data>
-  <data name="Text_13bc4500c90bc072fef5674f" xml:space="preserve">
-    <value>リポジトリごとにフェッチ間隔を設定します。リモートの更新をダウンロードし、自動マージは行いません。</value>
   </data>
   <data name="Text_179bf01adabef87cd4a9af91" xml:space="preserve">
     <value>ファイルを選択して両方のバージョンを比較します。外部で編集するか一方を採用して、マージを続行します。</value>
@@ -426,6 +438,9 @@
   <data name="Text_ab480df9b105271e4e11fcea" xml:space="preserve">
     <value>コミットハッシュをコピー</value>
   </data>
+  <data name="Text_e43ce3927efdd139c4d7bd11" xml:space="preserve">
+    <value>削除コマンドをコピー</value>
+  </data>
   <data name="Text_dba23f14c1094cbd338b8288" xml:space="preserve">
     <value>ログをコピー</value>
   </data>
@@ -459,6 +474,9 @@
   <data name="Text_863a46817b22ecc71d23d513" xml:space="preserve">
     <value>ファイルの初期表示</value>
   </data>
+  <data name="Text_dae59266d14ffb8c6f600abb" xml:space="preserve">
+    <value>デフォルトの間隔</value>
+  </data>
   <data name="Text_e2d0a54968ead24efc0dffa6" xml:space="preserve">
     <value>削除</value>
   </data>
@@ -482,6 +500,9 @@
   </data>
   <data name="Text_79479a6c76d8416ab7839952" xml:space="preserve">
     <value>降順</value>
+  </data>
+  <data name="Text_5cd261bcc680ffdaef07096b" xml:space="preserve">
+    <value>すべての選択を解除</value>
   </data>
   <data name="Text_23b028a2c6050cdb51bd5582" xml:space="preserve">
     <value>切り離された HEAD</value>
@@ -524,6 +545,9 @@
   </data>
   <data name="Text_464c4ffd019e1e9691dcf053" xml:space="preserve">
     <value>編集</value>
+  </data>
+  <data name="Text_966dd2dcb7d651972939d644" xml:space="preserve">
+    <value>スニペットを編集</value>
   </data>
   <data name="Text_61ff6d21d7a0ef059cf4e44b" xml:space="preserve">
     <value>空のファイル</value>
@@ -744,6 +768,9 @@
   <data name="Text_fd02b1c18bef168d6f3add0b" xml:space="preserve">
     <value>Git がワークツリーをマージ前の状態に戻します。競合解決中の編集は破棄され、元ブランチのコミットは保持されます。</value>
   </data>
+  <data name="Text_d6730b7b4d624dda2cd5e9d0" xml:space="preserve">
+    <value>GitHub リポジトリ</value>
+  </data>
   <data name="Text_8e7526fdcc5cc34f34e420cb" xml:space="preserve">
     <value>グループ名</value>
   </data>
@@ -767,6 +794,9 @@
   </data>
   <data name="Text_d09a731d988a17accc54df6f" xml:space="preserve">
     <value>混合表示では、過去 7 日間は相対時刻、それ以前は正確な日時を表示します。</value>
+  </data>
+  <data name="Text_ab4846e23c982779cea8ccf6" xml:space="preserve">
+    <value>混合表示：7 日以内は相対時刻、それ以前は日時を表示します。</value>
   </data>
   <data name="Text_365819e56f8313cb63ef6aa9" xml:space="preserve">
     <value>アイコンのみ</value>
@@ -828,14 +858,17 @@
   <data name="Text_856a3723d543e02279010aa3" xml:space="preserve">
     <value>前回のフェッチ成功</value>
   </data>
+  <data name="Text_ebb15215eeb5ff676a54e574" xml:space="preserve">
+    <value>最終アクティビティ：{0}</value>
+  </data>
   <data name="Text_73b6e48a1b552d112502d37a" xml:space="preserve">
     <value>あとで</value>
   </data>
   <data name="Text_540c74af14f71faf221e4c45" xml:space="preserve">
     <value>ログイン時に起動</value>
   </data>
-  <data name="Text_77d5dbd3b313e4112e98867f" xml:space="preserve">
-    <value>この設定は差分ビューの切り替えボタンと同期します。</value>
+  <data name="Text_a511909161e1b84fb81b5202" xml:space="preserve">
+    <value>レイアウト</value>
   </data>
   <data name="Text_d32ec834f46c429ce0816506" xml:space="preserve">
     <value>空欄の場合はフォルダ名を使用します。</value>
@@ -957,6 +990,9 @@
   <data name="Text_b1a942ad4fcaabc9a985eed6" xml:space="preserve">
     <value>マージ完了</value>
   </data>
+  <data name="Text_880c7484f1aa099926b208c5" xml:space="preserve">
+    <value>マージ状態</value>
+  </data>
   <data name="Text_21de86e184864f733401f0c4" xml:space="preserve">
     <value>マージ進行中</value>
   </data>
@@ -1013,6 +1049,9 @@
   </data>
   <data name="Text_1fac73e86cf4db8ba24f1b6b" xml:space="preserve">
     <value>選択項目で新規グループを作成</value>
+  </data>
+  <data name="Text_8decc1f2e1c2c6e5c9ba3a44" xml:space="preserve">
+    <value>新規スニペット</value>
   </data>
   <data name="Text_82148b3da229440cdb35bd4e" xml:space="preserve">
     <value>新規タグ</value>
@@ -1092,8 +1131,8 @@
   <data name="Text_822622a167cc9522df56237f" xml:space="preserve">
     <value>タグがありません</value>
   </data>
-  <data name="Text_a53befb2563cd5bcdd5d81e1" xml:space="preserve">
-    <value>未コミットの変更なし</value>
+  <data name="Text_3b7a0c47da4e5b6127db261d" xml:space="preserve">
+    <value>このワークツリーの作成以降コミットなし</value>
   </data>
   <data name="Text_0fe076d57a58c8baa924a5f2" xml:space="preserve">
     <value>整理できるマージ済みのワークツリーはありません。</value>
@@ -1164,6 +1203,9 @@
   <data name="Text_2e6abab7cf7b8d2347dcbf1b" xml:space="preserve">
     <value>オープンソースライセンス</value>
   </data>
+  <data name="Text_326ce64193d0b604ea43e554" xml:space="preserve">
+    <value>オープンソースライセンス…</value>
+  </data>
   <data name="Text_8aaee6ffeadb0b89d8f73beb" xml:space="preserve">
     <value>元のワークツリーを開く</value>
   </data>
@@ -1197,9 +1239,6 @@
   <data name="Text_ef16c859555349fa66dbcbca" xml:space="preserve">
     <value>固定したアプリ</value>
   </data>
-  <data name="Text_515f958c3059b4a3fb447476" xml:space="preserve">
-    <value>固定したアプリは「次で開く」メニューの先頭に表示されます。</value>
-  </data>
   <data name="Text_241d6de1db015ad7d64cf1ba" xml:space="preserve">
     <value>Git リポジトリを含むフォルダを追加してください。</value>
   </data>
@@ -1232,6 +1271,9 @@
   </data>
   <data name="Text_525212783dd88c8069b1d454" xml:space="preserve">
     <value>最後のウインドウを閉じたときに終了</value>
+  </data>
+  <data name="Text_8a576d6eca984d5ad32d9aaa" xml:space="preserve">
+    <value>ワークツリーの状態を取得中…</value>
   </data>
   <data name="Text_f897c1672415f3654ae0f5be" xml:space="preserve">
     <value>リベース進行中</value>
@@ -1332,6 +1374,9 @@
   <data name="Text_21dbf396d782cdbc702a4d49" xml:space="preserve">
     <value>リポジトリはサイドバーに残り、フォルダは変更されません。</value>
   </data>
+  <data name="Text_672c2c12ebe7ac78d570e83c" xml:space="preserve">
+    <value>個別に設定していないリポジトリはデフォルトの間隔を使います。</value>
+  </data>
   <data name="Text_13d6ff07b8a5d792ec87d5ec" xml:space="preserve">
     <value>リポジトリ</value>
   </data>
@@ -1346,9 +1391,6 @@
   </data>
   <data name="Text_ac51a40e0c992b7c1d8696fb" xml:space="preserve">
     <value>リポジトリのワークツリー</value>
-  </data>
-  <data name="Text_c17307e2f5ac4d4095cf0ba7" xml:space="preserve">
-    <value>設定をリセット</value>
   </data>
   <data name="Text_8e26aa45ecfbf70029957213" xml:space="preserve">
     <value>マージを解決</value>
@@ -1370,6 +1412,9 @@
   </data>
   <data name="Text_33a3925b62344e5775d0a04a" xml:space="preserve">
     <value>デフォルトに戻す</value>
+  </data>
+  <data name="Text_5a1e582ff6c9d741f52fc1ba" xml:space="preserve">
+    <value>デフォルトに戻す…</value>
   </data>
   <data name="Text_f031a34fa5b9037b9fb8c29c" xml:space="preserve">
     <value>前回のリポジトリとウインドウを復元</value>
@@ -1397,9 +1442,6 @@
   </data>
   <data name="Text_5d8021556c24ef0720ad3e41" xml:space="preserve">
     <value>ワークツリーを確認</value>
-  </data>
-  <data name="Text_2d2ad59d90427b3476a8a981" xml:space="preserve">
-    <value>設定を戻す前に、すべてのデフォルト値を確認できます。</value>
   </data>
   <data name="Text_f4ccae29e1bb0c20a124570a" xml:space="preserve">
     <value>実行中</value>
@@ -1440,6 +1482,9 @@
   <data name="Text_d416f4340be478fabb6757d5" xml:space="preserve">
     <value>リポジトリを検索</value>
   </data>
+  <data name="Text_d1ec69e64b9609d089aae09f" xml:space="preserve">
+    <value>すべてを選択</value>
+  </data>
   <data name="Text_1ce37f395d7aa7aaa8076d0f" xml:space="preserve">
     <value>ブランチを選択</value>
   </data>
@@ -1473,11 +1518,17 @@
   <data name="Text_74a883a037bc227f91891ab6" xml:space="preserve">
     <value>設定</value>
   </data>
+  <data name="Text_7a04083baf8daa20973e671f" xml:space="preserve">
+    <value>設定…</value>
+  </data>
   <data name="Text_0df6f1cad36c49da768a6efd" xml:space="preserve">
     <value>表示</value>
   </data>
   <data name="Text_590180ed4faa710883dfa079" xml:space="preserve">
     <value>コミットグラフを表示</value>
+  </data>
+  <data name="Text_a5bc373536dc270de53825e5" xml:space="preserve">
+    <value>コミットメッセージ欄を表示</value>
   </data>
   <data name="Text_fbaecba48b4003832d72ee05" xml:space="preserve">
     <value>画像の 1 ピクセルを画面の 1 ピクセルで表示</value>
@@ -1647,6 +1698,9 @@
   <data name="Text_f6c9dd3b5586ef02efe172c0" xml:space="preserve">
     <value>ワークツリーがロック中、存在しない、またはブランチが使用中です。保持するかロックを解除してから整理してください。</value>
   </data>
+  <data name="Text_efb52e7172b77731d996ff4f" xml:space="preserve">
+    <value>テーマ</value>
+  </data>
   <data name="Text_90d2f542b118d50055ff1e33" xml:space="preserve">
     <value>このファイルまたはワークツリーに進行中のマージはありません。更新して再試行してください。</value>
   </data>
@@ -1731,8 +1785,11 @@
   <data name="Text_9bc51f2f1a2a0998f6490334" xml:space="preserve">
     <value>未追跡のファイル</value>
   </data>
-  <data name="Text_5f61c3f8f7c5f5802be4769b" xml:space="preserve">
-    <value>上流：{0} 件先行、{1} 件遅れ</value>
+  <data name="Text_815a73d281edb5bac0ee0279" xml:space="preserve">
+    <value>デフォルトを使用（{0}）</value>
+  </data>
+  <data name="Text_9d72f41224784dc06e39db57" xml:space="preserve">
+    <value>すべてのリポジトリでデフォルトを使用</value>
   </data>
   <data name="Text_fdad19b2db24f1a14a14f2f4" xml:space="preserve">
     <value>フォルダ名を使用</value>
@@ -1748,6 +1805,9 @@
   </data>
   <data name="Text_69ea5a45920209ea3090a258" xml:space="preserve">
     <value>バージョン {0}</value>
+  </data>
+  <data name="Text_bdbae54dcb2846740dd3db86" xml:space="preserve">
+    <value>バージョン {0}（{1}）</value>
   </data>
   <data name="Text_dcc839a4015c4b7dd9db959a" xml:space="preserve">
     <value>表示</value>
@@ -1793,6 +1853,9 @@
   </data>
   <data name="Text_1ba4c75ec617f08429ecd534" xml:space="preserve">
     <value>ワークツリーの状態</value>
+  </data>
+  <data name="Text_0ab7d74cdc30c2789a87a027" xml:space="preserve">
+    <value>ワークツリーの状態を取得できません</value>
   </data>
   <data name="Text_aec2f93d67b7c4c5fd9b9404" xml:space="preserve">
     <value>ワークツリー</value>

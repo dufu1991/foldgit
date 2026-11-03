@@ -34,11 +34,13 @@ public struct GitWorkingTreeStatus: Hashable, Sendable {
     public let branch: String?
     public let upstream: UpstreamDivergence?
     public let changes: WorktreeChangeCounts
+    public var upstreamReference: String? = nil
 
     public static func parse(_ output: String) throws -> Self {
         var head: String?
         var branch: String?
         var upstream: UpstreamDivergence?
+        var upstreamReference: String?
         var changes = WorktreeChangeCounts()
         var fields = output.split(separator: "\0", omittingEmptySubsequences: true).makeIterator()
         while let field = fields.next() {
@@ -48,6 +50,7 @@ public struct GitWorkingTreeStatus: Hashable, Sendable {
                 switch header[0] {
                 case "branch.oid": head = value == "(initial)" ? nil : value
                 case "branch.head": branch = value == "(detached)" ? nil : value
+                case "branch.upstream": upstreamReference = value
                 case "branch.ab":
                     let counts = value.split(separator: " ").map { Int($0.dropFirst()) }
                     guard counts.count == 2, let ahead = counts[0], let behind = counts[1] else { throw invalidStatus }
@@ -78,7 +81,7 @@ public struct GitWorkingTreeStatus: Hashable, Sendable {
                 throw invalidStatus
             }
         }
-        return Self(head: head, branch: branch, upstream: upstream, changes: changes)
+        return Self(head: head, branch: branch, upstream: upstream, changes: changes, upstreamReference: upstreamReference)
     }
 
     private static var invalidStatus: GitExecutionError {
@@ -118,21 +121,36 @@ public struct GitIgnoredEntriesQuery: RepositoryCommand {
 // MARK: - Operations in progress
 
 public enum GitPendingOperation: String, Sendable {
-    case merge, cherryPick, revert, rebase
+    case merge, cherryPick, revert, rebase, bisect
 
     private static let markers: [(String, Self)] = [
         ("MERGE_HEAD", .merge), ("CHERRY_PICK_HEAD", .cherryPick), ("REVERT_HEAD", .revert),
-        ("rebase-merge", .rebase), ("rebase-apply", .rebase),
+        ("rebase-merge", .rebase), ("rebase-apply", .rebase), ("BISECT_LOG", .bisect),
     ]
+    /// Entries in a worktree's own Git directory that start or end an operation.
+    public static let markerNames = markers.map(\.0) + ["sequencer"]
+
+    /// Every marker lives in the worktree's own Git directory, so one directory read replaces a Git process per marker.
+    static func detect(inGitDirectory directory: URL) -> Self? {
+        let exists = { (name: String) in FileManager.default.fileExists(atPath: directory.appendingPathComponent(name).path) }
+        if let operation = markers.first(where: { exists($0.0) })?.1 { return operation }
+        // A multi-commit cherry-pick or revert stays in progress between its commits without a *_HEAD file.
+        guard exists("sequencer") else { return nil }
+        let todo = (try? String(contentsOf: directory.appendingPathComponent("sequencer/todo"), encoding: .utf8)) ?? ""
+        return todo.hasPrefix("revert") ? .revert : .cherryPick
+    }
 
     static func detect(using session: GitRuntime.Session) async throws -> Self? {
-        for (name, operation) in markers {
-            let path = try await session.run(GitRevParse(directory: session.directory, gitPath: name))
-            let url = URL(fileURLWithPath: path, relativeTo: session.directory.appendingPathComponent("", isDirectory: true))
-            if FileManager.default.fileExists(atPath: url.path) { return operation }
-        }
-        return nil
+        let gitDirectory = try await session.run(GitAbsoluteGitDirectory(directory: session.directory))
+        return detect(inGitDirectory: URL(fileURLWithPath: gitDirectory, isDirectory: true))
     }
+}
+
+struct GitAbsoluteGitDirectory: RepositoryCommand {
+    var directory: URL
+    var isReadOnly: Bool { true }
+    var arguments: [String] { ["git", "rev-parse", "--absolute-git-dir"] }
+    func parse(for standardOutput: String) -> String { standardOutput.trimmingCharacters(in: .newlines) }
 }
 
 // MARK: - Trunk
@@ -162,37 +180,49 @@ public struct TrunkReference: Hashable, Sendable {
     /// Resolves an explicit branch, then `origin/HEAD`, then `main` or `master`, then the main worktree's branch.
     public static func resolve(in directory: URL, preferred: String? = nil, mainWorktreeBranch: String? = nil) async throws -> Self? {
         try await GitRuntime.read(at: directory, readOnly: true) { session in
-            let output = try await session.run(TrunkRefs(directory: directory))
-            let refs = Set(output.split(separator: "\n").map(String.init))
             let originHead = try await session.run(TrunkOriginHead(directory: directory))
             var names: [String] = []
             if let preferred, !preferred.isEmpty { names.append(preferred) }
             if originHead.hasPrefix("refs/remotes/origin/") { names.append(String(originHead.dropFirst(20))) }
             names += ["main", "master"]
             if let mainWorktreeBranch { names.append(mainWorktreeBranch) }
+            // Only the candidates are listed, so repositories with thousands of branches stay cheap to poll.
+            let refs = try await session.run(TrunkRefs(directory: directory,
+                references: names.flatMap { ["refs/heads/\($0)", "refs/remotes/origin/\($0)"] }))
             for name in names {
                 let local = "refs/heads/\(name)"
                 let remoteOnly = "refs/remotes/origin/\(name)"
-                guard refs.contains(local) || refs.contains(remoteOnly) else { continue }
+                guard refs[local] != nil || refs[remoteOnly] != nil else { continue }
                 var remote: String?
-                if refs.contains(local) {
-                    let upstream = try await session.run(TrunkUpstream(directory: directory, reference: local))
+                if let upstream = refs[local] {
                     // A configured upstream may be pruned or never fetched; only an existing ref can be compared.
                     // Without a usable upstream, a same-named branch on origin is still the trunk's remote copy.
-                    remote = refs.contains(upstream) ? upstream : (refs.contains(remoteOnly) ? remoteOnly : nil)
+                    remote = upstream ?? (refs[remoteOnly] != nil ? remoteOnly : nil)
                 } else {
                     remote = remoteOnly
                 }
-                return Self(local: refs.contains(local) ? local : nil, remote: remote)
+                return Self(local: refs[local] != nil ? local : nil, remote: remote)
             }
             return nil
         }
     }
 }
 
-private struct TrunkRefs: GitTextQuery {
+/// Maps each existing reference to its upstream, which is nil when none is configured or it no longer exists.
+private struct TrunkRefs: RepositoryCommand {
     var directory: URL
-    var arguments: [String] { ["git", "for-each-ref", "--format=%(refname)", "refs/heads", "refs/remotes"] }
+    let references: [String]
+    var isReadOnly: Bool { true }
+    var arguments: [String] { ["git", "for-each-ref", "--format=%(refname)%00%(upstream)%00%(upstream:track)"] + references }
+    func parse(for standardOutput: String) -> [String: String?] {
+        var refs: [String: String?] = [:]
+        for line in standardOutput.split(whereSeparator: \.isNewline) {
+            let fields = line.split(separator: "\0", omittingEmptySubsequences: false).map(String.init)
+            guard fields.count == 3, references.contains(fields[0]) else { continue }
+            refs[fields[0]] = fields[1].isEmpty || fields[2] == "[gone]" ? String?.none : fields[1]
+        }
+        return refs
+    }
 }
 
 /// `for-each-ref` succeeds without a match, so a missing `origin/HEAD` is not logged as a failed command.
@@ -200,14 +230,6 @@ private struct TrunkOriginHead: RepositoryCommand {
     var directory: URL
     var isReadOnly: Bool { true }
     var arguments: [String] { ["git", "for-each-ref", "--format=%(symref)", "refs/remotes/origin/HEAD"] }
-    func parse(for standardOutput: String) -> String { standardOutput.trimmingCharacters(in: .whitespacesAndNewlines) }
-}
-
-private struct TrunkUpstream: RepositoryCommand {
-    var directory: URL
-    let reference: String
-    var isReadOnly: Bool { true }
-    var arguments: [String] { ["git", "for-each-ref", "--format=%(upstream)", "--", reference] }
     func parse(for standardOutput: String) -> String { standardOutput.trimmingCharacters(in: .whitespacesAndNewlines) }
 }
 
@@ -234,19 +256,29 @@ public struct TrunkComparison: Hashable, Sendable {
     /// Short name of the reference that contains the commit. It differs from `reference`
     /// when the work is merged into the local trunk but not pushed yet.
     public let integratedInto: String?
+    /// HEAD has not moved since its branch or detached worktree was created. Such a worktree is an ancestor
+    /// of the trunk because no work has started, not because work was merged.
+    public let isUnstarted: Bool
 
-    public init(reference: String, ahead: Int, behind: Int, integration: WorktreeIntegration, integratedInto: String? = nil) {
+    public init(reference: String, ahead: Int, behind: Int, integration: WorktreeIntegration, integratedInto: String? = nil,
+                isUnstarted: Bool = false) {
         self.reference = reference
         self.ahead = ahead
         self.behind = behind
         self.integration = integration
         self.integratedInto = integratedInto
+        self.isUnstarted = isUnstarted
     }
+
+    /// Integrated work that was actually done here, as opposed to a worktree created on the trunk and left untouched.
+    public var hasMergedWork: Bool { integration.isIntegrated && !isUnstarted }
 }
 
 public enum WorktreeIntegrationCheck {
     /// Compares `commit` with the trunk. It is integrated if either the local or the remote trunk contains it.
-    public static func compare(_ commit: String, with trunk: TrunkReference, in directory: URL) async throws -> TrunkComparison? {
+    /// Pass the checked-out `branch` so a worktree that never committed is told apart from merged work.
+    public static func compare(_ commit: String, with trunk: TrunkReference, in directory: URL,
+                               branch: String? = nil) async throws -> TrunkComparison? {
         guard let comparison = trunk.comparison else { return nil }
         return try await GitRuntime.read(at: directory, readOnly: true) { session in
             let counts = try await session.run(IntegrationGit(directory: directory,
@@ -272,9 +304,21 @@ public enum WorktreeIntegrationCheck {
                     }
                 }
             }
+            let unstarted = integration == .ancestor ? await isUnstarted(commit, branch: branch, using: session) : false
             return TrunkComparison(reference: TrunkReference.shortName(comparison), ahead: ahead, behind: behind,
-                                   integration: integration, integratedInto: integratedInto.map(TrunkReference.shortName))
+                                   integration: integration, integratedInto: integratedInto.map(TrunkReference.shortName),
+                                   isUnstarted: unstarted)
         }
+    }
+
+    /// True when every reflog entry of the branch, or of a detached HEAD, points at `commit`. A missing reflog
+    /// proves nothing, so it reads as started and keeps the plain ancestry result.
+    static func isUnstarted(_ commit: String, branch: String?, using session: GitRuntime.Session) async -> Bool {
+        let reference = branch.map { "refs/heads/" + $0 } ?? "HEAD"
+        guard let log = try? await session.run(IntegrationGit(directory: session.directory,
+                args: ["log", "--walk-reflogs", "--format=%H", "-n", "200", reference, "--"])) else { return false }
+        let entries = log.split(whereSeparator: \.isNewline)
+        return !entries.isEmpty && entries.allSatisfy { $0 == commit }
     }
 
     /// A conflict, or a Git too old for `merge-tree --write-tree`, reads as not merged.
@@ -318,6 +362,7 @@ public struct WorktreeStatus: Hashable, Sendable {
     public var changes: WorktreeChangeCounts { working.changes }
     public var upstream: UpstreamDivergence? { working.upstream }
     public var isClean: Bool { changes.isClean && operation == nil }
+    /// Integrated but unstarted worktrees still qualify: removing them loses nothing, but they are never preselected.
     public var canBeCleanedUp: Bool { isClean && trunk?.integration.isIntegrated == true }
 
     public init(working: GitWorkingTreeStatus, operation: GitPendingOperation?, trunk: TrunkComparison?) {
@@ -340,9 +385,9 @@ public struct WorktreeStatus: Hashable, Sendable {
         }
         // Without readable trunk tips there is nothing to compare, but changes and pending operations still count.
         guard let head = working.head, let trunk, let tips else { return Self(working: working, operation: operation, trunk: nil) }
-        let key = [RepositoryLocation.key(for: directory), head, tips].joined(separator: "|")
+        let key = [RepositoryLocation.key(for: directory), head, working.branch ?? "", tips].joined(separator: "|")
         if let cached = await cache?.value(for: key) { return Self(working: working, operation: operation, trunk: cached) }
-        let comparison = try? await WorktreeIntegrationCheck.compare(head, with: trunk, in: directory)
+        let comparison = try? await WorktreeIntegrationCheck.compare(head, with: trunk, in: directory, branch: working.branch)
         if let comparison { await cache?.store(comparison, for: key) }
         return Self(working: working, operation: operation, trunk: comparison)
     }

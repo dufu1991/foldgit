@@ -6,19 +6,90 @@ extension View {
         background(ImmediateHelpAnchor(text: text).accessibilityHidden(true))
             .accessibilityHint(Text(verbatim: text))
     }
+
+    func immediateHelp(_ details: ImmediateHelpDetails) -> some View {
+        background(ImmediateHelpAnchor(text: details.text, details: details).accessibilityHidden(true))
+            .accessibilityHint(Text(verbatim: details.text))
+    }
+}
+
+struct ImmediateHelpDetails: Equatable {
+    struct Row: Equatable {
+        let label: String
+        let value: String
+    }
+    struct Section: Equatable {
+        var title: String = ""
+        let rows: [Row]
+    }
+    let title: String
+    let summary: String
+    let sections: [Section]
+
+    var text: String {
+        ([title, summary] + sections.flatMap { section in
+            [section.title] + section.rows.map { "\($0.label) \($0.value)" }
+        }).filter { !$0.isEmpty }.joined(separator: "\n")
+    }
+
+    /// The summary and every section on one line, for lists that show the facts without a tooltip.
+    var compactText: String {
+        (summary.split(whereSeparator: \.isNewline).map(String.init) + sections.map { section in
+            let rows = section.rows.map { "\($0.label) \($0.value)" }.joined(separator: ", ")
+            return section.title.isEmpty ? rows : section.title + " " + rows
+        }).filter { !$0.isEmpty }.joined(separator: " · ")
+    }
+
+    @MainActor var attributedText: NSAttributedString {
+        let font = NSFont.systemFont(ofSize: NSFont.smallSystemFontSize)
+        let result = NSMutableAttributedString(string: "")
+        let column = min(180, ceil(sections.flatMap(\.rows).map { ($0.label as NSString).size(withAttributes: [.font: font]).width }.max() ?? 0) + 20)
+        let append = { (text: String, weight: NSFont.Weight, secondary: Bool, gap: CGFloat) in
+            guard !text.isEmpty else { return }
+            let paragraph = NSMutableParagraphStyle()
+            paragraph.paragraphSpacing = gap
+            result.append(NSAttributedString(string: text + "\n", attributes: [
+                .font: NSFont.systemFont(ofSize: font.pointSize, weight: weight),
+                .foregroundColor: secondary ? NSColor.labelColor.withAlphaComponent(0.72) : NSColor.labelColor,
+                .paragraphStyle: paragraph,
+            ]))
+        }
+        append(title, .semibold, false, 4)
+        append(summary, .regular, false, 8)
+        for (sectionIndex, section) in sections.enumerated() {
+            let isLastSection = sectionIndex == sections.count - 1
+            if !section.title.isEmpty { append(section.title, .medium, true, 4) }
+            for (index, row) in section.rows.enumerated() {
+                let paragraph = NSMutableParagraphStyle()
+                paragraph.tabStops = [NSTextTab(textAlignment: .left, location: column)]
+                paragraph.headIndent = column
+                paragraph.paragraphSpacing = index < section.rows.count - 1 ? 3 : isLastSection ? 0 : 8
+                let line = NSMutableAttributedString(string: row.label + "\t" + row.value + "\n", attributes: [
+                    .font: font, .foregroundColor: NSColor.labelColor, .paragraphStyle: paragraph,
+                ])
+                line.addAttribute(.font, value: NSFont.monospacedDigitSystemFont(ofSize: font.pointSize, weight: .regular),
+                                  range: NSRange(location: (row.label + "\t").utf16.count, length: row.value.utf16.count))
+                result.append(line)
+            }
+        }
+        if result.length > 0 { result.deleteCharacters(in: NSRange(location: result.length - 1, length: 1)) }
+        return result
+    }
 }
 
 private struct ImmediateHelpAnchor: NSViewRepresentable {
     let text: String
+    var details: ImmediateHelpDetails?
 
     func makeNSView(context: Context) -> ImmediateHelpView {
         ImmediateHelpView()
     }
 
     func updateNSView(_ view: ImmediateHelpView, context: Context) {
-        if view.text != text {
+        if view.text != text || view.details != details {
             view.hideHelp()
             view.text = text
+            view.details = details
         }
     }
 
@@ -29,6 +100,7 @@ private struct ImmediateHelpAnchor: NSViewRepresentable {
 
 final class ImmediateHelpView: NSView {
     var text = ""
+    var details: ImmediateHelpDetails?
     private var hoverArea: NSTrackingArea?
     private var panel: NSPanel?
     private var eventMonitor: Any?
@@ -68,6 +140,7 @@ final class ImmediateHelpView: NSView {
         label.maximumNumberOfLines = 0
         label.cell?.usesSingleLineMode = false
         label.preferredMaxLayoutWidth = 320
+        if let details { label.attributedStringValue = details.attributedText }
         let fittingSize = label.sizeThatFits(NSSize(width: 320, height: CGFloat.greatestFiniteMagnitude))
         let textSize = NSSize(width: ceil(fittingSize.width), height: ceil(fittingSize.height))
         let size = NSSize(width: textSize.width + 16, height: textSize.height + 12)

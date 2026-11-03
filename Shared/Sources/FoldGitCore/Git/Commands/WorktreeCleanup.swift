@@ -17,8 +17,31 @@ public struct WorktreeCleanupCandidate: Hashable, Sendable, Identifiable {
         lastActivity.map { now.timeIntervalSince($0) < WorktreeCleanup.recentActivityInterval } ?? false
     }
 
-    /// Every worktree containing ignored files or recent activity needs an explicit choice.
-    public func isSelectedByDefault(at now: Date = .now) -> Bool { ignoredEntries.isEmpty && !isRecentlyActive(at: now) }
+    /// Every worktree containing ignored files or recent activity, or one where no work was ever committed,
+    /// needs an explicit choice.
+    public func isSelectedByDefault(at now: Date = .now) -> Bool {
+        ignoredEntries.isEmpty && !isRecentlyActive(at: now) && !trunk.isUnstarted
+    }
+
+    /// Ignored files grouped by their top-level entry, largest groups first. A directory such as
+    /// `node_modules` holds thousands of files, which cannot be listed one by one.
+    public var ignoredGroups: [IgnoredGroup] { IgnoredGroup.groups(ignoredEntries) }
+}
+
+public struct IgnoredGroup: Hashable, Sendable {
+    /// A top-level file name, or a directory name with a trailing slash.
+    public let name: String
+    public let files: Int
+
+    static func groups(_ paths: [String]) -> [Self] {
+        var counts: [String: Int] = [:]
+        for path in paths {
+            let parts = path.split(separator: "/", maxSplits: 1)
+            counts[parts.count == 2 ? parts[0] + "/" : path, default: 0] += 1
+        }
+        return counts.map { Self(name: $0.key, files: $0.value) }
+            .sorted { $0.files != $1.files ? $0.files > $1.files : $0.name < $1.name }
+    }
 }
 
 public enum WorktreeBranchOutcome: Hashable, Sendable {
@@ -40,16 +63,30 @@ public enum WorktreeCleanup {
         guard let trunk = try await TrunkReference.resolve(in: repository, preferred: preferredTrunk,
                                                            mainWorktreeBranch: trees.first(where: \.isMain)?.branch) else { return [] }
         let trunkBranch = trunk.local.map(TrunkReference.shortName)
-        var candidates: [WorktreeCleanupCandidate] = []
         // Only a worktree that has the local trunk branch checked out is skipped; detached worktrees still qualify.
-        for tree in trees where isRemovable(tree) && (trunkBranch == nil || tree.branch != trunkBranch) {
-            guard let status = try? await WorktreeStatus.read(tree.url, trunk: trunk, untracked: .all),
-                  status.canBeCleanedUp, let head = status.head, let comparison = status.trunk else { continue }
-            let ignored = try await GitRuntime.run(GitIgnoredEntriesQuery(directory: tree.url))
-            candidates.append(WorktreeCleanupCandidate(tree: tree, head: head, trunkReference: trunk, trunk: comparison,
-                                                       ignoredEntries: ignored, lastActivity: try? await lastActivity(of: tree.url)))
+        let eligible = trees.filter { isRemovable($0) && (trunkBranch == nil || $0.branch != trunkBranch) }
+        var found: [URL: WorktreeCleanupCandidate] = [:]
+        var start = eligible.startIndex
+        while start < eligible.endIndex {
+            let batch = eligible[start..<min(start + concurrentReads, eligible.endIndex)]
+            start = batch.endIndex
+            try await withThrowingTaskGroup(of: WorktreeCleanupCandidate?.self) { group in
+                for tree in batch { group.addTask { try await candidate(tree, trunk: trunk) } }
+                for try await candidate in group { if let candidate { found[candidate.id] = candidate } }
+            }
         }
-        return candidates
+        return eligible.compactMap { found[$0.id] }
+    }
+
+    /// Worktrees are read a few at a time, so a repository with many worktrees does not start dozens of Git processes.
+    static let concurrentReads = 4
+
+    private static func candidate(_ tree: GitWorktree, trunk: TrunkReference) async throws -> WorktreeCleanupCandidate? {
+        guard let status = try? await WorktreeStatus.read(tree.url, trunk: trunk, untracked: .all),
+              status.canBeCleanedUp, let head = status.head, let comparison = status.trunk else { return nil }
+        let ignored = try await GitRuntime.run(GitIgnoredEntriesQuery(directory: tree.url))
+        return WorktreeCleanupCandidate(tree: tree, head: head, trunkReference: trunk, trunk: comparison,
+                                        ignoredEntries: ignored, lastActivity: try? await lastActivity(of: tree.url))
     }
 
     /// Checks the candidate again, removes it without force, then deletes its branch only when Git can prove it merged.
@@ -136,13 +173,6 @@ public enum WorktreeCleanup {
             (try? FileManager.default.attributesOfItem(atPath: base.appendingPathComponent(name).path))?[.modificationDate] as? Date
         }.max()
     }
-}
-
-private struct GitAbsoluteGitDirectory: RepositoryCommand {
-    var directory: URL
-    var isReadOnly: Bool { true }
-    var arguments: [String] { ["git", "rev-parse", "--absolute-git-dir"] }
-    func parse(for standardOutput: String) -> String { standardOutput.trimmingCharacters(in: .newlines) }
 }
 
 public enum WorktreeCleanupError: LocalizedError, Equatable {

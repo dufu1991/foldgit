@@ -116,6 +116,7 @@ private actor RepositoryCommandQueue {
 
 public enum GitRuntime: Sendable {
     public static let outputLimit = 64 * 1024 * 1024
+    public static let repositoryDidChange = Notification.Name("FoldGit.RepositoryDidChange")
 
     public struct Session: Sendable {
         public let directory: URL
@@ -184,6 +185,9 @@ public enum GitRuntime: Sendable {
                 return try await group.next()!
             }
             await GitCommandLog.shared.finish(logID, status: .succeeded, duration: elapsed())
+            if !readOnly, let directory {
+                NotificationCenter.default.post(name: repositoryDidChange, object: RepositoryLocation.canonical(directory))
+            }
             return output
         } catch {
             let timedOut = error is GitExecutionTimeout
@@ -192,6 +196,9 @@ public enum GitRuntime: Sendable {
             let cancelled = Task.isCancelled || error is CancellationError
             await GitCommandLog.shared.finish(logID, status: timedOut ? .timedOut : cancelled ? .cancelled : .failed,
                                               duration: elapsed(), failure: cancelled ? nil : failure.localizedDescription)
+            if !readOnly, let directory {
+                NotificationCenter.default.post(name: repositoryDidChange, object: RepositoryLocation.canonical(directory))
+            }
             if !cancelled, let logID {
                 throw GitExecutionError(description: failure.localizedDescription, commandLogID: logID, directory: directory)
             }

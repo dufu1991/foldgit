@@ -89,6 +89,45 @@ import Observation
         try await refresh(source)
     }
 
+    /// Keeps the statuses of `families` current until cancelled: one full read, then reads limited to the worktrees
+    /// that file events or app mutations touched. During builds or installs events never stop, so reads start at
+    /// most once per `minimumInterval` and each one covers everything that changed while the previous one ran.
+    func monitorStatuses(_ families: [[GitWorktree]], minimumInterval: Duration = .seconds(2)) async {
+        guard let plan = try? await RepositoryChangeMonitor.statusWatchPlan(for: families), !Task.isCancelled else { return }
+        let feed = RepositoryChangeMonitor.statusChanges(in: plan)
+        await statuses.refresh(families)
+        let clock = ContinuousClock()
+        var last = clock.now
+        for await _ in feed.ticks {
+            do { try await clock.sleep(until: last.advanced(by: minimumInterval)) } catch { return }
+            let change = feed.take()
+            guard !change.isEmpty else { continue }
+            last = clock.now
+            await refreshAffected(change)
+        }
+    }
+
+    func refreshAffected(_ change: RepositoryChangeMonitor.StatusChange) async {
+        var visited: Set<URL> = []
+        for path in change.paths.union(change.listPaths) {
+            let url = URL(fileURLWithPath: path)
+            let family = list(for: url)
+            guard let anchor = family.first(where: { !$0.isBare && !$0.isPrunable && FileManager.default.fileExists(atPath: $0.url.path) }),
+                  visited.insert(anchor.id).inserted else { continue }
+            // Plain edits and staging leave the worktree list as it is; only HEAD and worktree changes reload it.
+            if family.contains(where: { change.listPaths.contains($0.id.path) }) {
+                do {
+                    try await refresh(anchor.url)
+                } catch {
+                    guard !Task.isCancelled else { return }
+                    errors[anchor.id] = error.localizedDescription
+                    continue
+                }
+            }
+            await statuses.refresh([list(for: anchor.url)], onlyPaths: change.paths)
+        }
+    }
+
     private func key(_ url: URL) -> URL { RepositoryLocation.canonical(url) }
 }
 

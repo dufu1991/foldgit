@@ -12,7 +12,6 @@ struct WorktreeIndicator: View {
 
     var body: some View {
         Image(systemName: "square.stack.3d.up")
-            .font(.caption2)
             .foregroundStyle(.secondary)
             .immediateHelp(String(localized: "Linked Worktree") + "\n" + path)
             .accessibilityLabel(Text("Linked Worktree"))
@@ -176,8 +175,7 @@ struct WorktreeManagementSheet: View {
                 ForEach(worktrees.list(for: repository).filter { !$0.isBare }) { tree in
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {
-                            (tree.isMain ? Image.gitBranch : Image(systemName: "square.stack.3d.up"))
-                                .foregroundStyle(.secondary)
+                            WorktreeStatusIcon(url: tree.url, isMain: tree.isMain, name: tree.url.lastPathComponent)
                             Text(tree.url.lastPathComponent).fontWeight(.medium).lineLimit(1)
                             if tree.isMain { Text("Main Worktree").font(.caption).foregroundStyle(.secondary) }
                             if tree.isLocked { Image(systemName: "lock.fill").help(tree.lockReason ?? "") }
@@ -194,13 +192,12 @@ struct WorktreeManagementSheet: View {
                             Label("Missing Worktree", systemImage: "exclamationmark.triangle")
                                 .font(.caption).foregroundStyle(.orange).help(tree.pruneReason ?? "")
                         } else if let status = worktrees.statuses.status(for: tree.url) {
-                            let onTrunk = worktrees.statuses.isOnTrunk(tree.url)
-                            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                                WorktreeStatusBadge(status: status, isOnTrunk: onTrunk)
-                                Text(WorktreeStatusText.lines(for: status, isOnTrunk: onTrunk).joined(separator: " · "))
-                                    .font(.caption).foregroundStyle(status.isClean ? Color.secondary : Color.orange)
-                                    .lineLimit(2)
-                            }
+                            // The same facts as the sidebar tooltip, so both places always agree.
+                            let details = WorktreeStatusText.details(status: status, isMain: tree.isMain,
+                                isOnTrunk: worktrees.statuses.isOnTrunk(tree.url), name: tree.url.lastPathComponent)
+                            Text(details.compactText)
+                                .font(.caption).foregroundStyle(status.isClean ? Color.secondary : Color.orange)
+                                .lineLimit(2)
                         }
                         HStack {
                             Button("Open") { openWorktree(tree.url); dismiss() }.disabled(tree.isPrunable)
@@ -240,7 +237,9 @@ struct WorktreeManagementSheet: View {
                 if worktrees.list(for: repository).contains(where: \.isPrunable) {
                     Button("Prune Missing Worktrees") { perform(.prune) }
                 }
-                if worktrees.list(for: repository).contains(where: { !$0.isMain && worktrees.statuses.status(for: $0.url)?.canBeCleanedUp == true }) {
+                if worktrees.list(for: repository).contains(where: { tree in
+                    !tree.isMain && worktrees.statuses.status(for: tree.url).map { $0.canBeCleanedUp && $0.trunk?.hasMergedWork == true } == true
+                }) {
                     Button("Clean Up Merged Worktrees") { cleaning = true }
                 }
                 if isBusy { ProgressView().controlSize(.small) }

@@ -69,12 +69,21 @@ struct WorktreeCleanupSheet: View {
             Text("No merged worktrees to clean up.")
                 .foregroundStyle(.secondary).frame(maxWidth: .infinity, minHeight: 120)
         } else {
-            List {
-                ForEach(model.candidates) { candidate in
-                    row(candidate).padding(.vertical, 4)
+            VStack(alignment: .leading, spacing: 6) {
+                if model.candidates.count > 1 {
+                    let allSelected = model.selectedCount == model.candidates.count
+                    Button(allSelected ? "Deselect All" : "Select All") {
+                        model.selection = allSelected ? [] : Set(model.candidates.map(\.id))
+                    }
+                    .buttonStyle(.link).controlSize(.small).disabled(model.phase != .review)
                 }
+                List {
+                    ForEach(model.candidates) { candidate in
+                        row(candidate).padding(.vertical, 4)
+                    }
+                }
+                .listStyle(.inset).frame(minHeight: 200, maxHeight: 360)
             }
-            .listStyle(.inset).frame(minHeight: 200, maxHeight: 360)
         }
     }
 
@@ -95,27 +104,42 @@ struct WorktreeCleanupSheet: View {
                     Text(integration).font(.caption).foregroundStyle(.secondary)
                 }
                 if !candidate.ignoredEntries.isEmpty {
-                    Label("Ignored files will be deleted: \(candidate.ignoredEntries.joined(separator: ", "))",
+                    // Directories such as node_modules hold thousands of files; one entry per top-level item stays readable.
+                    let groups = candidate.ignoredGroups.map { group in
+                        group.files > 1 ? "\(group.name) (\(group.files.formatted()))" : group.name
+                    }
+                    Label("Ignored files will be deleted: \(groups.joined(separator: ", "))",
                           systemImage: "exclamationmark.triangle")
                         .font(.caption).foregroundStyle(.orange)
                         .fixedSize(horizontal: false, vertical: true)
                         .textSelection(.enabled)
                 }
-                if candidate.isRecentlyActive() {
-                    Label("Active in the last 15 minutes", systemImage: "clock")
+                if candidate.isRecentlyActive(), let lastActivity = candidate.lastActivity {
+                    let elapsed = RelativeDateTimeFormatter().localizedString(for: lastActivity, relativeTo: .now)
+                    Label("Last activity \(elapsed)", systemImage: "clock")
                         .font(.caption).foregroundStyle(.orange)
                 }
                 Text(candidate.tree.url.path).font(.caption2).foregroundStyle(.tertiary)
                     .lineLimit(1).truncationMode(.middle).textSelection(.enabled)
-                if let outcome = model.outcomes[candidate.id] { outcomeLabel(outcome) }
+                if let outcome = model.outcomes[candidate.id] { outcomeLabel(outcome, branch: candidate.tree.branch) }
             }
         }
     }
 
-    @ViewBuilder private func outcomeLabel(_ outcome: WorktreeCleanupModel.Outcome) -> some View {
+    @ViewBuilder private func outcomeLabel(_ outcome: WorktreeCleanupModel.Outcome, branch name: String?) -> some View {
         switch outcome {
         case let .removed(branch):
-            Label(Self.text(for: branch), systemImage: "checkmark.circle.fill").font(.caption).foregroundStyle(.green)
+            HStack(spacing: 8) {
+                Label(Self.text(for: branch), systemImage: "checkmark.circle.fill").font(.caption).foregroundStyle(.green)
+                // FoldGit never forces a delete; the command lets the user do it deliberately.
+                if branch == .keptContentMerged, let name {
+                    Button("Copy Delete Command") {
+                        NSPasteboard.general.clearContents()
+                        NSPasteboard.general.setString("git branch -D \(name)", forType: .string)
+                    }
+                    .buttonStyle(.link).controlSize(.small)
+                }
+            }
         case let .failed(message):
             Label(message, systemImage: "xmark.octagon.fill").font(.caption).foregroundStyle(.red)
         }

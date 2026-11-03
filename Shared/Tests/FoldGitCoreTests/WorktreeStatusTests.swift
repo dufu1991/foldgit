@@ -19,6 +19,7 @@ struct WorktreeStatusTests {
         #expect(status.head == "1234abcd")
         #expect(status.branch == "feature/状态")
         #expect(status.upstream == UpstreamDivergence(ahead: 2, behind: 3))
+        #expect(status.upstreamReference == "origin/feature")
         #expect(status.changes == WorktreeChangeCounts(staged: 3, unstaged: 2, untracked: 1, conflicted: 1, files: 6))
     }
 
@@ -169,6 +170,78 @@ struct WorktreeStatusTests {
         #expect(status.changes.conflicted == 1)
         #expect(!status.isClean)
     }
+
+    @Test func bisectAndSequencerCountAsPendingOperations() async throws {
+        let fixture = try await Fixture.create()
+        defer { fixture.remove() }
+        let feature = try await fixture.worktree("bisect", commits: ["one.txt", "two.txt"])
+        try await fixture.git(in: feature, ["bisect", "start", "HEAD", "main"])
+        #expect(try await WorktreeStatus.read(feature, trunk: nil).operation == .bisect)
+        try await fixture.git(in: feature, ["bisect", "reset"])
+        #expect(try await WorktreeStatus.read(feature, trunk: nil).operation == nil)
+        let gitDirectory = try await fixture.git(in: feature, ["rev-parse", "--absolute-git-dir"])
+            .trimmingCharacters(in: .newlines)
+        let sequencer = URL(fileURLWithPath: gitDirectory).appendingPathComponent("sequencer")
+        try FileManager.default.createDirectory(at: sequencer, withIntermediateDirectories: true)
+        try "revert abc subject\n".write(to: sequencer.appendingPathComponent("todo"), atomically: true, encoding: .utf8)
+        #expect(try await WorktreeStatus.read(feature, trunk: nil).operation == .revert)
+    }
+
+    @Test func untouchedWorktreesAreUnstartedRatherThanMerged() async throws {
+        let fixture = try await Fixture.create()
+        defer { fixture.remove() }
+        let fresh = try await fixture.worktree("fresh", commits: [])
+        let merged = try await fixture.worktree("merged", commits: ["merged.txt"])
+        try await fixture.repository.git(["merge", "--no-edit", "merged"])
+        let detached = fixture.root.appendingPathComponent("detached")
+        try await fixture.repository.git(["worktree", "add", "--detach", detached.path, "main"])
+        let trunk = try #require(try await TrunkReference.resolve(in: fixture.repository.url))
+
+        let freshStatus = try await WorktreeStatus.read(fresh, trunk: trunk)
+        #expect(freshStatus.trunk?.integration == .ancestor)
+        #expect(freshStatus.trunk?.isUnstarted == true)
+        #expect(freshStatus.trunk?.hasMergedWork == false)
+        #expect(try await WorktreeStatus.read(detached, trunk: trunk).trunk?.isUnstarted == true)
+        let mergedStatus = try await WorktreeStatus.read(merged, trunk: trunk)
+        #expect(mergedStatus.trunk?.isUnstarted == false)
+        #expect(mergedStatus.trunk?.hasMergedWork == true)
+
+        // The first commit starts the work, even after it lands on the trunk.
+        try fixture.write(in: fresh, "late.txt", "late\n")
+        try await fixture.git(in: fresh, ["add", "late.txt"])
+        try await fixture.git(in: fresh, ["commit", "-m", "feat: late"])
+        try await fixture.repository.git(["merge", "--no-edit", "fresh"])
+        #expect(try await WorktreeStatus.read(fresh, trunk: trunk).trunk?.hasMergedWork == true)
+
+        let candidates = try await WorktreeCleanup.candidates(in: fixture.repository.url)
+        let byPath = Dictionary(uniqueKeysWithValues: candidates.map { ($0.tree.url.lastPathComponent, $0) })
+        let later = Date.now.addingTimeInterval(3600)
+        #expect(byPath["detached"]?.isSelectedByDefault(at: later) == false)
+        #expect(byPath["merged"]?.isSelectedByDefault(at: later) == true)
+    }
+
+    @Test func statusReadStartsAtMostThreeGitProcessesOnceTheComparisonIsCached() async throws {
+        let fixture = try await Fixture.create()
+        defer { fixture.remove() }
+        let feature = try await fixture.worktree("processes", commits: ["processes.txt"])
+        let trunk = try #require(try await TrunkReference.resolve(in: feature))
+        let cache = TrunkComparisonCache()
+        _ = try await WorktreeStatus.read(feature, trunk: trunk, cache: cache)
+        await GitCommandLog.shared.clear(in: feature)
+        _ = try await WorktreeStatus.read(feature, trunk: trunk, cache: cache)
+        #expect(await GitCommandLog.shared.records(in: feature).count <= 3)
+    }
+
+    @Test func trunkResolutionListsOnlyCandidateReferences() async throws {
+        let fixture = try await Fixture.create()
+        defer { fixture.remove() }
+        for index in 0..<20 { try await fixture.repository.git(["branch", "noise-\(index)"]) }
+        await GitCommandLog.shared.clear(in: fixture.repository.url)
+        #expect(try await TrunkReference.resolve(in: fixture.repository.url)?.local == "refs/heads/main")
+        let commands = await GitCommandLog.shared.records(in: fixture.repository.url).map(\.command)
+        #expect(commands.count == 2)
+        #expect(!commands.contains { $0.contains("refs/heads ") || $0.hasSuffix("refs/heads") })
+    }
 }
 
 struct WorktreeCleanupTests {
@@ -245,6 +318,13 @@ struct WorktreeCleanupTests {
         let candidate = try #require(try await WorktreeCleanup.candidates(in: fixture.repository.url).first)
         #expect(candidate.ignoredEntries == paths.sorted())
         #expect(!candidate.isSelectedByDefault(at: Date.now.addingTimeInterval(3600)))
+    }
+
+    @Test func ignoredFilesAreGroupedByTopLevelEntryLargestFirst() {
+        let paths = (0..<10_000).map { "node_modules/pkg\($0)/index.js" } + [".env", "build/a.o", "build/b.o"]
+        let groups = IgnoredGroup.groups(paths)
+        #expect(groups == [IgnoredGroup(name: "node_modules/", files: 10_000), IgnoredGroup(name: "build/", files: 2),
+                           IgnoredGroup(name: ".env", files: 1)])
     }
 
     @Test func newIgnoredFilesInsideAnAlreadyIgnoredDirectoryKeepTheWorktree() async throws {

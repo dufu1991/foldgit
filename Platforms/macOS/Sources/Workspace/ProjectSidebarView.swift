@@ -16,6 +16,7 @@ struct ProjectSidebarView: View {
     @Binding var selection: URL?
     let onError: (Error) -> Void
     @Environment(\.appearsActive) private var appearsActive
+    @Environment(\.scenePhase) private var scenePhase
     @Environment(WorktreeStore.self) private var worktrees
     @State private var finishingWorktree: WorktreeSheetTarget?
     @State private var creatingWorktree: WorktreeSheetTarget?
@@ -38,6 +39,7 @@ struct ProjectSidebarView: View {
     @State private var worktreePreferencesCache = DecodedPreference { RepositoryWorktreePreferences.decode($0 ?? Data()) }
     private let activity = RepositoryActivity()
     private let discovery = MacRepositoryDiscovery.make()
+    private var refreshEnabled: Bool { appearsActive && scenePhase == .active }
 
     private var organization: SidebarOrganization {
         SidebarOrganization(folders: folders, names: displayNames, query: search, sort: sort,
@@ -128,26 +130,22 @@ struct ProjectSidebarView: View {
             dates.opened[WorkspaceEntry(url: selection).identity.path] = .now
             saveDates(dates)
         }
-        .task(id: WorktreeRefreshID(paths: folders.flatMap(\.repositories).map(\.identity), enabled: appearsActive)) {
+        .task(id: WorktreeRefreshID(paths: folders.flatMap(\.repositories).map(\.identity), enabled: refreshEnabled)) {
+            guard refreshEnabled else {
+                await worktrees.refreshRepositories(folders.flatMap(\.repositories).map(\.url).filter { worktrees.list(for: $0).isEmpty })
+                return
+            }
             await worktrees.refreshRepositories(folders.flatMap(\.repositories).map(\.url))
-            await refreshWorktreeStatuses()
-            guard appearsActive else { return }
             while !Task.isCancelled {
-                do { try await Task.sleep(for: .seconds(20)) } catch { return }
+                do { try await Task.sleep(for: .seconds(60)) } catch { return }
                 await worktrees.refreshRepositories(folders.flatMap(\.repositories).map(\.url))
                 await refreshWorktreeStatuses()
             }
         }
         .task(id: WorktreeStatusMonitorID(paths: statusFamilies.flatMap { $0.map(\.url.path) },
-                                          enabled: appearsActive && showWorktreeStatus)) {
-            guard appearsActive && showWorktreeStatus else { return }
-            let families = statusFamilies
-            let paths = families.flatMap { $0.filter { !$0.isBare && !$0.isPrunable }.map(\.id.path) }
-            // File events only refresh the worktrees they touched; commits and staging are caught by the poll above.
-            for await changed in RepositoryChangeMonitor.changes(in: paths) {
-                guard !Task.isCancelled else { return }
-                await worktrees.statuses.refresh(families, onlyPaths: changed)
-            }
+                                          enabled: refreshEnabled && showWorktreeStatus)) {
+            guard refreshEnabled && showWorktreeStatus else { return }
+            await worktrees.monitorStatuses(statusFamilies)
         }
         .onChange(of: sort) { ascending = sort == .name || sort == .manual }
         .task(id: ModificationRefreshID(paths: folders.flatMap(\.repositories).map(\.identity),
@@ -320,7 +318,6 @@ struct ProjectSidebarView: View {
                         HStack {
                             Label("Inactive", systemImage: "archivebox")
                             Spacer(minLength: 4)
-                            Text(infrequent.count, format: .number).monospacedDigit()
                         }
                         .contentShape(Rectangle())
                     }
@@ -339,7 +336,6 @@ struct ProjectSidebarView: View {
                 HStack {
                     Label(folder.displayName, systemImage: folder.symbol)
                     Spacer(minLength: 4)
-                    Text(children.count, format: .number).monospacedDigit().foregroundStyle(.secondary)
                 }
                 .contentShape(Rectangle())
             }
@@ -459,17 +455,20 @@ struct ProjectSidebarView: View {
                     }
                 }
             } icon: {
-                Image(systemName: folder.symbol)
-                    .foregroundStyle(selectedRepositories.contains(folder.url)
-                        ? AnyShapeStyle(.primary)
-                        : AnyShapeStyle(folder.repositoryIconColor.opacity(isInfrequent ? 0.6 : 1)))
+                let iconStyle = selectedRepositories.contains(folder.url) ? AnyShapeStyle(.primary)
+                    : isLinked ? AnyShapeStyle(.secondary)
+                    : AnyShapeStyle(folder.repositoryIconColor.opacity(isInfrequent ? 0.6 : 1))
+                if showWorktreeInformation && showWorktreeStatus {
+                    WorktreeStatusIcon(url: folder.url, isMain: !isLinked, name: displayNames.displayName(for: folder),
+                                       symbol: isLinked ? nil : folder.symbol, style: iconStyle)
+                } else if showWorktreeInformation && isLinked {
+                    WorktreeIndicator(path: folder.url.path)
+                } else {
+                    Image(systemName: folder.symbol)
+                        .foregroundStyle(iconStyle)
+                }
             }
-            .immediateHelp(folder.url.path)
             Spacer(minLength: 4)
-            if showWorktreeInformation && showWorktreeStatus, let status = worktrees.statuses.status(for: folder.url) {
-                WorktreeStatusBadge(status: status, isOnTrunk: worktrees.statuses.isOnTrunk(folder.url))
-            }
-            if showWorktreeInformation && isLinked { WorktreeIndicator(path: folder.url.path).fixedSize() }
             if showWorktreeInformation && tree?.isLocked == true {
                 Image(systemName: "lock.fill").font(.caption2).foregroundStyle(.secondary)
                     .immediateHelp(String(localized: "Locked Worktree"))

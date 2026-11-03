@@ -4,8 +4,8 @@ import FoldGitCore
 public struct TestRepository: Sendable {
     public let url: URL
 
-    public static func create(commits: Int = 1) async throws -> Self {
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("FoldGit-tests-\(UUID().uuidString)")
+    public static func create(commits: Int = 1, parent: URL = FileManager.default.temporaryDirectory) async throws -> Self {
+        let url = parent.appendingPathComponent("FoldGit-tests-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         let repository = Self(url: url)
         try await repository.git(["init", "--initial-branch=main"])

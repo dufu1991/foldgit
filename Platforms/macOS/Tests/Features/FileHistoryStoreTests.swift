@@ -7,6 +7,42 @@ import Testing
 
 @MainActor
 struct FileHistoryStoreTests {
+    @Test func revealingAnOffscreenFileScrollsItIntoViewIncludingRepeatedRequests() async throws {
+        let repository = try await TestRepository.create()
+        defer { repository.remove() }
+        for index in 0..<100 { try repository.write("Folder\(index)/file.txt", "file\n") }
+        let path = "ZZZ/Nested/revealed.txt"
+        try repository.write(path, "revealed content\n")
+        let store = FileHistoryStore()
+        defer { store.deactivate() }
+        store.activate(in: repository.url)
+        store.selectDetailMode(.content)
+        await store.refreshTask?.value
+        await store.treeTask?.value
+
+        let view = NSHostingView(rootView: RepositoryFileTreeView(store: store).frame(width: 320, height: 300))
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 320, height: 300),
+                              styleMask: [.borderless], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        window.contentView = view
+        defer { window.close() }
+        try await Task.sleep(for: .milliseconds(150))
+        view.layoutSubtreeIfNeeded()
+        let table = try #require(findTable(in: view))
+        #expect(table.visibleRect.minY == 0)
+
+        for _ in 0..<2 {
+            store.revealFile(path)
+            await store.treeTask?.value
+            try await Task.sleep(for: .milliseconds(200))
+            view.layoutSubtreeIfNeeded()
+            let index = try #require(store.rows.firstIndex { $0.path == path && !$0.isDirectory })
+            #expect(table.visibleRect.contains(table.rect(ofRow: index)))
+            table.scrollRowToVisible(0)
+            #expect(table.visibleRect.minY == 0)
+        }
+    }
+
     @Test func demandLoadingPaginationCachesAndRefreshInvalidation() async throws {
         let repository = try await TestRepository.create(commits: 6)
         defer { repository.remove() }
@@ -290,6 +326,11 @@ struct FileHistoryStoreTests {
     private func settle(_ store: FileHistoryStore) async {
         await store.historyTask?.value
         await store.diffTask?.value
+    }
+
+    private func findTable(in view: NSView) -> NSTableView? {
+        if let table = view as? NSTableView { return table }
+        return view.subviews.lazy.compactMap { findTable(in: $0) }.first
     }
 
     private func historyCommands(in repository: TestRepository) async -> [GitCommandLogEntry] {

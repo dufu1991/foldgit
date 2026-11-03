@@ -166,7 +166,7 @@ struct WorkspaceScreen: View {
         .environment(\.openWorktree, OpenWorktreeAction { url in selectionFolderURL = url.standardizedFileURL.resolvingSymlinksInPath() })
         .environment(\.folder, selectionFolder?.url)
         .environment(\.openWorkspaceFile, selectionFolder.map { folder in
-            OpenWorkspaceFileAction { path in
+            OpenWorkspaceFileAction(directory: folder.url) { path in
                 browseMode = .files
                 fileHistory.activate(in: folder.url)
                 fileHistory.selectDetailMode(.content)

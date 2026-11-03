@@ -18,6 +18,7 @@ enum RepositoryFileDetailMode: String {
     private(set) var directory: URL?
     private(set) var isActive = false
     private(set) var selectedPath: String?
+    private(set) var revealRequest: UUID?
     private(set) var selectedEntry: FileHistoryEntry?
     private(set) var entries: [FileHistoryEntry] = []
     private(set) var rows: [ChangeFileTree.Row] = []
@@ -82,6 +83,7 @@ enum RepositoryFileDetailMode: String {
             detailMode = .history
             self.directory = directory
             selectedPath = nil
+            revealRequest = nil
             selectedEntry = nil
             entries = []
             diff = nil
@@ -149,6 +151,7 @@ enum RepositoryFileDetailMode: String {
                 try Task.checkCancellation()
                 guard request == refreshGeneration else { return }
                 let changedHistory = !hasSnapshot || head != snapshot.1
+                var needsRows = false
                 if paths != snapshot.0 {
                     let paths = snapshot.0
                     let calculation = Task.detached(priority: .userInitiated) { ChangeFileTree(untrackedFiles: paths) }
@@ -161,12 +164,14 @@ enum RepositoryFileDetailMode: String {
                     fileCount = paths.count
                     collapsedDirectories.formIntersection(tree.directoryPaths)
                     collapsedDirectories.formUnion(addedDirectories)
-                    if let pendingRevealPath {
-                        expandParents(of: pendingRevealPath)
-                        self.pendingRevealPath = nil
-                    }
-                    updateRows()
-                } else if treeTask?.isCancelled == true {
+                    needsRows = true
+                }
+                if let pendingRevealPath {
+                    expandParents(of: pendingRevealPath)
+                    self.pendingRevealPath = nil
+                    needsRows = true
+                }
+                if needsRows || treeTask?.isCancelled == true {
                     updateRows()
                 }
                 head = snapshot.1
@@ -190,12 +195,13 @@ enum RepositoryFileDetailMode: String {
     }
 
     func revealFile(_ path: String) {
-        pendingRevealPath = hasSnapshot ? nil : path
+        pendingRevealPath = path
         expandParents(of: path)
         searchText = ""
         searchCollapsedDirectories = []
         updateRows()
         selectFile(path)
+        revealRequest = UUID()
     }
 
     private func expandParents(of path: String) {

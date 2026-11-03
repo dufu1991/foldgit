@@ -2,10 +2,6 @@ import FoldGitCore
 import SwiftUI
 
 struct FileDiffHeaderView: View {
-    @Environment(\.openWorkspaceFile) private var openWorkspaceFile
-    @Environment(\.stageFlights) private var stageFlights
-    @Environment(\.stageFlightPane) private var stageFlightPane
-    @State private var frame = StageFlightFrame()
     @Binding var isExpanded: Bool
     var fileDiff: FileDiff
     var leadingActionImageSystemName: String?
@@ -30,7 +26,7 @@ struct FileDiffHeaderView: View {
                     .padding(.trailing, 2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Color(NSColor.textBackgroundColor).opacity(0.9), in: RoundedRectangle(cornerRadius: 8))
-                    .stageFlightRow(path: fileDiff.changeTreePath, frame: frame)
+                    .stageLandingRow(path: fileDiff.changeTreePath)
             } else {
                 headerContent
                     .padding(.leading, CGFloat(treeDepth ?? 0) * 16 + 3)
@@ -45,15 +41,7 @@ struct FileDiffHeaderView: View {
         HStack(spacing: 4) {
             if let leadingActionImageSystemName {
                 Button {
-                    if let onLeadingAction {
-                        if let stageFlightPane {
-                            stageFlights?.launch(StageFlightItem(path: fileDiff.changeTreePath,
-                                                                 title: fileDiff.filePathDisplay,
-                                                                 change: fileDiff.change),
-                                                 from: frame.rect, leaving: stageFlightPane)
-                        }
-                        onLeadingAction()
-                    }
+                    onLeadingAction?()
                 } label: {
                     Image(systemName: leadingActionImageSystemName)
                         .font(.system(size: 11, weight: .medium))
@@ -83,15 +71,7 @@ struct FileDiffHeaderView: View {
             .accessibilityHint(Text(verbatim: expansionTitle))
             .accessibilityIdentifier("fileDiffExpansion-" + fileDiff.changeTreePath)
 
-            if let openWorkspaceFile {
-                Button("View Working Tree File", systemImage: "doc.text.magnifyingglass") {
-                    let path = fileDiff.toFilePath == "/dev/null" ? fileDiff.fromFilePath : fileDiff.toFilePath
-                    openWorkspaceFile(path)
-                }
-                .labelStyle(.iconOnly).buttonStyle(.plain).controlSize(.small)
-                .help("View Working Tree File")
-                .accessibilityIdentifier("viewWorkingTreeFile-" + fileDiff.changeTreePath)
-            }
+            ViewWorkingTreeFileButton(filePath: fileDiff.changeTreePath)
             OpenFileButton(filePath: fileDiff.toFilePath)
         }
     }

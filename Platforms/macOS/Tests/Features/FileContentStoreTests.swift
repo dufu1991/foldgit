@@ -5,6 +5,119 @@ import Testing
 
 @MainActor
 struct FileContentStoreTests {
+    @Test func missingWorkspaceFilesDoNotNavigateAndRestoredFilesCanBeOpened() async throws {
+        let repository = try await TestRepository.create()
+        defer { repository.remove() }
+        let untrackedPath = "New Folder/untracked.txt"
+        try repository.write(untrackedPath, "untracked\n")
+        var openedPaths: [String] = []
+        let open = OpenWorkspaceFileAction(directory: repository.url) { openedPaths.append($0) }
+
+        for path in ["example.swift", untrackedPath] {
+            #expect(open(path))
+            let count = openedPaths.count
+            try FileManager.default.removeItem(at: repository.url.appendingPathComponent(path))
+            #expect(!open(path))
+            #expect(openedPaths.count == count)
+            try repository.write(path, "restored\n")
+            #expect(open(path))
+            #expect(openedPaths.last == path)
+        }
+        let count = openedPaths.count
+        #expect(!open("Deleted Folder/Nested/missing.txt"))
+        #expect(openedPaths.count == count)
+    }
+
+    @Test(arguments: [true, false])
+    func filesDeletedAfterNavigationKeepTheMissingStateAndCanBeRetried(tracked: Bool) async throws {
+        let repository = try await TestRepository.create()
+        defer { repository.remove() }
+        let path = tracked ? "example.swift" : "New Folder/untracked.txt"
+        if !tracked { try repository.write(path, "untracked\n") }
+        let store = FileHistoryStore()
+        defer { store.deactivate() }
+        let open = OpenWorkspaceFileAction(directory: repository.url) { path in
+            store.activate(in: repository.url)
+            store.selectDetailMode(.content)
+            store.revealFile(path)
+        }
+        #expect(open(path))
+        try FileManager.default.removeItem(at: repository.url.appendingPathComponent(path))
+        await store.refreshTask?.value
+        await store.treeTask?.value
+        await store.content.readTask?.value
+        #expect(store.selectedPath == path)
+        #expect(store.detailMode == .content)
+        guard case .missing = store.content.state else {
+            Issue.record("A file deleted during navigation must show the missing state")
+            return
+        }
+
+        store.refresh()
+        await store.refreshTask?.value
+        await store.content.refreshTask?.value
+        #expect(store.selectedPath == path)
+        guard case .missing = store.content.state else {
+            Issue.record("Refreshing must preserve the missing state")
+            return
+        }
+        try repository.write(path, "restored content\n")
+        store.content.load()
+        await store.content.readTask?.value
+        guard case .text(let document) = store.content.state else {
+            Issue.record("Retry must load the restored file")
+            return
+        }
+        #expect(document.text == "restored content\n")
+    }
+
+    @Test func revealingFilesAfterReturningToACachedTreeShowsNewDirectoriesAndWorkingContent() async throws {
+        let repository = try await TestRepository.create()
+        defer { repository.remove() }
+        let committedPath = "Sources/Nested/committed.txt"
+        let untrackedPath = "New Folder/Nested/untracked.txt"
+        try repository.write(committedPath, "committed content\n")
+        try await repository.commit("add nested file")
+        let store = FileHistoryStore()
+        store.activate(in: repository.url)
+        await store.refreshTask?.value
+        await store.treeTask?.value
+        store.search("example")
+        await store.treeTask?.value
+        store.deactivate()
+
+        try repository.write(committedPath, "working content\n")
+        try repository.write(untrackedPath, "untracked content\n")
+        for (path, expected) in [(untrackedPath, "untracked content\n"), (committedPath, "working content\n")] {
+            store.activate(in: repository.url)
+            store.selectDetailMode(.content)
+            store.revealFile(path)
+            await store.refreshTask?.value
+            await store.treeTask?.value
+            await store.content.readTask?.value
+            #expect(store.selectedPath == path)
+            #expect(store.searchText.isEmpty)
+            #expect(store.rows.contains { $0.path == path && !$0.isDirectory })
+            #expect(!store.isDirectoryCollapsed((path as NSString).deletingLastPathComponent))
+            #expect(store.entries.isEmpty)
+            guard case .text(let document) = store.content.state else {
+                Issue.record("Revealed working tree file did not load")
+                store.deactivate()
+                return
+            }
+            #expect(document.text == expected)
+
+            let request = try #require(store.revealRequest)
+            store.collapseDirectories()
+            await store.treeTask?.value
+            store.revealFile(path)
+            await store.treeTask?.value
+            #expect(store.revealRequest != request)
+            #expect(store.rows.contains { $0.path == path && !$0.isDirectory })
+            store.deactivate()
+        }
+    }
+
     @Test func revealingAFileDuringInitialLoadExpandsItsDirectoriesAndLoadsContentOnly() async throws {
         let repository = try await TestRepository.create(commits: 0)
         defer { repository.remove() }

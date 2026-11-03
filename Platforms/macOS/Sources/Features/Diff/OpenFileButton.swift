@@ -5,6 +5,31 @@
 
 import SwiftUI
 
+struct ViewWorkingTreeFileButton: View {
+    @Environment(\.openWorkspaceFile) private var openWorkspaceFile
+    @State private var isMissing = false
+    var filePath: String
+
+    var body: some View {
+        if let openWorkspaceFile {
+            Button("View Working Tree File", systemImage: "doc.text.magnifyingglass") {
+                isMissing = !openWorkspaceFile(filePath)
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.plain)
+            .controlSize(.small)
+            .help("View Working Tree File")
+            .accessibilityIdentifier("viewWorkingTreeFile-" + filePath)
+            .alert("File No Longer Exists", isPresented: $isMissing) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(verbatim: String(localized: "The selected file is no longer available in the working tree.")
+                     + "\n\n" + filePath)
+            }
+        }
+    }
+}
+
 struct OpenFileButton: View {
     @Environment(\.folder) private var folder
     @State private var error: Error?

@@ -5,6 +5,7 @@ struct RepositoryFileTreeView: View {
     @Bindable var store: FileHistoryStore
     @Environment(\.colorScheme) private var colorScheme
     @State private var searchText = ""
+    @State private var scrolledRevealRequest: UUID?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -24,49 +25,54 @@ struct RepositoryFileTreeView: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(.bar)
-            List(selection: Binding(get: { store.selectedPath }, set: { path in
-                if let path, store.rows.contains(where: { $0.path == path && !$0.isDirectory }) { store.selectFile(path) }
-            })) {
-                ForEach(store.rows) { row in
-                    if row.isDirectory {
-                        Button {
-                            store.toggleDirectory(row.path)
-                        } label: {
-                            HStack(spacing: 6) {
-                                Image(systemName: store.isDirectoryCollapsed(row.path) ? "chevron.right" : "chevron.down")
-                                    .font(.system(size: 9, weight: .semibold)).frame(width: 12)
-                                Label { Text(verbatim: row.name) } icon: {
-                                    Image(systemName: "folder").foregroundStyle(.secondary)
+            ScrollViewReader { proxy in
+                List(selection: Binding(get: { store.selectedPath }, set: { path in
+                    if let path, store.rows.contains(where: { $0.path == path && !$0.isDirectory }) { store.selectFile(path) }
+                })) {
+                    ForEach(store.rows) { row in
+                        if row.isDirectory {
+                            Button {
+                                store.toggleDirectory(row.path)
+                            } label: {
+                                HStack(spacing: 6) {
+                                    Image(systemName: store.isDirectoryCollapsed(row.path) ? "chevron.right" : "chevron.down")
+                                        .font(.system(size: 9, weight: .semibold)).frame(width: 12)
+                                    Label { Text(verbatim: row.name) } icon: {
+                                        Image(systemName: "folder").foregroundStyle(.secondary)
+                                    }
                                 }
+                                .padding(.leading, CGFloat(row.depth) * 16)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
                             }
-                            .padding(.leading, CGFloat(row.depth) * 16)
+                            .buttonStyle(.plain)
+                            .accessibilityIdentifier("historyDirectory-" + row.path)
+                            .accessibilityValue(store.isDirectoryCollapsed(row.path) ? Text("Collapsed") : Text("Expanded"))
+                        } else {
+                            HStack(spacing: 6) {
+                                Image(nsImage: FileIconTheme.bundled.image(filePath: row.path, isDark: colorScheme == .dark))
+                                    .resizable().scaledToFit().frame(width: 16, height: 16)
+                                    .accessibilityHidden(true)
+                                Text(verbatim: row.name).lineLimit(1).truncationMode(.middle)
+                            }
+                            .padding(.leading, CGFloat(row.depth) * 16 + 18)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .contentShape(Rectangle())
+                            .tag(row.path)
+                            .help(row.path)
+                            .accessibilityIdentifier("historyFile-" + row.path)
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityIdentifier("historyDirectory-" + row.path)
-                        .accessibilityValue(store.isDirectoryCollapsed(row.path) ? Text("Collapsed") : Text("Expanded"))
-                    } else {
-                        HStack(spacing: 6) {
-                            Image(nsImage: FileIconTheme.bundled.image(filePath: row.path, isDark: colorScheme == .dark))
-                                .resizable().scaledToFit().frame(width: 16, height: 16)
-                                .accessibilityHidden(true)
-                            Text(verbatim: row.name).lineLimit(1).truncationMode(.middle)
-                        }
-                        .padding(.leading, CGFloat(row.depth) * 16 + 18)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .contentShape(Rectangle())
-                        .tag(row.path)
-                        .help(row.path)
-                        .accessibilityIdentifier("historyFile-" + row.path)
                     }
                 }
-            }
-            .overlay {
-                if store.rows.isEmpty {
-                    if store.isLoadingFiles { ProgressView().controlSize(.small) }
-                    else { Text(store.searchText.isEmpty ? String(localized: "No Files") : String(localized: "No Results")).foregroundStyle(.secondary) }
+                .overlay {
+                    if store.rows.isEmpty {
+                        if store.isLoadingFiles { ProgressView().controlSize(.small) }
+                        else { Text(store.searchText.isEmpty ? String(localized: "No Files") : String(localized: "No Results")).foregroundStyle(.secondary) }
+                    }
                 }
+                .onAppear { scrollToRevealedFile(using: proxy) }
+                .onChange(of: store.revealRequest) { scrollToRevealedFile(using: proxy) }
+                .onChange(of: store.rows) { scrollToRevealedFile(using: proxy) }
             }
             HStack {
                 if store.isLoadingFiles { ProgressView().controlSize(.small) }
@@ -86,6 +92,14 @@ struct RepositoryFileTreeView: View {
         .onChange(of: store.searchText) { _, value in
             if searchText.trimmingCharacters(in: .whitespacesAndNewlines) != value { searchText = value }
         }
+    }
+
+    private func scrollToRevealedFile(using proxy: ScrollViewProxy) {
+        guard let request = store.revealRequest, request != scrolledRevealRequest,
+              let path = store.selectedPath,
+              let row = store.rows.first(where: { $0.path == path && !$0.isDirectory }) else { return }
+        proxy.scrollTo(row.id, anchor: .center)
+        scrolledRevealRequest = request
     }
 }
 

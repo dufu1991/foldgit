@@ -22,6 +22,8 @@ def build(output):
     for path in SOURCE.iterdir():
         if path.suffix in (".html", ".css", ".js", ".json") or path.name in ("_headers", "_redirects"):
             shutil.copy2(path, output / path.name)
+    subprocess.run([sys.executable, str(ROOT / "Scripts/changelog.py"), "--write",
+                    "--output", str(output / "changelog.html")], check=True)
     shutil.copytree(SOURCE / "assets", output / "assets", ignore=shutil.ignore_patterns(".DS_Store"))
     for suffix in ("", "-dark"):
         with Image.open(BRANDING / f"FoldGit{suffix}.webp") as image:

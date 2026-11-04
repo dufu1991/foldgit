@@ -3,9 +3,11 @@ set -euo pipefail
 
 foldgit_root="$(cd "$(dirname "$0")/.." && pwd)"
 foldgit_output="${1:-$foldgit_root/dist/macos}"
+if [ "$#" -gt 0 ]; then shift; fi
 mkdir -p "$foldgit_output"
 foldgit_output="$(cd "$foldgit_output" && pwd)"
 foldgit_work="$(mktemp -d "${TMPDIR:-/tmp}/FoldGit-package.XXXXXX")"
+trap 'rm -rf "$foldgit_work"' EXIT
 
 printf 'Release build log: %s\n' "$foldgit_output/build.log"
 if ! xcodebuild archive \
@@ -14,10 +16,12 @@ if ! xcodebuild archive \
   -configuration Release \
   -destination 'generic/platform=macOS' \
   -archivePath "$foldgit_work/FoldGit.xcarchive" \
-  -derivedDataPath "$foldgit_work/DerivedData" \
+  -derivedDataPath "$foldgit_root/build/PackagingDerivedData" \
   CODE_SIGNING_ALLOWED=NO \
+  ENABLE_HARDENED_RUNTIME=NO \
   ONLY_ACTIVE_ARCH=NO \
   ARCHS=arm64 \
+  "$@" \
   > "$foldgit_output/build.log" 2>&1; then
   tail -n 100 "$foldgit_output/build.log"
   exit 1
@@ -30,8 +34,7 @@ foldgit_build="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$foldgit_p
 foldgit_minimum="$(/usr/libexec/PlistBuddy -c 'Print :LSMinimumSystemVersion' "$foldgit_plist")"
 foldgit_name="FoldGit-$foldgit_version-macOS-arm64"
 
-codesign --force --sign - --options runtime --timestamp=none "$foldgit_app"
-codesign --verify --deep --strict --verbose=2 "$foldgit_app"
+python3 "$foldgit_root/Scripts/sign-macos-adhoc.py" "$foldgit_app"
 lipo "$foldgit_app/Contents/MacOS/FoldGit" -verify_arch arm64
 test "$(lipo -archs "$foldgit_app/Contents/MacOS/FoldGit")" = arm64
 test -s "$foldgit_app/Contents/Resources/Assets.car"
@@ -58,7 +61,7 @@ cat > "$foldgit_output/BUILD-INFO.txt" <<EOF
 FoldGit $foldgit_version ($foldgit_build)
 Architectures: arm64
 Minimum macOS: $foldgit_minimum
-Signing: local ad hoc, hardened runtime
+Signing: local ad hoc, including embedded updater tools
 Apple notarization: not performed
 Source icon: Shared/Resources/Branding/AppIcon.icon
 Build log: build.log

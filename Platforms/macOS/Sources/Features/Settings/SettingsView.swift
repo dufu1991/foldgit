@@ -187,6 +187,9 @@ struct GeneralSettingsPane: View {
                     .accessibilityIdentifier("restoreSessionToggle")
                 Toggle("Check for Updates at Launch", isOn: $checkForUpdatesAtLaunch)
                     .accessibilityIdentifier("checkForUpdatesAtLaunchToggle")
+                    .onChange(of: checkForUpdatesAtLaunch) { _, enabled in
+                        UpdateChecker.shared.setAutomaticChecks(enabled)
+                    }
             }
             Section("Windows") {
                 Toggle("Quit When the Last Window Closes", isOn: $quitAfterLastWindow)
@@ -493,6 +496,7 @@ struct ApplicationSettingsPane: View {
 }
 
 struct AboutSettingsPane: View {
+    @ObservedObject private var updateChecker = UpdateChecker.shared
     @State private var showsLicense = false
     private let website = URL(string: "https://foldgit.com")!
     private let project = URL(string: "https://github.com/dufu1991/foldgit")!
@@ -516,7 +520,8 @@ struct AboutSettingsPane: View {
                         Text("A native Git client for macOS.").foregroundStyle(.secondary)
                     }
                     Spacer()
-                    Button("Check for Updates") { UpdateChecker.shared.checkNow() }
+                    Button("Check for Updates") { updateChecker.checkNow() }
+                        .disabled(!updateChecker.canCheckForUpdates)
                         .accessibilityIdentifier("checkForUpdatesButton")
                 }
             }

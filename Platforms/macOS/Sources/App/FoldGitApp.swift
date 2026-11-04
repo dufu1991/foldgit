@@ -5,6 +5,7 @@ struct FoldGitApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @AppStorage(PreferenceKey.toolbarLabelStyle.rawValue) private var toolbarLabelStyle = AppPreferences.defaultToolbarLabelStyle
     @AppStorage(PreferenceKey.restoreSession.rawValue) private var restoreSession = true
+    @ObservedObject private var updateChecker = UpdateChecker.shared
 
     init() {
         guard ProcessInfo.processInfo.environment["FOLDGIT_TESTING"] != "1" else { return }
@@ -34,7 +35,8 @@ struct FoldGitApp: App {
             CommandGroup(replacing: .appSettings) {
                 Button("Settings…") { SettingsWindowController.show() }
                     .keyboardShortcut(",", modifiers: .command)
-                Button("Check for Updates") { UpdateChecker.shared.checkNow() }
+                Button("Check for Updates") { updateChecker.checkNow() }
+                    .disabled(!updateChecker.canCheckForUpdates)
             }
         }
         Window("Keyboard Shortcuts", id: "keyboard-shortcuts") {

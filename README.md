@@ -59,9 +59,9 @@ To update, run `brew update` followed by `brew upgrade --cask dufu1991/tap/foldg
 1. Download the latest `FoldGit-macOS-arm64.dmg` from [Releases](https://github.com/dufu1991/foldgit/releases/latest).
 2. Open the DMG and drag FoldGit into Applications.
 
-### First launch
+### Open after installing or updating
 
-Releases that are not notarized by Apple carry this command in their release notes. If macOS says FoldGit is damaged or cannot be verified, run it once, then open FoldGit again:
+The first installation of an unnotarized build may be blocked by macOS. If macOS says FoldGit is damaged or cannot be verified, confirm that the download is trusted and the app has not been tampered with, then run the command below and open FoldGit again. After installing a version with built-in updates, use Check for Updates to download, install and restart within the app. Replacing the app manually from a DMG or through Homebrew may require handling quarantine again.
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/FoldGit.app
@@ -175,6 +175,8 @@ Output goes to `dist/macos`: `FoldGit.app`, a DMG and ZIP named `macOS-arm64`, a
 
 Set the version with `python3 Scripts/version.py set <version>` and push to `main`; the [release workflow](.github/workflows/release.yml) publishes the macOS DMG and Windows EXE installers. The Homebrew tap automatically checks for new releases every 6 hours and updates the cask using its own `GITHUB_TOKEN`, without a personal access token. GitHub scheduling may delay a run.
 
+macOS uses Sparkle for in-app updates. CI requires a fixed `SPARKLE_EDDSA_PRIVATE_KEY` and generates a signed `appcast.xml` as a release asset. Both update archives and feeds are authenticated with EdDSA, without Developer ID. Release notes come only from `Shared/Resources/Updates/changelog.json`, shared with the website build; Chinese app languages show Chinese notes and other languages currently show English. See [macOS update maintenance](Platforms/macOS/UPDATES.md) for signing, publishing and upgrade verification.
+
 ### Website
 
 `website/` contains the landing page and user guide published at [foldgit.com](https://foldgit.com). Run `python3 Scripts/build-website.py` to assemble `dist/website` from the shared assets. See [website/README.md](website/README.md) for dependencies, Cloudflare Pages settings, local preview and screenshot capture.
@@ -183,4 +185,4 @@ Set the version with `python3 Scripts/version.py set <version>` and push to `mai
 
 FoldGit is an open source project independently maintained by dufu, released under the [MIT License](LICENSE). Copyright of the project's own code belongs to dufu.
 
-Third-party code and resources retain their own copyright and license notices. These include HighlightSwift (MIT), highlight.js (BSD-3-Clause), their bundled themes (including NNFX under CC BY-SA 4.0), Swift Subprocess (Apache-2.0), Swift System (Apache-2.0 with Swift Runtime Library Exception), and Material Icon Theme (MIT). Windows additionally includes .NET Community Toolkit MVVM, Windows App SDK and Win2D. The component overview, source revisions, local modification notices and license terms are in [Shared/Resources/Licenses/LICENSE.txt](Shared/Resources/Licenses/LICENSE.txt), which ships with both apps and can be viewed under Open Source Licenses in Settings.
+Third-party code and resources retain their own copyright and license notices. These include Sparkle, HighlightSwift (MIT), highlight.js (BSD-3-Clause), their bundled themes (including NNFX under CC BY-SA 4.0), Swift Subprocess (Apache-2.0), Swift System (Apache-2.0 with Swift Runtime Library Exception), and Material Icon Theme (MIT). Windows additionally includes .NET Community Toolkit MVVM, Windows App SDK and Win2D. The component overview, source revisions, local modification notices and license terms are in [Shared/Resources/Licenses/LICENSE.txt](Shared/Resources/Licenses/LICENSE.txt), which ships with both apps and can be viewed under Open Source Licenses in Settings.

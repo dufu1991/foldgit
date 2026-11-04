@@ -7,7 +7,7 @@ on:
     paths:
       - Platforms/macOS/Configuration/Base.xcconfig
       - Platforms/Windows/src/FoldGit.App/Package.appxmanifest
-      - website/changelog.json
+      - Shared/Resources/Updates/changelog.json
   workflow_dispatch:
     inputs:
       rebuild:
@@ -58,72 +58,36 @@ jobs:
     runs-on: xcode-27
     env:
       VERSION: ${{ needs.version.outputs.version }}
-      TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-      # Without Developer ID secrets the app is ad hoc signed and users clear the quarantine flag once.
-      SIGNED: ${{ secrets.APPLE_TEAM_ID != '' && secrets.BUILD_CERTIFICATE_BASE64 != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest
-
-      - name: Package with ad hoc signing
-        if: env.SIGNED != 'true'
-        run: |
-          Scripts/package-macos.sh "$RUNNER_TEMP/out"
-          mkdir -p release
-          cp "$RUNNER_TEMP/out/FoldGit-$VERSION-macOS-arm64.dmg" release/FoldGit-macOS-arm64.dmg
-
-      - name: Import Developer ID certificate
-        if: env.SIGNED == 'true'
+      - name: Require update signing key
         env:
-          CERTIFICATE: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        run: |
-          echo -n "$CERTIFICATE" | base64 --decode -o "$RUNNER_TEMP/certificate.p12"
-          security create-keychain -p "$KEYCHAIN_PASSWORD" "$RUNNER_TEMP/FoldGit.keychain-db"
-          security set-keychain-settings -lut 21600 "$RUNNER_TEMP/FoldGit.keychain-db"
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$RUNNER_TEMP/FoldGit.keychain-db"
-          security import "$RUNNER_TEMP/certificate.p12" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$RUNNER_TEMP/FoldGit.keychain-db"
-          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$RUNNER_TEMP/FoldGit.keychain-db"
-          security list-keychain -d user -s "$RUNNER_TEMP/FoldGit.keychain-db"
-          rm "$RUNNER_TEMP/certificate.p12"
-
-      - name: Archive and export with Developer ID
-        if: env.SIGNED == 'true'
-        run: |
-          xcodebuild archive -project Platforms/macOS/FoldGit.xcodeproj -scheme FoldGit -configuration Release \
-            -destination 'generic/platform=macOS' ARCHS=arm64 ONLY_ACTIVE_ARCH=NO \
-            -archivePath "$RUNNER_TEMP/FoldGit.xcarchive" DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_IDENTITY="Developer ID Application"
-          cp Platforms/macOS/Configuration/ExportOptions.plist "$RUNNER_TEMP/ExportOptions.plist"
-          /usr/libexec/PlistBuddy -c "Add :teamID string $TEAM_ID" "$RUNNER_TEMP/ExportOptions.plist"
-          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/FoldGit.xcarchive" \
-            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" -exportPath "$RUNNER_TEMP/export"
-          test "$(lipo -archs "$RUNNER_TEMP/export/FoldGit.app/Contents/MacOS/FoldGit")" = arm64
-
-      - name: Notarize, staple and build the DMG
-        if: env.SIGNED == 'true'
+          SPARKLE_EDDSA_PRIVATE_KEY: ${{ secrets.SPARKLE_EDDSA_PRIVATE_KEY }}
+        run: test -n "$SPARKLE_EDDSA_PRIVATE_KEY"
+      - name: Package ad hoc macOS application
+        run: Scripts/package-macos.sh "$RUNNER_TEMP/out"
+      - name: Prepare signed Sparkle update
         env:
-          AC_USERNAME: ${{ secrets.AC_USERNAME }}
-          AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
+          SPARKLE_EDDSA_PRIVATE_KEY: ${{ secrets.SPARKLE_EDDSA_PRIVATE_KEY }}
         run: |
-          app="$RUNNER_TEMP/export/FoldGit.app"
-          mkdir -p release
-          ditto -c -k --keepParent "$app" "$RUNNER_TEMP/notarize.zip"
-          xcrun notarytool submit "$RUNNER_TEMP/notarize.zip" --apple-id "$AC_USERNAME" --password "$AC_PASSWORD" --team-id "$TEAM_ID" --wait
-          xcrun stapler staple "$app"
-          mkdir -p "$RUNNER_TEMP/dmg"
-          ditto "$app" "$RUNNER_TEMP/dmg/FoldGit.app"
-          ln -s /Applications "$RUNNER_TEMP/dmg/Applications"
-          hdiutil create -volname FoldGit -srcfolder "$RUNNER_TEMP/dmg" -fs HFS+ -format UDZO -ov "release/FoldGit-macOS-arm64.dmg"
-          codesign --sign "Developer ID Application" --timestamp "release/FoldGit-macOS-arm64.dmg"
-          xcrun notarytool submit "release/FoldGit-macOS-arm64.dmg" --apple-id "$AC_USERNAME" --password "$AC_PASSWORD" --team-id "$TEAM_ID" --wait
-          xcrun stapler staple "release/FoldGit-macOS-arm64.dmg"
-
-      - name: Remove temporary keychain
-        if: always() && env.SIGNED == 'true'
-        run: security delete-keychain "$RUNNER_TEMP/FoldGit.keychain-db" || true
+          sparkle_version="$(python3 -c 'import json; from pathlib import Path; p=Path("Platforms/macOS/FoldGit.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved"); print(next(x["state"]["version"] for x in json.loads(p.read_text())["pins"] if x["identity"] == "sparkle"))')"
+          curl --fail --location --silent --show-error "https://github.com/sparkle-project/Sparkle/releases/download/$sparkle_version/Sparkle-$sparkle_version.tar.xz" -o "$RUNNER_TEMP/Sparkle.tar.xz"
+          echo '1a856d2a9edb8e628de88121d7be04cf0e2167f8641650b78fca00b14244cf27  '"$RUNNER_TEMP/Sparkle.tar.xz" | shasum -a 256 -c -
+          mkdir -p "$RUNNER_TEMP/Sparkle"
+          tar -xf "$RUNNER_TEMP/Sparkle.tar.xz" -C "$RUNNER_TEMP/Sparkle"
+          python3 Scripts/sparkle.py --app "$RUNNER_TEMP/out/FoldGit.app" \
+            --archive "$RUNNER_TEMP/out/FoldGit-$VERSION-macOS-arm64.dmg" \
+            --tools "$RUNNER_TEMP/Sparkle/bin" --output release
+      - name: Verify update authentication and tamper rejection
+        env:
+          SPARKLE_EDDSA_PRIVATE_KEY: ${{ secrets.SPARKLE_EDDSA_PRIVATE_KEY }}
+          SPARKLE_TOOLS_DIRECTORY: ${{ runner.temp }}/Sparkle/bin
+          FOLDGIT_SPARKLE_TEST_APP: ${{ runner.temp }}/out/FoldGit.app
+          FOLDGIT_SPARKLE_TEST_ARCHIVE: ${{ runner.temp }}/out/FoldGit-${{ env.VERSION }}-macOS-arm64.dmg
+        run: python3 -m unittest discover -s Scripts/tests -p 'test_sparkle.py'
 
       - uses: actions/upload-artifact@v4
         with:
@@ -237,11 +201,12 @@ jobs:
       - name: Validate assets and write release notes
         run: |
           test -f release/FoldGit-macOS-arm64.dmg
-          expected=1
+          test -s release/appcast.xml
+          expected=2
           if [ "${{ needs.version.outputs.windows }}" = "true" ]; then
             test -f release/FoldGit-Windows-x64.exe
             test -f release/FoldGit-Windows-ARM64.exe
-            expected=3
+            expected=4
           fi
           test "$(find release -type f | wc -l | tr -d ' ')" = "$expected"
           python3 Scripts/changelog.py --release "$VERSION" > notes.md

@@ -11,6 +11,9 @@ packages:
     path: ../..
   HighlightSwift:
     path: ../../Vendor/HighlightSwift
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    exactVersion: 2.10.1
 settings:
   base:
     ARCHS: arm64
@@ -43,11 +46,14 @@ targets:
       base:
         CODE_SIGN_ENTITLEMENTS: Configuration/FoldGit.entitlements
         ENABLE_PREVIEWS: YES
+        INFOPLIST_FILE: Configuration/FoldGit-Info.plist
     dependencies:
       - package: FoldGitShared
         product: FoldGitCore
       - package: HighlightSwift
         product: HighlightSwift
+      - package: Sparkle
+        product: Sparkle
     postBuildScripts:
       - name: Generate localizations
         script: python3 "$SRCROOT/../../Scripts/generate-resources.py" macos "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"

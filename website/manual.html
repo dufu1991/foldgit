@@ -146,7 +146,7 @@
               <li>打开 DMG，把 FoldGit 拖进「应用程序」。</li>
             </ol>
             <div class="tip">
-              <p><b>首次打开提示“已损坏”或“无法验证开发者”？</b> 两种安装方式都适用：未使用 Apple Developer ID 签名并完成公证的版本可能被 macOS 拦截。确认信任下载的版本后，在终端执行下面的命令，再重新打开：</p>
+              <p><b>首次安装提示「已损坏」或「无法验证开发者」？</b> 未公证的版本可能被 macOS 拦截。确认下载来源可信且应用未被篡改后，在终端执行下面的命令，再重新打开。安装支持内置更新的版本后，可通过「检查更新」直接下载安装并重启；手动下载 DMG 或通过 Homebrew 替换应用时，仍可能需要重新处理隔离标记。</p>
               <pre class="cmd"><code>xattr -dr com.apple.quarantine /Applications/FoldGit.app</code></pre>
             </div>
           </div>
@@ -162,7 +162,7 @@
               <li>Open the DMG and drag FoldGit into Applications.</li>
             </ol>
             <div class="tip">
-              <p><b>“FoldGit is damaged” or “cannot be verified” on first launch?</b> For both installation methods, builds without Developer ID signing and notarization may be blocked by macOS. If you trust the downloaded release, run this in Terminal, then open FoldGit again:</p>
+              <p><b>“FoldGit is damaged” or “cannot be verified” on first installation?</b> Unnotarized builds may be blocked by macOS. Confirm that the download is trusted and the app has not been tampered with, then run this in Terminal and open FoldGit again. After installing a version with built-in updates, use Check for Updates to download, install and restart within the app. Replacing the app manually from a DMG or through Homebrew may require handling quarantine again.</p>
               <pre class="cmd"><code>xattr -dr com.apple.quarantine /Applications/FoldGit.app</code></pre>
             </div>
           </div>
@@ -578,7 +578,7 @@
             <p>按 <kbd>⌘</kbd><kbd>,</kbd> 打开，会回到上次查看的分类。常用的几项：</p>
             <ul>
               <li><b>通用</b>：选择界面语言，设置登录时启动、恢复上次的仓库和窗口状态、启动时检查更新，以及关闭最后一个窗口时是否退出。语言更改后需重启应用。</li>
-              <li><b>检查更新</b>：启动时默认检查新版本，仅发现新版本时提示。也可从「FoldGit → 检查更新」或「设置 → 关于」手动检查；点击「下载」会打开 GitHub 发布页，选择对应安装包更新。通过 Homebrew 安装的用户可继续使用上方的升级命令。</li>
+              <li><b>检查更新</b>：默认在启动时与后台检查新版本，仅发现新版本时提示。也可从「FoldGit → 检查更新」或「设置 → 关于」手动检查；选择「安装更新」，下载后点击「安装并重启应用」。应用会验证更新来源，并由内置更新器完成替换。更新说明跟随应用语言，中文界面显示中文，其余语言暂时显示英文。旧版若只提供发布页下载入口，需要先手动安装一次支持内置更新的版本。通过 Homebrew 安装的用户也可继续使用上方的升级命令。</li>
               <li><b>外观</b>：选择浅色、深色或自动跟随系统；工具栏可显示「仅图标」或「图标和文字」。</li>
               <li><b>历史与差异</b>：控制提交关系图、提交时间、差异布局、文件默认展开方式（默认折叠）、代码字号和长行自动换行。</li>
               <li><b>提交信息</b>：控制是否显示提交信息区，维护快捷输入条目；勾选的条目显示在提交信息编辑框下方。</li>
@@ -592,7 +592,7 @@
             <p>Press <kbd>⌘</kbd><kbd>,</kbd>; Settings reopens the category you viewed last. The ones you will likely touch:</p>
             <ul>
               <li><b>General</b> — choose the interface language, launch at login, restore the previous repository and window, check for updates at launch, and choose whether closing the last window quits the app. Restart after changing the language.</li>
-              <li><b>Check for Updates</b> — launch checks are enabled by default and only notify you when a newer version is available. To check manually, choose FoldGit → Check for Updates or use the button in Settings → About. Download opens the GitHub release page so you can choose an installer. Homebrew users can continue using the upgrade command above.</li>
+              <li><b>Check for Updates</b> — checks at launch and in the background are enabled by default and only notify you when a newer version is available. Choose FoldGit → Check for Updates or use Settings → About to check manually. Select Install Update, then Install and Relaunch after downloading. The app authenticates the update and its built-in updater replaces it. Release notes follow the app language: Chinese for Chinese interfaces, and English for all other languages for now. Older builds that only open a release page need one manual installation of a version with built-in updates. Homebrew users can still use the upgrade command above.</li>
               <li><b>Appearance</b> — choose Light, Dark or Automatic and set Toolbar Display to Icons Only or Icons and Text.</li>
               <li><b>History and Diffs</b> — configure the commit graph, commit time, diff layout, Default File Expansion (Collapsed by default), code font size and line wrapping.</li>
               <li><b>Commit Messages</b> — show or hide the commit message area and manage snippets; checked snippets appear below the commit message editor.</li>

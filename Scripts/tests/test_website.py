@@ -5,11 +5,14 @@ from html.parser import HTMLParser
 import importlib.util
 from pathlib import Path
 import re
+import sys
 from tempfile import TemporaryDirectory
 import unittest
 from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "Scripts"))
+import changelog
 PIL_AVAILABLE = importlib.util.find_spec("PIL") is not None
 
 
@@ -34,7 +37,7 @@ class WebsiteBuildTests(unittest.TestCase):
         spec = importlib.util.spec_from_file_location("build_website", ROOT / "Scripts/build-website.py")
         builder = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(builder)
-        sources = list((ROOT / "website").rglob("*")) + list(builder.BRANDING.glob("*"))
+        sources = list((ROOT / "website").rglob("*")) + list(builder.BRANDING.glob("*")) + [changelog.SOURCE]
         before = {path: hashlib.sha256(path.read_bytes()).digest() for path in sources if path.is_file()}
         with TemporaryDirectory() as directory:
             output = Path(directory) / "public"
@@ -46,6 +49,10 @@ class WebsiteBuildTests(unittest.TestCase):
             self.assertFalse((output / "stale-asset.txt").exists())
             self.assertFalse((output / "scripts").exists())
             self.assertFalse((output / "README.md").exists())
+            self.assertFalse((output / "templates").exists())
+            self.assertFalse((output / "changelog.json").exists())
+            expected = changelog.render_page(changelog.TEMPLATE.read_text(encoding="utf-8"), changelog.read_entries())
+            self.assertEqual((output / "changelog.html").read_text(encoding="utf-8"), expected)
             for page in output.glob("*.html"):
                 parser = PageResources()
                 parser.feed(page.read_text(encoding="utf-8"))

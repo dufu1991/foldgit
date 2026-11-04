@@ -5,8 +5,7 @@
 ```text
 index.html        页面结构与中文文案
 manual.html       使用手册
-changelog.json    各版本的中英文更新文案，网页与 Release 共用
-changelog.html    更新日志页面，条目由脚本生成
+templates/changelog.html  更新日志页面模板，源码不保存版本条目
 i18n.js           英文文案
 styles.css        设计变量、液态玻璃样式、亮暗色与动效
 main.js           语言与外观切换、截图同步、滚动动效、Fold 演示
@@ -42,6 +41,7 @@ python3 -m http.server 8765 --directory dist/website
 ```text
 website/**
 Shared/Resources/Branding/Images/**
+Shared/Resources/Updates/**
 Scripts/**
 Platforms/macOS/Configuration/Base.xcconfig
 Platforms/Windows/src/FoldGit.App/Package.appxmanifest
@@ -80,15 +80,15 @@ Open Graph 与 Twitter 分享卡片使用 `assets/og.png`，尺寸 1200 × 630�
 
 顶部导航和使用手册页脚提供更新日志入口。日志按版本倒序排列，跟随网站的中英文、亮暗色设置。
 
-每次升级版本，在 `changelog.json` 顶部添加版本号、发布日期及对应的 `zh`、`en` 短句列表。条目只描述该版本的实际变化，不重复安装步骤或旧版本文案。然后在仓库根目录运行：
+更新日志唯一数据源位于仓库根目录的 `Shared/Resources/Updates/changelog.json`，网页、GitHub Release 与 Sparkle 共用。每次升级版本，只在该文件顶部添加版本号、发布日期及对应的 `zh`、`en` 短句列表。条目只描述该版本的实际变化，不重复安装步骤或旧版本文案。然后在仓库根目录运行：
 
 ```sh
-python3 Scripts/changelog.py --write  # 同步静态网页
-python3 Scripts/changelog.py --check  # 检查版本、双语与网页是否同步
+python3 Scripts/changelog.py --check  # 检查版本、双语日志与页面模板
+python3 Scripts/build-website.py  # 构建包含更新日志的完整网站
 python3 Scripts/changelog.py --release 0.2.0  # 输出指定版本的双语 Release 文案
 ```
 
-网页条目由脚本更新，页面框架和样式仍在 `changelog.html`、`styles.css` 中维护。生成后的页面随源码提交，部署时无需脚本或额外请求数据。发版工作流从同一份数据读取对应版本的中文与英文，缺少条目或页面未同步时停止发布。
+页面框架和样式在 `templates/changelog.html`、`styles.css` 中维护。网站构建时从共享日志生成 `dist/website/changelog.html`，浏览时无需额外请求数据。源码不保存生成页面或重复的日志数据。发版工作流从同一份数据读取对应版本的中文与英文，缺少条目、语言或签名校验失败时停止发布。
 
 ## Homebrew 安装入口
 

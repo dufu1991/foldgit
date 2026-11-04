@@ -128,6 +128,8 @@ enum LaunchAtLoginPreferences {
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    private let updateChecker = UpdateChecker.shared
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         _ = InterfaceLanguageSession.shared
         Self.applyAppearance()
@@ -145,7 +147,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             object: nil
         )
         NSApp.windows.compactMap(\.toolbar).forEach(Self.configureToolbarSeparators)
-        UpdateChecker.shared.checkAtLaunch()
+        updateChecker.checkAtLaunch()
         Task { @MainActor in
             await Task.yield()
             Self.maximizeStartupWindows()

@@ -5,6 +5,7 @@ struct RestoreDefaultsSheet: View {
     @Environment(\.dismiss) private var dismiss
     var restore: () throws -> Void = {
         try SettingsReset.restore()
+        UpdateChecker.shared.setAutomaticChecks(UpdateChecker.checksAtLaunch())
         AutoFetchScheduler.shared.reload()
         AppDelegate.applyAppearance()
         NotificationCenter.default.post(name: .settingsDidRestoreDefaults, object: nil)

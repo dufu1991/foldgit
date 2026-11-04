@@ -59,9 +59,9 @@ brew install --cask dufu1991/tap/foldgit
 1. 在 [Releases](https://github.com/dufu1991/foldgit/releases/latest) 下载最新的 `FoldGit-macOS-arm64.dmg`。
 2. 打开 DMG，把 FoldGit 拖进「应用程序」。
 
-### 首次打开
+### 安装或升级后打开
 
-未经 Apple 公证的版本会在发布说明中附上下面的命令。如果 macOS 提示 FoldGit “已损坏”或“无法验证开发者”，在终端执行一次，再重新打开：
+首次安装未公证的版本时，macOS 可能提示 FoldGit「已损坏」或「无法验证开发者」。确认下载来源可信且应用未被篡改后，在终端执行下面的命令，再重新打开。安装支持内置更新的版本后，后续可通过「检查更新」在应用内下载安装并重启；手动下载 DMG 或通过 Homebrew 替换应用时，仍可能需要重新处理隔离标记。
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/FoldGit.app
@@ -175,6 +175,8 @@ Scripts/package-macos.sh
 
 用 `python3 Scripts/version.py set <版本号>` 设置版本并推送到 `main`，[发布工作流](.github/workflows/release.yml)会发布 macOS DMG 与 Windows EXE 安装包。Homebrew tap 每 6 小时自动检查新版本，使用自身的 `GITHUB_TOKEN` 更新 Cask，无须配置个人令牌；GitHub 调度繁忙时可能延迟。
 
+macOS 使用 Sparkle 进行应用内更新。CI 必须配置固定的 `SPARKLE_EDDSA_PRIVATE_KEY`，并在构建时生成带签名的 `appcast.xml`，作为 Release 附件发布；更新包与更新源均经过 EdDSA 验证，不使用 Developer ID。日志仅维护在 `Shared/Resources/Updates/changelog.json`，与网站构建共用；中文界面显示中文说明，其余语言暂时显示英文。密钥、发版和实际升级验证说明见 [macOS 更新维护](Platforms/macOS/UPDATES.md)。
+
 ### 网站
 
 `website/` 保存落地页与使用手册的源文件，发布在 [foldgit.com](https://foldgit.com)。运行 `python3 Scripts/build-website.py`，从共享资源生成 `dist/website`。构建依赖、Cloudflare Pages 配置、本地预览与截图方式见 [website/README.md](website/README.md)。
@@ -183,4 +185,4 @@ Scripts/package-macos.sh
 
 FoldGit 是由 dufu 独立维护的开源项目，采用 [MIT 许可证](LICENSE)，自有代码版权归 dufu 所有。
 
-第三方代码与资源保留各自的版权与许可声明，包括 HighlightSwift（MIT）、highlight.js（BSD-3-Clause）、随库保留的主题（其中 NNFX 采用 CC BY-SA 4.0）、Swift Subprocess（Apache-2.0）、Swift System（Apache-2.0，含 Swift Runtime Library Exception）和 Material Icon Theme（MIT）。Windows 还包含 .NET Community Toolkit MVVM、Windows App SDK 和 Win2D。组件清单、来源版本、本地修改说明与许可条款位于 [Shared/Resources/Licenses/LICENSE.txt](Shared/Resources/Licenses/LICENSE.txt)，随两个平台的应用分发，可在设置的「开源许可」中查看。
+第三方代码与资源保留各自的版权与许可声明，包括 Sparkle、HighlightSwift（MIT）、highlight.js（BSD-3-Clause）、随库保留的主题（其中 NNFX 采用 CC BY-SA 4.0）、Swift Subprocess（Apache-2.0）、Swift System（Apache-2.0，含 Swift Runtime Library Exception）和 Material Icon Theme（MIT）。Windows 还包含 .NET Community Toolkit MVVM、Windows App SDK 和 Win2D。组件清单、来源版本、本地修改说明与许可条款位于 [Shared/Resources/Licenses/LICENSE.txt](Shared/Resources/Licenses/LICENSE.txt)，随两个平台的应用分发，可在设置的「开源许可」中查看。

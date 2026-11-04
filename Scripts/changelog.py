@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate bilingual release copy, generate the static page, or print release notes.
+"""Read shared release copy, build the static page, or print release notes.
 
     python3 Scripts/changelog.py --write
     python3 Scripts/changelog.py --check
@@ -16,8 +16,9 @@ import sys
 from version import check as current_version
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "website/changelog.json"
-PAGE = ROOT / "website/changelog.html"
+SOURCE = ROOT / "Shared/Resources/Updates/changelog.json"
+TEMPLATE = ROOT / "website/templates/changelog.html"
+PAGE = ROOT / "dist/website/changelog.html"
 START = "    <!-- changelog:start -->"
 END = "    <!-- changelog:end -->"
 VERSION = re.compile(r"\d+\.\d+\.\d+")
@@ -51,8 +52,20 @@ def validate(entries, version):
         if len(entry["zh"]) != len(entry["en"]):
             sys.exit(f"Release {number} must have matching Chinese and English items.")
     if entries[0]["version"] != version:
-        sys.exit(f"Add bilingual notes for version {version} to website/changelog.json, then run "
-                 "python3 Scripts/changelog.py --write.")
+        sys.exit(f"Add bilingual notes for version {version} to Shared/Resources/Updates/changelog.json.")
+
+
+def read_entries():
+    entries = json.loads(SOURCE.read_text(encoding="utf-8"))
+    validate(entries, current_version())
+    return entries
+
+
+def release_entry(entries, version):
+    entry = next((entry for entry in entries if entry["version"] == version), None)
+    if entry is None:
+        sys.exit(f"No release notes found for {version}.")
+    return entry
 
 
 def render_entries(entries):
@@ -89,13 +102,13 @@ def render_page(page, entries):
         sys.exit("The changelog page must contain one ordered pair of changelog markers.")
     before = page.split(START)[0]
     after = page.split(END)[1]
+    if page.split(START)[1].split(END)[0].strip():
+        sys.exit("The changelog template must not contain generated release entries.")
     return before + START + "\n" + render_entries(entries) + "\n" + END + after
 
 
 def release_notes(entries, version):
-    entry = next((entry for entry in entries if entry["version"] == version), None)
-    if entry is None:
-        sys.exit(f"No release notes found for {version}.")
+    entry = release_entry(entries, version)
     return ("\n".join(f"- {item}" for item in entry["zh"])
             + "\n\n---\n\n" + "\n".join(f"- {item}" for item in entry["en"]) + "\n")
 
@@ -103,23 +116,26 @@ def release_notes(entries, version):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group(required=True)
-    mode.add_argument("--write", action="store_true", help="Regenerate the static changelog page")
-    mode.add_argument("--check", action="store_true", help="Check current-version notes and generated HTML")
+    mode.add_argument("--write", action="store_true", help="Build the static changelog page in dist/website")
+    mode.add_argument("--check", action="store_true", help="Check current-version notes and the page template")
     mode.add_argument("--release", metavar="VERSION", help="Print both languages for exactly this version")
+    parser.add_argument("--output", type=Path, help="Output page to build, or verify when used with --check")
     args = parser.parse_args()
-    entries = json.loads(SOURCE.read_text(encoding="utf-8"))
-    validate(entries, current_version())
-    page = PAGE.read_text(encoding="utf-8")
+    entries = read_entries()
+    if args.release:
+        print(release_notes(entries, args.release), end="")
+        return
+    page = TEMPLATE.read_text(encoding="utf-8")
     generated = render_page(page, entries)
     if args.write:
-        PAGE.write_text(generated, encoding="utf-8")
-        print("Updated website/changelog.html.")
-    elif generated != page:
-        sys.exit("Changelog HTML is stale. Run: python3 Scripts/changelog.py --write")
-    elif args.release:
-        print(release_notes(entries, args.release), end="")
+        output = args.output or PAGE
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(generated, encoding="utf-8")
+        print(f"Built changelog page in {output}")
+    elif args.output and (not args.output.is_file() or args.output.read_text(encoding="utf-8") != generated):
+        sys.exit("Built changelog HTML does not match the shared release notes and template.")
     else:
-        print("Changelog versions, translations and HTML are up to date.")
+        print("Shared changelog versions, translations and page template are valid.")
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ on:
     paths:
       - website/**
       - Shared/Resources/Branding/Images/**
+      - Shared/Resources/Updates/**
       - Scripts/build-website.py
       - Scripts/build-requirements.txt
       - Scripts/changelog.py
@@ -19,6 +20,7 @@ on:
     paths:
       - website/**
       - Shared/Resources/Branding/Images/**
+      - Shared/Resources/Updates/**
       - Scripts/build-website.py
       - Scripts/build-requirements.txt
       - Scripts/changelog.py

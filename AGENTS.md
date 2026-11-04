@@ -18,16 +18,16 @@
 
 - 更改版本统一使用 `python3 Scripts/version.py set X.Y.Z`，由脚本同步各平台版本并递增 macOS 构建号，不得只修改更新日志。
 - 必须核对 `Platforms/macOS/Configuration/Base.xcconfig` 中的 `MARKETING_VERSION` 和 `CURRENT_PROJECT_VERSION`、`Platforms/Windows/src/FoldGit.App/Package.appxmanifest` 中的四段版本号，以及 `Platforms/Windows/src/FoldGit.App/MainWindow.Dialogs.cs` 中的“关于”页版本。软件版本 `a.b.c` 对应 Windows 包版本 `a.b.c.0`。
-- 检查 `.github/workflows/release.yml` 的触发路径、版本读取、打包和发布标签，确保使用本次版本。当前工作流在版本配置或 `website/changelog.json` 随提交推送到 `main` 时触发，自动读取统一版本并发布 `vX.Y.Z`；不得另行维护固定版本号。
-- 完成后运行 `python3 Scripts/version.py` 和 `python3 Scripts/changelog.py --check`，确认平台版本一致、当前版本日志完整且网页已同步。
+- 检查 `.github/workflows/release.yml` 的触发路径、版本读取、打包和发布标签，确保使用本次版本。当前工作流在版本配置或 `Shared/Resources/Updates/changelog.json` 随提交推送到 `main` 时触发，自动读取统一版本并发布 `vX.Y.Z`；不得另行维护固定版本号。
+- 完成后运行 `python3 Scripts/version.py` 和 `python3 Scripts/changelog.py --check`，确认平台版本一致、当前版本日志完整且网页模板有效。
 
 ## 软件更新日志
 
-- 只要本次修改包含版本号变化，必须在提交前自动维护 `website/changelog.json`，并运行 `python3 Scripts/changelog.py --write` 同步 `website/changelog.html`，两者随版本改动一起提交。
+- 只要本次修改包含版本号变化，必须在提交前自动维护 `Shared/Resources/Updates/changelog.json`，并运行 `python3 Scripts/changelog.py --check`。网页源码只维护 `website/templates/changelog.html` 模板，日志页面由网站构建生成到 `dist/website/changelog.html`，生成结果不得提交到源码。
 - 以该版本之前最近的发布标签为基线，检查实际代码差异、未提交的新文件和提交记录，仅总结本次发布中软件本身、用户可感知的新增、改进和修复。所有版本均不得记录官网、使用手册、README、宣传素材、截图、更新日志页面或 CI/CD 流程的修改，不得复用上个版本的文案、堆砌提交标题或编造功能。首次发布概述软件已有能力。
 - 每个版本记录版本号、发布日期，以及含义对应的中文和英文条目。发布日期使用用户所在时区的日期。文案简洁，优先用 2 至 5 条短句；实际变化较少时不凑数，标明仅适用的平台。
-- 网站更新日志跟随现有语言与外观设置，入口放在页脚。`website/changelog.json` 是网页与 GitHub Release 更新文案的唯一来源，不得另写一份重复维护。
-- 提交前运行 `python3 Scripts/changelog.py --check`。缺少当前版本条目、任一语言或页面未同步时，必须补齐后再提交。
+- 网站更新日志跟随现有语言与外观设置，入口放在页脚。`Shared/Resources/Updates/changelog.json` 是网页、GitHub Release 与 Sparkle 更新文案的唯一来源，不得另写一份重复维护。
+- 提交前运行 `python3 Scripts/changelog.py --check`。缺少当前版本条目、任一语言或页面模板无效时，必须补齐后再提交。
 - GitHub 发版工作流必须按正在发布的版本读取日志，同时写入中文和英文，不得用固定安装说明或自动生成的提交列表代替更新内容。
 - Release 先展示中文条目，再用分割线隔开英文条目，不添加“更新内容”或“What's new”标题，也不生成空条目。
 - 安装说明仅保留在首次发布中，后续 Release 不重复安装链接、安装步骤或签名提示。完整安装指南统一维护在官网使用手册；只有安装方式、兼容性或升级要求发生变化时，才在该版本的中英文条目中说明。

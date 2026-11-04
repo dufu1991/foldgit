@@ -1,4 +1,4 @@
-"""Guard release copy selection, bilingual validation and generated-page freshness."""
+"""Guard shared release copy, templates and build-only page generation."""
 from contextlib import redirect_stdout
 from copy import deepcopy
 from io import StringIO
@@ -74,27 +74,51 @@ class ChangelogTests(unittest.TestCase):
         self.assertIn('class="show-en" lang="en"', html)
 
     def test_regeneration_preserves_page_shell_and_is_repeatable(self):
-        page = "header\n" + changelog.START + "\nold\n" + changelog.END + "\nfooter"
+        page = "header\n" + changelog.START + "\n" + changelog.END + "\nfooter"
         generated = changelog.render_page(page, self.entries)
         self.assertTrue(generated.startswith("header\n"))
         self.assertTrue(generated.endswith("\nfooter"))
-        self.assertEqual(changelog.render_page(generated, self.entries), generated)
+        self.assertEqual(changelog.render_page(page, self.entries), generated)
 
-    def test_ci_rejects_stale_page_until_it_is_regenerated(self):
+    def test_template_rejects_hardcoded_release_entries(self):
+        page = changelog.START + "\n<article>Old release</article>\n" + changelog.END
+        with self.assertRaisesRegex(SystemExit, "must not contain generated release entries"):
+            changelog.render_page(page, self.entries)
+
+    def test_check_needs_no_build_artifacts_and_write_only_changes_the_output(self):
         with TemporaryDirectory() as directory:
             source = Path(directory) / "changelog.json"
-            page = Path(directory) / "changelog.html"
+            template = Path(directory) / "template.html"
+            page = Path(directory) / "dist/changelog.html"
             source.write_text(json.dumps(self.entries), encoding="utf-8")
-            page.write_text(changelog.START + "\n" + changelog.END, encoding="utf-8")
-            with patch.object(changelog, "SOURCE", source), patch.object(changelog, "PAGE", page), \
+            template.write_text(changelog.START + "\n" + changelog.END, encoding="utf-8")
+            before = {path: path.read_bytes() for path in [source, template]}
+            with patch.object(changelog, "SOURCE", source), patch.object(changelog, "TEMPLATE", template), \
                     patch.object(changelog, "current_version", return_value="0.1.1"), redirect_stdout(StringIO()):
                 with patch.object(sys, "argv", ["changelog.py", "--check"]):
-                    with self.assertRaisesRegex(SystemExit, "Changelog HTML is stale"):
+                    changelog.main()
+                self.assertFalse(page.exists())
+                with patch.object(sys, "argv", ["changelog.py", "--write", "--output", str(page)]):
+                    changelog.main()
+                with patch.object(sys, "argv", ["changelog.py", "--check", "--output", str(page)]):
+                    changelog.main()
+                page.write_text("stale page", encoding="utf-8")
+                with patch.object(sys, "argv", ["changelog.py", "--check", "--output", str(page)]):
+                    with self.assertRaisesRegex(SystemExit, "does not match the shared release notes"):
                         changelog.main()
-                with patch.object(sys, "argv", ["changelog.py", "--write"]):
-                    changelog.main()
-                with patch.object(sys, "argv", ["changelog.py", "--check"]):
-                    changelog.main()
+            self.assertEqual(before, {path: path.read_bytes() for path in before})
+
+    def test_release_copy_does_not_depend_on_website_template_or_output(self):
+        with TemporaryDirectory() as directory:
+            source = Path(directory) / "changelog.json"
+            source.write_text(json.dumps(self.entries), encoding="utf-8")
+            output = StringIO()
+            with patch.object(changelog, "SOURCE", source), \
+                    patch.object(changelog, "TEMPLATE", Path(directory) / "missing-template.html"), \
+                    patch.object(changelog, "current_version", return_value="0.1.1"), \
+                    patch.object(sys, "argv", ["changelog.py", "--release", "0.1.0"]), redirect_stdout(output):
+                changelog.main()
+            self.assertEqual(output.getvalue(), changelog.release_notes(self.entries, "0.1.0"))
 
 
 if __name__ == "__main__":

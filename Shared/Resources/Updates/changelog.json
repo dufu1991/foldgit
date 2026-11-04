@@ -1,5 +1,17 @@
 [
   {
+    "version": "0.4.2",
+    "date": "2026-11-04",
+    "zh": [
+      "macOS 新增应用内更新，支持下载安装并重启；旧版需先手动安装本版本，后续可直接在应用内升级。",
+      "macOS 更新说明跟随应用语言，中文界面显示中文，其余语言暂时显示英文。"
+    ],
+    "en": [
+      "Add in-app updates on macOS with download, installation and relaunch. Install this version manually once to enable future in-app updates.",
+      "Show macOS release notes in the app's language: Chinese for Chinese interfaces, and English for all other languages for now."
+    ]
+  },
+  {
     "version": "0.4.1",
     "date": "2026-11-04",
     "zh": [

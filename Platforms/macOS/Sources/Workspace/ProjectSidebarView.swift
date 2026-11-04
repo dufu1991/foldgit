@@ -496,6 +496,7 @@ struct ProjectSidebarView: View {
             if repositories.count > 1 {
                 groupingActions(for: repositories)
                 Divider()
+                CopyRepositoryPathButton(url: folder.url)
                 Button("Remove from Sidebar") {
                     folders = WorkspaceGroups.removingRepositories(Set(repositories.map(\.identity)), from: folders)
                 }
@@ -532,6 +533,7 @@ struct ProjectSidebarView: View {
                 if isSaved { ProjectAutoFetchMenu(folder: folder) }
                 Divider()
                 Button("Show in Finder", systemImage: "folder") { reveal(folder) }
+                CopyRepositoryPathButton(url: folder.url)
                 if let groupURL {
                     Divider()
                     if isInfrequent {

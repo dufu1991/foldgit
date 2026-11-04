@@ -219,6 +219,7 @@
               <li><b>分组</b>：在 <b>+</b> 菜单中选「新建分组」，或多选仓库后右键「将所选仓库新建为分组」。分组只是整理方式，不会移动文件夹。</li>
               <li><b>不活跃的仓库</b>：右键「设为不活跃」，它会收进分组底部的二级折叠里。点击分组或「不活跃」标题即可展开或收起。</li>
               <li><b>改名</b>：右键修改「仓库显示名称」，只影响侧边栏，不改文件夹名。</li>
+              <li><b>复制路径</b>：在主仓库或工作树上右键，选择「复制路径」，即可复制对应目录的本地绝对路径。macOS 和 Windows 均支持。</li>
               <li><b>查找与排序</b>：在「搜索仓库」中按目录、仓库或显示名称过滤；旁边的排序按钮可按名称、最近打开、最近修改或最近添加排序，也可以直接拖动调整顺序。</li>
             </ul>
           </div>
@@ -227,6 +228,7 @@
               <li><b>Groups</b> — choose New Group from the <b>+</b> menu, or select several repositories and right-click New Group with Selection. Groups never move folders on disk.</li>
               <li><b>Inactive repositories</b> — right-click Mark as Inactive to tuck one into the folded section at the bottom of its group. Click a group or Inactive heading to expand or collapse it.</li>
               <li><b>Rename</b> — set a Repository Display Name from the context menu. Only the sidebar label changes.</li>
+              <li><b>Copy Path</b> — right-click a main repository or worktree and choose Copy Path to copy that folder’s absolute local path. Available on macOS and Windows.</li>
               <li><b>Find and sort</b> — Search Repositories filters by folder, repository or display name. The sort button orders by name, recently opened, modified or added. You can also drag to reorder.</li>
             </ul>
           </div>
@@ -452,7 +454,7 @@
             <p>鼠标悬停在图标上，会显示主工作区或关联工作树、已暂存、未暂存、未跟踪和冲突的数量，以及相对主干或上游领先、落后多少个提交，最后是文件夹路径。主干依次取 <code>origin/HEAD</code> 指向的分支、<code>main</code>、<code>master</code>；主工作区和检出主干分支的工作树改为与各自的上游对比。</p>
             <p class="tip">状态在文件或 Git 元数据变化后自动更新；应用转到后台时暂停读取，回到前台时立即刷新。读取不占用 Git 锁，不会打断正在工作的终端或 Agent。不需要时，可在「设置 → 仓库」关闭「在边栏显示工作树状态」。</p>
             <h3>管理工作树</h3>
-            <p>右键仓库选择「管理工作树」，或在菜单栏「仓库 → 工作树」中打开。列表显示每个工作树的分支、路径和状态摘要，可以打开、在访达中显示、锁定或解锁、移动、移除，也可以新建工作树或清理缺失的工作树记录。</p>
+            <p>右键仓库选择「管理工作树」，或在菜单栏「仓库 → 工作树」中打开。列表显示每个工作树的分支、路径和状态摘要，可以打开、在访达中显示、锁定或解锁、移动、移除，也可以新建工作树或清理缺失的工作树记录。右键列表中的工作树，选择「复制路径」，可复制该工作树的本地路径。</p>
             <h3>清理已合并的工作树</h3>
             <p>当一个仓库有多个工作树时，右键菜单和「管理工作树」中会出现「清理已合并的工作树」。它列出没有未提交更改、提交已在主干上的关联工作树：</p>
             <ul>
@@ -483,7 +485,7 @@
             <p>Hover over the icon to see whether it is the main or a linked worktree; staged, unstaged, untracked and conflicted counts; how many commits it is ahead of or behind the trunk or upstream; and its folder path. The trunk is the branch <code>origin/HEAD</code> points to, then <code>main</code>, then <code>master</code>. The main worktree, and any worktree with the trunk branch checked out, is compared with its own upstream instead.</p>
             <p class="tip">Status updates after files or Git metadata change. Reads pause while the app is in the background and refresh as soon as it returns. Reads take no Git locks, so terminals and agents working in the worktree are never interrupted. Turn off Show Worktree Status in Sidebar under Settings → Repositories if you don’t need it.</p>
             <h3>Manage worktrees</h3>
-            <p>Right-click a repository and choose Manage Worktrees, or open it from Repository → Worktrees in the menu bar. The list shows each worktree’s branch, path and status summary. Open, show in Finder, lock or unlock, move or remove a worktree, create a new one, or prune records of missing worktrees.</p>
+            <p>Right-click a repository and choose Manage Worktrees, or open it from Repository → Worktrees in the menu bar. The list shows each worktree’s branch, path and status summary. Open, show in Finder, lock or unlock, move or remove a worktree, create a new one, or prune records of missing worktrees. Right-click a worktree in the list and choose Copy Path to copy its local path.</p>
             <h3>Clean up merged worktrees</h3>
             <p>When a repository has more than one worktree, Clean Up Merged Worktrees appears in the context menu and in Manage Worktrees. It lists linked worktrees with no uncommitted changes whose commits are already on the trunk:</p>
             <ul>

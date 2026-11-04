@@ -7,6 +7,18 @@ struct WorktreeSheetTarget: Identifiable {
     var id: URL { url }
 }
 
+struct CopyRepositoryPathButton: View {
+    let url: URL
+
+    var body: some View {
+        Button("Copy Path", systemImage: "doc.on.doc") {
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.setString(url.path, forType: .string)
+        }
+    }
+}
+
 struct WorktreeIndicator: View {
     let path: String
 
@@ -228,6 +240,9 @@ struct WorktreeManagementSheet: View {
                         .controlSize(.small)
                     }
                     .padding(.vertical, 6)
+                    .contextMenu {
+                        CopyRepositoryPathButton(url: tree.url)
+                    }
                 }
             }
             .listStyle(.inset).frame(minHeight: 240, maxHeight: 380).disabled(isBusy)

@@ -293,6 +293,7 @@
     "Copy Commit Hash": "コミットハッシュをコピー",
     "Copy Delete Command": "削除コマンドをコピー",
     "Copy Log": "ログをコピー",
+    "Copy Path": "パスをコピー",
     "Could Not Read File": "ファイルを読み込めませんでした",
     "Couldn't read the changed file in the diff.": "差分内の変更ファイルを読み取れません。",
     "Couldn't read the diff.": "差分を読み取れません。",

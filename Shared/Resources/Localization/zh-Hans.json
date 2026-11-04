@@ -293,6 +293,7 @@
     "Copy Commit Hash": "复制提交哈希",
     "Copy Delete Command": "复制删除命令",
     "Copy Log": "复制日志",
+    "Copy Path": "复制路径",
     "Could Not Read File": "无法读取文件",
     "Couldn't read the changed file in the diff.": "无法读取差异中的更改文件。",
     "Couldn't read the diff.": "无法读取差异。",

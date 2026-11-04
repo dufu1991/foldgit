@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Windows.ApplicationModel;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace FoldGit.App;
 
@@ -57,6 +58,7 @@ public sealed partial class MainWindow
             groups.Items.Add(Menu("Ungrouped", () => Model.UpdateSettingsAsync(Model.Settings with { Workspace = Model.Settings.Workspace with { Repositories = Model.Settings.Workspace.Repositories.Select(repository => selected.Contains(repository.Id) ? repository with { GroupId = null } : repository).ToArray() } })));
             menu.Items.Add(groups);
             menu.Items.Add(Menu(row.Infrequent ? "Mark as Active" : "Mark as Inactive", () => Model.UpdateSettingsAsync(Model.Settings with { Workspace = Model.Settings.Workspace with { Repositories = Model.Settings.Workspace.Repositories.Select(repository => selected.Contains(repository.Id) ? repository with { Infrequent = !row.Infrequent } : repository).ToArray() } })));
+            menu.Items.Add(CopyPathItem(row.Path!));
             menu.Items.Add(Menu("Show in Finder", () => { ExternalApplications.Reveal(row.Path!); return Task.CompletedTask; }));
             if (Model.Settings.WorktreesEnabled)
             {
@@ -129,6 +131,7 @@ public sealed partial class MainWindow
         if (ItemAt<Worktree>(args) is not { } tree) return;
         var menu = new MenuFlyout();
         menu.Items.Add(Menu("Open Worktree", () => Model.SelectRepositoryAsync(tree.Path)));
+        menu.Items.Add(CopyPathItem(tree.Path));
         if (!tree.Main)
         {
             menu.Items.Add(Menu(tree.Locked is null ? "Lock Worktree" : "Unlock Worktree", async () => { await Model.Trees!.ChangeAsync(Model.Directory!, tree.Locked is null ? "lock" : "unlock", tree.Path); await Model.RefreshAsync(); }));
@@ -157,6 +160,19 @@ public sealed partial class MainWindow
         }
         ShowMenu(menu, args, WorktreeList);
     }
+
+    private MenuFlyoutItem CopyPathItem(string path)
+    {
+        var item = new MenuFlyoutItem { Text = L("Copy Path") };
+        item.Click += (_, _) =>
+        {
+            var data = new DataPackage();
+            data.SetText(path);
+            Clipboard.SetContent(data);
+        };
+        return item;
+    }
+
     private async Task FinishWorktreeAsync(string source)
     {
         if (Model.Trees is null || Model.Repositories is null) return;

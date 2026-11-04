@@ -74,7 +74,7 @@ window.FOLDGIT_I18N = {
     "cmp.kicker": "What is different",
     "cmp.title": "Less weight,<br>more order.",
     "d.multi.title": "Built for many projects",
-    "d.multi.body": "Every repository stays in the sidebar, folded by folder or group, with sorting and filtering. Import a local folder or clone a remote right there.",
+    "d.multi.body": "Every repository stays in the sidebar, folded by folder or group, with sorting and filtering. Import a local folder or clone a remote, and right-click any repository or worktree to copy its local path.",
     "d.wt.title": "Worktrees, first-class",
     "d.wt.body": "Auto-discovered, with each worktree’s status live in the sidebar. Finish merges, merged worktrees clean up safely in bulk, and conflicts are handled in native sheets.",
     "d.size.title": "Just a few MB",

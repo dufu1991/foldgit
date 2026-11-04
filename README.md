@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="Shared/Resources/Branding/Images/FoldGit-dark.png">
-    <img src="Shared/Resources/Branding/Images/FoldGit.png" width="128" height="128" alt="FoldGit">
+    <source media="(prefers-color-scheme: dark)" srcset="Shared/Resources/Branding/Images/FoldGit-dark.webp">
+    <img src="Shared/Resources/Branding/Images/FoldGit.webp" width="128" height="128" alt="FoldGit">
   </picture>
 </p>
 
@@ -148,9 +148,10 @@ Local Debug builds and tests use a fixed Apple Development certificate, so macOS
 xcodebuild test -project Platforms/macOS/FoldGit.xcodeproj -scheme FoldGit \
   -configuration Debug -destination 'platform=macOS'
 
-python3 Scripts/generate-resources.py --check
 python3 Scripts/validate-localizations.py
 ```
+
+Edit translations in `Shared/Resources/Localization`. Xcode uses Python 3 to generate native translations directly in the app bundle during each build.
 
 Regenerate the Xcode project with XcodeGen 2.45 or later:
 
@@ -160,7 +161,7 @@ xcodegen generate --spec Platforms/macOS/project.yml
 
 ### Icons and local packaging
 
-Shared brand assets live in `Shared/Resources/Branding`. macOS uses the layered icon directly; other platforms use the PNG and SVG layers next to it.
+Shared brand assets live in `Shared/Resources/Branding`. macOS uses the layered icon directly. Windows, the website build and the READMEs share the lossless WebP exports.
 
 Build a local Apple Silicon (`arm64`) Release package:
 
@@ -176,7 +177,7 @@ Set the version with `python3 Scripts/version.py set <version>` and push to `mai
 
 ### Website
 
-`website/` is the static landing page and user guide published at [foldgit.com](https://foldgit.com), with no build step. See [website/README.md](website/README.md) for local preview and how screenshots are captured from demo repositories.
+`website/` contains the landing page and user guide published at [foldgit.com](https://foldgit.com). Run `python3 Scripts/build-website.py` to assemble `dist/website` from the shared assets. See [website/README.md](website/README.md) for dependencies, Cloudflare Pages settings, local preview and screenshot capture.
 
 ## License
 

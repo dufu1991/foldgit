@@ -1,6 +1,6 @@
 # FoldGit 落地页
 
-纯静态网站，无需构建，可直接部署到 GitHub Pages 等静态托管。
+页面源文件保存在此目录，构建后生成可部署的纯静态网站。共享品牌原图从仓库的相对位置读取，图标、favicon 与低分辨率截图在构建时生成。
 
 ```text
 index.html        页面结构与中文文案
@@ -10,16 +10,47 @@ changelog.html    更新日志页面，条目由脚本生成
 i18n.js           英文文案
 styles.css        设计变量、液态玻璃样式、亮暗色与动效
 main.js           语言与外观切换、截图同步、滚动动效、Fold 演示
-assets/           图标、赞助二维码、原始截图、亮暗壁纸与 README 展示图
+assets/           赞助二维码、高分辨率原始截图、亮暗壁纸与 README 展示图
 ```
 
-## 本地预览
+## 构建与本地预览
 
 ```sh
-python3 -m http.server 8765 --directory website
+python3 -m pip install -r Scripts/build-requirements.txt
+python3 Scripts/build-website.py
+python3 -m http.server 8765 --directory dist/website
 ```
 
 然后打开 <http://127.0.0.1:8765/>。
+
+构建命令在仓库根目录执行。脚本从 `Shared/Resources/Branding/Images` 读取与 Windows、README 共用的无损 WebP，生成 `dist/website/assets` 下的图标与 favicon。截图只保存 `@2x.webp` 原图，构建时生成对应的 1 倍版本。发布后的资源 URL 保持现有路径。构建同时检查更新日志，并复制页面、样式、脚本和实际使用的静态资源。
+
+## Cloudflare Pages 配置
+
+在连接 Git 仓库的 Pages 项目中设置以下内容，生产与预览环境使用相同配置。
+
+| 设置 | 值 |
+|---|---|
+| 框架预设 | None |
+| 根目录 | 仓库根目录，留空 |
+| 构建命令 | `python3 -m pip install -r Scripts/build-requirements.txt && python3 Scripts/build-website.py` |
+| 构建输出目录 | `dist/website` |
+| 环境变量 | `PYTHON_VERSION=3.12` |
+
+构建监控路径可以保留默认设置。如果已配置自定义包含路径，需要覆盖以下构建输入，让共享资源与版本配置修改能够触发网站构建。
+
+```text
+website/**
+Shared/Resources/Branding/Images/**
+Scripts/**
+Platforms/macOS/Configuration/Base.xcconfig
+Platforms/Windows/src/FoldGit.App/Package.appxmanifest
+Platforms/Windows/src/FoldGit.App/MainWindow.Dialogs.cs
+```
+
+GitHub 的 `Website build` 工作流会独立验证构建结果和页面资源引用。
+
+配置项对应 [Cloudflare Pages 构建配置](https://developers.cloudflare.com/pages/configuration/build-configuration/) 和 [Python 版本设置](https://developers.cloudflare.com/pages/configuration/build-image/)。
 
 - 语言默认跟随浏览器：`zh-*` 显示中文，其他语言一律显示英文。
 - 亮暗色默认跟随浏览器，图标、截图和网站图标随之切换。
@@ -43,7 +74,7 @@ python3 -m http.server 8765 --directory website
 
 Open Graph 与 Twitter 分享卡片使用 `assets/og.png`，尺寸 1200 × 630。构图为：左侧是图标、名称和首页标语，右侧放大英文亮色截图中的侧栏与提交图，保证缩小到卡片尺寸后仍可辨认。三个页面的 `og:image` 必须使用 `https://foldgit.com/` 开头的绝对地址；替换卡片后可更改文件名或追加查询参数，促使各平台刷新缓存。
 
-替换原始截图、壁纸或调整展示样式后，同步更新中英文和亮暗色展示图以及分享卡片。素材制作脚本和模板仅保存在本地，不随仓库分发；网站直接使用已提交的静态资源，部署无需安装导出工具。
+替换原始截图、壁纸或调整展示样式后，同步更新中英文和亮暗色展示图以及分享卡片。展示图和分享卡片的制作脚本保存在本地；网站构建会从共享原图生成图标、favicon 和 1 倍截图。
 
 ## 更新日志
 
@@ -82,7 +113,7 @@ python3 Scripts/changelog.py --release 0.2.0  # 输出指定版本的双语 Rele
 2. 用 `defaults export com.dufu.foldgit <备份.plist>` 备份偏好。关闭所有 FoldGit 实例，使用本地固定的 Apple Development 签名，在原有 Debug 应用路径构建当前代码。不得复制应用或修改 Bundle ID。
 3. 临时配置演示仓库与分组，使用 1920 × 988 的窗口，历史列宽 320，保留目录树、暂存区与展开的并排差异。提交框只填写演示文案，不执行提交。
 4. 分别切换中文、英文与亮暗色，捕获主窗口。语言切换后重启同一个应用，每次确认运行路径和构建版本。移开鼠标，避免悬浮提示，确认左上角为真实的红黄绿按钮且不含共享指示器。
-5. 使用 `cwebp -q 90 -m 6` 导出 `assets/screenshots/main-<zh|en>-<light|dark>.webp`（1920 × 988）和同名 `@2x.webp`（3840 × 1976）。只缩放与压缩，不修饰实际界面。同步更新 README 展示图和分享卡片。
+5. 使用 `cwebp -q 90 -m 6` 导出 `assets/screenshots/main-<zh|en>-<light|dark>@2x.webp`（3840 × 1976）。构建时自动生成 1920 × 988 的 1 倍版本。只缩放与压缩，不修饰实际界面。同步更新 README 展示图和分享卡片。
 6. 退出应用，执行 `defaults import com.dufu.foldgit <备份.plist>`，删除仅由截图会话新增的偏好键并逐项核对恢复结果。重新打开原路径的最新构建，恢复原仓库列表。
 
 截图原图、演示仓库生成工具和展示图导出工具仅在本地保留，并由 Git 忽略。仓库只保存页面和 README 实际使用的成品图片。

@@ -36,9 +36,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows build dependencies
+        run: python -m pip install -r Scripts/build-requirements.txt
       - name: Validate shared resources and platform boundaries
         run: |
-          python Scripts/generate-resources.py --check
+          python Scripts/validate-localizations.py
+          python -m unittest discover -s Scripts/tests -p 'test_*.py'
           python Scripts/check-platform-boundaries.py
           python Scripts/validate-windows.py
       - name: Run real repository behavior suites
@@ -63,6 +66,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows build dependencies
+        run: python -m pip install -r Scripts/build-requirements.txt
       - name: Prepare temporary signing certificate
         if: inputs.validate_signing
         id: certificate
@@ -79,10 +84,50 @@ jobs:
           CERTIFICATE_THUMBPRINT: ${{ steps.certificate.outputs.thumbprint }}
         run: |
           if ($env:CERTIFICATE_THUMBPRINT) {
-            Platforms/Windows/Packaging/package.ps1 -Architecture ${{ matrix.architecture }} -CertificateThumbprint $env:CERTIFICATE_THUMBPRINT
+            $package = Platforms/Windows/Packaging/package.ps1 -Architecture ${{ matrix.architecture }} -CertificateThumbprint $env:CERTIFICATE_THUMBPRINT
           } else {
-            Platforms/Windows/Packaging/package.ps1 -Architecture ${{ matrix.architecture }} -Unsigned
+            $package = Platforms/Windows/Packaging/package.ps1 -Architecture ${{ matrix.architecture }} -Unsigned
           }
+          $unpacked = Join-Path $env:RUNNER_TEMP 'FoldGit-msix-icons'
+          [IO.Compression.ZipFile]::ExtractToDirectory($package, $unpacked)
+          python Scripts/generate-windows-icons.py "$unpacked/Assets" --check
+          if ($LASTEXITCODE -ne 0) { throw 'MSIX icons are missing or incorrect.' }
+      - name: Verify ordinary Debug build
+        shell: pwsh
+        run: |
+          $project = 'Platforms/Windows/src/FoldGit.App/FoldGit.App.csproj'
+          $runtime = 'win-${{ matrix.architecture }}'.ToLowerInvariant()
+          $properties = @('-p:Platform=${{ matrix.architecture }}', "-p:RuntimeIdentifier=$runtime", '-p:WindowsPackageType=None')
+          dotnet build $project -c Debug @properties
+          if ($LASTEXITCODE -ne 0) { throw 'Ordinary Debug build failed.' }
+          $target = dotnet msbuild $project -nologo -getProperty:TargetDir -p:Configuration=Debug @properties
+          if ($LASTEXITCODE -ne 0) { throw 'Could not read the Debug output directory.' }
+          python Scripts/generate-windows-icons.py "$target/Assets" --check
+          if ($LASTEXITCODE -ne 0) { throw 'Debug icons are missing or incorrect.' }
+      - name: Install Inno Setup compiler
+        shell: pwsh
+        run: |
+          $setup = Join-Path $env:RUNNER_TEMP 'innosetup-6.7.3.exe'
+          Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $setup
+          if ((Get-AuthenticodeSignature $setup).Status -ne 'Valid') { throw 'Inno Setup signature validation failed.' }
+          $process = Start-Process $setup -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', "/DIR=$env:RUNNER_TEMP/InnoSetup") -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw 'Inno Setup installation failed.' }
+      - name: Build and verify EXE installer
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $installer = Platforms/Windows/Packaging/installer.ps1 -Architecture ${{ matrix.architecture }} -CompilerPath "$env:RUNNER_TEMP/InnoSetup/ISCC.exe"
+          $install = Join-Path $env:RUNNER_TEMP 'FoldGit-installed'
+          $setup = Start-Process $installer -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/DIR=$install") -Wait -PassThru
+          if ($setup.ExitCode -ne 0) { throw 'Installer failed.' }
+          python Scripts/generate-windows-icons.py "$install/Assets" --check
+          if ($LASTEXITCODE -ne 0) { throw 'Installed icons are missing or incorrect.' }
+          $app = Start-Process "$install/FoldGit.App.exe" -PassThru
+          Start-Sleep -Seconds 5
+          if ($app.HasExited) { throw "Installed application exited with code $($app.ExitCode)." }
+          Stop-Process -Id $app.Id
+          $uninstall = Start-Process "$install/unins000.exe" -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART') -Wait -PassThru
+          if ($uninstall.ExitCode -ne 0) { throw 'Uninstaller failed.' }
       - name: Remove temporary signing certificate
         if: always() && steps.certificate.outputs.thumbprint != ''
         shell: pwsh

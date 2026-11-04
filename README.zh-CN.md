@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="Shared/Resources/Branding/Images/FoldGit-dark.png">
-    <img src="Shared/Resources/Branding/Images/FoldGit.png" width="128" height="128" alt="FoldGit">
+    <source media="(prefers-color-scheme: dark)" srcset="Shared/Resources/Branding/Images/FoldGit-dark.webp">
+    <img src="Shared/Resources/Branding/Images/FoldGit.webp" width="128" height="128" alt="FoldGit">
   </picture>
 </p>
 
@@ -148,9 +148,10 @@ CI 分别验证共享核心、Windows 共享核心和 macOS 应用。
 xcodebuild test -project Platforms/macOS/FoldGit.xcodeproj -scheme FoldGit \
   -configuration Debug -destination 'platform=macOS'
 
-python3 Scripts/generate-resources.py --check
 python3 Scripts/validate-localizations.py
 ```
+
+翻译统一在 `Shared/Resources/Localization` 中维护。Xcode 构建时调用 Python 3，在应用包内生成原生翻译资源。
 
 使用 XcodeGen 2.45 或更新版本重新生成 macOS 工程：
 
@@ -160,7 +161,7 @@ xcodegen generate --spec Platforms/macOS/project.yml
 
 ### 图标与本地打包
 
-共享品牌资源位于 `Shared/Resources/Branding`。macOS 直接引用分层图标，其他平台可使用同目录的通用 PNG 与 SVG 图层。
+共享品牌资源位于 `Shared/Resources/Branding`。macOS 直接引用分层图标，Windows、网站构建与 README 共用同目录的无损 WebP 原图。
 
 生成仅含 Apple Silicon（`arm64`）架构的本地 Release 安装包：
 
@@ -176,7 +177,7 @@ Scripts/package-macos.sh
 
 ### 网站
 
-`website/` 是无需构建的静态落地页与使用手册，发布在 [foldgit.com](https://foldgit.com)。本地预览方式，以及如何用演示仓库重新截图，见 [website/README.md](website/README.md)。
+`website/` 保存落地页与使用手册的源文件，发布在 [foldgit.com](https://foldgit.com)。运行 `python3 Scripts/build-website.py`，从共享资源生成 `dist/website`。构建依赖、Cloudflare Pages 配置、本地预览与截图方式见 [website/README.md](website/README.md)。
 
 ## 开源许可
 

@@ -156,6 +156,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows build dependencies
+        run: python -m pip install -r Scripts/build-requirements.txt
 
       # Optional Authenticode signing uses the existing certificate secrets.
       # Without a certificate, publish an unsigned EXE installer.

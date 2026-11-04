@@ -20,8 +20,6 @@ if (-not $Unsigned) {
         throw "The certificate subject must match the fixed MSIX Publisher identity $($identity.Publisher)."
     }
 }
-python "$root/Scripts/generate-resources.py" --check
-if ($LASTEXITCODE -ne 0) { throw 'Shared resource validation failed.' }
 $arguments = @('build', $project, '-c', 'Release', "-p:Platform=$Architecture",
     "-p:RuntimeIdentifier=win-$($Architecture.ToLowerInvariant())", '-p:GenerateAppxPackageOnBuild=true',
     '-p:UapAppxPackageBuildMode=SideloadOnly', "-p:AppxPackageDir=$destination", '-p:ContinuousIntegrationBuild=true')

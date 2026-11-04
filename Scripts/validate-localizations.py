@@ -4,13 +4,11 @@
 import argparse
 from collections import Counter
 import json
-import plistlib
 from pathlib import Path
 import re
-import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-RESOURCES = ROOT / "Platforms/macOS/Resources"
+CATALOGS = ROOT / "Shared/Resources/Localization"
 PLACEHOLDER = re.compile(r"%(?:\d+\$)?(?:lld|ld|d|u|@)")
 PLURALS = {
     "en": {"one", "other"},
@@ -24,29 +22,18 @@ PLURALS = {
 }
 
 
-def read_strings(path):
-    result = subprocess.run(
-        ["plutil", "-convert", "json", "-o", "-", str(path)],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    return json.loads(result.stdout)
-
-
 def validate(extracted_directory):
     errors = []
-    source_strings = read_strings(RESOURCES / "en.lproj/Localizable.strings")
-    source_plurals = plistlib.loads((RESOURCES / "en.lproj/Localizable.stringsdict").read_bytes())
-    strings = set(source_strings) | set(source_plurals)
-    directories = {path.stem for path in RESOURCES.glob("*.lproj")}
-    if directories != set(PLURALS):
-        errors.append("Missing or unexpected language directories")
+    catalogs = {path.stem: json.loads(path.read_text(encoding="utf-8")) for path in CATALOGS.glob("*.json")}
+    if set(catalogs) != set(PLURALS):
+        raise SystemExit("Missing or unexpected language catalogs")
+    source = catalogs["en"]
+    strings = set(source["strings"]) | set(source["plurals"])
     for language, categories in PLURALS.items():
-        directory = RESOURCES / f"{language}.lproj"
-        ordinary = read_strings(directory / "Localizable.strings")
-        plurals = plistlib.loads((directory / "Localizable.stringsdict").read_bytes())
-        if set(ordinary) != set(source_strings) or set(plurals) != set(source_plurals):
+        catalog = catalogs[language]
+        ordinary = catalog["strings"]
+        plurals = catalog["plurals"]
+        if any(set(catalog[section]) != set(source[section]) for section in ("strings", "plurals", "windows")):
             errors.append(f"{language}: translation keys differ from English")
         if set(ordinary) & set(plurals):
             errors.append(f"{language}: keys appear in both strings and plural resources")

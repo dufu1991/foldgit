@@ -10,10 +10,11 @@
 - `tests/FoldGit.Core.Tests`：不依赖界面的行为测试程序，创建独立临时仓库。
 - `Packaging/package.ps1`：MSIX 构建、签名、校验文件和 App Installer 清单。
 
-开发环境需要 Visual Studio 的 WinUI 应用开发工具、Windows SDK、Python 3，以及 `global.json` 指定的 .NET SDK。NuGet 依赖固定版本并保存锁文件。普通构建使用已提交的资源，不需要 Node.js、Pillow 或 Icon Composer。
+开发环境需要 Visual Studio 的 WinUI 应用开发工具、Windows SDK、Python 3，以及 `global.json` 指定的 .NET SDK。NuGet 依赖固定版本并保存锁文件。
 
 ```powershell
-python Scripts/generate-resources.py --check
+python -m pip install -r Scripts/build-requirements.txt
+python Scripts/validate-localizations.py
 python Scripts/validate-windows.py
 dotnet run --project Platforms/Windows/tests/FoldGit.Core.Tests -c Release
 dotnet build Platforms/Windows/src/FoldGit.App -p:Platform=x64 -p:RuntimeIdentifier=win-x64
@@ -29,9 +30,9 @@ dotnet build Platforms/Windows/src/FoldGit.App -p:Platform=x64 -p:RuntimeIdentif
 
 ## 资源和偏好
 
-品牌、文件图标和许可从 `Shared/Resources` 引用。维护共享翻译后运行 `python Scripts/generate-resources.py`，生成两端原生资源。Windows 运行时使用同源翻译目录处理动态文本和复数；MSIX 的显示信息使用 `.resw` 资源。
+品牌、文件图标和许可从 `Shared/Resources` 引用。翻译统一在 `Shared/Resources/Localization` 中维护，应用通过嵌入的 JSON 读取界面文案和复数规则。Windows 构建在中间目录生成包含包说明的最小 `.resw` 文件，保留原生资源索引的语言候选，并供 MSIX 包说明使用。
 
-Windows 图标已生成并提交。更改共享品牌图后，同步更新 `Assets` 中的 PNG 与 `FoldGit.ico`。图标制作工具仅保存在本地，普通构建直接使用仓库中的成品资源。
+Windows 图标由 `Scripts/generate-windows-icons.py` 在普通构建、MSIX 构建和 EXE 发布时自动生成，源图统一使用 `Shared/Resources/Branding/Images/FoldGit.webp`。该无损 WebP 同时供 README 和网站构建使用。生成文件保存在当前架构和配置的 `obj` 目录，通过 `Assets` 路径进入应用输出和发布目录。EXE 安装器也使用发布目录中的图标。构建依赖固定在 `Scripts/build-requirements.txt`，首次构建前安装一次。
 
 偏好保存在当前用户本地应用数据目录下的 `FoldGit/settings.json`，通过临时文件替换完成保存。包括仓库、逻辑分组、显示偏好、模板、最近应用和待完成 Worktree 流程。语言切换在下次启动时生效。恢复默认设置保留仓库与分组，并备份原设置文件。
 

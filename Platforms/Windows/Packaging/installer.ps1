@@ -17,9 +17,11 @@ dotnet publish $project -c Release -r "win-$($Architecture.ToLowerInvariant())" 
     -p:GenerateAppxPackageOnBuild=false -p:SelfContained=true -p:WindowsAppSDKSelfContained=true `
     -p:PublishSingleFile=false -p:PublishTrimmed=false -p:ContinuousIntegrationBuild=true -o $publish | Out-Host
 if ($LASTEXITCODE -ne 0) { throw 'Windows application publishing failed.' }
-foreach ($file in @('FoldGit.App.exe', 'FoldGit.App.dll', 'Microsoft.UI.Xaml.dll', 'Assets/MaterialFileIcons.json', 'Assets/LICENSE.txt')) {
+foreach ($file in @('FoldGit.App.exe', 'FoldGit.App.dll', 'Microsoft.UI.Xaml.dll', 'Assets/MaterialFileIcons.json', 'Assets/LICENSE.txt', 'Assets/FoldGit.ico', 'Assets/Square44x44Logo.png')) {
     if (-not (Test-Path (Join-Path $publish $file))) { throw "Missing installer content: $file" }
 }
+python "$root/Scripts/generate-windows-icons.py" "$publish/Assets" --check
+if ($LASTEXITCODE -ne 0) { throw 'Published Windows icons are missing or incorrect.' }
 
 if ($CertificateThumbprint) {
     $signTool = Get-ChildItem "${env:ProgramFiles(x86)}/Windows Kits/10/bin/*/x64/signtool.exe" |

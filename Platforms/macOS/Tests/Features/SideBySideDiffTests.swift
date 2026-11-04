@@ -112,15 +112,21 @@ final class SideBySideDiffTests: XCTestCase {
                 window.contentView = view
                 window.orderBack(nil)
                 defer { window.close() }
-                try await Task.sleep(for: .milliseconds(200))
-                view.layoutSubtreeIfNeeded()
-                var pending: [NSView] = [view]
+                let expectedColumns = layout == .unified ? 1 : 2
+                let deadline = ContinuousClock.now.advanced(by: .seconds(3))
                 var columns: [DiffColumnTextView] = []
-                while let next = pending.popLast() {
-                    if let column = next as? DiffColumnTextView { columns.append(column) }
-                    pending.append(contentsOf: next.subviews)
-                }
-                XCTAssertEqual(columns.count, layout == .unified ? 1 : 2)
+                repeat {
+                    view.layoutSubtreeIfNeeded()
+                    columns.removeAll()
+                    var pending: [NSView] = [view]
+                    while let next = pending.popLast() {
+                        if let column = next as? DiffColumnTextView { columns.append(column) }
+                        pending.append(contentsOf: next.subviews)
+                    }
+                    if columns.count == expectedColumns { break }
+                    try await Task.sleep(for: .milliseconds(10))
+                } while ContinuousClock.now < deadline
+                XCTAssertEqual(columns.count, expectedColumns, "Layout: \(layout), dark appearance: \(dark)")
                 for column in columns {
                     let storage = try XCTUnwrap(column.textStorage)
                     var count = 0

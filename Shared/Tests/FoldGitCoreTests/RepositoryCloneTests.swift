@@ -68,17 +68,43 @@ struct RepositoryCloneTests {
         #expect(FileManager.default.fileExists(atPath: retry.destination.appendingPathComponent(".git").path))
     }
 
-    @Test func cancellationStopsProcessAndRemovesOnlyItsStagingDirectory() async throws {
+    @Test(arguments: [false, true], [false, true])
+    func cancellationStopsProcessAndRemovesOnlyItsStagingDirectory(usingTransport: Bool, cancellingCaller: Bool) async throws {
         let source = try await TestRepository.create()
         defer { source.remove() }
         let parent = source.url.appendingPathComponent("clones")
         try FileManager.default.createDirectory(at: parent, withIntermediateDirectories: true)
-        let request = RepositoryCloneRequest(parent: parent, remote: source.url.path, directoryName: "canceled")
-        let clone = Task { try await RepositoryClone.run(request) { _ in
-            withUnsafeCurrentTask { $0?.cancel() }
-        } }
-        await #expect(throws: (any Error).self) { try await clone.value }
-        #expect(try FileManager.default.contentsOfDirectory(atPath: parent.path).isEmpty)
+        let existing = parent.appendingPathComponent("existing.txt")
+        try "keep existing data".write(to: existing, atomically: true, encoding: .utf8)
+        let remote = usingTransport ? source.url.absoluteString : source.url.path
+        let request = RepositoryCloneRequest(parent: parent, remote: remote, directoryName: "canceled")
+        let lines = CloneLines()
+        let (progress, signal) = AsyncStream<Void>.makeStream()
+        let clone = Task {
+            defer { signal.finish() }
+            return try await RepositoryClone.run(request) { line in
+                await lines.append(line)
+                signal.yield(())
+                if cancellingCaller {
+                    try? await Task.sleep(for: .seconds(30))
+                } else {
+                    withUnsafeCurrentTask { $0?.cancel() }
+                }
+            }
+        }
+        defer { clone.cancel() }
+        if cancellingCaller {
+            var updates = progress.makeAsyncIterator()
+            _ = try #require(await updates.next())
+            clone.cancel()
+        }
+        await #expect(throws: CancellationError.self) { try await clone.value }
+        #expect(!(await lines.values).isEmpty)
+        #expect(try FileManager.default.contentsOfDirectory(atPath: parent.path) == ["existing.txt"])
+        #expect(try String(contentsOf: existing, encoding: .utf8) == "keep existing data")
+        // A canceled clone must leave the destination available for an immediate retry.
+        _ = try await RepositoryClone.run(request)
+        #expect(FileManager.default.fileExists(atPath: request.destination.appendingPathComponent("example.swift").path))
     }
 }
 

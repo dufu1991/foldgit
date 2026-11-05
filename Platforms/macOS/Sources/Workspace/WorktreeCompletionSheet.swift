@@ -3,6 +3,7 @@ import FoldGitCore
 import SwiftUI
 
 struct WorktreeCompletionSheet: View {
+    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
     let onRemoved: (URL, URL) -> Void
     @State private var model: WorktreeCompletionModel
     @State private var isResolving = false
@@ -22,14 +23,7 @@ struct WorktreeCompletionSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Label("Finish Worktree", systemImage: "checkmark.circle").font(.headline)
-            HStack(spacing: 16) {
-                Label("Review", systemImage: "doc.text.magnifyingglass")
-                Image(systemName: "chevron.right").foregroundStyle(.tertiary)
-                Label("Merge", systemImage: "arrow.trianglehead.merge")
-                Image(systemName: "chevron.right").foregroundStyle(.tertiary)
-                Label("Cleanup", systemImage: "checkmark.circle")
-            }
-            .font(.callout).foregroundStyle(.secondary)
+            WorktreeCompletionSteps(phase: model.phase)
             if model.phase == .review {
                 review
             } else if model.phase == .conflicts, let plan = model.plan {
@@ -53,7 +47,7 @@ struct WorktreeCompletionSheet: View {
                 if model.phase == .review {
                     Button("Merge into Target") { Task { await model.merge() } }
                         .buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
-                        .disabled(model.plan == nil || model.isBusy)
+                        .disabled(disableCommitOperations || model.plan == nil || model.isBusy)
                 } else if model.phase == .merged {
                     Button("Finish Cleanup") { Task { await model.cleanup() } }
                         .buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction).disabled(model.isBusy)
@@ -62,6 +56,7 @@ struct WorktreeCompletionSheet: View {
         }
         .padding(24).frame(width: model.phase == .conflicts ? 760 : 600)
         .interactiveDismissDisabled(model.isBusy || isResolving)
+        .onChange(of: disableCommitOperations) { _, disabled in if disabled && !model.isBusy && !isResolving { dismiss() } }
         .task { if model.plan == nil { await model.load() } }
         .onChange(of: model.targetBranch) { old, new in
             if old != new && !model.isBusy { Task { await model.preview() } }
@@ -138,5 +133,68 @@ struct WorktreeCompletionSheet: View {
             }
             Button("Open Target Worktree") { openWorktree(plan.target); dismiss() }
         }
+    }
+}
+
+/// Review › Merge › Cleanup, with the current step emphasized and finished steps checked.
+struct WorktreeCompletionSteps: View {
+    enum Step: Int, CaseIterable {
+        case review, merge, cleanup
+
+        var title: LocalizedStringKey {
+            switch self {
+            case .review: "Review"
+            case .merge: "Merge"
+            case .cleanup: "Cleanup"
+            }
+        }
+
+        var symbol: String {
+            switch self {
+            case .review: "doc.text.magnifyingglass"
+            case .merge: "arrow.trianglehead.merge"
+            case .cleanup: "checkmark.circle"
+            }
+        }
+    }
+
+    let phase: WorktreeCompletionModel.Phase
+
+    /// The step in progress; `nil` once every step is finished.
+    static func currentStep(for phase: WorktreeCompletionModel.Phase) -> Step? {
+        switch phase {
+        case .review: .review
+        case .conflicts: .merge
+        case .merged: .cleanup
+        case .done: nil
+        }
+    }
+
+    var body: some View {
+        let current = Self.currentStep(for: phase)
+        HStack(spacing: 12) {
+            ForEach(Step.allCases, id: \.self) { step in
+                if step != .review {
+                    Image(systemName: "chevron.right").foregroundStyle(.tertiary).accessibilityHidden(true)
+                }
+                let isDone = current.map { step.rawValue < $0.rawValue } ?? true
+                let isCurrent = step == current
+                Label {
+                    Text(step.title)
+                } icon: {
+                    Image(systemName: isDone ? "checkmark.circle.fill" : step.symbol)
+                        .foregroundStyle(isDone ? AnyShapeStyle(.green) : isCurrent ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                }
+                .fontWeight(isCurrent ? .semibold : .regular)
+                .foregroundStyle(isCurrent ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(isCurrent ? AnyShapeStyle(Color.accentColor.opacity(0.15)) : AnyShapeStyle(.clear), in: Capsule())
+                .accessibilityElement(children: .combine)
+                .accessibilityValue(isCurrent ? Text("Current Step") : isDone ? Text("Completed") : Text("Not Started"))
+                .accessibilityIdentifier("worktreeCompletionStep-\(step.rawValue)")
+            }
+        }
+        .font(.callout)
     }
 }

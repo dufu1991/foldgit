@@ -12,7 +12,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .general: String(localized: "General")
         case .appearance: String(localized: "Appearance")
         case .comparison: String(localized: "History and Diffs")
-        case .snippets: String(localized: "Commit Messages")
+        case .snippets: String(localized: "Commit Operations")
         case .repositories: String(localized: "Repositories")
         case .applications: String(localized: "External Applications")
         case .about: String(localized: "About")
@@ -95,7 +95,10 @@ struct SettingsView: View {
                             .fixedSize(horizontal: true, vertical: false)
                     } icon: {
                         Image(systemName: tab.symbol)
-                            .font(.system(size: 11, weight: .semibold))
+                            .resizable()
+                            .scaledToFit()
+                            .fontWeight(.medium)
+                            .frame(width: 12, height: 12)
                             .foregroundStyle(.white)
                             .frame(width: 20, height: 20)
                             .background(tab.tint.gradient, in: RoundedRectangle(cornerRadius: 5))
@@ -147,11 +150,10 @@ struct GeneralSettingsPane: View {
     @State private var loginStatus = SMAppService.mainApp.status
     @State private var changingLoginItem = false
     @State private var error: Error?
-    @State private var showsLanguageRestart = false
     @State private var isRestarting = false
     @State private var showsRestoreDefaults = false
-    @State private var isShowingRestoreDefaults = false
-    @State private var didRestoreDefaults = false
+    @AppStorage(PreferenceKey.disableCommitOperations.rawValue)
+    private var disableCommitOperations = PreferenceDefaults.disableCommitOperations
 
     var body: some View {
         Form {
@@ -166,9 +168,13 @@ struct GeneralSettingsPane: View {
                 Text("Language")
             } footer: {
                 if languageSession.requiresRestart(for: language) {
-                    Button("Restart Now") { restartApplication() }
-                        .disabled(isRestarting)
-                        .accessibilityIdentifier("restartForLanguageButton")
+                    HStack(spacing: 8) {
+                        Text("Restart FoldGit to update the interface and menus.")
+                            .foregroundStyle(.secondary)
+                        Button("Restart Now") { restartApplication() }
+                            .disabled(isRestarting)
+                            .accessibilityIdentifier("restartForLanguageButton")
+                    }
                 }
             }
             Section("Startup") {
@@ -185,7 +191,8 @@ struct GeneralSettingsPane: View {
                 }
                 Toggle("Restore Previous Repository and Window", isOn: $restoreSession)
                     .accessibilityIdentifier("restoreSessionToggle")
-                Toggle("Check for Updates at Launch", isOn: $checkForUpdatesAtLaunch)
+                // Sparkle checks periodically, not only at launch; the stored key keeps its original name.
+                Toggle("Automatically Check for Updates", isOn: $checkForUpdatesAtLaunch)
                     .accessibilityIdentifier("checkForUpdatesAtLaunchToggle")
                     .onChange(of: checkForUpdatesAtLaunch) { _, enabled in
                         UpdateChecker.shared.setAutomaticChecks(enabled)
@@ -195,36 +202,31 @@ struct GeneralSettingsPane: View {
                 Toggle("Quit When the Last Window Closes", isOn: $quitAfterLastWindow)
                     .accessibilityIdentifier("quitAfterLastWindowToggle")
             }
+            Section("Commit Operations") {
+                Toggle(isOn: $disableCommitOperations) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Disable Commit Operations in FoldGit")
+                        Text("Hide commit, amend, squash, revert, merge, and staging controls.")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
+                }
+                .accessibilityIdentifier("disableCommitOperationsToggle")
+                .accessibilityLabel(Text("Disable Commit Operations in FoldGit"))
+            }
             Section {
-                Button("Restore Defaults…", role: .destructive) {
-                    isShowingRestoreDefaults = true
+                Button("Restore Defaults", role: .destructive) {
                     showsRestoreDefaults = true
                 }
                 .accessibilityIdentifier("restoreDefaultsButton")
             }
         }
         .settingsForm()
-        .onChange(of: language) {
-            language.apply()
-            if !isShowingRestoreDefaults {
-                showsLanguageRestart = languageSession.requiresRestart(for: language)
-            }
-        }
+        // The language footer offers the restart, so changing the language never interrupts with an alert.
+        .onChange(of: language) { language.apply() }
         .sheet(isPresented: $showsRestoreDefaults, onDismiss: {
-            isShowingRestoreDefaults = false
             loginStatus = SMAppService.mainApp.status
-            if didRestoreDefaults {
-                didRestoreDefaults = false
-                showsLanguageRestart = languageSession.requiresRestart(for: language)
-            }
         }) {
-            RestoreDefaultsSheet(onRestored: { didRestoreDefaults = true })
-        }
-        .alert("Restart to Apply Language", isPresented: $showsLanguageRestart) {
-            Button("Restart Now") { restartApplication() }
-            Button("Later", role: .cancel) {}
-        } message: {
-            Text("Your language choice has been saved. Restart FoldGit to update the interface and menus.")
+            RestoreDefaultsSheet()
         }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             loginStatus = SMAppService.mainApp.status
@@ -307,7 +309,9 @@ struct ComparisonSettingsPane: View {
             } header: {
                 Text("Commit History")
             } footer: {
-                Text("Hybrid: relative times within 7 days, exact dates before that.")
+                if commitTimeMode == .hybrid {
+                    Text("Hybrid: relative times within 7 days, exact dates before that.")
+                }
             }
             Section("Diff Display") {
                 Picker("Diff Layout", selection: $layout) {
@@ -346,6 +350,8 @@ struct ComparisonSettingsPane: View {
 }
 
 struct RepositorySettingsPane: View {
+    @AppStorage(PreferenceKey.showRepositoryBranch.rawValue)
+    private var showRepositoryBranch = PreferenceDefaults.showRepositoryBranch
     @AppStorage(PreferenceKey.showWorktreeInformation.rawValue)
     private var showWorktreeInformation = PreferenceDefaults.showWorktreeInformation
     @AppStorage(PreferenceKey.showWorktreeStatus.rawValue) private var showWorktreeStatus = PreferenceDefaults.showWorktreeStatus
@@ -353,10 +359,14 @@ struct RepositorySettingsPane: View {
     @State private var autoFetch = AutoFetchScheduler.shared
     @State private var error: Error?
     private var folders: [WorkspaceEntry] { data.flatMap { try? JSONDecoder().decode([WorkspaceEntry].self, from: $0) } ?? [] }
-    private var groups: [WorkspaceEntry] { folders.filter { !$0.repositories.isEmpty } }
+    private var entries: [WorkspaceEntry] { folders.filter { !$0.repositories.isEmpty } }
 
     var body: some View {
         Form {
+            Section("Sidebar") {
+                Toggle("Show Branch for Repositories Without Worktrees", isOn: $showRepositoryBranch)
+                    .accessibilityIdentifier("showRepositoryBranchToggle")
+            }
             Section {
                 Toggle("Enable Worktrees", isOn: $showWorktreeInformation)
                     .toggleStyle(.switch)
@@ -370,7 +380,7 @@ struct RepositorySettingsPane: View {
             } footer: {
                 Text("Also enable worktrees per repository from its context menu.")
             }
-            Section {
+            Section("Automatic Fetch") {
                 Picker("Default Interval", selection: Binding(get: { autoFetch.defaultInterval }, set: {
                     autoFetch.setDefaultInterval($0)
                 })) {
@@ -378,16 +388,12 @@ struct RepositorySettingsPane: View {
                 }
                 .pickerStyle(.menu)
                 .accessibilityIdentifier("defaultAutoFetchIntervalPicker")
-            } header: {
-                Text("Automatic Fetch")
-            } footer: {
-                Text("Repositories without their own interval use the default.")
             }
-            if groups.isEmpty {
+            if entries.isEmpty {
                 Section { Text("No Repositories").foregroundStyle(.secondary) }
             }
-            ForEach(groups, id: \.url) { entry in
-                Section(entry.displayName) {
+            ForEach(entries, id: \.url) { entry in
+                Section {
                     ForEach(entry.repositories, id: \.url) { repository in
                         VStack(alignment: .leading, spacing: 6) {
                             Picker(selection: Binding(get: { autoFetch.override(for: repository) }, set: {
@@ -421,6 +427,10 @@ struct RepositorySettingsPane: View {
                             }
                         }
                         .help(repository.url.path)
+                    }
+                } header: {
+                    if !entry.isRepository {
+                        Text(verbatim: entry.displayName)
                     }
                 }
             }
@@ -458,7 +468,7 @@ struct ApplicationSettingsPane: View {
                     }
                 }
                 HStack {
-                    Button("Add Application…", systemImage: "plus") { chooseApplication() }
+                    Button("Add Application", systemImage: "plus") { chooseApplication() }
                     Button("Refresh Applications", systemImage: "arrow.clockwise") {
                         Task { await store.reload(for: directory, force: true) }
                     }
@@ -529,7 +539,7 @@ struct AboutSettingsPane: View {
                 Link("Official Website", destination: website)
                 Link("GitHub Repository", destination: project)
                 Link("Send Feedback", destination: project.appending(path: "issues"))
-                Button("Open Source Licenses…") { showsLicense = true }
+                Button("Open Source Licenses") { showsLicense = true }
             }
         }
         .settingsForm()

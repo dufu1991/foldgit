@@ -6,8 +6,10 @@ enum MenuCommand: String {
     case openRepository, cloneRepository, newGroup, newWorktree, manageWorktrees, finishWorktree
     case toggleSidebar, toggleCommandLog, expandAll, collapseAll, searchCommits, findInFile, revealHead, showChanges
     case expandDirectories, collapseDirectories
+    case commitView, directoryView
     case refresh, fetch, pull, push, stash, showStashes, showBranches, newBranch, renameBranch, mergeBranch, openTerminal
     case compare, showTags, newTag, checkoutCommit, revertCommit, copyCommitHash, amendCommit
+    case squashCommits
     case stageAll, unstageAll, commit
     case chooseApplication, showInFinder
 
@@ -21,6 +23,8 @@ enum MenuCommand: String {
         case .toggleSidebar: MenuShortcut("s", [.command, .control])
         case .showChanges: MenuShortcut("1")
         case .revealHead: MenuShortcut("0")
+        case .commitView: MenuShortcut("1", [.command, .control])
+        case .directoryView: MenuShortcut("2", [.command, .control])
         case .expandAll: MenuShortcut(.rightArrow, .option)
         case .collapseAll: MenuShortcut(.leftArrow, .option)
         case .refresh: MenuShortcut("r")
@@ -90,6 +94,7 @@ struct RepositoryMenuContext {
     var applications: [OpenInApplication]
     var openApplication: @MainActor (OpenInApplication) -> Void
     var isOpeningApplication: Bool
+    var browseMode: RepositoryBrowseMode = .commits
 }
 
 private struct WorkspaceMenuKey: FocusedValueKey { typealias Value = WorkspaceMenuContext }
@@ -139,6 +144,7 @@ struct AppMenuCommands: Commands {
     @FocusedValue(\.diffMenu) private var diff
     @FocusedValue(\.editorMenu) private var editor
     @FocusedValue(\.fileMenu) private var file
+    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
     @AppStorage(PreferenceKey.showCommitGraph.rawValue) private var showGraph = true
     @AppStorage(PreferenceKey.diffLayout.rawValue) private var diffLayout = DiffLayout.automatic
     @Environment(\.openWindow) private var openWindow
@@ -173,6 +179,9 @@ struct AppMenuCommands: Commands {
             command("Log", .toggleCommandLog)
         }
         CommandGroup(before: .toolbar) {
+            browseModeToggle("Commit View", .commits, .commitView)
+            browseModeToggle("Directory View", .files, .directoryView)
+            Divider()
             Toggle("Commit Graph", isOn: $showGraph).disabled(repository == nil)
             command("Uncommitted Changes", .showChanges)
             command("Jump to HEAD", .revealHead)
@@ -221,7 +230,7 @@ struct AppMenuCommands: Commands {
         Menu("Worktrees") {
             command("New Worktree", .newWorktree)
             command("Manage Worktrees", .manageWorktrees)
-            command("Finish Worktree", .finishWorktree)
+            if !disableCommitOperations { command("Finish Worktree", .finishWorktree) }
         }
         Divider()
         command("Show in Finder", .showInFinder)
@@ -241,7 +250,7 @@ struct AppMenuCommands: Commands {
         command("Select Branch", .showBranches)
         command("New Branch", .newBranch)
         command("Rename Branch", .renameBranch)
-        command("Merge Branch", .mergeBranch)
+        if !disableCommitOperations { command("Merge Branch", .mergeBranch) }
         Divider()
         command("Compare Branches or Tags", .compare)
         Menu("Tags") {
@@ -251,17 +260,21 @@ struct AppMenuCommands: Commands {
     }
 
     @ViewBuilder private var commitCommands: some View {
-        command("Commit", .commit)
-        command("Amend Last Commit", .amendCommit)
-        Divider()
-        command("Stage All", .stageAll)
-        command("Unstage All", .unstageAll)
-        Divider()
+        if !disableCommitOperations {
+            command("Commit", .commit)
+            command("Amend Last Commit", .amendCommit)
+            command("Squash Commits", .squashCommits)
+            Divider()
+            command("Stage All", .stageAll)
+            command("Unstage All", .unstageAll)
+            Divider()
+        }
         command("Checkout Selected Commit", .checkoutCommit)
-        command("Revert Selected Commit", .revertCommit)
+        if !disableCommitOperations { command("Revert Selected Commit", .revertCommit) }
     }
 
     private func handler(_ command: MenuCommand) -> (@MainActor () -> Void)? {
+        if disableCommitOperations && [.commit, .amendCommit, .squashCommits, .revertCommit, .stageAll, .unstageAll, .mergeBranch, .finishWorktree].contains(command) { return nil }
         switch command {
         case .findInFile: return file?[command]
         case .commit, .amendCommit:
@@ -283,6 +296,21 @@ struct AppMenuCommands: Commands {
             if let action = actions?[command] { return action }
         }
         return nil
+    }
+
+    /// Checked like a picker, but each mode keeps its own key equivalent.
+    private func browseModeToggle(_ title: LocalizedStringKey, _ mode: RepositoryBrowseMode, _ action: MenuCommand) -> some View {
+        let toggle = Toggle(title, isOn: Binding(
+            get: { repository?.browseMode == mode },
+            set: { if $0 { handler(action)?() } }
+        ))
+        .disabled(handler(action) == nil)
+        .accessibilityIdentifier("menu-\(action.rawValue)")
+        return Group {
+            if let shortcut = action.shortcut {
+                toggle.keyboardShortcut(shortcut.key, modifiers: shortcut.modifiers)
+            } else { toggle }
+        }
     }
 
     @ViewBuilder private func command(_ title: LocalizedStringKey, _ action: MenuCommand) -> some View {
@@ -322,6 +350,8 @@ struct KeyboardShortcutsView: View {
                 shortcut("Copy Commit Hash", .copyCommitHash)
             }
             Section("View") {
+                shortcut("Commit View", .commitView)
+                shortcut("Directory View", .directoryView)
                 shortcut("Search Commits", .searchCommits)
                 shortcut("Uncommitted Changes", .showChanges)
                 shortcut("Jump to HEAD", .revealHead)

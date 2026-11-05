@@ -7,6 +7,24 @@ import Testing
 @testable import FoldGit
 
 struct AppPreferencesTests {
+    @Test func commitOperationMigrationPreservesOldChoiceAndNewChoiceWins() {
+        for old in [true, false] {
+            withDefaults { defaults, _ in
+                defaults.set(old, forKey: PreferenceKey.showCommitMessageArea.rawValue)
+                PreferenceDefaults.migrateCommitOperations(in: defaults)
+                #expect(defaults.bool(forKey: PreferenceKey.disableCommitOperations.rawValue) == !old)
+                #expect(defaults.object(forKey: PreferenceKey.showCommitMessageArea.rawValue) == nil)
+                defaults.set(old, forKey: PreferenceKey.disableCommitOperations.rawValue)
+                PreferenceDefaults.migrateCommitOperations(in: defaults)
+                #expect(defaults.bool(forKey: PreferenceKey.disableCommitOperations.rawValue) == old)
+            }
+        }
+        withDefaults { defaults, _ in
+            PreferenceDefaults.migrateCommitOperations(in: defaults)
+            #expect(!defaults.bool(forKey: PreferenceKey.disableCommitOperations.rawValue))
+        }
+    }
+
     @Test func directoryGroupsMigrateOnceWithOriginalDataBackup() throws {
         try withDefaults { defaults, _ in
             let repository = WorkspaceEntry(url: URL(fileURLWithPath: "/projects/client"))

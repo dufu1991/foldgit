@@ -63,7 +63,9 @@ struct RestoreDefaultsSheet: View {
             }
             .padding(16)
         }
-        .frame(width: 600, height: 620)
+        // The Settings window can be as short as 520 points, so the list scrolls instead of the sheet overflowing it.
+        .frame(minWidth: 480, idealWidth: 600, maxWidth: 600)
+        .frame(minHeight: 300, idealHeight: 440, maxHeight: 620)
         .buttonStyle(.bordered)
         .errorSheet($error, operation: "Restore Defaults")
     }

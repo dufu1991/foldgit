@@ -4,7 +4,7 @@ import SwiftUI
 struct StashChangedView: View {
     var folder: WorkspaceEntry
     @Binding var showingStashChanged: Bool
-    @State private var stashList: [Stash]?
+    @State private var stashList: [StashListEntry]?
     @State private var error: Error?
 
     var body: some View {
@@ -12,7 +12,7 @@ struct StashChangedView: View {
             Task {
                 do {
                     try await GitRuntime.run(GitStashDrop(directory: folder.url, index: stash.index))
-                    stashList = try await GitRuntime.run(GitStashList(directory: folder.url))
+                    stashList = try await GitRuntime.run(GitStashListDetails(directory: folder.url))
                 } catch {
                     self.error = OperationFailure("Drop Stash", error)
                 }
@@ -20,7 +20,7 @@ struct StashChangedView: View {
         })
         .task {
             do {
-               stashList = try await GitRuntime.run(GitStashList(directory: folder.url))
+               stashList = try await GitRuntime.run(GitStashListDetails(directory: folder.url))
             } catch {
                 self.error = OperationFailure("Load Stashes", error)
             }

@@ -7,6 +7,14 @@ struct CreateNewBranchSheet: View {
     var onCreate: (() -> Void)
     @State private var newBranchName = ""
     @State private var error: Error?
+    @State private var isWorking = false
+
+    /// A commit start point shows as an abbreviated hash, like everywhere else in the history.
+    private var startPointName: String {
+        guard let name = showingCreateNewBranchFrom?.name else { return "" }
+        let isHash = name.count == 40 && name.allSatisfy(\.isHexDigit)
+        return isHash ? String(name.prefix(12)) : name
+    }
 
     var body: some View {
         VStack {
@@ -18,7 +26,7 @@ struct CreateNewBranchSheet: View {
                         Text("From:")
                             .gridColumnAlignment(.trailing)
                             .fixedSize(horizontal: false, vertical: true)
-                        Text(showingCreateNewBranchFrom?.name ?? "")
+                        Text(verbatim: startPointName)
                             .lineLimit(2)
                             .truncationMode(.middle)
                             .textSelection(.enabled)
@@ -27,18 +35,25 @@ struct CreateNewBranchSheet: View {
                         Text("Name:")
                             .fixedSize(horizontal: false, vertical: true)
                         TextField("New branch name", text: $newBranchName)
+                            .disabled(isWorking)
                     }
                 }
                 HStack {
                     Button("Cancel") {
                         showingCreateNewBranchFrom = nil
                     }
+                    .keyboardShortcut(.cancelAction)
+                    .disabled(isWorking)
                     Spacer()
+                    if isWorking { ProgressView().controlSize(.small) }
                     Button("Create") {
+                        guard !isWorking, let startPoint = showingCreateNewBranchFrom?.point else { return }
+                        isWorking = true
                         Task {
+                            defer { isWorking = false }
                             do {
                                 try await GitRuntime.run(
-                                    GitCheckoutB(directory: folder.url, newBranchName: newBranchName, startPoint: showingCreateNewBranchFrom!.point)
+                                    GitCheckoutB(directory: folder.url, newBranchName: newBranchName, startPoint: startPoint)
                                 )
                                 showingCreateNewBranchFrom = nil
                                 onCreate()
@@ -49,7 +64,7 @@ struct CreateNewBranchSheet: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .keyboardShortcut(.init(.defaultAction))
-                    .disabled(newBranchName.isEmpty)
+                    .disabled(newBranchName.isEmpty || isWorking)
                 }
                 .padding(.top)
             }
@@ -59,6 +74,7 @@ struct CreateNewBranchSheet: View {
         .padding()
         .cornerRadius(8)
         .fixedSize(horizontal: false, vertical: true)
+        .interactiveDismissDisabled(isWorking)
         .errorSheet($error, operation: "New Branch")
     }
 }

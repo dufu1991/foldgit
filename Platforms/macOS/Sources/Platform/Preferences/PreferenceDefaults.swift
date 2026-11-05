@@ -4,10 +4,21 @@ import Foundation
 struct PreferenceDefaults {
     static let showWorktreeInformation = true
     static let showWorktreeStatus = true
+    static let showRepositoryBranch = false
     static let repositoryWorktreeVisibility = try! JSONEncoder().encode(RepositoryWorktreePreferences())
     static let repositoryDisplayNames = try! JSONEncoder().encode(RepositoryDisplayNames())
     static let sidebarDates = try! JSONEncoder().encode(SidebarDates())
     static let showCommitMessageArea = true
+    static let disableCommitOperations = false
+
+    static func migrateCommitOperations(in defaults: UserDefaults = .standard) {
+        let key = PreferenceKey.disableCommitOperations.rawValue
+        guard defaults.object(forKey: key) == nil else { return }
+        if let old = defaults.object(forKey: PreferenceKey.showCommitMessageArea.rawValue) as? Bool {
+            defaults.set(!old, forKey: key)
+        }
+        defaults.removeObject(forKey: PreferenceKey.showCommitMessageArea.rawValue)
+    }
     static let commitMessageSnippets = try! JSONEncoder().encode(CommitMessageSnippet.defaultPrefixes)
     static let commitMessageSnippetEntries = try! JSONEncoder().encode(CommitMessageSnippetEntry.defaults)
 
@@ -151,5 +162,15 @@ final class DecodedPreference<Value> {
         self.data = data
         value = decoded
         return decoded
+    }
+}
+
+@MainActor
+enum CommitOperations {
+    /// Tests use an isolated store, so the developer's own setting never changes their results.
+    static var defaults = UserDefaults.standard
+    static var disabled: Bool { defaults.bool(forKey: PreferenceKey.disableCommitOperations.rawValue) }
+    static func requireEnabled() throws {
+        if disabled { throw GenericError(errorDescription: String(localized: "Commit operations are disabled in FoldGit settings.")) }
     }
 }

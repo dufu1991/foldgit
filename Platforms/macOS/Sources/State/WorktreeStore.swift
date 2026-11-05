@@ -13,6 +13,12 @@ import Observation
     func worktree(at url: URL) -> GitWorktree? { list(for: url).first { $0.id == key(url) } }
     func contains(_ url: URL) -> Bool { worktree(at: url) != nil }
 
+    func sidebarBranch(for url: URL, showInformation: Bool, showRepositoryBranch: Bool) -> String? {
+        guard showInformation ? list(for: url).count > 1 : showRepositoryBranch,
+              let tree = worktree(at: url), !tree.isBare else { return nil }
+        return tree.branch ?? String(localized: "Detached HEAD")
+    }
+
     func repositoryIdentity(for url: URL) -> URL { list(for: url).first?.id ?? key(url) }
 
     func showsInformation(for url: URL?, global: Bool, preferences: RepositoryWorktreePreferences) -> Bool {
@@ -87,6 +93,20 @@ import Observation
         let source = source(for: directory)
         try await GitRuntime.run(GitWorktreeCommand(directory: source, operation: operation))
         try await refresh(source)
+    }
+
+    /// Branch subtitles need HEAD changes, without scanning working files or loading status counts.
+    func monitorBranches(_ families: [[GitWorktree]], minimumInterval: Duration = .seconds(2)) async {
+        guard let statusPlan = try? await RepositoryChangeMonitor.statusWatchPlan(for: families), !Task.isCancelled else { return }
+        let plan = RepositoryChangeMonitor.StatusWatchPlan(roots: statusPlan.roots.filter { $0.kind != .files },
+                                                          families: statusPlan.families)
+        let feed = RepositoryChangeMonitor.statusChanges(in: plan)
+        await refreshRepositories(families.compactMap { $0.first?.url })
+        for await _ in feed.ticks {
+            try? await Task.sleep(for: minimumInterval)
+            guard !Task.isCancelled else { return }
+            await refreshRepositories(feed.take().listPaths.map { URL(fileURLWithPath: $0) })
+        }
     }
 
     /// Keeps the statuses of `families` current until cancelled: one full read, then reads limited to the worktrees

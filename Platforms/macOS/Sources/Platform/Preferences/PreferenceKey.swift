@@ -8,6 +8,7 @@ enum PreferenceKey: String, CaseIterable {
     case sidebarSort
     case sidebarSortAscending
     case sidebarDates
+    case disableCommitOperations
     case showCommitMessageArea
     case commitMessageSnippet
     case commitMessageSnippetEntries
@@ -33,9 +34,11 @@ enum PreferenceKey: String, CaseIterable {
     case showCommitGraph
     case showWorktreeInformation
     case showWorktreeStatus
+    case showRepositoryBranch
     case repositoryWorktreeVisibility
     case codeFontSize
     case wrapLongLines
     case checkForUpdatesAtLaunch
+    case untrackedFilesExpanded
 }
 

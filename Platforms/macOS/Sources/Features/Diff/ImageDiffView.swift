@@ -96,6 +96,45 @@ struct ImageDiffView: View {
     }
 
     private var zoomControls: some View {
+        ImagePreviewZoomControls(zoom: $zoom, fitZoom: min(oldFitZoom, newFitZoom))
+    }
+}
+
+struct FileImagePreviewView: View {
+    let image: DiffImage
+    @State private var zoom: CGFloat?
+    @State private var fitZoom: CGFloat = 1
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ViewThatFits(in: .horizontal) {
+                HStack {
+                    ImagePreviewMetadata(image: image)
+                    Spacer(minLength: 12)
+                    ImagePreviewZoomControls(zoom: $zoom, fitZoom: fitZoom)
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    ImagePreviewMetadata(image: image)
+                    ImagePreviewZoomControls(zoom: $zoom, fitZoom: fitZoom)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+            }
+            .padding(10)
+            Divider()
+            ImagePreviewCanvas(title: "Preview", state: .loaded(image), zoom: zoom, fitZoom: $fitZoom)
+        }
+        .font(.callout)
+        .textSelection(.disabled)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+private struct ImagePreviewZoomControls: View {
+    @Binding var zoom: CGFloat?
+    let fitZoom: CGFloat
+    private var currentZoom: CGFloat { zoom ?? fitZoom }
+
+    var body: some View {
         HStack(spacing: 8) {
             Button("Fit") { zoom = nil }
                 .help("Fit Images to the Preview Area")
@@ -122,10 +161,66 @@ struct ImageDiffView: View {
             .disabled(zoom.map { $0 >= 8 } == true)
         }
         .fixedSize()
+        .buttonStyle(.bordered)
+        .controlSize(.small)
     }
 }
 
 private struct ImageDiffColumn: View {
+    let title: LocalizedStringKey
+    let state: DiffImageState
+    let zoom: CGFloat?
+    @Binding var fitZoom: CGFloat
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 5) {
+                Text(title).fontWeight(.medium)
+                if case .loaded(let image) = state {
+                    ImagePreviewMetadata(image: image)
+                }
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+            .frame(height: 80, alignment: .topLeading)
+            Divider()
+            ImagePreviewCanvas(title: title, state: state, zoom: zoom, fitZoom: $fitZoom)
+                .frame(height: 300)
+        }
+        .frame(minWidth: 0, maxWidth: .infinity)
+    }
+}
+
+private struct ImagePreviewMetadata: View {
+    let image: DiffImage
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 6) {
+                dimensions
+                Text(verbatim: "·")
+                details
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                dimensions
+                details
+            }
+        }
+        .font(.caption)
+        .foregroundStyle(.secondary)
+        .textSelection(.enabled)
+    }
+
+    private var dimensions: some View {
+        Text(verbatim: "\(image.pixelWidth) × \(image.pixelHeight) px")
+    }
+
+    private var details: some View {
+        Text(verbatim: "\(ByteCountFormatter.string(fromByteCount: Int64(image.byteCount), countStyle: .file)) · \(image.format)")
+    }
+}
+
+private struct ImagePreviewCanvas: View {
     let title: LocalizedStringKey
     let state: DiffImageState
     let zoom: CGFloat?
@@ -140,82 +235,48 @@ private struct ImageDiffColumn: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: 5) {
-                Text(title).fontWeight(.medium)
-                if case .loaded(let image) = state {
-                    ViewThatFits(in: .horizontal) {
-                        HStack(spacing: 6) {
-                            dimensions(image)
-                            Text(verbatim: "·")
-                            details(image)
-                        }
-                        VStack(alignment: .leading, spacing: 2) {
-                            dimensions(image)
-                            details(image)
-                        }
+        GeometryReader { geometry in
+            ZStack {
+                ImageCheckerboard()
+                switch state {
+                case .loaded(let image):
+                    let scale = ImageDiffZoom.scale(
+                        pixelSize: CGSize(width: image.pixelWidth, height: image.pixelHeight),
+                        viewport: geometry.size, displayScale: displayScale, zoom: zoom)
+                    let width = CGFloat(image.pixelWidth) * scale
+                    let height = CGFloat(image.pixelHeight) * scale
+                    ScrollView([.horizontal, .vertical]) {
+                        Image(decorative: image.image, scale: 1)
+                            .resizable()
+                            .interpolation(zoom.map { $0 > 1 } == true ? .none : .high)
+                            .frame(width: width, height: height)
+                            .padding(16)
+                            .frame(minWidth: geometry.size.width, minHeight: geometry.size.height)
                     }
-                    .font(.caption)
+                    .defaultScrollAnchor(.center)
+                    .accessibilityLabel(title)
+                case .loading:
+                    ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
+                case .absent:
+                    placeholder("No Image in This Version", systemImage: "photo")
+                case .failed(let message):
+                    VStack(spacing: 8) {
+                        Label("Image Preview Unavailable", systemImage: "exclamationmark.triangle")
+                        Text(verbatim: message).font(.caption).textSelection(.enabled)
+                    }
+                    .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)
-                    .textSelection(.enabled)
+                    .padding()
                 }
             }
-            .padding(12)
-            .frame(maxWidth: .infinity, alignment: .topLeading)
-            .frame(height: 80, alignment: .topLeading)
-            Divider()
-            GeometryReader { geometry in
-                ZStack {
-                    ImageCheckerboard()
-                    switch state {
-                    case .loaded(let image):
-                        let scale = ImageDiffZoom.scale(
-                            pixelSize: CGSize(width: image.pixelWidth, height: image.pixelHeight),
-                            viewport: geometry.size, displayScale: displayScale, zoom: zoom)
-                        let width = CGFloat(image.pixelWidth) * scale
-                        let height = CGFloat(image.pixelHeight) * scale
-                        ScrollView([.horizontal, .vertical]) {
-                            Image(decorative: image.image, scale: 1)
-                                .resizable()
-                                .interpolation(zoom.map { $0 > 1 } == true ? .none : .high)
-                                .frame(width: width, height: height)
-                                .padding(16)
-                                .frame(minWidth: geometry.size.width, minHeight: geometry.size.height)
-                        }
-                        .defaultScrollAnchor(.center)
-                        .accessibilityLabel(title)
-                    case .loading:
-                        ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
-                    case .absent:
-                        placeholder("No Image in This Version", systemImage: "photo")
-                    case .failed(let message):
-                        VStack(spacing: 8) {
-                            Label("Image Preview Unavailable", systemImage: "exclamationmark.triangle")
-                            Text(verbatim: message).font(.caption).textSelection(.enabled)
-                        }
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(.secondary)
-                        .padding()
-                    }
-                }
-                .clipped()
-                .onChange(of: [geometry.size, pixelSize, CGSize(width: displayScale, height: displayScale)], initial: true) { _, _ in
-                    guard pixelSize.width > 0, pixelSize.height > 0 else { return }
-                    fitZoom = ImageDiffZoom.scale(pixelSize: pixelSize, viewport: geometry.size,
-                                                 displayScale: displayScale, zoom: nil) * displayScale
-                }
+            .clipped()
+            .onChange(of: [geometry.size, pixelSize, CGSize(width: displayScale, height: displayScale)], initial: true) { _, _ in
+                guard pixelSize.width > 0, pixelSize.height > 0 else { return }
+                fitZoom = ImageDiffZoom.scale(pixelSize: pixelSize, viewport: geometry.size,
+                                             displayScale: displayScale, zoom: nil) * displayScale
             }
-            .frame(height: 300)
         }
-        .frame(minWidth: 0, maxWidth: .infinity)
-    }
-
-    private func dimensions(_ image: DiffImage) -> some View {
-        Text(verbatim: "\(image.pixelWidth) × \(image.pixelHeight) px")
-    }
-
-    private func details(_ image: DiffImage) -> some View {
-        Text(verbatim: "\(ByteCountFormatter.string(fromByteCount: Int64(image.byteCount), countStyle: .file)) · \(image.format)")
+        .background(Color(nsColor: .controlBackgroundColor))
     }
 
     private func placeholder(_ title: LocalizedStringKey, systemImage: String) -> some View {

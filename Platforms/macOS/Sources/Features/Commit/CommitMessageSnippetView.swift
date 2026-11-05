@@ -1,21 +1,15 @@
 import SwiftUI
 
 struct CommitMessageSnippetView: View {
-    @AppStorage(PreferenceKey.showCommitMessageArea.rawValue)
-    private var showCommitMessageArea = PreferenceDefaults.showCommitMessageArea
     @AppStorage(PreferenceKey.commitMessageSnippetEntries.rawValue)
     private var data = PreferenceDefaults.commitMessageSnippetEntries
     @State private var editingSnippet: CommitMessageSnippetEntry?
     @State private var error: Error?
+    @Environment(\.undoManager) private var undoManager
     private var snippets: [CommitMessageSnippetEntry] { CommitMessageSnippetEntry.decode(data) }
 
     var body: some View {
         Form {
-            Section("Layout") {
-                Toggle("Show Commit Message Area", isOn: $showCommitMessageArea)
-                    .toggleStyle(.switch)
-                    .accessibilityIdentifier("showCommitMessageAreaToggle")
-            }
             Section {
                 if snippets.isEmpty {
                     Text("No Commit Message Snippets")
@@ -41,19 +35,24 @@ struct CommitMessageSnippetView: View {
                             .labelStyle(.iconOnly)
                             .help("Edit")
                         Button("Delete", systemImage: "trash", role: .destructive) {
-                            save(snippets.filter { $0.id != snippet.id })
+                            delete(snippet)
                         }
                         .labelStyle(.iconOnly)
                         .help("Delete")
                     }
                 }
-                Button("Add Snippet…", systemImage: "plus") {
+                .onMove { source, destination in
+                    var reordered = snippets
+                    reordered.move(fromOffsets: source, toOffset: destination)
+                    replaceUndoably(with: reordered, actionName: String(localized: "Move Snippet"))
+                }
+                Button("Add Snippet", systemImage: "plus") {
                     editingSnippet = CommitMessageSnippetEntry(text: "", isFavorite: true)
                 }
             } header: {
                 Text("Commit Message Snippets")
             } footer: {
-                Text("Checked snippets appear below the commit message editor.")
+                Text("Checked snippets appear below the commit message editor. Drag snippets to change their order.")
             }
         }
         .settingsForm()
@@ -73,6 +72,23 @@ struct CommitMessageSnippetView: View {
         save(updated)
     }
 
+    private func delete(_ snippet: CommitMessageSnippetEntry) {
+        replaceUndoably(with: snippets.filter { $0.id != snippet.id }, actionName: String(localized: "Delete Snippet"))
+    }
+
+    /// Registers the previous list with the window's undo manager, so Command-Z brings a deleted or moved snippet back.
+    private func replaceUndoably(with updated: [CommitMessageSnippetEntry], actionName: String) {
+        let previous = data
+        let manager = undoManager
+        save(updated)
+        manager?.registerUndo(withTarget: SnippetUndoTarget.shared) { _ in
+            MainActor.assumeIsolated {
+                UserDefaults.standard.set(previous, forKey: PreferenceKey.commitMessageSnippetEntries.rawValue)
+            }
+        }
+        manager?.setActionName(actionName)
+    }
+
     private func save(_ snippets: [CommitMessageSnippetEntry]) {
         do {
             data = try JSONEncoder().encode(snippets)
@@ -80,6 +96,11 @@ struct CommitMessageSnippetView: View {
             self.error = error
         }
     }
+}
+
+/// Undo registration needs a reference target; the snippet list itself lives in user defaults.
+private final class SnippetUndoTarget {
+    nonisolated(unsafe) static let shared = SnippetUndoTarget()
 }
 
 private struct CommitMessageSnippetEditSheet: View {
@@ -92,11 +113,9 @@ private struct CommitMessageSnippetEditSheet: View {
         VStack(alignment: .leading, spacing: 16) {
             Text(isNew ? "New Snippet" : "Edit Snippet")
                 .font(.headline)
-            TextEditor(text: $snippet.text)
-                .font(.body)
+            MultilineTextEditor(text: $snippet.text, bordered: true,
+                                accessibilityLabel: String(localized: "Enter commit message snippet here"))
                 .frame(height: 120)
-                .border(.separator)
-                .accessibilityLabel(Text("Enter commit message snippet here"))
             Toggle("Show in Quick Input", isOn: $snippet.isFavorite)
                 .toggleStyle(.checkbox)
             HStack {

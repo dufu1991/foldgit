@@ -48,6 +48,7 @@ struct CreateNewTagSheet: View {
         .padding()
         .cornerRadius(8)
         .fixedSize(horizontal: false, vertical: true)
+        .interactiveDismissDisabled(isLoading)
         .errorSheet($error, operation: "New Tag")
     }
 
@@ -56,8 +57,13 @@ struct CreateNewTagSheet: View {
         Button("Cancel") {
             showingCreateNewTagAt = nil
         }
+        .keyboardShortcut(.cancelAction)
+        .disabled(isLoading)
         Button("Create") {
+            guard !isLoading else { return }
+            isLoading = true
             Task {
+                defer { isLoading = false }
                 do {
                     try await GitRuntime.run(
                         GitTagCreate(
@@ -73,15 +79,16 @@ struct CreateNewTagSheet: View {
                 }
             }
         }
-        .disabled(newTagname.isEmpty)
+        .disabled(newTagname.isEmpty || isLoading)
         if isLoading {
             ProgressView()
                 .scaleEffect(0.4)
                 .frame(minWidth: 24, minHeight: 17)
         } else {
             Button("Create & Push") {
+                guard !isLoading else { return }
+                isLoading = true
                 Task {
-                    isLoading = true
                     defer { isLoading = false }
                     do {
                         let currentBranch = try await GitRuntime.run(GitBranch(directory: folder.url)).current
@@ -101,7 +108,6 @@ struct CreateNewTagSheet: View {
                         onCreate()
                         showingCreateNewTagAt = nil
                     } catch {
-                        isLoading = false
                         self.error = OperationFailure("Create & Push", error)
                     }
                 }

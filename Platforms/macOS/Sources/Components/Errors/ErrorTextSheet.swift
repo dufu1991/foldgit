@@ -37,6 +37,15 @@ struct ErrorTextSheet: View {
                 Button("OK") {
                     error = nil
                 }
+                .keyboardShortcut(.defaultAction)
+                .background {
+                    // Escape dismisses through this invisible cancel button, without taking layout space.
+                    Button("Cancel") { error = nil }
+                        .keyboardShortcut(.cancelAction)
+                        .opacity(0)
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
+                }
             }
         }
         .padding()

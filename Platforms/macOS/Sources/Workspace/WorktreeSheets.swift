@@ -159,6 +159,7 @@ struct WorktreeCreateSheet: View {
 private enum WorktreeCreationMode: Hashable { case newBranch, existingBranch, detached }
 
 struct WorktreeManagementSheet: View {
+    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
     @Environment(\.folder) private var currentDirectory
     let repository: URL
     let onRelocated: (URL, URL?) -> Void
@@ -218,7 +219,7 @@ struct WorktreeManagementSheet: View {
                             Spacer()
                             if !tree.isMain {
                                 Menu {
-                                    if tree.branch != nil && !tree.isPrunable {
+                                    if tree.branch != nil && !tree.isPrunable && !disableCommitOperations {
                                         Button("Finish Worktree", systemImage: "checkmark.circle") {
                                             finishing = WorktreeSheetTarget(url: tree.url)
                                         }
@@ -245,7 +246,8 @@ struct WorktreeManagementSheet: View {
                     }
                 }
             }
-            .listStyle(.inset).frame(minHeight: 240, maxHeight: 380).disabled(isBusy)
+            // The main window can be 420 points tall, so the list shrinks before the sheet's buttons are pushed out.
+            .listStyle(.inset).frame(minHeight: 120, idealHeight: 220, maxHeight: 380).disabled(isBusy)
             if let errorMessage { WorktreeErrorLabel(message: errorMessage) }
             HStack {
                 Button("New Worktree", systemImage: "plus") { showingCreate = true }

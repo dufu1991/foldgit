@@ -28,6 +28,25 @@ final class BranchTests: XCTestCase {
         XCTAssertNil(branches.current)
     }
 
+    func testRemoteCheckoutCreatesATrackingBranchNamedWithoutTheRemote() throws {
+        let directory = URL(fileURLWithPath: "/tmp")
+        XCTAssertEqual(GitSwitchTrack.localName(for: "origin/feature/login"), "feature/login")
+        XCTAssertEqual(GitSwitchTrack.localName(for: "main"), "main")
+        XCTAssertEqual(GitSwitchTrack(directory: directory, localBranchName: "feature/login", remoteBranchName: "origin/feature/login").arguments,
+                       ["git", "switch", "--create", "feature/login", "--track", "origin/feature/login"])
+    }
+
+    func testCommitOperationCommandsUseExplicitModes() throws {
+        let directory = URL(fileURLWithPath: "/tmp")
+        XCTAssertEqual(GitReset(directory: directory, mode: .hard, commit: "abc").arguments, ["git", "reset", "--hard", "abc"])
+        XCTAssertEqual(GitReset(directory: directory, mode: .soft, commit: "abc").arguments, ["git", "reset", "--soft", "abc"])
+        XCTAssertEqual(GitCherryPick(directory: directory, commit: "abc").arguments, ["git", "cherry-pick", "abc"])
+        XCTAssertEqual(GitCherryPick(directory: directory, parentNumber: 1, commit: "abc").arguments, ["git", "cherry-pick", "-m", "1", "abc"])
+        XCTAssertEqual(GitBranchForceDelete(directory: directory, branchName: "topic").arguments, ["git", "branch", "-D", "topic"])
+        XCTAssertTrue(GitBranchForceDelete.isUnmergedRefusal("error: the branch 'topic' is not fully merged"))
+        XCTAssertFalse(GitBranchForceDelete.isUnmergedRefusal("error: branch 'topic' not found"))
+    }
+
     func testDetachedHeadRemainsTheCurrentEntry() throws {
         let branches = try GitBranch(directory: URL(fileURLWithPath: "/tmp")).parse(for: "  main\n* (HEAD detached at a036829)\n")
         XCTAssertEqual(branches.currentFirst.first?.point, "a036829")

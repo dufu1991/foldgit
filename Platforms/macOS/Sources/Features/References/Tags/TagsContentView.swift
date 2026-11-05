@@ -13,6 +13,7 @@ struct TagsContentView: View {
     @State private var selection: String?
     @State private var error: Error?
     @State private var isFetching = false
+    @State private var deletingTag: String?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -62,36 +63,56 @@ struct TagsContentView: View {
                                 .padding(.top, 220)
                     }
                 } else {
+                    // Selecting a tag only highlights it; Return, a double-click or the context menu checks it out.
                     List(filteredTags, id: \.self, selection: $selection) { tag in
                         Label(tag, systemImage: "tag")
-                            .contextMenu {
-                                Button("Delete") {
-                                    Task {
-                                        do {
-                                            try await GitRuntime.run(GitTagDelete(directory: folder.url, tagname: tag))
-                                            tags = tags?.filter{ $0 != tag}
-                                        } catch {
-                                            self.error = OperationFailure("Delete Tag", error)
-                                        }
-                                    }
-                                }
-                            }
                     }
-                    .onChange(of: selection ?? "", { _, newValue in
-                        Task {
-                            do {
-                                try await GitRuntime.run(GitCheckout(directory: folder.url, commitHash: newValue))
-                                showingTags = false
-                            } catch {
-                                self.error = OperationFailure("Checkout", error)
-                            }
+                    .contextMenu(forSelectionType: String.self) { items in
+                        if let tag = items.first, items.count == 1 {
+                            Button("Checkout") { checkout(tag) }
+                            Divider()
+                            Button("Delete Tag", role: .destructive) { deletingTag = tag }
                         }
-                    })
+                    } primaryAction: { items in
+                        if let tag = items.first, items.count == 1 { checkout(tag) }
+                    }
+                    .accessibilityIdentifier("tagsList")
                 }
             }
         }
         .scrollContentBackground(.hidden)
+        .confirmationDialog("Delete Tag?", isPresented: Binding(
+            get: { deletingTag != nil }, set: { if !$0 { deletingTag = nil } }
+        ), titleVisibility: .visible, presenting: deletingTag) { tag in
+            Button("Delete Tag", role: .destructive) { delete(tag) }
+            Button("Cancel", role: .cancel) { }
+        } message: { tag in
+            Text("This deletes only the local tag “\(tag)”. Copies already pushed to remotes are not affected.")
+        }
         .errorSheet($error, operation: "Load Tags")
+    }
+
+    private func checkout(_ tag: String) {
+        Task {
+            do {
+                try await GitRuntime.run(GitCheckout(directory: folder.url, commitHash: tag))
+                showingTags = false
+            } catch {
+                self.error = OperationFailure("Checkout", error)
+            }
+        }
+    }
+
+    private func delete(_ tag: String) {
+        Task {
+            do {
+                try await GitRuntime.run(GitTagDelete(directory: folder.url, tagname: tag))
+                tags = tags?.filter { $0 != tag }
+                if selection == tag { selection = nil }
+            } catch {
+                self.error = OperationFailure("Delete Tag", error)
+            }
+        }
     }
 }
 

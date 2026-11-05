@@ -2,6 +2,7 @@ import FoldGitCore
 import SwiftUI
 
 struct BranchesView: View {
+    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
     @Environment(WorktreeStore.self) private var worktrees
     @AppStorage(PreferenceKey.showWorktreeInformation.rawValue)
     private var globalShowWorktreeInformation = PreferenceDefaults.showWorktreeInformation
@@ -25,6 +26,10 @@ struct BranchesView: View {
     @State private var isFetching = false
     @State private var isLoading = true
     @State private var isRemoteExpanded = false
+    @State private var listFocusRequest = 0
+    @State private var deleteCandidate: BranchDeletion?
+    @State private var forceDeleteCandidate: BranchDeletion?
+    @State private var isDeleting = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -32,6 +37,11 @@ struct BranchesView: View {
                 Image(systemName: "line.3.horizontal.decrease")
                     .foregroundStyle(.secondary)
                 TextField("Filter", text: $filterText)
+                    .onKeyPress(.downArrow) {
+                        listFocusRequest += 1
+                        return .handled
+                    }
+                    .onSubmit { listFocusRequest += 1 }
                 if isFetching {
                     ProgressView()
                         .controlSize(.small)
@@ -62,6 +72,7 @@ struct BranchesView: View {
                 remoteBranches: remoteBranches,
                 filterText: filterText,
                 isRemoteExpanded: $isRemoteExpanded,
+                focusRequest: listFocusRequest,
                 onSelect: onSelect,
                 onSelectRemote: onSelectRemote,
                 visibility: worktrees.visibility(for: folder.url, showInformation: showWorktreeInformation, currentBranch: branch?.name),
@@ -72,12 +83,32 @@ struct BranchesView: View {
                 branchContextMenu(item, isRemote: isRemote)
             }
             .overlay {
-                if isLoading {
+                if isLoading || isDeleting {
                     ProgressView()
                 }
             }
         }
         .textFieldStyle(.roundedBorder)
+        .confirmationDialog("Delete Branch", isPresented: Binding(
+            get: { deleteCandidate != nil }, set: { if !$0 { deleteCandidate = nil } }
+        ), titleVisibility: .visible, presenting: deleteCandidate) { candidate in
+            Button("Delete", role: .destructive) { delete(candidate) }
+            Button("Cancel", role: .cancel) {}
+        } message: { candidate in
+            if candidate.isRemote {
+                Text("The remote-tracking branch \"\(candidate.branch.name)\" will be removed from this repository. The branch on the remote is not changed.")
+            } else {
+                Text("The branch \"\(candidate.branch.name)\" will be deleted.")
+            }
+        }
+        .confirmationDialog("Force Delete Branch", isPresented: Binding(
+            get: { forceDeleteCandidate != nil }, set: { if !$0 { forceDeleteCandidate = nil } }
+        ), titleVisibility: .visible, presenting: forceDeleteCandidate) { candidate in
+            Button("Force Delete", role: .destructive) { delete(candidate, force: true) }
+            Button("Cancel", role: .cancel) {}
+        } message: { candidate in
+            Text("The branch \"\(candidate.branch.name)\" is not fully merged. Commits that only this branch contains will no longer be reachable.")
+        }
         .task(id: branch) {
             isLoading = true
             defer { isLoading = false }
@@ -98,7 +129,7 @@ struct BranchesView: View {
                 .disabled(tree.isPrunable)
             Divider()
         }
-        if let currentBranch = branch, isRemote || !item.isCurrent {
+        if !disableCommitOperations, let currentBranch = branch, isRemote || !item.isCurrent {
             Button("Merge into \"\(currentBranch.name)\"") {
                 onSelectMergeInto(item)
             }
@@ -118,13 +149,30 @@ struct BranchesView: View {
         }
         if isRemote || (!item.isCurrent && worktrees.destination(for: item.name, in: folder.url) == nil) {
             Button("Delete") {
-                Task {
-                    do {
-                        try await GitRuntime.run(GitBranchDelete(directory: folder.url, isRemote: isRemote, branchName: item.name))
-                        try await loadBranches()
-                    } catch {
-                        self.error = OperationFailure("Delete Branch", error)
-                    }
+                deleteCandidate = BranchDeletion(branch: item, isRemote: isRemote)
+            }
+            .disabled(isDeleting)
+        }
+    }
+
+    private func delete(_ candidate: BranchDeletion, force: Bool = false) {
+        guard !isDeleting else { return }
+        isDeleting = true
+        Task {
+            defer { isDeleting = false }
+            do {
+                if force {
+                    try await GitRuntime.run(GitBranchForceDelete(directory: folder.url, branchName: candidate.branch.name))
+                } else {
+                    try await GitRuntime.run(GitBranchDelete(directory: folder.url, isRemote: candidate.isRemote, branchName: candidate.branch.name))
+                }
+                try await loadBranches()
+            } catch {
+                // Git refuses unmerged branches; offer the explicit force delete instead of the raw message.
+                if !force, !candidate.isRemote, GitBranchForceDelete.isUnmergedRefusal(error.localizedDescription) {
+                    forceDeleteCandidate = candidate
+                } else {
+                    self.error = OperationFailure("Delete Branch", error)
                 }
             }
         }
@@ -140,16 +188,45 @@ struct BranchesView: View {
     }
 }
 
+struct BranchDeletion: Identifiable {
+    let branch: Branch
+    let isRemote: Bool
+    var id: String { (isRemote ? "remote:" : "local:") + branch.name }
+}
+
 struct BranchListContentView<ContextMenu: View>: View {
     let localBranches: [Branch]
     let remoteBranches: [Branch]
     var filterText: String
     @Binding var isRemoteExpanded: Bool
+    /// Each change moves keyboard focus into the list and selects a row, for example from the filter field.
+    var focusRequest = 0
     var onSelect: (Branch) -> Void
     var onSelectRemote: (Branch) -> Void
     var visibility = WorktreeVisibility()
     var worktreeBranches: [String: GitWorktree] = [:]
     @ViewBuilder var contextMenu: (Branch, Bool) -> ContextMenu
+    @State private var selection: String?
+    @FocusState private var isListFocused: Bool
+
+    private static func tag(_ item: Branch, isRemote: Bool) -> String { (isRemote ? "remote:" : "local:") + item.name }
+
+    /// Rows in display order, skipping collapsed remote branches, for keyboard movement.
+    private var visibleRows: [(branch: Branch, isRemote: Bool)] {
+        filteredLocal.map { ($0, false) } + (isRemoteExpanded ? filteredRemote.map { ($0, true) } : [])
+    }
+
+    private func row(for tag: String) -> (branch: Branch, isRemote: Bool)? {
+        visibleRows.first { Self.tag($0.branch, isRemote: $0.isRemote) == tag }
+    }
+
+    private func activate(_ item: Branch, isRemote: Bool) {
+        if isRemote {
+            onSelectRemote(item)
+        } else if !item.isCurrent, worktreeBranches[item.name]?.isPrunable != true {
+            onSelect(item)
+        }
+    }
 
     private var filteredLocal: [Branch] {
         visibility.branches(localBranches.currentFirst).filter { filterText.isEmpty || $0.name.localizedCaseInsensitiveContains(filterText) }
@@ -160,7 +237,7 @@ struct BranchListContentView<ContextMenu: View>: View {
     }
 
     var body: some View {
-        List {
+        List(selection: $selection) {
             Section {
                 ForEach(filteredLocal) { item in
                     branchButton(item, isRemote: false)
@@ -198,31 +275,42 @@ struct BranchListContentView<ContextMenu: View>: View {
         }
         .listStyle(.inset)
         .scrollContentBackground(.hidden)
+        .focused($isListFocused)
+        // Return and double-click check out the selected branch; a single click still checks out at once.
+        .contextMenu(forSelectionType: String.self) { tags in
+            if let tag = tags.first, let row = row(for: tag) { contextMenu(row.branch, row.isRemote) }
+        } primaryAction: { tags in
+            if let tag = tags.first, let row = row(for: tag) { activate(row.branch, isRemote: row.isRemote) }
+        }
         .onChange(of: filterText) { _, value in
             isRemoteExpanded = !value.isEmpty
+        }
+        .onChange(of: focusRequest) {
+            isListFocused = true
+            if selection.flatMap(row(for:)) == nil {
+                selection = visibleRows.first.map { Self.tag($0.branch, isRemote: $0.isRemote) }
+            }
         }
     }
 
     private func branchButton(_ item: Branch, isRemote: Bool) -> some View {
-        Button {
-            if isRemote {
-                onSelectRemote(item)
-            } else if !item.isCurrent {
-                onSelect(item)
-            }
-        } label: {
-            BranchRowLabel(name: item.name, isCurrent: !isRemote && item.isCurrent, isRemote: isRemote,
-                           worktree: isRemote || !visibility.showInformation ? nil : worktreeBranches[item.name])
-                .padding(.vertical, 4)
-                .padding(.horizontal, 6)
-                .background(!isRemote && item.isCurrent ? Color.accentColor.opacity(0.1) : .clear,
-                            in: RoundedRectangle(cornerRadius: 6))
-                .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .disabled(!isRemote && worktreeBranches[item.name]?.isPrunable == true)
-        .listRowSeparator(.hidden)
-        .contextMenu { contextMenu(item, isRemote) }
+        let isPrunable = !isRemote && worktreeBranches[item.name]?.isPrunable == true
+        return BranchRowLabel(name: item.name, isCurrent: !isRemote && item.isCurrent, isRemote: isRemote,
+                              worktree: isRemote || !visibility.showInformation ? nil : worktreeBranches[item.name])
+            .padding(.vertical, 4)
+            .padding(.horizontal, 6)
+            .background(!isRemote && item.isCurrent ? Color.accentColor.opacity(0.1) : .clear,
+                        in: RoundedRectangle(cornerRadius: 6))
+            .contentShape(Rectangle())
+            .simultaneousGesture(TapGesture().onEnded {
+                selection = Self.tag(item, isRemote: isRemote)
+                activate(item, isRemote: isRemote)
+            })
+            .opacity(isPrunable ? 0.5 : 1)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction { activate(item, isRemote: isRemote) }
+            .tag(Self.tag(item, isRemote: isRemote))
+            .listRowSeparator(.hidden)
     }
 }
 

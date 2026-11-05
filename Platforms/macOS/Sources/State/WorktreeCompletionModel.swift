@@ -62,6 +62,7 @@ import Observation
         errorMessage = nil
         defer { isBusy = false }
         do {
+            try CommitOperations.requireEnabled()
             switch try await WorktreeCompletion.merge(plan) {
             case .merged: phase = .merged
             case let .inProgress(state, diagnostic):
@@ -131,11 +132,11 @@ import Observation
 
     @discardableResult
     func resolve(_ path: String, choosing resolution: MergeResolution) async -> Bool {
-        await perform("Resolve Merge") { try await GitMergeWorkflow.resolve(path, choosing: resolution, in: self.directory) }
+        await perform("Resolve Merge") { try CommitOperations.requireEnabled(); try await GitMergeWorkflow.resolve(path, choosing: resolution, in: self.directory) }
     }
     @discardableResult
     func continueMerge() async -> Bool {
-        await perform("Continue Merge") { try await GitMergeWorkflow.continueMerge(in: self.directory) }
+        await perform("Continue Merge") { try CommitOperations.requireEnabled(); try await GitMergeWorkflow.continueMerge(in: self.directory) }
     }
     @discardableResult
     func abort() async -> Bool {

@@ -36,7 +36,7 @@ enum SettingsReset {
                 Item(id: "language", title: String(localized: "Interface Language"), value: automatic, keys: [.interfaceLanguage]),
                 Item(id: "login", title: String(localized: "Launch at Login"), value: on),
                 Item(id: "session", title: String(localized: "Restore Previous Repository and Window"), value: on, keys: [.restoreSession]),
-                Item(id: "updates", title: String(localized: "Check for Updates at Launch"), value: on, keys: [.checkForUpdatesAtLaunch]),
+                Item(id: "updates", title: String(localized: "Automatically Check for Updates"), value: on, keys: [.checkForUpdatesAtLaunch]),
                 Item(id: "quit", title: String(localized: "Quit When the Last Window Closes"), value: off, keys: [.quitAfterLastWindow]),
             ]),
             Group(id: "appearance", title: String(localized: "Appearance"), items: [
@@ -53,13 +53,14 @@ enum SettingsReset {
                 Item(id: "font", title: String(localized: "Code Font Size"), value: String(localized: "\(Int(AppPreferences.defaultCodeFontSize)) pt"), keys: [.codeFontSize]),
                 Item(id: "wrap", title: String(localized: "Wrap Long Lines"), value: off, keys: [.wrapLongLines]),
             ]),
-            Group(id: "snippets", title: String(localized: "Commit Messages"), items: [
+            Group(id: "snippets", title: String(localized: "Commit Operations"), items: [
                 Item(id: "snippets", title: String(localized: "Commit Message Snippets"), value: snippetText(snippets),
                      keys: [.commitMessageSnippet, .commitMessageSnippetEntries]),
                 Item(id: "favorites", title: String(localized: "Show in Quick Input"), value: snippetText(snippets.filter(\.isFavorite))),
-                Item(id: "commitMessageArea", title: String(localized: "Show Commit Message Area"), value: on, keys: [.showCommitMessageArea]),
+                Item(id: "commitMessageArea", title: String(localized: "Disable Commit Operations in FoldGit"), value: off, keys: [.disableCommitOperations, .showCommitMessageArea]),
             ]),
             Group(id: "repositories", title: String(localized: "Repositories"), items: [
+                Item(id: "repositoryBranch", title: String(localized: "Show Branch for Repositories Without Worktrees"), value: off, keys: [.showRepositoryBranch]),
                 Item(id: "worktrees", title: String(localized: "Enable Worktrees"), value: on, keys: [.showWorktreeInformation]),
                 Item(id: "worktreeStatus", title: String(localized: "Show Worktree Status in Sidebar"), value: on, keys: [.showWorktreeStatus]),
                 Item(id: "worktreeOverrides", title: String(localized: "Repository Worktrees"), value: String(localized: "Off for All Repositories"), keys: [.repositoryWorktreeVisibility]),

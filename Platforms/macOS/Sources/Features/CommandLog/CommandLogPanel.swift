@@ -29,11 +29,15 @@ struct CommandLogPanel: View {
                     Toggle("Only Failures", isOn: $onlyFailures)
                     Toggle("Include Read Commands", isOn: $includeReads)
                 } label: {
-                    Image(systemName: onlyFailures || !includeReads ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                    // Filled only when the filters differ from their defaults (all writes, failures and successes).
+                    Image(systemName: onlyFailures || includeReads ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
                 }
                 .menuStyle(.borderlessButton)
                 .fixedSize()
                 .help("Filter Commands")
+                .accessibilityLabel("Filter Commands")
+                .accessibilityValue(onlyFailures || includeReads ? Text("On") : Text("Off"))
+                .accessibilityIdentifier("commandLogFilter")
                 Menu {
                     Button("Copy Log") { CommandLogPresentation.copy(CommandLogPresentation.transcript(visibleEntries)) }
                         .disabled(visibleEntries.isEmpty)
@@ -48,6 +52,8 @@ struct CommandLogPanel: View {
                 .menuStyle(.borderlessButton)
                 .fixedSize()
                 .help("Log Actions")
+                .accessibilityLabel("Log Actions")
+                .accessibilityIdentifier("commandLogActions")
             }
             .padding(12)
             Divider()

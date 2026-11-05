@@ -55,6 +55,7 @@ struct OpenFileButton: View {
         .buttonStyle(.plain)
         .controlSize(.small)
         .help("Open \(fileURL?.absoluteString ?? "")")
+        .accessibilityLabel("Open File")
         .disabled(fileURL == nil)
         .errorSheet($error, operation: "Open File")
     }

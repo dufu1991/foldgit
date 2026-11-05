@@ -11,10 +11,54 @@ import Observation
 
     private let defaults: UserDefaults
     private(set) var scope = HistoryScope.currentBranch
-    private(set) var snapshot: HistorySnapshot?
+    private(set) var snapshot: HistorySnapshot? {
+        didSet { cachedSquashSelectionError = nil }
+    }
     private(set) var scrollRequest: ScrollRequest?
     private(set) var isRevealingIncoming = false
+    var selectedHashes = Set<String>() {
+        didSet { cachedSquashSelectionError = nil }
+    }
+    var selectionAnchor: String?
     var number = 100
+
+    /// Views read this on every render, so the chain walk only runs after its inputs change.
+    @ObservationIgnored private var cachedSquashSelectionError: String??
+    var squashSelectionError: String? {
+        if let cachedSquashSelectionError {
+            // Keep observation tracking even when the cached value is returned.
+            access(keyPath: \.selectedHashes); access(keyPath: \.commits)
+            access(keyPath: \.snapshot); access(keyPath: \.searchText)
+            return cachedSquashSelectionError
+        }
+        let error =
+            searchText.isEmpty
+            ? GitSquash.selectionError(selectedHashes, commits: commits, head: snapshot?.headHash)
+            : "Clear the commit search before squashing commits."
+        cachedSquashSelectionError = .some(error)
+        return error
+    }
+
+    func select(_ hash: String, extending: Bool, comparing: Bool) {
+        if extending, let anchor = selectionAnchor, searchText.isEmpty {
+            let chain = commits.firstParentChain(from: snapshot?.headHash).map(\.hash)
+            if let start = chain.firstIndex(of: anchor), let end = chain.firstIndex(of: hash) {
+                selectedHashes = Set(chain[min(start, end)...max(start, end)])
+            } else if let start = commits.firstIndex(where: { $0.hash == anchor }),
+                let end = commits.firstIndex(where: { $0.hash == hash })
+            {
+                // Outside the first-parent chain, fall back to the rows between them as displayed.
+                selectedHashes = Set(commits[min(start, end)...max(start, end)].map(\.hash))
+            } else {
+                selectedHashes = [hash]; selectionAnchor = hash
+            }
+        } else if comparing, let anchor = selectionAnchor {
+            selectedHashes = selectedHashes.contains(hash) ? selectedHashes.subtracting([hash]) : [anchor, hash]
+            if !selectedHashes.contains(anchor) { selectionAnchor = selectedHashes.first }
+        } else {
+            selectedHashes = [hash]; selectionAnchor = hash
+        }
+    }
 
     init(defaults: UserDefaults = .standard) { self.defaults = defaults }
 
@@ -88,6 +132,7 @@ import Observation
                 invalidateSearchIndex()
                 snapshot = nil
                 scope = savedScope()
+                selectedHashes = []; selectionAnchor = nil
                 commits = []
                 notCommitted = nil
                 totalCommitsCount = nil
@@ -95,19 +140,23 @@ import Observation
             }
         }
     }
-    private(set) var searchText = ""
+    private(set) var searchText = "" {
+        didSet { cachedSquashSelectionError = nil }
+    }
     private(set) var isSearching = false
     @ObservationIgnored private(set) var searchTask: Task<Void, Never>?
     private var snapshotIsStale = true
     private var reloadRequest: Int?
     private var searchIndex: CommitSearchIndex?
     private var matchingHashes: [String] = []
-    var commits: [Commit] = []
+    var commits: [Commit] = [] {
+        didSet { cachedSquashSelectionError = nil }
+    }
     var notCommitted: NotCommitted?
     var totalCommitsCount: Int?
     var error: (any Error)?
     private var generation = 0
-    private var loadingMore = false
+    private(set) var isLoadingMore = false
     var canLoadMore: Bool { !isSearching && (totalCommitsCount.map { $0 > commits.count } ?? false) }
 
     func logs() -> [Log] {
@@ -252,10 +301,16 @@ import Observation
         if case .committed(let commit) = log, commit == commits.last { await loadMore() }
     }
 
+    /// Keyboard navigation pages in early, so moving down never waits at the last loaded row.
+    func loadMoreIfApproaching(_ id: String, within distance: Int = 20) async {
+        guard let index = commits.firstIndex(where: { $0.id == id }), commits.count - index <= distance else { return }
+        await loadMore()
+    }
+
     func loadMore() async {
-        guard let directory, canLoadMore, !loadingMore, reloadRequest == nil else { return }
-        loadingMore = true
-        defer { loadingMore = false }
+        guard let directory, canLoadMore, !isLoadingMore, reloadRequest == nil else { return }
+        isLoadingMore = true
+        defer { isLoadingMore = false }
         let request = generation
         do {
             let additional: [Commit]

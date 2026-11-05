@@ -6,6 +6,88 @@ import UniformTypeIdentifiers
 @testable import FoldGit
 
 struct ImageDiffTests {
+    @Test(arguments: [FileContentReader.automaticLimit + 1, FileContentReader.maximumBytes + 1])
+    func fileImagesLoadAutomaticallyBeyondTextSizeLimits(byteCount: Int) throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("foldgit-image-\(UUID()).png")
+        defer { try? FileManager.default.removeItem(at: url) }
+        var data = try imageData(width: 120, height: 80)
+        data.append(Data(repeating: 0, count: byteCount - data.count))
+        try data.write(to: url)
+        let snapshot = try FileContentReader.read(url, allowLarge: false)
+        guard case .image(let image) = snapshot.content else {
+            Issue.record("Images must use the image decoder without the large text loading prompt")
+            return
+        }
+        #expect(image.pixelWidth == 120)
+        #expect(image.pixelHeight == 80)
+        #expect(image.byteCount == byteCount)
+        #expect(snapshot.metadata.size == byteCount)
+    }
+
+    @MainActor @Test func fileImageRefreshHandlesReplacementCorruptionAndRemoval() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("foldgit-image-\(UUID())")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let url = directory.appendingPathComponent("preview.png")
+        try imageData(width: 120, height: 80).write(to: url)
+        let store = FileContentStore()
+        defer { store.hide() }
+        store.show(directory: directory, path: url.lastPathComponent)
+        await store.readTask?.value
+        guard case .image(let first) = store.state else {
+            Issue.record("File content did not load an image")
+            return
+        }
+        #expect(first.pixelWidth == 120)
+        try imageData(width: 90, height: 60).write(to: url, options: .atomic)
+        store.refresh()
+        await store.refreshTask?.value
+        await store.readTask?.value
+        guard case .image(let changed) = store.state else {
+            Issue.record("The changed image was not reloaded")
+            return
+        }
+        #expect(changed.pixelWidth == 90)
+        #expect(changed.pixelHeight == 60)
+
+        try Data([0, 255, 1]).write(to: url, options: .atomic)
+        store.refresh()
+        await store.refreshTask?.value
+        await store.readTask?.value
+        guard case .failed = store.state else {
+            Issue.record("A corrupt image must report an image decoding failure")
+            return
+        }
+        try FileManager.default.removeItem(at: url)
+        store.refresh()
+        await store.refreshTask?.value
+        guard case .missing = store.state else {
+            Issue.record("A removed image must show the missing file state")
+            return
+        }
+    }
+
+    @Test func imageByteLimitAndSymbolicLinkRulesMatchThePreviewReader() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("foldgit-image-\(UUID())")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let url = directory.appendingPathComponent("large.png")
+        try Data().write(to: url)
+        let handle = try FileHandle(forWritingTo: url)
+        try handle.truncate(atOffset: UInt64(GitRuntime.outputLimit + 1))
+        try handle.close()
+        guard case .unavailable(.imageTooLarge) = try FileContentReader.read(url, allowLarge: false).content else {
+            Issue.record("Image byte limits must be checked before decoding")
+            return
+        }
+        let link = directory.appendingPathComponent("link.png")
+        try FileManager.default.createSymbolicLink(at: link, withDestinationURL: url)
+        guard case .unavailable(.notRegular) = try FileContentReader.read(link, allowLarge: false).content else {
+            Issue.record("Image previews must not bypass the symbolic link restriction")
+            return
+        }
+    }
+
     @Test func metadataUsesPixelsAndOriginalByteCount() throws {
         let data = try imageData(width: 120, height: 80)
         let image = try DiffImage.decode(data)

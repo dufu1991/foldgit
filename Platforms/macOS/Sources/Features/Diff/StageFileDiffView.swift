@@ -3,6 +3,7 @@ import SwiftUI
 
 struct StageFileDiffView: View {
     @Environment(\.imageDiffContext) private var imageDiffContext
+    @Environment(\.changeRowContext) private var changeRowContext
     @Binding var expandableFileDiff: ExpandableModel<FileDiff>
     var fileDiff: FileDiff {
         expandableFileDiff.model
@@ -27,44 +28,33 @@ struct StageFileDiffView: View {
                                 ChunkView(chunk: chunk, filePath: fileDiff.toFilePath)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 Spacer(minLength: 0)
-                                Button {
-                                    onSelectChunk?(fileDiff, chunk)
-                                } label: {
-                                    Image(systemName: selectButtonImageSystemName)
-                                        .font(.system(size: 11, weight: .medium))
-                                        .foregroundStyle(.secondary)
-                                        .frame(width: 22, height: 22)
-                                        .contentShape(Rectangle())
+                                if let onSelectChunk {
+                                    StageActionButton(systemImage: selectButtonImageSystemName, help: selectButtonHelp) {
+                                        onSelectChunk(fileDiff, chunk)
+                                    }
+                                    .padding(.vertical)
                                 }
-                                .buttonStyle(.plain)
-                                .controlSize(.small)
-                                .help(selectButtonHelp)
-                                .accessibilityLabel(Text(verbatim: selectButtonHelp))
-                                .padding(.vertical)
-                                .disabled(onSelectChunk == nil)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
+                            .contextMenu {
+                                if let discardChunk = changeRowContext?.discardChunk {
+                                    Button("Discard This Hunk", systemImage: "arrow.uturn.backward") {
+                                        discardChunk(fileDiff, chunk)
+                                    }
+                                }
+                            }
                         }
                     }
                     .padding(.top, 8)
                     .padding(.bottom, 12)
                     if fileDiff.chunks.isEmpty {
                         HStack {
-                            Button {
-                                onSelectFileDiff?(fileDiff)
-                            } label: {
-                                Image(systemName: selectButtonImageSystemName)
-                                    .font(.system(size: 11, weight: .medium))
-                                    .foregroundStyle(.secondary)
-                                    .frame(width: 22, height: 22)
-                                    .contentShape(Rectangle())
+                            if let onSelectFileDiff {
+                                StageActionButton(systemImage: selectButtonImageSystemName, help: selectFileButtonHelp) {
+                                    onSelectFileDiff(fileDiff)
+                                }
+                                .padding(.trailing, 8)
                             }
-                            .buttonStyle(.plain)
-                            .controlSize(.small)
-                            .help(selectFileButtonHelp)
-                            .accessibilityLabel(Text(verbatim: selectFileButtonHelp))
-                            .disabled(onSelectFileDiff == nil)
-                            .padding(.trailing, 8)
                             VStack(alignment: .leading) {
                                 Text(fileDiff.header)
                                 Text(fileDiff.extendedHeaderLines.joined(separator: "\n"))
@@ -79,13 +69,35 @@ struct StageFileDiffView: View {
             FileDiffHeaderView(
                 isExpanded: $expandableFileDiff.isExpanded,
                 fileDiff: fileDiff,
-                leadingActionImageSystemName: selectButtonImageSystemName,
+                leadingActionImageSystemName: onSelectFileDiff == nil ? nil : selectButtonImageSystemName,
                 leadingActionHelp: selectFileButtonHelp,
                 treeDepth: treeDepth,
                 onLeadingAction: onSelectFileDiff.map { action in { action(fileDiff) } }
             )
+            .changeFileRow(path: fileDiff.changeTreePath)
         } footer: {
             if expandableFileDiff.isExpanded { FileDiffDivider() }
         }
+    }
+}
+
+/// The compact plus or minus button that stages or unstages one file or chunk.
+struct StageActionButton: View {
+    let systemImage: String
+    let help: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(.secondary)
+                .frame(width: 22, height: 22)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .controlSize(.small)
+        .help(help)
+        .accessibilityLabel(Text(verbatim: help))
     }
 }

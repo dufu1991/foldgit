@@ -41,6 +41,7 @@ struct WorkspaceScreen: View {
     @State private var expandAllFiles: UUID?
     @State private var collapseAllFiles: UUID?
     @State private var showCommandLog = false
+    @State private var sidebarRequest: SidebarRequest?
     @State private var commandLogSelection: UUID?
     @AppStorage(PreferenceKey.sidebarDates.rawValue) private var sidebarDatesData = PreferenceDefaults.sidebarDates
     @State private var sidebarDatesCache = DecodedPreference { SidebarDates.decode($0 ?? Data()) }
@@ -48,7 +49,7 @@ struct WorkspaceScreen: View {
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             ProjectSidebarView(folders: Binding(get: { decodedFolders }, set: persistFolders),
-                               selection: $selectionFolderURL, onError: { error = $0 })
+                               selection: $selectionFolderURL, onError: { error = $0 }, request: $sidebarRequest)
             .frame(width: Self.sidebarWidth)
             .navigationSplitViewColumnWidth(min: Self.sidebarWidth, ideal: Self.sidebarWidth, max: Self.sidebarWidth)
             .toolbar(removing: .title)
@@ -73,8 +74,18 @@ struct WorkspaceScreen: View {
                     )
                     .id(folder)
                 } else {
-                    Text("No Folder Selection")
-                        .foregroundColor(.secondary)
+                    ContentUnavailableView {
+                        Label("No Repository Selected", systemImage: "folder")
+                    } description: {
+                        Text(decodedFolders.isEmpty
+                             ? LocalizedStringKey("Add a Git repository or a folder containing multiple repositories.")
+                             : "Select a repository in the sidebar.")
+                    } actions: {
+                        Button("Open Repository") { sidebarRequest = SidebarRequest(kind: .open) }
+                            .accessibilityIdentifier("emptyStateOpenRepository")
+                        Button("Clone Remote Repository") { sidebarRequest = SidebarRequest(kind: .clone) }
+                            .accessibilityIdentifier("emptyStateCloneRepository")
+                    }
                 }
             }
             .background(WorkspaceColumnConfiguration(historyWidth: Self.historyColumnWidth, sidebarWidth: Self.sidebarWidth))
@@ -97,7 +108,7 @@ struct WorkspaceScreen: View {
                                 folderIsRefresh = true
                             },
                             onStash: {
-                                self.selectionLog = nil
+                                // Stay on the changes view so the clean working tree is visible after stashing.
                                 folderIsRefresh = true
                             }
                         )
@@ -105,8 +116,11 @@ struct WorkspaceScreen: View {
                     case .committed(let commit):
                         CommitDetailStackView(commit: commit, folder: selectionFolder)
                     case nil:
-                        Text("No Selection")
-                            .foregroundColor(.secondary)
+                        ContentUnavailableView {
+                            Label("Select a Commit", systemImage: "point.3.connected.trianglepath.dotted")
+                        } description: {
+                            Text("Choose a commit or the working changes in the history list to see its details.")
+                        }
                     }
                 }
             }

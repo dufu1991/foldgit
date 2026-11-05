@@ -170,13 +170,13 @@ struct CompareRevisionsView: View {
                         CompareRevisionContentView(
                             baseRevision: baseRef.revision,
                             compareRevision: compareRef.revision,
-                            directoryURL: folder.url
+                            directoryURL: folder.url,
+                            reloadID: diffRefreshID
                         )
                         .navigationDestination(for: String.self) { commitHash in
                             CommitDetailView(commitHash: commitHash, folder: folder)
                         }
                     }
-                    .id(diffRefreshID)
                 } else {
                     CompareNoSelectionView(needsBaseSelection: baseRef == nil)
                 }
@@ -349,6 +349,8 @@ private struct CompareRevisionContentView: View {
     var baseRevision: String
     var compareRevision: String
     var directoryURL: URL
+    /// Changes after a fetch; the commits and diff reload in place so scrolling and navigation survive.
+    var reloadID: UUID
 
     @State private var tab = 0
     @State private var commits: [Commit] = []
@@ -379,7 +381,9 @@ private struct CompareRevisionContentView: View {
                 CommitDiffView(
                     selectionLogID: baseRevision,
                     subSelectionLogID: compareRevision,
-                    showsComparisonControls: false
+                    showsComparisonControls: false,
+                    ordersByHistory: false,
+                    reloadID: reloadID
                 )
                 .environment(\.folder, directoryURL)
             }
@@ -388,7 +392,7 @@ private struct CompareRevisionContentView: View {
             DiffTabView(tab: $tab)
                 .padding()
         }
-        .task(id: [baseRevision, compareRevision]) {
+        .task(id: CompareReloadKey(base: baseRevision, compare: compareRevision, reloadID: reloadID)) {
             do {
                 let updatedCommits = try await GitRuntime.run(
                     GitLog(
@@ -408,4 +412,10 @@ private struct CompareRevisionContentView: View {
         }
         .errorSheet($error, operation: "Compare Revisions")
     }
+}
+
+private struct CompareReloadKey: Hashable {
+    var base: String
+    var compare: String
+    var reloadID: UUID
 }

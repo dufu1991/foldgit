@@ -7,6 +7,21 @@ import XCTest
 
 @MainActor
 struct SettingsResetTests {
+    @Test func repositoryBranchDisplayDefaultsOffPersistsAndResets() throws {
+        try withDefaults { defaults, name in
+            let preference = AppStorage(wrappedValue: PreferenceDefaults.showRepositoryBranch,
+                                        PreferenceKey.showRepositoryBranch.rawValue, store: defaults)
+            #expect(!preference.wrappedValue)
+            preference.wrappedValue = true
+            #expect(UserDefaults(suiteName: name)!.bool(forKey: PreferenceKey.showRepositoryBranch.rawValue))
+            #expect(SettingsReset.preferenceKeys.contains(.showRepositoryBranch))
+            try SettingsReset.restore(in: defaults) {}
+            #expect(defaults.object(forKey: PreferenceKey.showRepositoryBranch.rawValue) == nil)
+            #expect(!AppStorage(wrappedValue: PreferenceDefaults.showRepositoryBranch,
+                                PreferenceKey.showRepositoryBranch.rawValue, store: defaults).wrappedValue)
+        }
+    }
+
     private func withDefaults(_ body: (UserDefaults, String) throws -> Void) rethrows {
         let name = "FoldGit.SettingsResetTests.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: name)!
@@ -159,7 +174,9 @@ final class RestoreDefaultsPresentationTests: XCTestCase {
             view.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
             let size = view.fittingSize
             XCTAssertEqual(size.width, 600, accuracy: 1)
-            XCTAssertEqual(size.height, 620, accuracy: 1)
+            // The sheet must fit inside the shortest Settings window, below its toolbar.
+            XCTAssertLessThanOrEqual(size.height, SettingsLayout.minimumSize.height - 60)
+            XCTAssertGreaterThanOrEqual(size.height, 300)
             let window = NSWindow(contentRect: NSRect(origin: .zero, size: size), styleMask: [.borderless], backing: .buffered, defer: false)
             window.isReleasedWhenClosed = false
             window.contentView = view

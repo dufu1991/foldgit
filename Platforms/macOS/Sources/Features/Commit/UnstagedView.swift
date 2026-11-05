@@ -110,20 +110,11 @@ struct UnstagedView: View {
 
     private func untrackedFileRow(_ file: String, treeDepth: Int?, imageExpansion: Binding<Bool>? = nil) -> some View {
         HStack {
-            Button {
-                onSelectUntrackedFile?(file)
-            } label: {
-                Image(systemName: "plus")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(.secondary)
-                    .frame(width: 22, height: 22)
-                    .contentShape(Rectangle())
+            if let onSelectUntrackedFile {
+                StageActionButton(systemImage: "plus", help: String(localized: "Stage This File")) {
+                    onSelectUntrackedFile(file)
+                }
             }
-            .buttonStyle(.plain)
-            .controlSize(.small)
-            .help("Stage This File")
-            .accessibilityLabel(Text("Stage This File"))
-            .disabled(onSelectUntrackedFile == nil)
             if let imageExpansion {
                 Button {
                     imageExpansion.wrappedValue.toggle()
@@ -144,6 +135,7 @@ struct UnstagedView: View {
             OpenFileButton(filePath: file)
         }
         .padding(.leading, CGFloat(treeDepth ?? 0) * 16)
+        .changeFileRow(path: file)
         .stageLandingRow(path: file)
     }
 

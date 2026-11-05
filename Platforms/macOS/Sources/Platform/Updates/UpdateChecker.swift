@@ -29,11 +29,9 @@ final class UpdateChecker: NSObject, ObservableObject {
         #if !DEBUG
         guard ProcessInfo.processInfo.environment["FOLDGIT_TESTING"] != "1", !hasStarted else { return }
         hasStarted = true
-        controller.startUpdater()
+        // Set before starting, so Sparkle's own schedule decides whether a check is due now.
         controller.updater.automaticallyChecksForUpdates = Self.checksAtLaunch()
-        if controller.updater.automaticallyChecksForUpdates {
-            controller.updater.checkForUpdatesInBackground()
-        }
+        controller.startUpdater()
         #endif
     }
 

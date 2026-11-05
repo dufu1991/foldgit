@@ -6,6 +6,9 @@ struct RepositoryFileTreeView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var searchText = ""
     @State private var scrolledRevealRequest: UUID?
+    /// Folders can be selected for keyboard navigation; only files drive the detail pane.
+    @State private var selectedDirectory: String?
+    @State private var openError: Error?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -26,26 +29,30 @@ struct RepositoryFileTreeView: View {
             .padding(.vertical, 8)
             .background(.bar)
             ScrollViewReader { proxy in
-                List(selection: Binding(get: { store.selectedPath }, set: { path in
-                    if let path, store.rows.contains(where: { $0.path == path && !$0.isDirectory }) { store.selectFile(path) }
-                })) {
+                List(selection: treeSelection) {
                     ForEach(store.rows) { row in
                         if row.isDirectory {
-                            Button {
-                                store.toggleDirectory(row.path)
-                            } label: {
-                                HStack(spacing: 6) {
+                            HStack(spacing: 6) {
+                                Button {
+                                    store.toggleDirectory(row.path)
+                                } label: {
                                     Image(systemName: store.isDirectoryCollapsed(row.path) ? "chevron.right" : "chevron.down")
                                         .font(.system(size: 9, weight: .semibold)).frame(width: 12)
-                                    Label { Text(verbatim: row.name) } icon: {
-                                        Image(systemName: "folder").foregroundStyle(.secondary)
-                                    }
+                                        .contentShape(Rectangle())
                                 }
-                                .padding(.leading, CGFloat(row.depth) * 16)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .contentShape(Rectangle())
+                                .buttonStyle(.plain)
+                                .help(store.isDirectoryCollapsed(row.path) ? "Expand" : "Collapse")
+                                .accessibilityLabel(store.isDirectoryCollapsed(row.path) ? Text("Expand") : Text("Collapse"))
+                                Label { Text(verbatim: row.name) } icon: {
+                                    Image(systemName: "folder").foregroundStyle(.secondary)
+                                }
                             }
-                            .buttonStyle(.plain)
+                            .padding(.leading, CGFloat(row.depth) * 16)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
+                            .tag(row.id)
+                            .help(row.path)
+                            .accessibilityElement(children: .combine)
                             .accessibilityIdentifier("historyDirectory-" + row.path)
                             .accessibilityValue(store.isDirectoryCollapsed(row.path) ? Text("Collapsed") : Text("Expanded"))
                         } else {
@@ -58,12 +65,32 @@ struct RepositoryFileTreeView: View {
                             .padding(.leading, CGFloat(row.depth) * 16 + 18)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .contentShape(Rectangle())
-                            .tag(row.path)
+                            .tag(row.id)
                             .help(row.path)
                             .accessibilityIdentifier("historyFile-" + row.path)
                         }
                     }
                 }
+                .contextMenu(forSelectionType: ChangeFileTree.Row.ID.self) { ids in
+                    if ids.count == 1, let row = row(for: ids.first) {
+                        if !row.isDirectory {
+                            Button("Open") { open(row) }
+                            Divider()
+                        }
+                        Button("Show in Finder") { revealInFinder(row) }
+                        Divider()
+                        Button("Copy Path") { copy(row.path) }
+                        Button("Copy Full Path") { if let url = url(for: row) { copy(url.path) } }
+                    }
+                } primaryAction: { ids in
+                    // Double-click or Return: folders expand or collapse, files open in their default app.
+                    guard ids.count == 1, let row = row(for: ids.first) else { return }
+                    if row.isDirectory { store.toggleDirectory(row.path) } else { open(row) }
+                }
+                .onKeyPress(keys: [.leftArrow, .rightArrow]) { press in
+                    handleArrow(press.key == .rightArrow) ? .handled : .ignored
+                }
+                .accessibilityIdentifier("repositoryFileTree")
                 .overlay {
                     if store.rows.isEmpty {
                         if store.isLoadingFiles { ProgressView().controlSize(.small) }
@@ -88,10 +115,77 @@ struct RepositoryFileTreeView: View {
             .frame(height: 40)
             .background(.bar)
         }
+        .errorSheet($openError, operation: "Open File")
         .onAppear { searchText = store.searchText }
         .onChange(of: store.searchText) { _, value in
             if searchText.trimmingCharacters(in: .whitespacesAndNewlines) != value { searchText = value }
         }
+    }
+
+    private var treeSelection: Binding<ChangeFileTree.Row.ID?> {
+        Binding {
+            if let selectedDirectory, store.rows.contains(where: { $0.id == .directory(selectedDirectory) }) {
+                return .directory(selectedDirectory)
+            }
+            guard let path = store.selectedPath else { return nil }
+            return store.rows.first { !$0.isDirectory && $0.path == path }?.id
+        } set: { id in
+            guard let row = row(for: id) else { return }
+            if row.isDirectory {
+                selectedDirectory = row.path
+            } else {
+                selectedDirectory = nil
+                store.selectFile(row.path)
+            }
+        }
+    }
+
+    private func row(for id: ChangeFileTree.Row.ID?) -> ChangeFileTree.Row? {
+        guard let id else { return nil }
+        return store.rows.first { $0.id == id }
+    }
+
+    /// Right expands a folder or steps into it; Left collapses a folder or steps out to the parent.
+    private func handleArrow(_ isRight: Bool) -> Bool {
+        guard let current = row(for: treeSelection.wrappedValue),
+              let offset = store.rows.firstIndex(where: { $0.id == current.id }) else { return false }
+        let collapsed = current.isDirectory && store.isDirectoryCollapsed(current.path)
+        if isRight {
+            guard current.isDirectory else { return false }
+            if collapsed {
+                store.toggleDirectory(current.path)
+            } else if store.rows.indices.contains(offset + 1), store.rows[offset + 1].depth > current.depth {
+                treeSelection.wrappedValue = store.rows[offset + 1].id
+            }
+            return true
+        }
+        if current.isDirectory && !collapsed {
+            store.toggleDirectory(current.path)
+            return true
+        }
+        let parent = (current.path as NSString).deletingLastPathComponent
+        guard !parent.isEmpty, store.rows.contains(where: { $0.id == .directory(parent) }) else { return false }
+        treeSelection.wrappedValue = .directory(parent)
+        return true
+    }
+
+    private func url(for row: ChangeFileTree.Row) -> URL? {
+        store.directory?.appending(path: row.path, directoryHint: row.isDirectory ? .isDirectory : .notDirectory)
+    }
+
+    private func open(_ row: ChangeFileTree.Row) {
+        guard let url = url(for: row) else { return }
+        openError = FileOpening.open(url, using: NSWorkspace.shared.open)
+    }
+
+    private func revealInFinder(_ row: ChangeFileTree.Row) {
+        guard let url = url(for: row) else { return }
+        NSWorkspace.shared.activateFileViewerSelecting([url])
+    }
+
+    private func copy(_ text: String) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
     }
 
     private func scrollToRevealedFile(using proxy: ScrollViewProxy) {
@@ -170,6 +264,11 @@ struct FileHistoryDetailView: View {
 private struct FileHistoryRecordsView: View {
     @Bindable var store: FileHistoryStore
 
+    static func copy(_ text: String) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+    }
+
     var body: some View {
         Group {
             if store.selectedPath != nil {
@@ -185,6 +284,10 @@ private struct FileHistoryRecordsView: View {
                                     .accessibilityElement(children: .combine)
                                     .tag(entry.id)
                                     .accessibilityIdentifier("fileHistoryCommit-" + entry.id)
+                                    .contextMenu {
+                                        Button("Copy Commit Hash") { Self.copy(entry.commit.hash) }
+                                        Button("Copy Commit Message") { Self.copy(entry.commit.rawBody) }
+                                    }
                             }
                             if store.canLoadMore {
                                 Button("Load More", action: store.loadMore)
@@ -214,6 +317,7 @@ private struct FileHistoryRecordsView: View {
 }
 
 private struct FileHistoryPatchView: View {
+    @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = AppPreferences.defaultDiffFileExpansion
     var store: FileHistoryStore
     @State private var files: [ExpandableModel<FileDiff>] = []
 
@@ -258,7 +362,11 @@ private struct FileHistoryPatchView: View {
             }
         }
         .onChange(of: store.diff, initial: true) { _, patch in
-            files = patch?.fileDiffs.map { ExpandableModel(isExpanded: true, model: $0) } ?? []
+            // Follows the expansion preference like commit and stash diffs; large or generated files start collapsed.
+            files = patch.map {
+                DiffLoading.expandable($0.fileDiffs, rawLineCount: DiffLoading.lineCount($0.raw),
+                                       prefersExpanded: fileExpansion.isExpanded)
+            } ?? []
         }
     }
 }

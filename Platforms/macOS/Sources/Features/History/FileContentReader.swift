@@ -1,5 +1,6 @@
 import Darwin
 import Foundation
+import FoldGitCore
 
 struct FileContentMetadata: Equatable, Sendable {
     let size: Int64
@@ -24,7 +25,7 @@ struct FileContentMetadata: Equatable, Sendable {
 }
 
 enum FileContentRestriction: Equatable, Sendable {
-    case tooLarge, tooManyLines, lineTooLong, binary, encoding, notRegular
+    case tooLarge, imageTooLarge, tooManyLines, lineTooLong, binary, encoding, notRegular
 }
 
 struct FileContentLayout: Sendable {
@@ -36,6 +37,7 @@ struct FileContentLayout: Sendable {
 struct FileContentSnapshot: Sendable {
     enum Content: Sendable {
         case text(String, plain: Bool, layout: FileContentLayout = .init(lineCount: 1, maximumColumns: 0))
+        case image(DiffImage)
         case requiresLoad
         case unavailable(FileContentRestriction)
     }
@@ -63,10 +65,12 @@ enum FileContentReader {
         guard initial.isRegularFile else {
             return FileContentSnapshot(metadata: initial, content: .unavailable(.notRegular))
         }
-        guard initial.size <= maximumBytes else {
-            return FileContentSnapshot(metadata: initial, content: .unavailable(.tooLarge))
+        let isImage = DiffImage.supports(path: url.path)
+        let maximumReadBytes = isImage ? GitRuntime.outputLimit : maximumBytes
+        guard initial.size <= maximumReadBytes else {
+            return FileContentSnapshot(metadata: initial, content: .unavailable(isImage ? .imageTooLarge : .tooLarge))
         }
-        guard initial.size <= automaticLimit || allowLarge else {
+        guard isImage || initial.size <= automaticLimit || allowLarge else {
             return FileContentSnapshot(metadata: initial, content: .requiresLoad)
         }
 
@@ -83,7 +87,7 @@ enum FileContentReader {
         guard metadata.isRegularFile else {
             return FileContentSnapshot(metadata: metadata, content: .unavailable(.notRegular))
         }
-        let limit = allowLarge ? maximumBytes : automaticLimit
+        let limit = isImage || allowLarge ? maximumReadBytes : automaticLimit
         var data = Data()
         while true {
             try Task.checkCancellation()
@@ -94,7 +98,8 @@ enum FileContentReader {
                 guard fstat(descriptor, &info) == 0 else { throw posixError() }
                 let current = FileContentMetadata(info)
                 return FileContentSnapshot(metadata: current, content:
-                    allowLarge || current.size > maximumBytes ? .unavailable(.tooLarge) : .requiresLoad)
+                    isImage || allowLarge || current.size > maximumReadBytes
+                        ? .unavailable(isImage ? .imageTooLarge : .tooLarge) : .requiresLoad)
             }
         }
         try Task.checkCancellation()
@@ -102,7 +107,12 @@ enum FileContentReader {
         guard FileContentMetadata(info) == metadata else {
             throw CocoaError(.fileReadUnknown)
         }
-        let content = try decode(data, plain: data.count > automaticLimit)
+        let content: FileContentSnapshot.Content
+        if isImage {
+            content = .image(try DiffImage.decode(data))
+        } else {
+            content = try decode(data, plain: data.count > automaticLimit)
+        }
         return FileContentSnapshot(metadata: metadata, content: content)
     }
 

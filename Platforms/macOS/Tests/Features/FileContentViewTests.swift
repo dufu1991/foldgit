@@ -7,6 +7,50 @@ import Testing
 
 @MainActor
 struct FileContentViewTests {
+    @Test(arguments: ["website/assets/og.png", "website/assets/screenshots/main-en-dark@2x.webp"])
+    func fileContentRendersTheSamePNGAndWebPFormatsAsImageComparison(path: String) async throws {
+        let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .appendingPathComponent("../../../../", isDirectory: true).standardizedFileURL
+        let store = FileContentStore()
+        defer { store.hide() }
+        store.show(directory: directory, path: path)
+        await store.readTask?.value
+        guard case .image(let image) = store.state else {
+            Issue.record("File content must preview the repository image instead of rejecting its text encoding")
+            return
+        }
+        #expect(image.pixelWidth > 0)
+        #expect(image.pixelHeight > 0)
+        let metadata = try #require(store.metadata)
+        #expect(Int64(image.byteCount) == metadata.size)
+        for scheme in [ColorScheme.light, .dark] {
+            let host = NSHostingView(rootView: FileContentView(store: store, path: path, findRequest: nil)
+                .environment(\.colorScheme, scheme))
+            let window = makeWindow(host)
+            defer { window.close() }
+            try await Task.sleep(for: .milliseconds(150))
+            host.layoutSubtreeIfNeeded()
+            #expect(!descendants(host).contains { $0 is NSTextView })
+            let bitmap = try #require(host.bitmapImageRepForCachingDisplay(in: host.bounds))
+            host.cacheDisplay(in: host.bounds, to: bitmap)
+            var coloredPixels = 0
+            for y in stride(from: bitmap.pixelsHigh / 4, to: bitmap.pixelsHigh * 3 / 4, by: 8) {
+                for x in stride(from: bitmap.pixelsWide / 4, to: bitmap.pixelsWide * 3 / 4, by: 8) {
+                    guard let color = bitmap.colorAt(x: x, y: y)?.usingColorSpace(.deviceRGB) else { continue }
+                    if max(color.redComponent, color.greenComponent, color.blueComponent)
+                        - min(color.redComponent, color.greenComponent, color.blueComponent) > 0.15 { coloredPixels += 1 }
+                }
+            }
+            #expect(coloredPixels > 20)
+            if let output = ProcessInfo.processInfo.environment["FILE_HISTORY_SNAPSHOT_DIRECTORY"] {
+                let target = URL(fileURLWithPath: output)
+                try FileManager.default.createDirectory(at: target, withIntermediateDirectories: true)
+                let png = try #require(bitmap.representation(using: .png, properties: [:]))
+                try png.write(to: target.appendingPathComponent("file-image-\(image.format)-\(scheme).png"))
+            }
+        }
+    }
+
     @Test func detailSwitchesInlineWithoutOpeningASheetOrResettingTheMode() async throws {
         let repository = try await TestRepository.create(commits: 1)
         defer { repository.remove() }

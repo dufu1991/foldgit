@@ -216,6 +216,43 @@ final class CommitGraphTests: XCTestCase {
     }
 
     @MainActor
+    func testRowsGrowOnlyWhenTitlesWrap() {
+        let width: CGFloat = 320
+        let height = { (title: String) -> CGFloat in
+            let rows = CommitGraph().positionedCommits([self.commit("abcdef1", title: title)])
+            let view = NSHostingView(rootView: CommitGraphContentView(
+                selectionLogID: .constant("abcdef1"), subSelectionLogID: .constant(nil),
+                logStore: HistoryStore(), showing: .constant(RepositoryPresentation()), isRefresh: .constant(false),
+                commits: rows, viewportWidth: width
+            ))
+            return view.fittingSize.height
+        }
+        let compact = height("fix: Refresh the demo")
+        let wrapped = height("ci: Generate platform and website resources during builds")
+        XCTAssertLessThan(compact, 52)
+        XCTAssertGreaterThan(wrapped, compact + 8)
+        XCTAssertLessThan(wrapped, 64)
+    }
+
+    @MainActor
+    func testSeveralBranchLanesFitANarrowPaneWithoutHorizontalOverflow() {
+        let parents = (0..<6).map { "branch-\($0)" }
+        let history = [commit("merge", parents: parents, title: "Merge several feature branches with a long commit title")]
+            + parents.map { commit($0, parents: ["root"], branches: ["feature/a-long-branch-name-that-should-truncate"]) }
+            + [commit("root")]
+        let rows = CommitGraph().positionedHistory(history, headHash: "merge", showsWorkingTree: true)
+        XCTAssertGreaterThanOrEqual(rows.map(\.columnCount).max() ?? 0, 6)
+        for width in [320.0, 520.0] {
+            let view = NSHostingView(rootView: CommitGraphContentView(
+                selectionLogID: .constant(nil), subSelectionLogID: .constant(nil),
+                logStore: HistoryStore(), showing: .constant(RepositoryPresentation()), isRefresh: .constant(false),
+                commits: rows, viewportWidth: width
+            ))
+            XCTAssertEqual(view.fittingSize.width, width, accuracy: 1)
+        }
+    }
+
+    @MainActor
     func testGraphRendersAtNarrowAndWideWidthsInBothAppearances() async throws {
         let rows = CommitGraph().positionedHistory(nestedMerges, headHash: nestedMerges.first?.hash, showsWorkingTree: true)
         for width in [320.0, 520.0] {

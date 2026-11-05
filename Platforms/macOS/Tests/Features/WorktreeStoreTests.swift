@@ -303,6 +303,83 @@ struct WorktreeCleanupFeatureTests {
 
 @MainActor
 struct WorktreeStoreTests {
+    @Test func ordinaryRepositoryBranchSubtitleRespectsSettingsAndWorktreeVisibility() async throws {
+        let repository = try await TestRepository.create()
+        defer { repository.remove() }
+        let store = WorktreeStore()
+        try await store.refresh(repository.url)
+        #expect(store.sidebarBranch(for: repository.url, showInformation: false, showRepositoryBranch: false) == nil)
+        #expect(store.sidebarBranch(for: repository.url, showInformation: false, showRepositoryBranch: true) == "main")
+        #expect(store.sidebarBranch(for: repository.url, showInformation: true, showRepositoryBranch: true) == nil)
+        try await repository.git(["checkout", "--detach"])
+        try await store.refresh(repository.url)
+        #expect(store.sidebarBranch(for: repository.url, showInformation: false, showRepositoryBranch: true) == String(localized: "Detached HEAD"))
+        try await repository.git(["checkout", "main"])
+        let linked = repository.url.appendingPathComponent("linked")
+        try await store.execute(.add(destination: linked, branch: .new(name: "feature", startPoint: "HEAD")), in: repository.url)
+        #expect(store.sidebarBranch(for: repository.url, showInformation: true, showRepositoryBranch: false) == "main")
+        #expect(store.sidebarBranch(for: linked, showInformation: true, showRepositoryBranch: false) == "feature")
+        #expect(store.sidebarBranch(for: linked, showInformation: false, showRepositoryBranch: true) == "feature")
+    }
+
+    @Test func ordinaryRepositoryBranchMonitorFollowsExternalCheckoutWithoutLoadingStatuses() async throws {
+        let repository = try await TestRepository.create()
+        defer { repository.remove() }
+        let store = WorktreeStore()
+        try await store.refresh(repository.url)
+        let monitor = Task { await store.monitorBranches([store.list(for: repository.url)], minimumInterval: .milliseconds(50)) }
+        defer { monitor.cancel() }
+        try await Task.sleep(for: .milliseconds(300))
+        try await repository.git(["checkout", "-b", "feature/sidebar"])
+        for _ in 0..<100 {
+            if store.worktree(at: repository.url)?.branch == "feature/sidebar" { break }
+            try await Task.sleep(for: .milliseconds(50))
+        }
+        #expect(store.sidebarBranch(for: repository.url, showInformation: false, showRepositoryBranch: true) == "feature/sidebar")
+        #expect(store.statuses.status(for: repository.url) == nil)
+    }
+
+    @Test func ordinaryRepositoryBranchSidebarFitsNarrowWindows() async throws {
+        let repository = try await TestRepository.create()
+        defer { repository.remove() }
+        try await repository.git(["checkout", "-b", "feature/ordinary-repository-branch-display"])
+        let store = WorktreeStore()
+        try await store.refresh(repository.url)
+        let suite = "FoldGit.RepositoryBranchRendering.\(UUID())"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let entry = WorkspaceEntry(url: repository.url)
+        var names = RepositoryDisplayNames()
+        names.setName("FoldGit", for: entry)
+        defaults.set(try JSONEncoder().encode(names), forKey: PreferenceKey.repositoryDisplayNames.rawValue)
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("foldgit-repository-branch-snapshots")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        for dark in [false, true] {
+            for (enabled, selected) in [(false, false), (true, false), (true, true)] {
+                defaults.set(enabled, forKey: PreferenceKey.showRepositoryBranch.rawValue)
+                let content = ProjectSidebarView(folders: .constant([entry]), selection: .constant(selected ? entry.url : nil), onError: { _ in })
+                    .environment(store).environment(\.appearsActive, false).defaultAppStorage(defaults)
+                    .frame(width: 220, height: 320).background(Color(nsColor: .windowBackgroundColor))
+                let view = NSHostingView(rootView: content)
+                view.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
+                let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 220, height: 320),
+                                      styleMask: [.borderless], backing: .buffered, defer: false)
+                window.isReleasedWhenClosed = false
+                window.contentView = view
+                window.orderBack(nil)
+                view.layoutSubtreeIfNeeded()
+                try await Task.sleep(for: .milliseconds(200))
+                window.displayIfNeeded()
+                #expect(view.fittingSize.width <= 220)
+                let image = try #require(view.bitmapImageRepForCachingDisplay(in: view.bounds))
+                view.cacheDisplay(in: view.bounds, to: image)
+                let png = try #require(image.representation(using: .png, properties: [:]))
+                try png.write(to: directory.appendingPathComponent("branch-\(selected ? "selected" : enabled ? "on" : "off")-\(dark ? "dark" : "light").png"))
+                window.close()
+            }
+        }
+    }
+
     @Test func discoveryFromLinkedDirectoryFindsFamilyAndBranchDestination() async throws {
         let repository = try await TestRepository.create()
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("FoldGit-worktree-store-\(UUID())")

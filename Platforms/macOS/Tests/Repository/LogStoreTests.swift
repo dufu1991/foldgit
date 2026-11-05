@@ -8,6 +8,29 @@ import Testing
 
 @MainActor
 struct HistoryStoreTests {
+    @Test func rangeSelectionUsesParentsAndKeepsComparisonSelectionSeparate() async throws {
+        let repository = try await TestRepository.create(commits: 5)
+        defer { repository.remove() }
+        let store = HistoryStore()
+        store.directory = repository.url
+        await store.refresh()
+        let commits = store.commits
+        store.select(commits[0].hash, extending: false, comparing: false)
+        store.select(commits[3].hash, extending: true, comparing: false)
+        #expect(store.selectedHashes == Set(commits.prefix(4).map(\.hash)))
+        #expect(store.squashSelectionError == nil)
+        store.select(commits[1].hash, extending: false, comparing: false)
+        store.select(commits[3].hash, extending: false, comparing: true)
+        #expect(store.selectedHashes == [commits[1].hash, commits[3].hash])
+        #expect(store.squashSelectionError != nil)
+        store.select(commits[1].hash, extending: false, comparing: true)
+        #expect(store.selectedHashes == [commits[3].hash])
+        #expect(store.selectionAnchor == commits[3].hash)
+        store.search("commit 2")
+        await store.searchTask?.value
+        #expect(store.squashSelectionError == "Clear the commit search before squashing commits.")
+    }
+
     @Test func openingCleanRepositorySelectsLatestCommit() async throws {
         let repository = try await TestRepository.create(commits: 3)
         defer { repository.remove() }

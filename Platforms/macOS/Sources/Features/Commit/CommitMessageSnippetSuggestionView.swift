@@ -6,14 +6,23 @@ struct CommitMessageSnippetSuggestionView: View {
     private var favorites: [CommitMessageSnippetEntry] {
         CommitMessageSnippetEntry.decode(data).filter(\.isFavorite)
     }
+    /// Inserts into the editor that owns this row only, so other windows keep their drafts.
+    var onSelect: (String) -> Void
 
     var body: some View {
         ScrollView(.horizontal) {
             LazyHStack {
                 ForEach(favorites) { snippet in
-                    Button(snippet.text) {
-                        NotificationCenter.default.post(name: .didSelectCommitMessageSnippetNotification, object: snippet.text)
+                    Button {
+                        onSelect(snippet.text)
+                    } label: {
+                        Text(verbatim: snippet.text.replacingOccurrences(of: "\n", with: " "))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                            .frame(maxWidth: 220)
                     }
+                    .help(snippet.text)
+                    .accessibilityLabel(Text(verbatim: snippet.text))
                 }
                 Button {
                     SettingsWindowController.show(tab: .snippets)
@@ -31,5 +40,5 @@ struct CommitMessageSnippetSuggestionView: View {
 }
 
 #Preview {
-    CommitMessageSnippetSuggestionView()
+    CommitMessageSnippetSuggestionView(onSelect: { _ in })
 }

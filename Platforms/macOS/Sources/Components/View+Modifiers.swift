@@ -19,50 +19,21 @@ extension View {
         showing: Binding<RepositoryPresentation>,
         bindingError: Binding<Error?>
     ) -> some View {
-        contextMenu{
-            Button("Checkout") {
-                Task {
-                    do {
-                        try await GitRuntime.run(GitCheckout(directory: folder, commitHash: commit.hash))
-                        isRefresh.wrappedValue = true
-                    } catch {
-                        bindingError.wrappedValue = OperationFailure("Checkout", error)
-                    }
-                }
-            }
-            Button(commit.revertMainline != nil
-                   ? String(localized: "Revert using mainline \(String(commit.parentHashes[0].prefix(7)))")
-                   : String(localized: "Revert")) {
-                Task {
-                    do {
-                        try await GitRuntime.run(GitRevert(directory: folder, parentNumber: commit.revertMainline, commit: commit.hash))
-                        isRefresh.wrappedValue = true
-                    } catch {
-                        bindingError.wrappedValue = OperationFailure("Revert", error)
-                    }
-                }
-            }
-            if commit == logStore.commits.first {
-                if let notCommitted = logStore.notCommitted {
-                    if notCommitted.diffCached.isEmpty {
-                        Button("Amend Commit with a New Message") {
-                            showing.wrappedValue.amendCommitAt = commit
-                        }
-                    }
-                } else {
-                    Button("Amend Commit with a New Message") {
-                        showing.wrappedValue.amendCommitAt = commit
-                    }
-                }
-            }
-            Button("New Tag") {
-                showing.wrappedValue.createNewTagAt = commit
-            }
+        contextMenu {
+            CommitContextMenu(folder: folder, commit: commit, logStore: logStore, isRefresh: isRefresh,
+                              showing: showing, bindingError: bindingError)
         }
     }
 
-    func tapGesture(logID: String, selectionLogID: Binding<String?>, subSelectionLogID: Binding<String?>) -> some View {
+    func tapGesture(logID: String, selectionLogID: Binding<String?>, subSelectionLogID: Binding<String?>, history: HistoryStore? = nil) -> some View {
         onTapGesture {
+            if let history {
+                history.select(logID, extending: NSEvent.modifierFlags.contains(.shift), comparing: NSEvent.modifierFlags.contains(.command))
+                let ordered = history.logs().filter { history.selectedHashes.contains($0.id) }
+                selectionLogID.wrappedValue = ordered.first?.id
+                subSelectionLogID.wrappedValue = ordered.count > 1 ? ordered.last?.id : nil
+                return
+            }
             if NSEvent.modifierFlags.contains(.command) {
                 // Command-click adds, promotes, or clears a comparison selection.
                 if selectionLogID.wrappedValue != nil {
@@ -90,5 +61,55 @@ extension View {
                 subSelectionLogID.wrappedValue = nil
             }
         }
+    }
+}
+
+/// A view rather than plain menu content, so the items follow the commit-operations setting as it changes.
+private struct CommitContextMenu: View {
+    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
+    let folder: URL
+    let commit: Commit
+    let logStore: HistoryStore
+    @Binding var isRefresh: Bool
+    @Binding var showing: RepositoryPresentation
+    @Binding var bindingError: Error?
+
+    var body: some View {
+        Button("Checkout") { showing.commitOperation = .checkout(commit) }
+        Button("New Branch from Here") {
+            showing.createNewBranchFrom = Branch(name: commit.hash, isCurrent: false)
+        }
+        Button("New Tag") { showing.createNewTagAt = commit }
+        Divider()
+        Button("Copy Commit Hash") { copy(commit.hash) }
+        Button("Copy Commit Message") { copy(commit.rawBody) }
+        if !disableCommitOperations {
+            Divider()
+            Button("Cherry-Pick Commit") { showing.commitOperation = .cherryPick(commit) }
+            Button(commit.revertMainline != nil
+                   ? String(localized: "Revert using mainline \(String(commit.parentHashes[0].prefix(7)))")
+                   : String(localized: "Revert")) {
+                showing.commitOperation = .revert(commit)
+            }
+            Menu("Reset Current Branch to Here") {
+                Button("Soft") { showing.commitOperation = .reset(commit, .soft) }
+                Button("Mixed") { showing.commitOperation = .reset(commit, .mixed) }
+                Button("Hard") { showing.commitOperation = .reset(commit, .hard) }
+            }
+            // Amending always rewrites HEAD, so only the HEAD row offers it, and only without staged changes.
+            if commit.hash == logStore.snapshot?.headHash, logStore.notCommitted?.diffCached.isEmpty != false {
+                Button("Amend Commit with a New Message") { showing.amendCommitAt = commit }
+            }
+            if logStore.selectedHashes.contains(commit.hash), logStore.selectedHashes.count >= 2 {
+                Button("Squash Commits") { showing.squashCommits = true }
+                    .disabled(logStore.squashSelectionError != nil)
+                    .help(logStore.squashSelectionError.map { NSLocalizedString($0, comment: "Squash selection") } ?? "")
+            }
+        }
+    }
+
+    private func copy(_ text: String) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
     }
 }

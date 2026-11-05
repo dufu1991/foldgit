@@ -38,6 +38,10 @@ struct FileContentView: View {
                                           onHighlightFailure: { highlightingFailed = true })
                         .accessibilityIdentifier("fileContentText")
                 }
+            case .image(let image):
+                FileImagePreviewView(image: image)
+                    .id(path)
+                    .accessibilityIdentifier("fileContentImage")
             case .missing:
                 message("File No Longer Exists", description: "The selected file is no longer available in the working tree.") {
                     Button("Retry") { store.load() }
@@ -78,6 +82,7 @@ private extension FileContentRestriction {
     var description: LocalizedStringKey {
         switch self {
         case .tooLarge: "Files larger than 10 MiB must be opened externally."
+        case .imageTooLarge: "The image is too large to preview."
         case .tooManyLines: "Files with more than 100,000 lines must be opened externally."
         case .lineTooLong: "This file contains a line that is too long to preview safely. Open it externally."
         case .binary: "Binary files and images must be opened externally."

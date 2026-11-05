@@ -9,40 +9,22 @@ struct CommitLogView: View {
     @Binding var showing: RepositoryPresentation
     @Binding var isRefresh: Bool
     @Binding var error: Error?
-    @State private var selectionLogIDs = Set<String>()
+    private var selectionLogIDs: Set<String> { logStore.selectedHashes }
 
     var body: some View {
         ScrollViewReader { proxy in
-            List(logStore.logs(), selection: $selectionLogIDs) { log in
+            List(logStore.logs(), selection: Binding(get: { logStore.selectedHashes }, set: { if logStore.selectedHashes != $0 { logStore.selectedHashes = $0 } })) { log in
                 logsRow(log)
                     .id(log.id)
                     .task {
                         await logStore.logViewTask(log)
                     }
             }
-            .onChange(of: selectionLogIDs) { oldValue, newValue in
-                if newValue.count <= 1 {
-                    selectionLogID = newValue.first
-                    subSelectionLogID = nil
-                    syncSelection()
-                    return
-                }
-                if selectionLogID == nil {
-                    subSelectionLogID = nil
-                    syncSelection()
-                    return
-                }
-                if newValue.count == 2, let selectionLogID, newValue.contains(selectionLogID), let subSelectionLogID, newValue.contains(subSelectionLogID) {
-                    return
-                }
-                if newValue.count < 4 {
-                    if let added = newValue.first(where: { !oldValue.contains($0) }) {
-                        subSelectionLogID = added
-                        syncSelection()
-                    }
-                } else {
-                    syncSelection()
-                }
+            .onChange(of: selectionLogIDs) { _, newValue in
+                let ordered = logStore.logs().filter { newValue.contains($0.id) }
+                selectionLogID = ordered.first?.id
+                subSelectionLogID = ordered.count > 1 ? ordered.last?.id : nil
+                if newValue.count == 1 { logStore.selectionAnchor = newValue.first }
             }
             .onChange(of: selectionLogID ?? "") {
                 syncSelection()
@@ -62,7 +44,8 @@ struct CommitLogView: View {
     }
 
     fileprivate func syncSelection() {
-        var newValues =  Set<String>()
+        if subSelectionLogID != nil, logStore.selectedHashes.count > 2, logStore.selectedHashes.contains(selectionLogID ?? "") { return }
+        var newValues = Set<String>()
         if let selectionLogID {
             newValues.insert(selectionLogID)
         }
@@ -70,7 +53,7 @@ struct CommitLogView: View {
             newValues.insert(subSelectionLogID)
         }
         // Defer the write so it does not modify state during the current view update.
-        Task { selectionLogIDs = newValues }
+        Task { if logStore.selectedHashes != newValues { logStore.selectedHashes = newValues } }
     }
 
     fileprivate func logsRow(_ log: Log) -> some View {

@@ -10,6 +10,7 @@ struct FoldGitApp: App {
     init() {
         guard ProcessInfo.processInfo.environment["FOLDGIT_TESTING"] != "1" else { return }
         LegacyPreferencesMigration.migrate()
+        PreferenceDefaults.migrateCommitOperations()
         PreferenceDefaults.migrateWorkspaceGroups()
         PreferenceDefaults.migrateLegacyCommitMessageSnippets()
         PreferenceDefaults.migrateCommitMessageSnippetEntries()
@@ -28,12 +29,12 @@ struct FoldGitApp: App {
         .commands {
             AppMenuCommands()
             CommandGroup(replacing: .appInfo) {
-                Button("About") {
+                Button("About FoldGit") {
                     NSApp.orderFrontStandardAboutPanel(options: [.version: ""])
                 }
             }
             CommandGroup(replacing: .appSettings) {
-                Button("Settings…") { SettingsWindowController.show() }
+                Button("Settings") { SettingsWindowController.show() }
                     .keyboardShortcut(",", modifiers: .command)
                 Button("Check for Updates") { updateChecker.checkNow() }
                     .disabled(!updateChecker.canCheckForUpdates)

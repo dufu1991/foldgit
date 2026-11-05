@@ -271,3 +271,48 @@ final class ChangeFileTreePresentationTests: XCTestCase {
         }
     }
 }
+
+@MainActor
+struct ChangeInteractionTests {
+    @Test func dragPayloadOnlyMovesFilesBetweenPanesOfTheSameRepository() {
+        let directory = URL(fileURLWithPath: "/tmp/Repository")
+        let payload = ChangeDragPayload.encode(paths: ["a.txt", "文档/b c.md"], isStaged: false, directory: directory)
+        #expect(ChangeDragPayload.decode(payload, droppingInto: true, directory: directory) == ["a.txt", "文档/b c.md"])
+        #expect(ChangeDragPayload.decode(payload, droppingInto: false, directory: directory) == nil)
+        #expect(ChangeDragPayload.decode(payload, droppingInto: true, directory: URL(fileURLWithPath: "/tmp/Other")) == nil)
+        #expect(ChangeDragPayload.decode("plain text", droppingInto: true, directory: directory) == nil)
+    }
+
+    @Test func rowMenusActOnTheSelectionOnlyWhenTheClickedRowIsSelected() {
+        let context = ChangeRowContext(directory: URL(fileURLWithPath: "/tmp/Repository"), isStaged: false,
+                                       selection: ["b", "a"], select: { _ in })
+        #expect(context.targets(for: "a") == ["a", "b"])
+        #expect(context.targets(for: "c") == ["c"])
+    }
+
+    @Test func commitDraftsAreKeptPerRepositoryUntilCleared() {
+        let store = CommitDraftStore()
+        let first = URL(fileURLWithPath: "/tmp/FoldGit-Draft-\(UUID().uuidString)")
+        let second = URL(fileURLWithPath: "/tmp/FoldGit-Draft-\(UUID().uuidString)")
+        store.setMessage("feat: first", for: first)
+        store.binding(for: second).wrappedValue = "fix: second"
+        #expect(store.message(for: first) == "feat: first")
+        #expect(store.message(for: second) == "fix: second")
+        store.clear(for: first)
+        #expect(store.message(for: first).isEmpty)
+        #expect(store.message(for: second) == "fix: second")
+    }
+
+    @Test func worktreeCompletionHighlightsTheCurrentStep() {
+        #expect(WorktreeCompletionSteps.currentStep(for: .review) == .review)
+        #expect(WorktreeCompletionSteps.currentStep(for: .conflicts) == .merge)
+        #expect(WorktreeCompletionSteps.currentStep(for: .merged) == .cleanup)
+        #expect(WorktreeCompletionSteps.currentStep(for: .done) == nil)
+    }
+
+    @Test func discardConfirmationNamesTheFileCountAndTheTrash() {
+        let discard = PendingDiscard(tracked: ["a.txt"], untracked: ["new.txt", "other.txt"])
+        #expect(discard.count == 3)
+        #expect(discard.message.contains("2"))
+    }
+}

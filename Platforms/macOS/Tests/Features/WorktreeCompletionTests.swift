@@ -5,8 +5,19 @@ import SwiftUI
 import Testing
 @testable import FoldGit
 
+/// Keeps the developer's own preferences out of tests without writing to any defaults domain.
+@MainActor
+enum TestPreferences {
+    /// Never written, so every preference reads as its default.
+    static let isolated = UserDefaults(suiteName: "FoldGit.Tests.Isolated." + UUID().uuidString)!
+
+    static func isolateCommitOperations() { CommitOperations.defaults = isolated }
+}
+
 @MainActor
 struct WorktreeCompletionTests {
+    init() { TestPreferences.isolateCommitOperations() }
+
     private func feature(in repository: TestRepository) async throws -> URL {
         let source = repository.url.deletingLastPathComponent().appendingPathComponent(repository.url.lastPathComponent + "-feature")
         try await GitRuntime.run(GitWorktreeCommand(directory: repository.url,

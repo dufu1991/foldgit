@@ -2,6 +2,7 @@ import FoldGitCore
 import SwiftUI
 
 struct ProjectSidebarView: View {
+    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
     @AppStorage(PreferenceKey.repositoryDisplayNames.rawValue)
     private var displayNamesData = PreferenceDefaults.repositoryDisplayNames
     @AppStorage(PreferenceKey.sidebarSort.rawValue) private var sort = SidebarSort.manual
@@ -12,11 +13,17 @@ struct ProjectSidebarView: View {
     @AppStorage(PreferenceKey.repositoryWorktreeVisibility.rawValue)
     private var worktreePreferencesData = PreferenceDefaults.repositoryWorktreeVisibility
     @AppStorage(PreferenceKey.showWorktreeStatus.rawValue) private var showWorktreeStatus = PreferenceDefaults.showWorktreeStatus
+    @AppStorage(PreferenceKey.showRepositoryBranch.rawValue)
+    private var showRepositoryBranch = PreferenceDefaults.showRepositoryBranch
     @Binding var folders: [WorkspaceEntry]
     @Binding var selection: URL?
     let onError: (Error) -> Void
+    /// Lets the window's empty state ask the sidebar to add or clone a repository.
+    var request: Binding<SidebarRequest?> = .constant(nil)
     @Environment(\.appearsActive) private var appearsActive
+    @Environment(\.undoManager) private var undoManager
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.legibilityWeight) private var legibilityWeight
     @Environment(WorktreeStore.self) private var worktrees
     @State private var finishingWorktree: WorktreeSheetTarget?
     @State private var creatingWorktree: WorktreeSheetTarget?
@@ -34,6 +41,8 @@ struct ProjectSidebarView: View {
     @State private var selectedRepositories: Set<URL> = []
     @State private var modificationDates: [String: Date] = [:]
     @State private var changedRepositories: Set<String> = []
+    @State private var missingRepositories: Set<URL> = []
+    @State private var pendingRemoval: [WorkspaceEntry] = []
     @State private var displayNamesCache = DecodedPreference { RepositoryDisplayNames.decode($0 ?? Data()) }
     @State private var datesCache = DecodedPreference { SidebarDates.decode($0 ?? Data()) }
     @State private var worktreePreferencesCache = DecodedPreference { RepositoryWorktreePreferences.decode($0 ?? Data()) }
@@ -147,7 +156,35 @@ struct ProjectSidebarView: View {
             guard refreshEnabled && showWorktreeStatus else { return }
             await worktrees.monitorStatuses(statusFamilies)
         }
+        .task(id: WorktreeStatusMonitorID(paths: branchFamilies.flatMap { $0.map(\.url.path) },
+                                          enabled: refreshEnabled && showRepositoryBranch)) {
+            guard refreshEnabled && showRepositoryBranch else { return }
+            await worktrees.monitorBranches(branchFamilies)
+        }
         .onChange(of: sort) { ascending = sort == .name || sort == .manual }
+        .onChange(of: request.wrappedValue) { _, value in
+            guard let value else { return }
+            request.wrappedValue = nil
+            switch value.kind {
+            case .open: chooseDirectory()
+            case .clone: chooseCloneDirectory()
+            }
+        }
+        // File checks run when the list or window activity changes, never while rendering rows.
+        .task(id: WorktreeRefreshID(paths: folders.flatMap(\.repositories).map(\.identity), enabled: refreshEnabled)) {
+            refreshMissingRepositories()
+        }
+        .confirmationDialog(removalTitle, isPresented: Binding(get: { !pendingRemoval.isEmpty },
+                                                               set: { if !$0 { pendingRemoval = [] } }),
+                            titleVisibility: .visible) {
+            Button("Remove from Sidebar", role: .destructive) {
+                removeFromSidebar(pendingRemoval)
+                pendingRemoval = []
+            }
+            Button("Cancel", role: .cancel) { pendingRemoval = [] }
+        } message: {
+            Text("The folders stay on disk. You can undo this with Edit > Undo.")
+        }
         .task(id: ModificationRefreshID(paths: folders.flatMap(\.repositories).map(\.identity),
                                        enabled: appearsActive && sort == .recentlyModified)) {
             guard appearsActive && sort == .recentlyModified else { return }
@@ -188,6 +225,16 @@ struct ProjectSidebarView: View {
         await worktrees.statuses.refresh(statusFamilies)
     }
 
+    private var branchFamilies: [[GitWorktree]] {
+        var seen: Set<URL> = []
+        return folders.flatMap(\.repositories).compactMap { repository in
+            guard !showsWorktreeInformation(for: repository.url) else { return nil }
+            let trees = worktrees.list(for: repository.url)
+            guard let first = trees.first, seen.insert(first.id).inserted else { return nil }
+            return trees
+        }
+    }
+
     private var sidebarContent: some View {
         // Rows share one projection per update instead of rebuilding it for each repository.
         let context = SidebarRowContext(organization: organization, saved: folders.flatMap(\.repositories))
@@ -206,6 +253,7 @@ struct ProjectSidebarView: View {
             .moveDisabled(!context.organization.canMove)
         }
         .listStyle(.sidebar)
+        .onDeleteCommand { requestRemoval(actionRepositories()) }
         .scrollEdgeEffectHidden(true, for: .top)
         .safeAreaInset(edge: .top, spacing: 0) {
             header
@@ -316,14 +364,18 @@ struct ProjectSidebarView: View {
                         isInfrequentExpanded.wrappedValue.toggle()
                     } label: {
                         HStack {
-                            Label("Inactive", systemImage: "archivebox")
+                            Label {
+                                Text("Inactive")
+                            } icon: {
+                                Image(systemName: "archivebox").foregroundStyle(.tint)
+                            }
+                            .labelStyle(SidebarEntryLabelStyle())
                             Spacer(minLength: 4)
                         }
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(.secondary)
-                    .immediateHelp(disclosureHelp(String(localized: "Inactive"), isExpanded: isInfrequentExpanded.wrappedValue))
                     .accessibilityLabel(Text("Inactive"))
                     .accessibilityValue(isInfrequentExpanded.wrappedValue ? Text("Expanded") : Text("Collapsed"))
                     .accessibilityIdentifier("sidebarInactiveDisclosure-" + folder.identity.absoluteString)
@@ -334,13 +386,17 @@ struct ProjectSidebarView: View {
                 isExpanded.wrappedValue.toggle()
             } label: {
                 HStack {
-                    Label(folder.displayName, systemImage: folder.symbol)
+                    Label {
+                        Text(folder.displayName)
+                    } icon: {
+                        Image(systemName: folder.symbol).foregroundStyle(.tint)
+                    }
+                    .labelStyle(SidebarEntryLabelStyle())
                     Spacer(minLength: 4)
                 }
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .immediateHelp(disclosureHelp(folder.displayName, isExpanded: isExpanded.wrappedValue))
             .accessibilityLabel(Text(verbatim: folder.displayName))
             .accessibilityValue(isExpanded.wrappedValue ? Text("Expanded") : Text("Collapsed"))
             .accessibilityIdentifier("sidebarGroupDisclosure-" + folder.identity.absoluteString)
@@ -353,15 +409,12 @@ struct ProjectSidebarView: View {
                 }
                 Divider()
                 Button("Dissolve Group", systemImage: "folder.badge.minus") {
-                    folders = WorkspaceGroups.dissolvingGroup(folder.identity, in: folders)
+                    updateFoldersUndoably(WorkspaceGroups.dissolvingGroup(folder.identity, in: folders),
+                                          actionName: String(localized: "Dissolve Group"))
                 }
                 .help("Repositories remain in the sidebar and their folders stay unchanged.")
             }
         }
-    }
-
-    private func disclosureHelp(_ name: String, isExpanded: Bool) -> String {
-        name + "\n" + (isExpanded ? String(localized: "Collapse Group") : String(localized: "Expand Group"))
     }
 
     private func moveFolders(from source: IndexSet, to destination: Int) {
@@ -439,23 +492,46 @@ struct ProjectSidebarView: View {
         let showWorktreeInformation = showsWorktreeInformation(for: folder.url)
         let tree = worktrees.worktree(at: folder.url)
         let isLinked = tree.map { !$0.isMain && !$0.isBare } == true
+        let isSelected = selectedRepositories.contains(folder.url)
         let isSaved = context.savedIdentities.contains(folder.identity)
         let autoFetch = AutoFetchScheduler.shared
         let interval = autoFetch.interval(for: folder)
         let fetchError = autoFetch.errors[AutoFetchScheduler.key(for: folder.url)]
         return HStack {
             Label {
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: 3) {
                     Text(displayNames.displayName(for: folder))
+                        .fontWeight(isSelected ? .semibold : .regular)
                         .lineLimit(1).truncationMode(.middle)
                         .foregroundStyle(isInfrequent ? .secondary : .primary)
-                    if showWorktreeInformation, let tree, worktrees.list(for: folder.url).count > 1 {
-                        Text(tree.branch ?? String(localized: "Detached HEAD"))
-                            .font(.caption).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
+                        .help(displayNames.displayName(for: folder) + "\n" + folder.url.path)
+                    if let branch = worktrees.sidebarBranch(for: folder.url, showInformation: showWorktreeInformation,
+                                                            showRepositoryBranch: showRepositoryBranch) {
+                        HStack(spacing: 4) {
+                            if !showWorktreeInformation {
+                                Image.gitBranch
+                                    .font(.system(size: 10, weight: .regular))
+                                    .frame(width: 12)
+                                    .accessibilityHidden(true)
+                            }
+                            Text(verbatim: branch)
+                                .font(.system(size: 11, weight: .regular))
+                                .fontWeight(.regular)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                        }
+                        // Keep the user's text preference without the sidebar's selected-row emphasis.
+                        .environment(\.legibilityWeight, legibilityWeight)
+                        .foregroundStyle(isSelected ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
+                        .opacity(isSelected ? 0.85 : 1)
+                        .help(branch)
                     }
                 }
+                .padding(.vertical, 1)
             } icon: {
-                let iconStyle = selectedRepositories.contains(folder.url) ? AnyShapeStyle(.primary)
+                let iconStyle = isSelected ? AnyShapeStyle(.primary)
                     : isLinked ? AnyShapeStyle(.secondary)
                     : AnyShapeStyle(folder.repositoryIconColor.opacity(isInfrequent ? 0.6 : 1))
                 if showWorktreeInformation && showWorktreeStatus {
@@ -468,6 +544,7 @@ struct ProjectSidebarView: View {
                         .foregroundStyle(iconStyle)
                 }
             }
+            .labelStyle(SidebarEntryLabelStyle())
             Spacer(minLength: 4)
             if showWorktreeInformation && tree?.isLocked == true {
                 Image(systemName: "lock.fill").font(.caption2).foregroundStyle(.secondary)
@@ -476,6 +553,12 @@ struct ProjectSidebarView: View {
             }
             if showWorktreeInformation && (tree?.isPrunable == true || worktrees.errors[folder.identity] != nil) {
                 warningButton("Load Worktrees", message: worktrees.errors[folder.identity] ?? String(localized: "Missing Worktree"), directory: folder.url)
+            }
+            if isSaved && missingRepositories.contains(folder.identity) {
+                Image(systemName: "exclamationmark.triangle.fill").font(.caption2).foregroundStyle(.orange)
+                    .immediateHelp(String(localized: "Repository Not Found") + "\n" + folder.url.path)
+                    .accessibilityLabel(Text("Repository Not Found"))
+                    .accessibilityIdentifier("missingRepository-" + folder.url.path)
             }
             if isSaved && interval != .off {
                 if let fetchError {
@@ -497,9 +580,7 @@ struct ProjectSidebarView: View {
                 groupingActions(for: repositories)
                 Divider()
                 CopyRepositoryPathButton(url: folder.url)
-                Button("Remove from Sidebar") {
-                    folders = WorkspaceGroups.removingRepositories(Set(repositories.map(\.identity)), from: folders)
-                }
+                Button("Remove from Sidebar") { requestRemoval(repositories) }
             } else {
                 Button(displayNames.customName(for: folder) == nil
                        ? String(localized: "Name Repository")
@@ -522,7 +603,7 @@ struct ProjectSidebarView: View {
                                 cleaningWorktrees = WorktreeSheetTarget(url: worktrees.source(for: folder.url))
                             }
                         }
-                        if isLinked && tree?.branch != nil {
+                        if isLinked && tree?.branch != nil && !disableCommitOperations {
                             Button("Finish Worktree", systemImage: "checkmark.circle") {
                                 finishingWorktree = WorktreeSheetTarget(url: folder.url)
                             }
@@ -547,10 +628,11 @@ struct ProjectSidebarView: View {
                     }
                 }
                 Divider()
+                if isSaved && missingRepositories.contains(folder.identity) {
+                    Button("Locate", systemImage: "magnifyingglass") { locate(folder) }
+                }
                 if isSaved {
-                    Button("Remove from Sidebar") {
-                        folders = WorkspaceGroups.removingRepositories([folder.identity], from: folders)
-                    }
+                    Button("Remove from Sidebar") { requestRemoval([folder]) }
                 }
             }
         }
@@ -717,7 +799,7 @@ struct ProjectSidebarView: View {
             }
             if let tree = worktrees.list(for: selection).first(where: { $0.id == RepositoryLocation.canonical(selection) }),
                !tree.isMain, tree.branch != nil {
-                actions[.finishWorktree] = { finishingWorktree = WorktreeSheetTarget(url: selection) }
+                if !disableCommitOperations { actions[.finishWorktree] = { finishingWorktree = WorktreeSheetTarget(url: selection) } }
             }
         }
         return actions
@@ -754,8 +836,94 @@ struct ProjectSidebarView: View {
         }
     }
 
+    private var removalTitle: String {
+        String(localized: "Remove \(pendingRemoval.count) Repositories from the Sidebar?")
+    }
+
+    /// One repository is removed right away, since Undo restores it; several ask first.
+    private func requestRemoval(_ repositories: [WorkspaceEntry]) {
+        let saved = Set(folders.flatMap(\.repositories).map(\.identity))
+        let removable = repositories.filter { saved.contains($0.identity) }
+        guard !removable.isEmpty else { return }
+        if removable.count > 1 {
+            pendingRemoval = removable
+        } else {
+            removeFromSidebar(removable)
+        }
+    }
+
+    private func removeFromSidebar(_ repositories: [WorkspaceEntry]) {
+        updateFoldersUndoably(WorkspaceGroups.removingRepositories(Set(repositories.map(\.identity)), from: folders),
+                              actionName: String(localized: "Remove from Sidebar"))
+    }
+
+    /// Registers the previous sidebar with the window's undo manager, so Command-Z restores it and Redo reapplies it.
+    private func updateFoldersUndoably(_ updated: [WorkspaceEntry], actionName: String) {
+        let binding = $folders
+        let manager = undoManager
+        SidebarUndo.apply(updated, to: binding, manager: manager, actionName: actionName)
+    }
+
+    private func refreshMissingRepositories() {
+        let missing = Set(folders.flatMap(\.repositories).filter { entry in
+            entry.url.isFileURL && !FileManager.default.fileExists(atPath: entry.url.path)
+        }.map(\.identity))
+        if missing != missingRepositories { missingRepositories = missing }
+    }
+
+    private func locate(_ folder: WorkspaceEntry) {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.canCreateDirectories = false
+        panel.allowsMultipleSelection = false
+        panel.title = String(localized: "Locate Repository")
+        panel.message = String(localized: "Choose the new location of \(displayNames.displayName(for: folder)).")
+        panel.directoryURL = folder.url.deletingLastPathComponent()
+        panel.begin { response in
+            guard response == .OK, let url = panel.url else { return }
+            Task { @MainActor in
+                do {
+                    let entry = try await discovery.inspect(url)
+                    guard entry.isRepository else {
+                        throw GenericError(errorDescription: String(localized: "The selected folder is not a Git repository."))
+                    }
+                    relocateWorktree(folder.url, entry.url, fallback: entry.url)
+                    refreshMissingRepositories()
+                } catch {
+                    onError(OperationFailure("Locate Repository", error))
+                }
+            }
+        }
+    }
+
     private func reveal(_ folder: WorkspaceEntry) {
         NSWorkspace.shared.activateFileViewerSelecting([folder.url])
+    }
+}
+
+/// A request from outside the sidebar to start adding a repository.
+struct SidebarRequest: Equatable {
+    enum Kind { case open, clone }
+    let kind: Kind
+    let id = UUID()
+}
+
+/// Sidebar edits share one undo target; the sidebar contents live in user defaults behind a binding.
+@MainActor
+private final class SidebarUndo {
+    static let shared = SidebarUndo()
+
+    static func apply(_ folders: [WorkspaceEntry], to binding: Binding<[WorkspaceEntry]>,
+                      manager: UndoManager?, actionName: String) {
+        let previous = binding.wrappedValue
+        binding.wrappedValue = folders
+        manager?.registerUndo(withTarget: shared) { _ in
+            MainActor.assumeIsolated {
+                apply(previous, to: binding, manager: manager, actionName: actionName)
+            }
+        }
+        manager?.setActionName(actionName)
     }
 }
 
@@ -832,6 +1000,17 @@ private struct SidebarRowContext {
         self.organization = organization
         self.saved = saved
         savedIdentities = Set(saved.map(\.identity))
+    }
+}
+
+private struct SidebarEntryLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(alignment: .center, spacing: 8) {
+            configuration.icon
+                .font(.system(size: 13, weight: .regular))
+                .frame(width: 18)
+            configuration.title.frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
 }
 

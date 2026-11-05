@@ -13,6 +13,7 @@ struct FileContentDocument: Sendable {
     enum State {
         case idle, loading, requiresLoad, missing
         case text(FileContentDocument)
+        case image(DiffImage)
         case unavailable(FileContentRestriction)
         case failed(String)
     }
@@ -70,6 +71,7 @@ struct FileContentDocument: Sendable {
                 metadata = snapshot.metadata
                 switch snapshot.content {
                 case .text(let source, let plain, let layout): state = .text(FileContentDocument(text: source, plain: plain, layout: layout))
+                case .image(let image): state = .image(image)
                 case .requiresLoad: state = .requiresLoad
                 case .unavailable(let restriction): state = .unavailable(restriction)
                 }

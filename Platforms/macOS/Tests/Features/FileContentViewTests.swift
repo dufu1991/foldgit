@@ -1,14 +1,16 @@
 import AppKit
 import Darwin
 import FoldGitTestSupport
+import ImageIO
 import SwiftUI
 import Testing
+import UniformTypeIdentifiers
 @testable import FoldGit
 
 @MainActor
 struct FileContentViewTests {
     @Test(arguments: ["website/assets/og.png", "website/assets/screenshots/main-en-dark@2x.webp"])
-    func fileContentRendersTheSamePNGAndWebPFormatsAsImageComparison(path: String) async throws {
+    func repositoryImageFormatsLoadAsImages(path: String) async throws {
         let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
             .appendingPathComponent("../../../../", isDirectory: true).standardizedFileURL
         let store = FileContentStore()
@@ -23,30 +25,59 @@ struct FileContentViewTests {
         #expect(image.pixelHeight > 0)
         let metadata = try #require(store.metadata)
         #expect(Int64(image.byteCount) == metadata.size)
+    }
+
+    @Test(arguments: ["png", "webp"], [1, 2])
+    func imagePreviewRendersKnownColorsAtBothPixelDensities(format: String, density: Int) async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("foldgit-preview-\(UUID())")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let path = "preview.\(format)"
+        try previewImageData(format: format).write(to: directory.appendingPathComponent(path))
+        let store = FileContentStore()
+        defer { store.hide() }
+        store.show(directory: directory, path: path)
+        await store.readTask?.value
+        guard case .image(let image) = store.state else {
+            Issue.record("The preview fixture must load as an image")
+            return
+        }
+        #expect(image.pixelWidth == 640)
+        #expect(image.pixelHeight == 480)
         for scheme in [ColorScheme.light, .dark] {
             let host = NSHostingView(rootView: FileContentView(store: store, path: path, findRequest: nil)
                 .environment(\.colorScheme, scheme))
             let window = makeWindow(host)
             defer { window.close() }
-            try await Task.sleep(for: .milliseconds(150))
-            host.layoutSubtreeIfNeeded()
-            #expect(!descendants(host).contains { $0 is NSTextView })
-            let bitmap = try #require(host.bitmapImageRepForCachingDisplay(in: host.bounds))
-            host.cacheDisplay(in: host.bounds, to: bitmap)
-            var coloredPixels = 0
-            for y in stride(from: bitmap.pixelsHigh / 4, to: bitmap.pixelsHigh * 3 / 4, by: 8) {
-                for x in stride(from: bitmap.pixelsWide / 4, to: bitmap.pixelsWide * 3 / 4, by: 8) {
-                    guard let color = bitmap.colorAt(x: x, y: y)?.usingColorSpace(.deviceRGB) else { continue }
-                    if max(color.redComponent, color.greenComponent, color.blueComponent)
-                        - min(color.redComponent, color.greenComponent, color.blueComponent) > 0.15 { coloredPixels += 1 }
+            let bitmap = try #require(NSBitmapImageRep(
+                bitmapDataPlanes: nil, pixelsWide: Int(host.bounds.width) * density,
+                pixelsHigh: Int(host.bounds.height) * density, bitsPerSample: 8, samplesPerPixel: 4,
+                hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0))
+            bitmap.size = host.bounds.size
+            var colorCounts = [0, 0, 0, 0]
+            let rendered = try await waitForLayout(host) {
+                host.cacheDisplay(in: host.bounds, to: bitmap)
+                colorCounts = [0, 0, 0, 0]
+                for y in stride(from: bitmap.pixelsHigh / 4, to: bitmap.pixelsHigh * 3 / 4, by: 8) {
+                    for x in stride(from: bitmap.pixelsWide / 4, to: bitmap.pixelsWide * 3 / 4, by: 8) {
+                        guard let color = bitmap.colorAt(x: x, y: y)?.usingColorSpace(.deviceRGB) else { continue }
+                        let red = color.redComponent, green = color.greenComponent, blue = color.blueComponent
+                        if red > 0.75 && green < 0.25 && blue < 0.25 { colorCounts[0] += 1 }
+                        if red < 0.25 && green > 0.75 && blue < 0.25 { colorCounts[1] += 1 }
+                        if red < 0.25 && green < 0.25 && blue > 0.75 { colorCounts[2] += 1 }
+                        if red > 0.75 && green > 0.75 && blue < 0.25 { colorCounts[3] += 1 }
+                    }
                 }
+                return colorCounts.allSatisfy { $0 > 20 }
             }
-            #expect(coloredPixels > 20)
+            // All four fixture colors must appear; a blank canvas or placeholder cannot pass.
+            #expect(rendered, "Expected all four image colors, sampled \(colorCounts)")
+            #expect(!descendants(host).contains { $0 is NSTextView })
             if let output = ProcessInfo.processInfo.environment["FILE_HISTORY_SNAPSHOT_DIRECTORY"] {
                 let target = URL(fileURLWithPath: output)
                 try FileManager.default.createDirectory(at: target, withIntermediateDirectories: true)
                 let png = try #require(bitmap.representation(using: .png, properties: [:]))
-                try png.write(to: target.appendingPathComponent("file-image-\(image.format)-\(scheme).png"))
+                try png.write(to: target.appendingPathComponent("file-image-\(image.format)-\(scheme)-\(density)x.png"))
             }
         }
     }
@@ -62,12 +93,15 @@ struct FileContentViewTests {
         let host = NSHostingView(rootView: FileHistoryDetailView(store: store).environment(\.folder, repository.url))
         let window = makeWindow(host)
         defer { window.close() }
-        try await Task.sleep(for: .milliseconds(100))
-        #expect(descendants(host).compactMap { $0 as? NSSegmentedControl }.isEmpty)
+        #expect(try await waitForLayout(host) {
+            descendants(host).compactMap { $0 as? NSSegmentedControl }.isEmpty
+        })
         store.selectFile("example.swift")
         await store.historyTask?.value
         await store.diffTask?.value
-        try await Task.sleep(for: .milliseconds(100))
+        #expect(try await waitForLayout(host) {
+            descendants(host).contains { $0 is NSSegmentedControl }
+        })
         #expect(store.detailMode == .history)
         #expect(store.content.url == nil)
         let picker = try #require(descendants(host).compactMap { $0 as? NSSegmentedControl }.first {
@@ -80,21 +114,28 @@ struct FileContentViewTests {
         picker.selectedSegment = 1
         _ = picker.sendAction(picker.action, to: picker.target)
         await store.content.readTask?.value
-        try await Task.sleep(for: .milliseconds(100))
+        #expect(try await waitForLayout(host) {
+            descendants(host).contains { $0 is NSTextView && ($0 as? NSTextView)?.isEditable == false }
+        })
         #expect(store.detailMode == .content)
-        #expect(descendants(host).contains { $0 is NSTextView && ($0 as? NSTextView)?.isEditable == false })
+        let contentText = try #require(descendants(host).compactMap { $0 as? NSTextView }.first { !$0.isEditable })
+        #expect(contentText.window === window)
         #expect(window.attachedSheet == nil)
 
         picker.selectedSegment = 0
         _ = picker.sendAction(picker.action, to: picker.target)
-        try await Task.sleep(for: .milliseconds(100))
+        #expect(try await waitForLayout(host) {
+            contentText.window == nil
+        })
         #expect(store.detailMode == .history)
         #expect(store.content.url == nil)
         #expect(window.attachedSheet == nil)
         #expect(picker.window === window)
         store.selectFile(nil)
-        try await Task.sleep(for: .milliseconds(100))
-        #expect(descendants(host).compactMap { $0 as? NSSegmentedControl }.isEmpty)
+        #expect(store.selectedPath == nil)
+        #expect(try await waitForLayout(host) {
+            descendants(host).compactMap { $0 as? NSSegmentedControl }.isEmpty
+        })
     }
 
     @Test func nativeFindAndCopyPreserveWhitespaceAndUnicode() async throws {
@@ -281,6 +322,40 @@ struct FileContentViewTests {
         window.contentView = content
         window.orderBack(nil)
         return window
+    }
+
+    private func previewImageData(format: String) throws -> Data {
+        if format == "webp" {
+            // Lossless 640 x 480 WebP with opaque red, green, blue and yellow quadrants.
+            return try #require(Data(base64Encoded:
+                "UklGRloAAABXRUJQVlA4TE4AAAAvf8J3AB8gEEjaH3qN+RcQFPk/2vwHXyTATNs2IzmSIzkCPSs5ov8T8HE3Lv/xH//xH//xH//xH/8VrYl7cfmP//iP//iP//iP//ivaAE="))
+        }
+        let context = try #require(CGContext(data: nil, width: 640, height: 480, bitsPerComponent: 8,
+                                            bytesPerRow: 0, space: CGColorSpaceCreateDeviceRGB(),
+                                            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
+        let colors = [CGColor(red: 1, green: 0, blue: 0, alpha: 1), CGColor(red: 0, green: 1, blue: 0, alpha: 1),
+                      CGColor(red: 0, green: 0, blue: 1, alpha: 1), CGColor(red: 1, green: 1, blue: 0, alpha: 1)]
+        for (index, color) in colors.enumerated() {
+            context.setFillColor(color)
+            context.fill(CGRect(x: index % 2 * 320, y: index / 2 * 240, width: 320, height: 240))
+        }
+        let image = try #require(context.makeImage())
+        let data = NSMutableData()
+        let destination = try #require(CGImageDestinationCreateWithData(data, UTType.png.identifier as CFString, 1, nil))
+        CGImageDestinationAddImage(destination, image, nil)
+        try #require(CGImageDestinationFinalize(destination))
+        return data as Data
+    }
+
+    private func waitForLayout(_ host: NSView, matching condition: () -> Bool) async throws -> Bool {
+        let deadline = ContinuousClock.now.advanced(by: .seconds(3))
+        repeat {
+            host.layoutSubtreeIfNeeded()
+            if condition() { return true }
+            try await Task.sleep(for: .milliseconds(20))
+        } while ContinuousClock.now < deadline
+        host.layoutSubtreeIfNeeded()
+        return condition()
     }
 
     private func descendants(_ root: NSView) -> [NSView] {

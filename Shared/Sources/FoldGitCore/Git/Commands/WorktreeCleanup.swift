@@ -135,15 +135,18 @@ public enum WorktreeCleanup {
     /// either reference. Git releases the locks on abort, EOF, cancellation or an error.
     static func withLockedHead<Value: Sendable>(_ candidate: WorktreeCleanupCandidate,
         operation: @Sendable () async throws -> Value) async throws -> Value {
+        let gitDirectory = try await GitRuntime.run(GitAbsoluteGitDirectory(directory: candidate.tree.url))
         var options = Subprocess.PlatformOptions()
         #if !os(Windows)
         // Give Git time to remove its lock files before Subprocess escalates cancellation.
         options.teardownSequence = [.send(signal: .terminate, allowedDurationToNextStep: .seconds(2))]
         #endif
+        // Windows cannot remove a process's working directory. Select the worktree's
+        // HEAD through its Git directory while keeping the lease process outside it.
         let result = try await Subprocess.run(
-            .name("git"), arguments: ["update-ref", "--stdin"],
+            .name("git"), arguments: ["--git-dir", gitDirectory, "update-ref", "--stdin"],
             environment: .inherit.updating(["LC_ALL": "en_US.UTF-8", "LANG": "en_US.UTF-8", "GIT_TERMINAL_PROMPT": "0"]),
-            workingDirectory: .init(candidate.tree.url.path),
+            workingDirectory: .init(candidate.tree.url.deletingLastPathComponent().path),
             platformOptions: options,
             input: .inputWriter, output: .sequence, error: .discarded
         ) { execution in

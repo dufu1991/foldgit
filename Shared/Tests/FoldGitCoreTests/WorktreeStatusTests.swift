@@ -302,7 +302,7 @@ struct WorktreeCleanupTests {
         let trunk = try #require(try await TrunkReference.resolve(in: fixture.repository.url))
         #expect(trunk == TrunkReference(local: nil, remote: "refs/remotes/origin/main"))
         let candidates = try await WorktreeCleanup.candidates(in: fixture.repository.url)
-        #expect(candidates.map(\.id) == [detached.resolvingSymlinksInPath()])
+        #expect(candidates.map(\.id) == [RepositoryLocation.canonical(detached)])
         let candidate = try #require(candidates.first)
         #expect(try await WorktreeCleanup.remove(candidate, deletingBranch: true) == .keptDetached)
         #expect(!FileManager.default.fileExists(atPath: detached.path))
@@ -312,8 +312,11 @@ struct WorktreeCleanupTests {
         let fixture = try await Fixture.create()
         defer { fixture.remove() }
         let feature = try await fixture.worktree("ignored-files", commits: [])
-        let paths = ["build/local-signing-key.pem", "dist/local.env", ".venv/credentials.json",
-                     "node_modules/private.pem", "build/nested/中文 file\nname.pem"]
+        var paths = ["build/local-signing-key.pem", "dist/local.env", ".venv/credentials.json",
+                     "node_modules/private.pem", "build/nested/中文 file name.pem"]
+        #if !os(Windows)
+        paths.append("build/nested/中文 file\nname.pem")
+        #endif
         for path in paths { try fixture.write(in: feature, path, "local data\n") }
         let candidate = try #require(try await WorktreeCleanup.candidates(in: fixture.repository.url).first)
         #expect(candidate.ignoredEntries == paths.sorted())
@@ -357,6 +360,8 @@ struct WorktreeCleanupTests {
             }
             let head = try await fixture.git(in: feature, ["rev-parse", "HEAD"])
             #expect(head.trimmingCharacters(in: .newlines) == candidate.head)
+            // The lease protects only the selected worktree, even when Git runs outside it.
+            try await fixture.repository.git(["commit", "--allow-empty", "-m", "test: commit in another worktree"])
         }
         // The transaction releases every lock when the protected operation finishes.
         try await fixture.git(in: feature, ["commit", "--allow-empty", "-m", "test: commit after lease"])

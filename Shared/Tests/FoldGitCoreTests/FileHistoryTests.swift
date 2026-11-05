@@ -18,7 +18,11 @@ struct FileHistoryTests {
     @Test func followsRenamesAcrossPagesAndDiffsEachHistoricalPath() async throws {
         let repository = try await TestRepository.create(commits: 0)
         defer { repository.remove() }
+        #if os(Windows)
+        let oldPath = "old/中文 [file].swift"
+        #else
         let oldPath = "old/中文 [file]\n.swift"
+        #endif
         let newPath = "new/-file.swift"
         try repository.write(oldPath, "let value = 1\n")
         try repository.write("unrelated.swift", "let other = 1\n")

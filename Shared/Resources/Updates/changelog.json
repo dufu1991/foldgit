@@ -1,5 +1,33 @@
 [
   {
+    "version": "0.5.0",
+    "date": "2026-11-05",
+    "zh": [
+      "macOS 和 Windows 新增连续提交压缩，支持编辑合并后的提交信息，并在执行前检查远程状态、备份历史，支持中断恢复。",
+      "macOS 和 Windows 新增“禁用提交操作”设置，隐藏提交、合并及暂存等控件，保留更改浏览，拉取仅允许快进。",
+      "macOS 支持多选、双击和拖拽暂存或取消暂存，可按文件或更改块丢弃更改，未跟踪文件移入废纸篓。",
+      "macOS 新增会话内提交草稿、Amend 开关和提交信息预填，标题超过 72 个字符时提示，快捷输入支持排序和删除撤销。",
+      "macOS 新增提交拣选、Soft、Mixed、Hard 分支重置和远程分支跟踪检出，完善分支删除确认与标签检出交互。",
+      "macOS 贮藏支持填写说明、显示来源分支和创建时间，新增弹出操作，删除贮藏时需确认。",
+      "macOS 目录视角新增可缩放的图片预览，完善目录树键盘导航、文件打开和路径复制，支持快捷切换两种浏览视角。",
+      "macOS 侧栏可显示普通仓库的当前分支，支持失效仓库重新定位、撤销仓库移除及分组解散，批量移除时需确认。",
+      "macOS 优化历史多选、键盘翻页和预加载，修正差异方向并保留比较刷新状态，大型差异及生成文件默认折叠。",
+      "macOS 和 Windows 改善多行输入与提交信息换行；macOS 优化窄窗口布局、操作进度和失败重试，并减小安装包体积。"
+    ],
+    "en": [
+      "Add consecutive commit squashing on macOS and Windows with editable messages, remote publication checks, history backups and recovery after interruption.",
+      "Add a setting to disable commit operations on macOS and Windows, hiding commit, merge and staging controls while keeping changes browsable and allowing fast-forward pulls only.",
+      "Stage or unstage files on macOS through multi-selection, double-clicking or drag and drop. Discard files or hunks, moving untracked files to the Trash.",
+      "Add session commit drafts, an Amend toggle and message prefilling on macOS, warn when subjects exceed 72 characters, and support snippet reordering and undoing deletion.",
+      "Add cherry-picking, Soft, Mixed and Hard resets and local tracking checkout for remote branches on macOS, with improved branch deletion confirmations and tag checkout interactions.",
+      "Add stash messages, source branch and creation time details, Pop and deletion confirmations on macOS.",
+      "Add zoomable image previews in Directory View on macOS, improve tree keyboard navigation, file opening and path copying, and add shortcuts for switching browsing modes.",
+      "Show branch names for ordinary repositories in the macOS sidebar, relocate missing repositories, undo repository removal or group dissolution, and confirm batch removal.",
+      "Improve history multi-selection, keyboard paging and preloading on macOS, correct diff direction, preserve comparison state on refresh, and collapse large diffs and generated files by default.",
+      "Improve multiline input and commit message line breaks on macOS and Windows. Refine compact layouts, operation progress and failure retries on macOS, and reduce its installer size."
+    ]
+  },
+  {
     "version": "0.4.2",
     "date": "2026-11-04",
     "zh": [

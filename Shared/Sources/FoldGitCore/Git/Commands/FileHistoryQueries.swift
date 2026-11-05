@@ -50,9 +50,9 @@ public struct GitFileHistory: RepositoryCommand {
         while offset < fields.count {
             while offset < fields.count && fields[offset].trimmingCharacters(in: .newlines).isEmpty { offset += 1 }
             guard offset < fields.count else { break }
-            guard offset + 8 <= fields.count else { throw invalidRecords() }
-            let commit = try CommitRecord.decode(Array(fields[offset..<(offset + 8)]))
-            offset += 8
+            guard offset + CommitRecord.fieldCount <= fields.count else { throw invalidRecords() }
+            let commit = try CommitRecord.decode(Array(fields[offset..<(offset + CommitRecord.fieldCount)]))
+            offset += CommitRecord.fieldCount
             // -z terminates the pretty record separately from the name/status record.
             if offset < fields.count && fields[offset].isEmpty { offset += 1 }
             guard offset < fields.count else { throw invalidRecords() }

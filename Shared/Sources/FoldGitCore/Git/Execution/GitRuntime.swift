@@ -123,7 +123,8 @@ public enum GitRuntime: Sendable {
 
         public func run<Command: RepositoryCommand>(_ command: Command) async throws -> Command.OutputModel {
             precondition(command.directory == directory)
-            let output = try await GitRuntime.collect(arguments: command.arguments, directory: directory, inputs: [], environment: command.environment, readOnly: command.isReadOnly, timeout: .seconds(180))
+            let inputs = (command as? any InteractiveRepositoryCommand)?.inputs ?? []
+            let output = try await GitRuntime.collect(arguments: command.arguments, directory: directory, inputs: inputs, environment: command.environment, readOnly: command.isReadOnly, timeout: .seconds(180))
             return try command.parse(for: output.textOutput().standardOutput)
         }
     }

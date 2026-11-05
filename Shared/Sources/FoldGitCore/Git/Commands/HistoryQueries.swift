@@ -8,10 +8,12 @@ public struct GitLog: RepositoryCommand {
     public var number = 0
     public var skip = 0
     public var noWalk = false
+    public var firstParent = false
     public var revisionRange: [String] = []
 
     public init(directory: URL, merges: Bool = false, ancestryPath: Bool = false, reverse: Bool = false,
-                number: Int = 0, skip: Int = 0, noWalk: Bool = false, revisionRange: [String] = []) {
+                number: Int = 0, skip: Int = 0, noWalk: Bool = false, firstParent: Bool = false,
+                revisionRange: [String] = []) {
         self.directory = directory
         self.merges = merges
         self.ancestryPath = ancestryPath
@@ -19,6 +21,7 @@ public struct GitLog: RepositoryCommand {
         self.number = number
         self.skip = skip
         self.noWalk = noWalk
+        self.firstParent = firstParent
         self.revisionRange = revisionRange
     }
 
@@ -31,17 +34,18 @@ public struct GitLog: RepositoryCommand {
         if number > 0 { arguments.append("-\(number)") }
         if skip > 0 { arguments.append("--skip=\(skip)") }
         if noWalk { arguments.append("--no-walk") }
+        if firstParent { arguments.append("--first-parent") }
         return arguments + revisionRange
     }
 
     public func parse(for output: String) throws -> [Commit] {
         guard !output.isEmpty else { return [] }
         var fields = output.components(separatedBy: "\0")
-        guard fields.removeLast().isEmpty, fields.count.isMultiple(of: 8) else {
+        guard fields.removeLast().isEmpty, fields.count.isMultiple(of: CommitRecord.fieldCount) else {
             throw GitExecutionError(description: "Invalid commit records from Git.")
         }
-        return try stride(from: 0, to: fields.count, by: 8).map { offset in
-            try CommitRecord.decode(Array(fields[offset..<(offset + 8)]))
+        return try stride(from: 0, to: fields.count, by: CommitRecord.fieldCount).map { offset in
+            try CommitRecord.decode(Array(fields[offset..<(offset + CommitRecord.fieldCount)]))
         }
     }
 }
@@ -55,10 +59,10 @@ public struct GitShow: RepositoryCommand {
     public var arguments: [String] { ["git", "show", "--full-index", "--pretty=format:\(CommitRecord.format)", object] }
 
     public func parse(for output: String) throws -> CommitDetail {
-        let fields = output.split(separator: "\0", maxSplits: 8, omittingEmptySubsequences: false).map(String.init)
-        guard fields.count == 9 else { throw GitExecutionError(description: "Invalid commit detail from Git.") }
-        return CommitDetail(commit: try CommitRecord.decode(Array(fields.prefix(8))),
-                            diff: try Diff(raw: fields[8].trimmingCharacters(in: .newlines)))
+        let fields = output.split(separator: "\0", maxSplits: CommitRecord.fieldCount, omittingEmptySubsequences: false).map(String.init)
+        guard fields.count == CommitRecord.fieldCount + 1 else { throw GitExecutionError(description: "Invalid commit detail from Git.") }
+        return CommitDetail(commit: try CommitRecord.decode(Array(fields.prefix(CommitRecord.fieldCount))),
+                            diff: try Diff(raw: fields[CommitRecord.fieldCount].trimmingCharacters(in: .newlines)))
     }
 }
 

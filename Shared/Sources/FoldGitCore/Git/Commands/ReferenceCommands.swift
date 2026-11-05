@@ -116,3 +116,63 @@ public struct GitTagDelete: GitAction {
     public init(directory: URL, tagname: String) { self.directory = directory; self.tagname = tagname }
     public var arguments: [String] { ["git", "tag", "-d", tagname] }
 }
+
+/// `git branch -D`, used only after the user confirms deleting a branch that is not fully merged.
+public struct GitBranchForceDelete: GitAction {
+    public var directory: URL
+    public var branchName: String
+    public init(directory: URL, branchName: String) { self.directory = directory; self.branchName = branchName }
+    public var arguments: [String] { ["git", "branch", "-D", branchName] }
+
+    /// Git reports this when `--delete` refuses a branch whose commits are not merged.
+    public static func isUnmergedRefusal(_ message: String) -> Bool {
+        message.contains("is not fully merged")
+    }
+}
+
+/// Creates a local branch that tracks a remote-tracking branch and switches to it.
+public struct GitSwitchTrack: GitAction {
+    public var directory: URL
+    public var localBranchName: String
+    public var remoteBranchName: String
+    public init(directory: URL, localBranchName: String, remoteBranchName: String) {
+        self.directory = directory
+        self.localBranchName = localBranchName
+        self.remoteBranchName = remoteBranchName
+    }
+    public var arguments: [String] { ["git", "switch", "--create", localBranchName, "--track", remoteBranchName] }
+
+    /// The local name for a remote-tracking branch such as `origin/feature/x`, which drops the remote name.
+    public static func localName(for remoteBranchName: String) -> String {
+        guard let slash = remoteBranchName.firstIndex(of: "/") else { return remoteBranchName }
+        return String(remoteBranchName[remoteBranchName.index(after: slash)...])
+    }
+}
+
+public struct GitCherryPick: GitAction {
+    public var directory: URL
+    public var parentNumber: Int?
+    public var commit: String
+    public init(directory: URL, parentNumber: Int? = nil, commit: String) {
+        self.directory = directory
+        self.parentNumber = parentNumber
+        self.commit = commit
+    }
+    public var arguments: [String] { ["git", "cherry-pick"] + (parentNumber.map { ["-m", String($0)] } ?? []) + [commit] }
+}
+
+public enum GitResetMode: String, CaseIterable, Sendable {
+    case soft, mixed, hard
+}
+
+public struct GitReset: GitAction {
+    public var directory: URL
+    public var mode: GitResetMode
+    public var commit: String
+    public init(directory: URL, mode: GitResetMode, commit: String) {
+        self.directory = directory
+        self.mode = mode
+        self.commit = commit
+    }
+    public var arguments: [String] { ["git", "reset", "--\(mode.rawValue)", commit] }
+}

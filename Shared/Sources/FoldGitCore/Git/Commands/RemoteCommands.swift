@@ -20,12 +20,14 @@ public struct GitPull: GitAction {
     public var directory: URL
     public var refspec: String
     public var remote: String
-    public init(directory: URL, refspec: String, remote: String) {
+    public var fastForwardOnly = false
+    public init(directory: URL, refspec: String, remote: String, fastForwardOnly: Bool = false) {
         self.directory = directory
         self.refspec = refspec
         self.remote = remote
+        self.fastForwardOnly = fastForwardOnly
     }
-    public var arguments: [String] { ["git", "pull", remote, refspec] }
+    public var arguments: [String] { ["git", "pull"] + (fastForwardOnly ? ["--ff-only"] : []) + [remote, refspec] }
 }
 
 public struct GitPush: GitAction {

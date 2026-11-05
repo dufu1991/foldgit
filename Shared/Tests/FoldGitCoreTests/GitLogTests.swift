@@ -4,6 +4,27 @@ import Testing
 @testable import FoldGitCore
 
 struct GitLogTests {
+    @Test func multilineMessagesRoundTripAcrossHistoryDetailAndFileHistory() async throws {
+        let repository = try await TestRepository.create()
+        defer { repository.remove() }
+        for message in [
+            "feat: First title\nfix: Second title\ndocs: Third title",
+            "fix: First line\nContinuation\n\nDescription.\n\nCo-authored-by: Developer <dev@example.com>",
+            "fix: First line\n\nDescription.\n\nMore details.",
+        ] {
+            try repository.write("message.txt", message)
+            try await repository.commit(message)
+            let history = try await GitRuntime.run(GitLog(directory: repository.url, number: 1))
+            let detail = try await GitRuntime.run(GitShow(directory: repository.url, object: "HEAD"))
+            let files = try await GitRuntime.run(GitFileHistory(directory: repository.url, path: "message.txt", revision: "HEAD"))
+            for commit in [history[0], detail.commit, files[0].commit] {
+                #expect(commit.title == message.components(separatedBy: "\n")[0])
+                #expect(commit.rawBody == message)
+                #expect(commit.body == message.components(separatedBy: "\n").dropFirst().joined(separator: "\n").trimmingCharacters(in: .newlines))
+            }
+        }
+    }
+
     @Test func recordsPreserveUnicodeMessagesAndArbitrarySeparatorText() async throws {
         let repository = try await TestRepository.create(commits: 2)
         defer { repository.remove() }

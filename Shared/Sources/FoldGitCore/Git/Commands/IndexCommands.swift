@@ -89,3 +89,63 @@ public struct GitStatus: RepositoryCommand {
         return Status(untrackedFiles: untracked, unmergedFiles: conflicts)
     }
 }
+
+/// Restores tracked files in the working tree from the index, discarding their unstaged changes.
+public struct GitRestoreWorktree: GitAction {
+    public var directory: URL
+    public let paths: [String]
+    public init(directory: URL, paths: [String]) { self.directory = directory; self.paths = paths }
+    public var arguments: [String] { ["git", "--literal-pathspecs", "restore", "--worktree", "--"] + paths }
+}
+
+/// Reverse-applies selected hunks of the unstaged diff to the working tree only.
+struct GitApplyWorktreeReverse: InteractiveRepositoryCommand, GitAction {
+    var directory: URL
+    let patch: String
+    var arguments: [String] { ["git", "apply", "--whitespace=nowarn", "--reverse"] }
+    var inputs: [String] { [patch] }
+}
+
+/// Discards unstaged changes. Untracked files are never deleted by Git here: callers move them to the Trash instead.
+public enum WorktreeDiscarding {
+    /// `selection` uses the staging shape: the files and hunks to discard are the ones marked as staged.
+    /// A stale patch fails instead of discarding a different hunk.
+    public static func discard(_ selection: IndexSelection, in directory: URL) async throws {
+        if !selection.patch.isEmpty {
+            try await GitRuntime.run(GitApplyWorktreeReverse(directory: directory, patch: selection.patch))
+        }
+        if !selection.paths.isEmpty {
+            try await GitRuntime.run(GitRestoreWorktree(directory: directory, paths: selection.paths))
+        }
+    }
+
+    /// The files a discard would touch, resolved inside `directory`. Paths that leave the repository are rejected.
+    public static func untrackedFileURLs(_ paths: [String], in directory: URL) throws -> [URL] {
+        let root = directory.standardizedFileURL.path
+        let prefix = root.hasSuffix("/") ? root : root + "/"
+        return try paths.map { path in
+            let url = directory.appendingPathComponent(path).standardizedFileURL
+            guard !path.isEmpty, url.path.hasPrefix(prefix), !path.split(separator: "/").contains("..") else {
+                throw GenericError(errorDescription: "Refusing to remove a path outside the repository: \(path)")
+            }
+            return url
+        }
+    }
+
+    #if os(macOS)
+    /// Moves untracked files to the Trash so they can be recovered, instead of `git clean`.
+    public static func trashUntrackedFiles(_ paths: [String], in directory: URL,
+                                           fileManager: FileManager = .default) throws {
+        for url in try untrackedFileURLs(paths, in: directory) where fileManager.fileExists(atPath: url.path) {
+            try fileManager.trashItem(at: url, resultingItemURL: nil)
+        }
+    }
+    #endif
+}
+
+/// The full message of `HEAD`, used to prefill an amend.
+public struct GitHeadMessage: GitTextQuery {
+    public var directory: URL
+    public init(directory: URL) { self.directory = directory }
+    public var arguments: [String] { ["git", "log", "-1", "--format=%B", "HEAD"] }
+}

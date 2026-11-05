@@ -66,4 +66,54 @@ struct RepositoryOperationTests {
                                          staging: true, in: repository.url)
         }
     }
+
+    @Test func discardRestoresWholeFileFromIndexAndKeepsStagedChanges() async throws {
+        let repository = try await TestRepository.create()
+        defer { repository.remove() }
+        try repository.write("notes.txt", "one\n")
+        try await repository.commit("feat: add notes")
+        try repository.write("notes.txt", "two\n")
+        _ = try await repository.git(["add", "notes.txt"])
+        try repository.write("notes.txt", "three\n")
+        let diff = try Diff(raw: await repository.git(["diff"]))
+        try await WorktreeDiscarding.discard(diff.updateAll(stage: true).indexSelection(staging: true), in: repository.url)
+        let snapshot = try await WorktreeSnapshot.read(in: repository.url)
+        #expect(snapshot.unstaged.isEmpty)
+        #expect(snapshot.staged.contains("+two"))
+        #expect(try String(contentsOf: repository.url.appendingPathComponent("notes.txt"), encoding: .utf8) == "two\n")
+    }
+
+    @Test func discardSelectedHunkKeepsOtherHunks() async throws {
+        let repository = try await TestRepository.create()
+        defer { repository.remove() }
+        let lines = (1...30).map { "line \($0)" }
+        try repository.write("list.txt", lines.joined(separator: "\n") + "\n")
+        try await repository.commit("feat: add list")
+        var changed = lines
+        changed[1] = "first change"
+        changed[27] = "second change"
+        try repository.write("list.txt", changed.joined(separator: "\n") + "\n")
+        let diff = try Diff(raw: await repository.git(["diff"]))
+        let file = try #require(diff.fileDiffs.first)
+        try await WorktreeDiscarding.discard(diff.updateChunkStage(file.chunks[0], in: file, stage: true).indexSelection(staging: true),
+                                             in: repository.url)
+        let snapshot = try await WorktreeSnapshot.read(in: repository.url)
+        #expect(!snapshot.unstaged.contains("+first change"))
+        #expect(snapshot.unstaged.contains("+second change"))
+        #expect(snapshot.staged.isEmpty)
+    }
+
+    @Test func discardCommandRestoresLiteralPathsWithoutClean() {
+        let directory = URL(fileURLWithPath: "/tmp/repository")
+        #expect(GitRestoreWorktree(directory: directory, paths: ["a b.txt", "-n"]).arguments
+            == ["git", "--literal-pathspecs", "restore", "--worktree", "--", "a b.txt", "-n"])
+    }
+
+    @Test func untrackedTrashPathsStayInsideRepository() throws {
+        let directory = URL(fileURLWithPath: "/tmp/repository")
+        let urls = try WorktreeDiscarding.untrackedFileURLs(["new.txt", "dir/other.txt"], in: directory)
+        #expect(urls.map(\.path) == ["/tmp/repository/new.txt", "/tmp/repository/dir/other.txt"])
+        #expect(throws: (any Error).self) { try WorktreeDiscarding.untrackedFileURLs(["../outside.txt"], in: directory) }
+        #expect(throws: (any Error).self) { try WorktreeDiscarding.untrackedFileURLs([""], in: directory) }
+    }
 }

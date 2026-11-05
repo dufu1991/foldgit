@@ -12,6 +12,9 @@
   }
   function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
   function easeInOut(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+  const setStyle = (element, name, value) => {
+    if (element.style.getPropertyValue(name) !== value) element.style.setProperty(name, value);
+  };
 
   // ---------------------------------------------------------------- language
   var i18nNodes = Array.prototype.slice.call(document.querySelectorAll("[data-i18n]"));
@@ -32,6 +35,7 @@
     if (table["meta.title"]) document.title = table["meta.title"];
     if (table["meta.description"] && metaDescription) metaDescription.setAttribute("content", table["meta.description"]);
     updateShot();
+    scheduleMeasure();
   }
 
   // Chinese for any zh-* browser language, English for everything else.
@@ -136,12 +140,22 @@
   }
 
   // ---------------------------------------------------------------- glass highlight
-  document.addEventListener("pointermove", function (e) {
-    var el = e.target.closest && e.target.closest(".glass");
-    if (!el) return;
-    var r = el.getBoundingClientRect();
-    el.style.setProperty("--mx", (e.clientX - r.left) + "px");
-    el.style.setProperty("--my", (e.clientY - r.top) + "px");
+  const hoverQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+  let highlightFrame = 0;
+  let pointer = null;
+  const updateHighlight = () => {
+    highlightFrame = 0;
+    if (!pointer || reduceMotion || document.hidden || !hoverQuery.matches) return;
+    const { element, x, y } = pointer;
+    const rect = element.getBoundingClientRect();
+    setStyle(element, "--mx", Math.round(x - rect.left) + "px");
+    setStyle(element, "--my", Math.round(y - rect.top) + "px");
+  };
+  document.addEventListener("pointermove", (event) => {
+    if (reduceMotion || !hoverQuery.matches || document.hidden) return;
+    const element = event.target.closest && event.target.closest(".glass");
+    pointer = element ? { element, x: event.clientX, y: event.clientY } : null;
+    if (pointer && !highlightFrame) highlightFrame = requestAnimationFrame(updateHighlight);
   }, { passive: true });
 
   // ---------------------------------------------------------------- fold story
@@ -214,67 +228,130 @@
     layoutFold(step);
   }
 
-  // ---------------------------------------------------------------- scroll loop
-  var shotFrame = document.getElementById("shot-frame");
+  // ---------------------------------------------------------------- scroll-linked scenes
+  const shotFrame = document.getElementById("shot-frame");
+  const shotWindow = shotFrame && shotFrame.querySelector(".shot-window");
   const shotStage = document.getElementById("stage");
   const shotSticky = document.getElementById("stage-sticky");
-  let stageContentHeight = 0;
-  var nav = document.querySelector(".nav");
-  var smoothY = window.scrollY;
-  var ticking = false;
+  const bands = document.querySelector(".bands");
+  const nav = document.querySelector(".nav");
+  const desktopQuery = window.matchMedia("(min-width: 861px)");
+  let geometry = null;
+  let measureFrame = 0;
+  let animationFrame = 0;
+  let smoothY = window.scrollY;
+  let stageWasVisible = false;
+  let foldLayoutDirty = true;
+
+  // Read layout only after size or content changes, before any per-frame writes.
+  const measureGeometry = () => {
+    measureFrame = 0;
+    const contentHeight = shotSticky ? shotSticky.offsetHeight : 0;
+    if (shotStage && shotStage.style.getPropertyValue("--stage-content-height") !== contentHeight + "px") {
+      setStyle(shotStage, "--stage-content-height", contentHeight + "px");
+      scheduleMeasure();
+      return;
+    }
+    const scrollY = window.scrollY;
+    const viewportHeight = window.innerHeight;
+    const stageRect = shotStage && shotStage.getBoundingClientRect();
+    const foldRect = foldSection && foldSection.getBoundingClientRect();
+    geometry = {
+      viewportHeight,
+      maxScroll: Math.max(1, document.documentElement.scrollHeight - viewportHeight),
+      stageTop: stageRect ? stageRect.top + scrollY : 0,
+      stageHeight: stageRect ? stageRect.height : 0,
+      stageDistance: stageRect ? Math.max(1, stageRect.height - contentHeight) : 1,
+      stickyTop: shotSticky ? parseFloat(getComputedStyle(shotSticky).top) || 0 : 0,
+      shotHeight: shotFrame ? shotFrame.clientHeight : 0,
+      foldTop: foldRect ? foldRect.top + scrollY : 0,
+      foldHeight: foldRect ? foldRect.height : 0,
+      foldDistance: foldRect ? Math.max(1, foldRect.height - viewportHeight) : 1
+    };
+    foldLayoutDirty = true;
+    kick();
+  };
+  const scheduleMeasure = () => {
+    if (!measureFrame && !document.hidden) measureFrame = requestAnimationFrame(measureGeometry);
+  };
 
   const frame = () => {
-    var target = window.scrollY;
-    // Critically damped follow gives the scroll-linked motion a soft, non-linear feel.
-    smoothY += (target - smoothY) * (reduceMotion ? 1 : 0.14);
+    animationFrame = 0;
+    if (!geometry || document.hidden) return;
+    const target = window.scrollY;
+    const stageVisible = shotWindow && target + geometry.viewportHeight > geometry.stageTop
+      && target < geometry.stageTop + geometry.stageHeight;
+    // Only the visible screenshot follows softly; other sections settle in one frame.
+    if (stageVisible && stageWasVisible && !reduceMotion) smoothY += (target - smoothY) * 0.22;
+    else smoothY = target;
     if (Math.abs(target - smoothY) < 0.3) smoothY = target;
 
-    var vh = window.innerHeight;
-    var max = Math.max(1, document.documentElement.scrollHeight - vh);
-    root.style.setProperty("--scroll", (reduceMotion ? 0 : smoothY / max).toFixed(4));
-
-    if (shotFrame && shotStage && shotSticky) {
-      if (stageContentHeight !== shotSticky.offsetHeight) {
-        stageContentHeight = shotSticky.offsetHeight;
-        shotStage.style.setProperty("--stage-content-height", stageContentHeight + "px");
+    if (bands) {
+      const parallax = !reduceMotion && desktopQuery.matches;
+      const offset = -60 * target / geometry.maxScroll;
+      setStyle(bands, "transform", parallax ? "translate3d(0, " + offset.toFixed(2) + "px, 0)" : "none");
+    }
+    if (shotWindow) {
+      const progress = clamp((smoothY + geometry.stickyTop - geometry.stageTop) / geometry.stageDistance, 0, 1);
+      shotFrame.classList.toggle("is-animating", !!stageVisible && !reduceMotion && progress > 0.12 && progress < 0.8);
+      if (reduceMotion) {
+        setStyle(shotWindow, "opacity", "1");
+        setStyle(shotWindow, "transform", "none");
+      } else if (stageVisible) {
+        // Hold the wallpaper before the window rises and unfolds into place.
+        const unfold = easeInOut(clamp((progress - 0.12) / 0.68, 0, 1));
+        setStyle(shotWindow, "opacity", clamp((progress - 0.12) / 0.18, 0, 1).toFixed(4));
+        setStyle(shotWindow, "transform", "translate3d(0, " + ((1 - unfold) * geometry.shotHeight * 0.38).toFixed(2)
+          + "px, " + (-180 * (1 - unfold)).toFixed(2) + "px) rotateX(" + (62 * (1 - unfold)).toFixed(2)
+          + "deg) scale(" + (0.86 + 0.14 * unfold).toFixed(4) + ")");
       }
-      // Hold the wallpaper in view before the window rises and unfolds into place.
-      const top = shotStage.getBoundingClientRect().top + target - smoothY;
-      const distance = Math.max(1, shotStage.offsetHeight - stageContentHeight);
-      const stickyTop = parseFloat(getComputedStyle(shotSticky).top) || 0;
-      const progress = clamp((stickyTop - top) / distance, 0, 1);
-      const unfold = reduceMotion ? 1 : easeInOut(clamp((progress - 0.12) / 0.68, 0, 1));
-      const opacity = reduceMotion ? 1 : clamp((progress - 0.12) / 0.18, 0, 1);
-      shotFrame.style.setProperty("--window-opacity", opacity.toFixed(4));
-      shotFrame.style.setProperty("--window-y", ((1 - unfold) * shotFrame.clientHeight * 0.38).toFixed(2) + "px");
-      shotFrame.style.setProperty("--window-z", (-180 * (1 - unfold)).toFixed(2) + "px");
-      shotFrame.style.setProperty("--window-tilt", (62 * (1 - unfold)).toFixed(2) + "deg");
-      shotFrame.style.setProperty("--window-scale", (0.86 + 0.14 * unfold).toFixed(4));
     }
-    nav.classList.toggle("is-compact", target > 40);
+    stageWasVisible = stageVisible;
+    if (nav) nav.classList.toggle("is-compact", target > 40);
 
-    if (foldSection) {
-      var rect = foldSection.getBoundingClientRect();
-      var fp = clamp(-rect.top / Math.max(1, rect.height - vh), 0, 1);
-      steps[0].parentNode.style.setProperty("--fold-progress", fp.toFixed(4));
-      setFoldStep(Math.min(steps.length - 1, Math.floor(fp * steps.length)));
+    if (foldSection && target + geometry.viewportHeight > geometry.foldTop && target < geometry.foldTop + geometry.foldHeight) {
+      const progress = clamp((target - geometry.foldTop) / geometry.foldDistance, 0, 1);
+      setStyle(steps[0].parentNode, "--fold-progress", progress.toFixed(4));
+      const step = Math.min(steps.length - 1, Math.floor(progress * steps.length));
+      if (foldLayoutDirty) foldStep = -1;
+      setFoldStep(step);
+      foldLayoutDirty = false;
     }
 
-    if (smoothY !== target) {
-      requestAnimationFrame(frame);
-    } else {
-      ticking = false;
-    }
+    if (smoothY !== target) kick();
   };
   const kick = () => {
-    if (!ticking) { ticking = true; requestAnimationFrame(frame); }
+    if (!animationFrame && !document.hidden) animationFrame = requestAnimationFrame(frame);
   };
   window.addEventListener("scroll", kick, { passive: true });
-  window.addEventListener("resize", function () { var s = foldStep; foldStep = -1; setFoldStep(s < 0 ? 0 : s); kick(); });
+  window.addEventListener("resize", scheduleMeasure, { passive: true });
+  desktopQuery.addEventListener("change", kick);
   motionQuery.addEventListener("change", () => {
     reduceMotion = motionQuery.matches;
-    kick();
+    if (reduceMotion) revealTargets.forEach((element) => element.classList.add("is-in"));
+    scheduleMeasure();
   });
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      cancelAnimationFrame(animationFrame);
+      cancelAnimationFrame(measureFrame);
+      cancelAnimationFrame(highlightFrame);
+      animationFrame = measureFrame = highlightFrame = 0;
+      pointer = null;
+      if (shotFrame) shotFrame.classList.remove("is-animating");
+    } else {
+      smoothY = window.scrollY;
+      stageWasVisible = false;
+      scheduleMeasure();
+    }
+  });
+  if ("ResizeObserver" in window) {
+    const resizeObserver = new ResizeObserver(scheduleMeasure);
+    resizeObserver.observe(document.body);
+    if (shotSticky) resizeObserver.observe(shotSticky);
+  }
+  if (shot) shot.addEventListener("load", scheduleMeasure);
+  if (document.fonts) document.fonts.ready.then(scheduleMeasure);
 
   // ---------------------------------------------------------------- manual contents
   var tocLinks = Array.prototype.slice.call(document.querySelectorAll(".toc a"));
@@ -292,7 +369,7 @@
   applyScheme();
   applyLanguage();
   setFoldStep(0);
-  kick();
+  scheduleMeasure();
   // Hero copy reveals on load rather than waiting for the observer.
   requestAnimationFrame(function () {
     document.querySelectorAll(".hero [data-reveal]").forEach(function (el) { el.classList.add("is-in"); });

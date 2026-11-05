@@ -3,7 +3,7 @@ using System.Text;
 
 namespace FoldGit.Core.Git;
 
-public sealed class RepositoryService(GitProcess process)
+public sealed partial class RepositoryService(GitProcess process)
 {
     private readonly ConcurrentDictionary<string, Lazy<Task>> fetches = new(StringComparer.Ordinal);
     private readonly ConcurrentDictionary<string, (string Head, Commit[] Commits)> searchIndexes = new(StringComparer.Ordinal);
@@ -125,7 +125,8 @@ public sealed class RepositoryService(GitProcess process)
         process.InRepositoryAsync(directory, async session =>
         {
             if (string.IsNullOrWhiteSpace(message)) throw new GitException("A commit message is required.");
-            await session.RunAsync(["commit", .. amend ? new[] { "--amend" } : [], "--file=-"], Encoding.UTF8.GetBytes(message));
+            // WinUI text boxes break lines with "\r", which Git would keep inside the message.
+            await session.RunAsync(["commit", .. amend ? new[] { "--amend" } : [], "--file=-"], Encoding.UTF8.GetBytes(message.ReplaceLineEndings("\n")));
             return true;
         }, cancellationToken);
 
@@ -200,7 +201,7 @@ public sealed class RepositoryService(GitProcess process)
         await task.WaitAsync(cancellationToken);
     }
 
-    public Task PullAsync(string directory, CancellationToken cancellationToken = default) => ActionAsync(directory, ["pull", "--no-edit"], cancellationToken);
+    public Task PullAsync(string directory, CancellationToken cancellationToken = default, bool fastForwardOnly = false) => ActionAsync(directory, fastForwardOnly ? ["pull", "--ff-only"] : ["pull", "--no-edit"], cancellationToken);
     public Task PushAsync(string directory, CancellationToken cancellationToken = default) => ActionAsync(directory, ["push"], cancellationToken);
     public Task PushReferenceAsync(string directory, string remote, string reference, CancellationToken cancellationToken = default) =>
         ActionAsync(directory, ["push", "--set-upstream", "--", remote, reference], cancellationToken);

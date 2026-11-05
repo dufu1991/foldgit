@@ -32,9 +32,12 @@ public sealed class GitProcess(string executable, Func<string, string>? identity
         finally { lane.Release(); }
     }
 
+    internal Task InRepositoryRecoveryAsync(string directory, Func<GitSession, Task> operation) =>
+        operation(new(this, directory, CancellationToken.None));
+
     public async Task<GitOutput> ExecuteAsync(string directory, IReadOnlyList<string> arguments,
         byte[]? input = null, bool background = false, CancellationToken cancellationToken = default,
-        int[]? acceptedExitCodes = null, TimeSpan? timeout = null)
+        int[]? acceptedExitCodes = null, TimeSpan? timeout = null, IReadOnlyDictionary<string, string>? environment = null)
     {
         using var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         deadline.CancelAfter(timeout ?? TimeSpan.FromMinutes(10));
@@ -54,6 +57,8 @@ public sealed class GitProcess(string executable, Func<string, string>? identity
             start.Environment["GCM_INTERACTIVE"] = "never";
             start.Environment["SSH_ASKPASS_REQUIRE"] = "never";
         }
+        if (environment is not null)
+            foreach (var (key, value) in environment) start.Environment[key] = value;
         using var process = new Process { StartInfo = start };
         if (!process.Start()) throw new GitException("Git could not be started.");
         using var registration = deadline.Token.Register(() =>
@@ -115,7 +120,7 @@ public sealed class GitSession(GitProcess process, string directory, Cancellatio
 {
     public string Directory { get; } = directory;
     public Task<GitOutput> RunAsync(IReadOnlyList<string> arguments, byte[]? input = null,
-        bool background = false, int[]? acceptedExitCodes = null) =>
-        process.ExecuteAsync(Directory, arguments, input, background, cancellationToken, acceptedExitCodes);
+        bool background = false, int[]? acceptedExitCodes = null, IReadOnlyDictionary<string, string>? environment = null) =>
+        process.ExecuteAsync(Directory, arguments, input, background, cancellationToken, acceptedExitCodes, environment: environment);
     public async Task<string> TextAsync(params string[] arguments) => (await RunAsync(arguments)).Text;
 }

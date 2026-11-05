@@ -41,6 +41,114 @@ async Task<string> Repository(string name)
 }
 try
 {
+    await Test("Squash middle and root ranges, editable multiline messages and unchanged trees", async () =>
+    {
+        var directory = await Repository("squash middle '$() 中文");
+        for (var index = 0; index < 4; index++) await git.ExecuteAsync(directory, ["commit", "--allow-empty", "-m", "commit " + index]);
+        var before = await service.HistoryAsync(directory);
+        var selected = new HashSet<string> { before[2].Hash, before[3].Hash };
+        await git.ExecuteAsync(directory, ["branch", "keep", before[2].Hash]);
+        await git.ExecuteAsync(directory, ["config", "rebase.updateRefs", "true"]);
+        var tree = (await git.ExecuteAsync(directory, ["rev-parse", "HEAD^{tree}"])).Text;
+        var plan = await service.PrepareSquashAsync(directory, selected);
+        Assert(plan.Message == before[3].Subject + " | " + before[2].Subject);
+        Assert(plan.FollowingCount == 2);
+        var message = "feat: 压缩提交\nbody $() `literal` 'quoted'\nCo-authored-by: Other <other@example.com>";
+        var result = await service.SquashAsync(directory, plan, message);
+        var after = await service.HistoryAsync(directory);
+        Assert(after.Length == before.Length - 1);
+        Assert(after[2].Hash == result && after[2].Message.TrimEnd('\r', '\n') == message);
+        Assert(after[0].Message == before[0].Message && after[1].Message == before[1].Message);
+        Assert((await git.ExecuteAsync(directory, ["rev-parse", "HEAD^{tree}"])).Text == tree);
+        Assert((await git.ExecuteAsync(directory, ["rev-parse", "refs/heads/keep"])).Text.Trim() == before[2].Hash);
+        Assert((await git.ExecuteAsync(directory, ["status", "--porcelain"])).Text.Length == 0);
+        Assert((await git.ExecuteAsync(directory, ["for-each-ref", "refs/foldgit/squash-backups"])).Text.Length == 0);
+        Assert(!File.Exists(Path.Combine(directory, ".git", "foldgit-squash.json")));
+        var root = await service.PrepareSquashAsync(directory, after.Select(commit => commit.Hash).ToHashSet());
+        await service.SquashAsync(directory, root, "one\ntwo\nthree");
+        var final = await service.HistoryAsync(directory);
+        Assert(final.Length == 1 && final[0].Parents.Length == 0 && final[0].Message.TrimEnd('\r', '\n') == "one\ntwo\nthree");
+        Assert(final[0].Subject == "one");
+        var detail = await service.GetCommitAsync(directory, "HEAD");
+        Assert(detail.Subject == "one" && detail.Message.TrimEnd('\r', '\n') == "one\ntwo\nthree");
+    });
+    await Test("Commit and squash messages store Windows text box line breaks as LF", async () =>
+    {
+        var directory = await Repository("line endings");
+        await File.WriteAllTextAsync(Path.Combine(directory, "file.txt"), "one");
+        await service.StageAllAsync(directory, true);
+        await service.CommitAsync(directory, "feat: first\r\rbody\r\nmore", false);
+        var first = (await git.ExecuteAsync(directory, ["log", "-1", "--format=%B"])).Text;
+        Assert(!first.Contains('\r') && first.TrimEnd('\n') == "feat: first\n\nbody\nmore");
+        await git.ExecuteAsync(directory, ["commit", "--allow-empty", "-m", "second"]);
+        var commits = await service.HistoryAsync(directory);
+        var plan = await service.PrepareSquashAsync(directory, commits.Select(commit => commit.Hash).ToHashSet());
+        await service.SquashAsync(directory, plan, "squashed\r\rbody");
+        var raw = (await git.ExecuteAsync(directory, ["log", "-1", "--format=%B"])).Text;
+        Assert(!raw.Contains('\r') && raw.TrimEnd('\n') == "squashed\n\nbody");
+    });
+    await Test("Squash recovery reports a corrupt journal as needing attention", async () =>
+    {
+        var directory = await Repository("squash journal");
+        for (var index = 0; index < 2; index++) await git.ExecuteAsync(directory, ["commit", "--allow-empty", "-m", "commit " + index]);
+        var commits = await service.HistoryAsync(directory);
+        var journal = Path.Combine(directory, ".git", "foldgit-squash.json");
+        await File.WriteAllTextAsync(journal, "{");
+        await Throws(async () => await service.PrepareSquashAsync(directory, commits.Select(commit => commit.Hash).ToHashSet()));
+        await Throws(async () => await service.RecoverSquashAsync(directory));
+        Assert(File.Exists(journal));
+        File.Delete(journal);
+        await service.RecoverSquashAsync(directory);
+    });
+    await Test("Squash rejects gaps, foreign commits, dirty worktrees, stale plans and unavailable remotes", async () =>
+    {
+        var directory = await Repository("squash rejected");
+        for (var index = 0; index < 3; index++) await git.ExecuteAsync(directory, ["commit", "--allow-empty", "-m", "commit " + index]);
+        var before = await service.HistoryAsync(directory);
+        await Throws(async () => await service.PrepareSquashAsync(directory, new HashSet<string> { before[0].Hash, before[2].Hash }));
+        var selected = new HashSet<string> { before[0].Hash, before[1].Hash };
+        await File.WriteAllTextAsync(Path.Combine(directory, "untracked.txt"), "keep");
+        await Throws(async () => await service.PrepareSquashAsync(directory, selected));
+        File.Delete(Path.Combine(directory, "untracked.txt"));
+        var plan = await service.PrepareSquashAsync(directory, selected);
+        var indexLock = Path.Combine(directory, ".git", "index.lock");
+        await File.WriteAllTextAsync(indexLock, "");
+        await Throws(async () => await service.PrepareSquashAsync(directory, selected));
+        await Throws(async () => await service.SquashAsync(directory, plan, "combined"));
+        Assert(File.Exists(indexLock));
+        Assert((await git.ExecuteAsync(directory, ["rev-parse", "HEAD"])).Text.Trim() == plan.Head);
+        Assert((await git.ExecuteAsync(directory, ["for-each-ref", "refs/foldgit/squash-backups"])).Text.Length == 0);
+        File.Delete(indexLock);
+        await git.ExecuteAsync(directory, ["commit", "--allow-empty", "-m", "agent change"]);
+        await Throws(async () => await service.SquashAsync(directory, plan, "combined"));
+        await git.ExecuteAsync(directory, ["checkout", "--detach"]);
+        await Throws(async () => await service.PrepareSquashAsync(directory, selected));
+        await git.ExecuteAsync(directory, ["switch", "main"]);
+        await git.ExecuteAsync(directory, ["remote", "add", "offline", Path.Combine(directory, "missing.git")]);
+        await Throws(async () => await service.PrepareSquashAsync(directory, selected));
+    });
+    await Test("Squash checks all remote branches and tags and rechecks publication before execution", async () =>
+    {
+        var directory = await Repository("squash remote");
+        var remote = await Repository("squash published");
+        await git.ExecuteAsync(remote, ["config", "receive.denyCurrentBranch", "ignore"]);
+        await git.ExecuteAsync(directory, ["remote", "add", "origin", remote]);
+        await git.ExecuteAsync(directory, ["config", "remote.origin.fetch", "+refs/heads/missing:refs/remotes/origin/missing"]);
+        await git.ExecuteAsync(directory, ["commit", "--allow-empty", "-m", "base"]);
+        await git.ExecuteAsync(directory, ["push", "origin", "HEAD:refs/heads/topic"]);
+        await git.ExecuteAsync(directory, ["commit", "--allow-empty", "-m", "one\n\nbody"]);
+        await git.ExecuteAsync(directory, ["commit", "--allow-empty", "-m", "two"]);
+        var commits = await service.HistoryAsync(directory);
+        var selected = new HashSet<string> { commits[0].Hash, commits[1].Hash };
+        var plan = await service.PrepareSquashAsync(directory, selected);
+        Assert(plan.Message == "one | two");
+        await git.ExecuteAsync(directory, ["push", "origin", "HEAD:refs/heads/topic"]);
+        await Throws(async () => await service.SquashAsync(directory, plan, plan.Message));
+        await git.ExecuteAsync(directory, ["push", "origin", ":refs/heads/topic"]);
+        await git.ExecuteAsync(directory, ["push", "origin", "HEAD:refs/tags/published"]);
+        await Throws(async () => await service.PrepareSquashAsync(directory, selected));
+        Assert((await git.ExecuteAsync(directory, ["for-each-ref", "refs/foldgit/squash-check"])).Text.Length == 0);
+    });
     await Test("Commit time modes, elapsed boundaries, localization and time zones", () =>
     {
         var now = DateTimeOffset.Parse("2024-11-04T00:00:00Z");
@@ -112,6 +220,9 @@ try
         {
             var text = new TextCatalog(language);
             Assert(text.Get("Commit").Length > 0);
+            Assert(text.GetErrorMessage("fatal: remote repository is unavailable\nDetails from Git.") == "fatal: remote repository is unavailable\nDetails from Git.");
+            Assert(text.GetErrorMessage("The Git index is locked. Wait for other Git operations to finish. If the lock remains, check for an interrupted Git process.")
+                == text.Get("The Git index is locked. Wait for other Git operations to finish. If the lock remains, check for an interrupted Git process."));
             foreach (var count in new long[] { 0, 1, 2, 5, 11, 21, 22, 25 }) Assert(!text.Count("%lld commits", count).Contains('%'));
         }
         Assert(TextCatalog.PluralCategory("ru", 21) == "one" && TextCatalog.PluralCategory("ru", 22) == "few");

@@ -156,7 +156,7 @@ public sealed partial class MainWindow
                     if (selected) await Model.SelectRepositoryAsync(main); else await Model.RefreshAsync();
                 }
             }));
-            if (tree.Branch is not null) menu.Items.Add(Menu("Finish Worktree", () => FinishWorktreeAsync(tree.Path)));
+            if (tree.Branch is not null && !Model.Settings.DisableCommitOperations) menu.Items.Add(Menu("Finish Worktree", () => FinishWorktreeAsync(tree.Path)));
         }
         ShowMenu(menu, args, WorktreeList);
     }
@@ -175,6 +175,7 @@ public sealed partial class MainWindow
 
     private async Task FinishWorktreeAsync(string source)
     {
+        Model.RequireCommitOperations();
         if (Model.Trees is null || Model.Repositories is null) return;
         var pending = Model.Settings.PendingCompletions.FirstOrDefault(plan => plan.Source == source);
         CompletionPlan plan;
@@ -215,6 +216,7 @@ public sealed partial class MainWindow
             var integrated = await Model.Repositories.Process.ExecuteAsync(plan.Target, ["merge-base", "--is-ancestor", plan.SourceCommit, "refs/heads/" + plan.TargetBranch], acceptedExitCodes: [0, 1]);
             if (integrated.ExitCode != 0)
             {
+                Model.RequireCommitOperations();
                 var result = await Model.Trees.MergeAsync(plan);
                 if (!result.Complete) await ResolveMergeAsync(plan.Target);
             }
@@ -241,15 +243,21 @@ public sealed partial class MainWindow
     });
     private async Task ResolveMergeAsync(string directory)
     {
+        Model.RequireCommitOperations();
         if (Model.Trees is null) return;
         var state = await Model.Trees.MergeStateAsync(directory);
         var panel = new StackPanel { Spacing = 12, MinWidth = 520, MaxWidth = 800 };
         panel.Children.Add(new TextBlock { Text = L("Choose a file to compare both versions. Edit it externally or keep one version, then continue the merge."), TextWrapping = TextWrapping.Wrap });
         var files = new ComboBox { ItemsSource = state.Conflicts.Select(conflict => conflict.Path).ToArray(), HorizontalAlignment = HorizontalAlignment.Stretch };
         var versions = new Grid { ColumnSpacing = 8 }; versions.ColumnDefinitions.Add(new()); versions.ColumnDefinitions.Add(new());
-        var target = new TextBox { Header = L("Target Branch Version"), IsReadOnly = true, AcceptsReturn = true, TextWrapping = TextWrapping.NoWrap, MinHeight = 180, MaxHeight = 320, FontFamily = new("Cascadia Mono, Consolas") };
-        var incoming = new TextBox { Header = L("Incoming Branch Version"), IsReadOnly = true, AcceptsReturn = true, TextWrapping = TextWrapping.NoWrap, MinHeight = 180, MaxHeight = 320, FontFamily = new("Cascadia Mono, Consolas") }; Grid.SetColumn(incoming, 1); versions.Children.Add(target); versions.Children.Add(incoming);
+        var target = new TextBox { Style = (Style)Application.Current.Resources["MultilineTextBoxStyle"], Header = L("Target Branch Version"), IsReadOnly = true, TextWrapping = TextWrapping.NoWrap, MinHeight = 180, MaxHeight = 320, FontFamily = new("Cascadia Mono, Consolas") };
+        var incoming = new TextBox { Style = (Style)Application.Current.Resources["MultilineTextBoxStyle"], Header = L("Incoming Branch Version"), IsReadOnly = true, TextWrapping = TextWrapping.NoWrap, MinHeight = 180, MaxHeight = 320, FontFamily = new("Cascadia Mono, Consolas") }; Grid.SetColumn(incoming, 1); versions.Children.Add(target); versions.Children.Add(incoming);
         var actions = new StackPanel { Spacing = 4 };
+        foreach (var version in new[] { target, incoming })
+        {
+            ScrollViewer.SetHorizontalScrollBarVisibility(version, ScrollBarVisibility.Auto);
+            ScrollViewer.SetHorizontalScrollMode(version, ScrollMode.Enabled);
+        }
         var feedback = new TextBlock { TextWrapping = TextWrapping.Wrap };
         var dialog = new ContentDialog { Title = L("Resolve Merge"), XamlRoot = Root.XamlRoot, Content = new ScrollViewer { Content = panel }, PrimaryButtonText = L("Continue Merge"), SecondaryButtonText = L("Abort Merge"), CloseButtonText = L("Later"), IsPrimaryButtonEnabled = state.CanContinue, RequestedTheme = Root.ActualTheme };
         async Task Reload()
@@ -270,13 +278,13 @@ public sealed partial class MainWindow
         foreach (var (label, resolution) in new[] { ("Use Target Version", ConflictResolution.Target), ("Use Incoming Version", ConflictResolution.Incoming), ("Mark Resolved", ConflictResolution.Edited), ("Delete File", ConflictResolution.Delete) })
         {
             var button = new Button { Content = L(label) };
-            button.Click += async (_, _) => await Model.RunAsync(async () => { if (files.SelectedItem is string path) { await Model.Trees.ResolveAsync(directory, path, resolution); await Reload(); } }); actions.Children.Add(button);
+            button.Click += async (_, _) => await Model.RunAsync(async () => { if (files.SelectedItem is string path) { Model.RequireCommitOperations(); await Model.Trees.ResolveAsync(directory, path, resolution); await Reload(); } }); actions.Children.Add(button);
         }
         var open = new Button { Content = L("Open File") }; open.Click += (_, _) => { if (files.SelectedItem is string path) ExternalApplications.OpenDefault(Path.Combine(directory, path)); }; actions.Children.Add(open);
         panel.Children.Add(files); panel.Children.Add(versions); panel.Children.Add(actions); panel.Children.Add(feedback);
         await Reload();
         var result = await dialog.ShowAsync();
-        if (result == ContentDialogResult.Primary) await Model.Trees.ContinueAsync(directory);
+        if (result == ContentDialogResult.Primary) { Model.RequireCommitOperations(); await Model.Trees.ContinueAsync(directory); }
         if (result == ContentDialogResult.Secondary && await ConfirmAsync("Abort Merge?", L("Git will return this worktree to its pre-merge state. Conflict-resolution edits will be discarded. Source branch commits are kept."), "Abort Merge")) await Model.Trees.AbortAsync(directory);
         await Model.RefreshAsync();
     }
@@ -321,15 +329,20 @@ public sealed partial class MainWindow
         var timeModes = new[] { CommitTimeDisplayMode.Relative, CommitTimeDisplayMode.Absolute, CommitTimeDisplayMode.Hybrid };
         var commitTime = new ComboBox { Header = L("Commit Time"), ItemsSource = new[] { L("Relative Time"), L("Absolute Time"), L("Hybrid") }, SelectedIndex = Array.IndexOf(timeModes, settings.CommitTimeDisplayMode), HorizontalAlignment = HorizontalAlignment.Stretch };
         appearance.Children.Add(commitTime);
-        appearance.Children.Add(new TextBlock { Text = L("Hybrid shows relative times for the last 7 days and exact dates and times for older commits."), TextWrapping = TextWrapping.Wrap });
+        var hybridHint = new TextBlock { Text = L("Hybrid: relative times within 7 days, exact dates before that."), TextWrapping = TextWrapping.Wrap, Visibility = settings.CommitTimeDisplayMode == CommitTimeDisplayMode.Hybrid ? Visibility.Visible : Visibility.Collapsed };
+        appearance.Children.Add(hybridHint);
+        commitTime.SelectionChanged += (_, _) => hybridHint.Visibility = timeModes[commitTime.SelectedIndex] == CommitTimeDisplayMode.Hybrid ? Visibility.Visible : Visibility.Collapsed;
         var comparison = Tab("Diff Display");
         var side = Toggle(comparison, "Side by Side", settings.SideBySide); var wrap = Toggle(comparison, "Wrap Long Lines", settings.WordWrap);
         var lines = Toggle(comparison, "Line Numbers", settings.LineNumbers); var expanded = Toggle(comparison, "Expanded", settings.ExpandFiles);
         var size = new NumberBox { Header = L("Code Font Size"), Minimum = 11, Maximum = 18, Value = settings.FontSize, SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline }; comparison.Children.Add(size);
         var repository = Tab("Repositories");
         var worktrees = Toggle(repository, "Enable Worktrees", settings.WorktreesEnabled);
-        repository.Children.Add(new TextBlock { Text = L("After enabling worktrees globally, enable them for each repository in its context menu. Worktree information and management actions appear only for enabled repositories. Turning this off preserves repository choices."), TextWrapping = TextWrapping.Wrap });
-        var templates = new TextBox { Header = L("Commit Message Snippets"), Text = string.Join("\n---\n", settings.CommitTemplates), AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MinHeight = 120 }; repository.Children.Add(templates);
+        repository.Children.Add(new TextBlock { Text = L("Also enable worktrees per repository from its context menu."), TextWrapping = TextWrapping.Wrap });
+        var commits = Tab("Commit Operations");
+        var disableCommits = Toggle(commits, "Disable Commit Operations in FoldGit", settings.DisableCommitOperations);
+        commits.Children.Add(new TextBlock { Text = L("Hide commit, amend, squash, revert, merge, and staging controls."), TextWrapping = TextWrapping.Wrap });
+        var templates = new TextBox { Style = (Style)Application.Current.Resources["MultilineTextBoxStyle"], Header = L("Commit Message Snippets"), Text = string.Join("\n---\n", settings.CommitTemplates), MinHeight = 120, MaxHeight = 220 }; commits.Children.Add(templates);
         var applications = Tab("Applications");
         var appList = new ListView { ItemsSource = settings.Applications.Concat(ExternalApplications.Discover()).DistinctBy(value => value.Executable).ToArray(), DisplayMemberPath = "Name", SelectionMode = ListViewSelectionMode.Multiple, MaxHeight = 240 };
         foreach (var application in appList.Items.OfType<ExternalApplication>().Where(value => value.Pinned)) appList.SelectedItems.Add(application);
@@ -342,7 +355,7 @@ public sealed partial class MainWindow
         var removeApp = new Button { Content = L("Remove Custom Application") }; removeApp.Click += (_, _) => appList.ItemsSource = appList.Items.OfType<ExternalApplication>().Except(appList.SelectedItems.OfType<ExternalApplication>()).ToArray(); applications.Children.Add(removeApp);
         var about = Tab("About"); about.Children.Add(new TextBlock { Text = "FoldGit 0.4.2", Style = (Style)Application.Current.Resources["TitleTextBlockStyle"] });
         about.Children.Add(new TextBlock { Text = L("Git Client") });
-        about.Children.Add(new TextBox { Header = L("Open Source Licenses"), Text = await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Assets", "LICENSE.txt")), IsReadOnly = true, AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MaxHeight = 220 });
+        about.Children.Add(new TextBox { Style = (Style)Application.Current.Resources["MultilineTextBoxStyle"], Header = L("Open Source Licenses"), Text = await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Assets", "LICENSE.txt")), IsReadOnly = true, MaxHeight = 220 });
         var reset = new CheckBox { Content = L("Restore Defaults") }; about.Children.Add(reset);
         if (!await DialogAsync("Settings", tabs, "Save")) return;
         if (reset.IsChecked == true)
@@ -366,6 +379,7 @@ public sealed partial class MainWindow
             GitPath = git.Text.Length > 0 ? git.Text : null, SideBySide = side.IsChecked == true, WordWrap = wrap.IsChecked == true,
             LineNumbers = lines.IsChecked == true, ExpandFiles = expanded.IsChecked == true, FontSize = double.IsFinite(size.Value) ? Math.Clamp(size.Value, 11, 18) : 12,
             WorktreesEnabled = worktrees.IsChecked == true,
+            DisableCommitOperations = disableCommits.IsChecked == true,
             CommitTemplates = templates.Text.Split("\n---\n", StringSplitOptions.RemoveEmptyEntries),
             Applications = appList.Items.OfType<ExternalApplication>().Select(application => application with { Pinned = pinned.Contains(application.Executable) }).ToArray()
         });
@@ -377,4 +391,67 @@ public sealed partial class MainWindow
         if (await DialogAsync("Commit Message Snippets", list, "Apply") && list.SelectedItem is string message)
             Model.CommitMessage += (Model.CommitMessage.Length > 0 ? "\n" : "") + message;
     });
+    private async Task ShowSquashAsync(IReadOnlySet<string> hashes)
+    {
+        Model.RequireCommitOperations();
+        var directory = Model.Directory;
+        var repositories = Model.Repositories;
+        if (directory is null || repositories is null || Model.Search.Length > 0) return;
+        // Preparing fetches every remote, so show a progress dialog that can cancel it.
+        SquashPlan plan;
+        using (var cancellation = new CancellationTokenSource())
+        {
+            var progress = new ContentDialog { Title = L("Squash Commits"), Content = new ProgressBar { IsIndeterminate = true, MinWidth = 360 }, CloseButtonText = L("Cancel"), XamlRoot = Root.XamlRoot, RequestedTheme = Root.ActualTheme };
+            var preparing = Model.BusyAsync(() => repositories.PrepareSquashAsync(directory, hashes, cancellation.Token));
+            var showing = progress.ShowAsync().AsTask();
+            try
+            {
+                if (await Task.WhenAny(preparing, showing) == showing) await cancellation.CancelAsync();
+                plan = await preparing;
+            }
+            finally
+            {
+                // WinUI allows one open ContentDialog, so let the progress dialog close before the editor opens.
+                progress.Hide();
+                await Task.WhenAny(showing, Task.Delay(TimeSpan.FromSeconds(1)));
+            }
+        }
+        var editor = new TextBox { Style = (Style)Application.Current.Resources["MultilineTextBoxStyle"], Header = L("Commit Message"), Text = plan.Message, Height = 220 };
+        var panel = new StackPanel { Spacing = 12, MinWidth = 500, MaxWidth = 600 };
+        panel.Children.Add(new TextBlock { Text = plan.Branch });
+        panel.Children.Add(new TextBlock { Text = L("The selected commits will become one commit."), TextWrapping = TextWrapping.Wrap });
+        panel.Children.Add(new ScrollViewer { MaxHeight = 120, Content = new TextBlock { Text = string.Join("\n", plan.Commits.Select(commit => commit.ShortHash + "  " + commit.Subject)), TextWrapping = TextWrapping.Wrap } });
+        if (plan.FollowingCount > 0) panel.Children.Add(new TextBlock { Text = L("Later commits will be recreated with new hashes."), TextWrapping = TextWrapping.Wrap });
+        panel.Children.Add(editor);
+        var dialog = new ContentDialog { Title = L("Squash Commits"), Content = panel, PrimaryButtonText = L("Squash"), CloseButtonText = L("Cancel"), XamlRoot = Root.XamlRoot, RequestedTheme = Root.ActualTheme, DefaultButton = ContentDialogButton.Primary };
+        editor.TextChanged += (_, _) => dialog.IsPrimaryButtonEnabled = !string.IsNullOrWhiteSpace(editor.Text);
+        string? result = null;
+        while (result is null)
+        {
+            if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
+            // WinUI permits only one ContentDialog at a time, so close the editor before confirmation.
+            var confirmation = new ContentDialog
+            {
+                Title = L("Squash the selected commits?"),
+                Content = new TextBlock
+                {
+                    Text = plan.Branch + "\n\n" + L("This rewrites local commit history. The selected commits will be replaced by one commit."),
+                    TextWrapping = TextWrapping.Wrap, MaxWidth = 500
+                },
+                PrimaryButtonText = L("Squash"), CloseButtonText = L("Cancel"),
+                XamlRoot = Root.XamlRoot, RequestedTheme = Root.ActualTheme, DefaultButton = ContentDialogButton.Close
+            };
+            if (await confirmation.ShowAsync() != ContentDialogResult.Primary) continue;
+            Model.RequireCommitOperations();
+            if (Model.Directory != directory) throw new GitException(L("The repository changed. Select the commits again."));
+            result = await Model.BusyAsync(() => repositories.SquashAsync(directory, plan, editor.Text));
+        }
+        await Model.BusyAsync(async () => { await Model.RefreshAsync(); await Model.LoadHistoryAsync(); });
+        if (result is not null && Model.History.FirstOrDefault(row => row.Commit.Hash == result) is { } selected)
+        {
+            HistoryList.SelectedItems.Clear(); HistoryList.SelectedItem = selected;
+            HistoryList.ScrollIntoView(selected);
+        }
+    }
+
 }

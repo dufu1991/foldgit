@@ -62,6 +62,7 @@ public sealed partial class MainWindow : Window
         {
             foreach (var row in Model.History.Where(row => historySelection.Contains(row.Commit.Hash))) HistoryList.SelectedItems.Add(row);
             updatingSelection = false;
+            Model.SelectHistory(SelectedHistoryHashes());
             if (historySelection.Length > 0 && HistoryList.SelectedItems.Count == 0) Model.ClearSelection();
             UpdateRepositoryControls();
         };
@@ -138,12 +139,13 @@ public sealed partial class MainWindow : Window
         if (Model.Settings.CommitTimeDisplayMode == CommitTimeDisplayMode.Absolute) commitTimeTimer.Stop();
         else commitTimeTimer.Start();
         Root.RequestedTheme = Model.Settings.Appearance switch { "light" => ElementTheme.Light, "dark" => ElementTheme.Dark, _ => ElementTheme.Default };
-        foreach (var (item, key) in new (MenuFlyoutItem, string)[] { (AddButton, "Add"), (CloneButton, "Clone"), (RefreshButton, "Refresh"), (TagsButton, "Tags"), (StashesButton, "Stashed Changes"), (CompareButton, "Compare Branches or Tags") }) item.Text = L(key);
+        foreach (var (item, key) in new (MenuFlyoutItem, string)[] { (AddButton, "Add"), (CloneButton, "Clone"), (RefreshButton, "Refresh"), (TagsButton, "Tags"), (StashesButton, "Stashed Changes"), (CompareButton, "Compare Branches or Tags"), (SquashButton, "Squash Commits") }) item.Text = L(key);
         foreach (var (button, key) in new (Button, string)[] { (BranchButton, "New Branch"), (MoreButton, "More"), (NewWorktreeButton, "New Worktree"), (PruneButton, "Prune Missing Worktrees"), (ResolveButton, "Resolve Merge"), (CommitButton, "Commit"), (StageAllButton, "Stage All"), (UnstageAllButton, "Unstage All"), (StashButton, "Stash All Changes"), (TemplatesButton, "Commit Message Snippets") }) button.Content = L(key);
         foreach (var (element, key) in new (FrameworkElement, string)[] { (AddMenuButton, "Add"), (FetchButton, "Fetch"), (PullButton, "Pull"), (PushButton, "Push"), (BranchSelector, "Select Branch"), (RepositoryMenuButton, "More"), (OpenButton, "Open in"), (SettingsButton, "Settings"), (WorktreesButton, "Worktrees"), (LayoutButton, "Diff Layout"), (ChangesLayoutButton, "Diff Layout"), (ExpandButton, "Expand All Files"), (ChangesExpandButton, "Expand All Files"), (CollapseButton, "Collapse All Files"), (ChangesCollapseButton, "Collapse All Files") })
         { AutomationProperties.SetName(element, L(key)); ToolTipService.SetToolTip(element, L(key)); }
         RepositoriesHeading.Text = L("Repositories"); BranchesHeading.Text = L("Local Branches"); BranchFilter.PlaceholderText = L("Filter"); RemoteBranchesSection.Header = L("Remote Branches");
         ChangesLabel.Text = L("Uncommitted Changes"); WorkingTreeLabel.Text = L("Working Tree");
+        ReadOnlyUnstagedHeading.Text = L("Unstaged Changes"); ReadOnlyStagedHeading.Text = L("Staged Changes");
         UnstagedHeading.Text = L("Unstaged Changes"); StagedHeading.Text = L("Staged Changes"); EmptySelection.Text = L("No Selection");
         RepositoryFilter.PlaceholderText = L("Filter Repositories"); CommitSearch.PlaceholderText = L("Search Commits");
         CommitSearch.ItemsSource = Model.Settings.SearchHistory;
@@ -162,11 +164,14 @@ public sealed partial class MainWindow : Window
         WorktreesButton.Visibility = Model.Settings.WorktreesEnabled && enabled && Model.IsWorktreeEnabled(Model.Directory!) ? Visibility.Visible : Visibility.Collapsed;
         CurrentBranchLabel.Text = Model.Snapshot is { } snapshot ? snapshot.Branch.Length > 0 ? snapshot.Branch : L("Detached HEAD") : L("Branches");
         HistoryCount.Text = Model.Text.Count("%lld commits", Model.History.Count);
+        ResolveButton.Visibility = Model.Settings.DisableCommitOperations ? Visibility.Collapsed : Visibility.Visible;
         StageAllButton.IsEnabled = !Model.Busy && Model.Snapshot?.Files.Any(file => file.IsUnstaged || file.Conflict) == true;
         UnstageAllButton.IsEnabled = !Model.Busy && Model.Snapshot?.Files.Any(file => file.IsStaged) == true;
         StashButton.IsEnabled = !Model.Busy && Model.Snapshot?.Files.Length > 0;
         CommitButton.IsEnabled = Model.ViewingChanges && !Model.Busy && !string.IsNullOrWhiteSpace(Model.CommitMessage)
             && (Model.Snapshot?.Files.Any(file => file.IsStaged) == true || Model.Amend || Model.Snapshot?.Merging == true);
+        SquashButton.Visibility = Model.Settings.DisableCommitOperations ? Visibility.Collapsed : Visibility.Visible;
+        SquashButton.IsEnabled = !Model.Busy && Model.CanSquash;
         MoreButton.IsEnabled = !Model.Busy && Model.HasMoreHistory;
         MoreButton.Visibility = Model.HasMoreHistory ? Visibility.Visible : Visibility.Collapsed;
     }
@@ -188,6 +193,7 @@ public sealed partial class MainWindow : Window
         if (args.PropertyName == nameof(Model.Mode) && Model.Mode is WorkbenchMode.None or WorkbenchMode.Changes)
         {
             updatingSelection = true; HistoryList.SelectedItems.Clear(); updatingSelection = false;
+            Model.SelectHistory([]);
         }
         if (args.PropertyName == nameof(Model.Error)) { ErrorBar.Title = L("Error"); ErrorBar.Message = Model.Error; ErrorBar.IsOpen = Model.Error.Length > 0; }
         if (args.PropertyName == nameof(Model.Busy)) Progress.Visibility = Model.Busy ? Visibility.Visible : Visibility.Collapsed;
@@ -199,10 +205,11 @@ public sealed partial class MainWindow : Window
     {
         viewer.Text = Model.Text; viewer.SideBySide = Model.Settings.SideBySide; viewer.WordWrap = Model.Settings.WordWrap;
         viewer.LineNumbers = Model.Settings.LineNumbers; viewer.FontSizeSetting = Model.Settings.FontSize; viewer.DefaultExpanded = Model.Settings.ExpandFiles;
+        if (Model.Settings.DisableCommitOperations) staging = null;
         viewer.StagingLabel = staging.HasValue ? L(staging.Value ? "Stage This File" : "Unstage This File") : null;
-        viewer.StageFile = staging.HasValue ? file => Model.RunAsync(() => Model.MutateAsync((service, directory) => service.StageFileAsync(directory, file, staging.Value))) : null;
+        viewer.StageFile = staging.HasValue ? file => Model.RunAsync(() => Model.MutateCommitAsync((service, directory) => service.StageFileAsync(directory, file, staging.Value))) : null;
         viewer.StageHunk = staging.HasValue && Model.Snapshot?.Files.Any(file => file.Conflict) != true
-            ? (file, hunk) => Model.RunAsync(() => Model.MutateAsync((service, directory) => service.StageHunkAsync(directory, file, hunk, staging.Value))) : null;
+            ? (file, hunk) => Model.RunAsync(() => Model.MutateCommitAsync((service, directory) => service.StageHunkAsync(directory, file, hunk, staging.Value))) : null;
         viewer.Failed = error => Model.Error = error.Message;
         viewer.OpenFile = path => { if (Model.Directory is not null) ExternalApplications.OpenDefault(Path.Combine(Model.Directory, path)); };
         var repository = Model.Directory;
@@ -219,7 +226,22 @@ public sealed partial class MainWindow : Window
     }
     private void RenderDetail()
     {
-        CommitPane.Visibility = Model.ViewingChanges ? Visibility.Visible : Visibility.Collapsed;
+        var readOnlyChanges = Model.ViewingChanges && Model.Settings.DisableCommitOperations;
+        ReadOnlyChangesPane.Visibility = readOnlyChanges ? Visibility.Visible : Visibility.Collapsed;
+        if (readOnlyChanges)
+        {
+            ConfigureDiff(ReadOnlyUnstagedDiff, "index", "working");
+            ConfigureDiff(ReadOnlyStagedDiff, "HEAD", "index");
+            ReadOnlyUnstagedDiff.Show(Model.Snapshot?.Unstaged);
+            ReadOnlyStagedDiff.Show(Model.Snapshot?.Staged);
+        }
+        else
+        {
+            // Release the hidden pane's content without rebuilding its presentation.
+            ReadOnlyUnstagedDiff.Show(null);
+            ReadOnlyStagedDiff.Show(null);
+        }
+        CommitPane.Visibility = Model.ViewingChanges && !Model.Settings.DisableCommitOperations ? Visibility.Visible : Visibility.Collapsed;
         DetailPane.Visibility = Model.Mode is WorkbenchMode.Commit or WorkbenchMode.Comparison ? Visibility.Visible : Visibility.Collapsed;
         EmptySelection.Visibility = Model.Mode == WorkbenchMode.None ? Visibility.Visible : Visibility.Collapsed;
         ChangesButton.BorderBrush = Model.ViewingChanges ? (Brush)Root.Resources["SelectionBrush"] : new SolidColorBrush(Colors.Transparent);
@@ -301,7 +323,7 @@ public sealed partial class MainWindow : Window
     });
     private async void RefreshClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(async () => { await Model.RefreshAsync(); await Model.LoadHistoryAsync(); });
     private async void FetchClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(() => Model.MutateAsync((service, directory) => service.FetchAsync(directory, false)));
-    private async void PullClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(() => Model.MutateAsync((service, directory) => service.PullAsync(directory)));
+    private async void PullClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(() => Model.MutateAsync((service, directory) => service.PullAsync(directory, fastForwardOnly: Model.Settings.DisableCommitOperations)));
     private async void PushClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(async () =>
     {
         var branch = Model.Snapshot?.Branches.FirstOrDefault(value => value.Current);
@@ -311,8 +333,8 @@ public sealed partial class MainWindow : Window
         var remote = new ComboBox { Header = L("Remotes"), ItemsSource = Model.Snapshot.Remotes, SelectedIndex = 0, MinWidth = 340 };
         if (await DialogAsync("Push", remote, "Push")) await Model.MutateAsync((service, directory) => service.PushReferenceAsync(directory, (string)remote.SelectedItem, branch.Name));
     });
-    private async void StageAllClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(() => Model.MutateAsync((service, directory) => service.StageAllAsync(directory, true)));
-    private async void UnstageAllClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(() => Model.MutateAsync((service, directory) => service.StageAllAsync(directory, false)));
+    private async void StageAllClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(() => Model.MutateCommitAsync((service, directory) => service.StageAllAsync(directory, true)));
+    private async void UnstageAllClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(() => Model.MutateCommitAsync((service, directory) => service.StageAllAsync(directory, false)));
     private async void CommitClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(Model.CommitAsync);
     private async void StashClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(async () =>
     {
@@ -325,7 +347,7 @@ public sealed partial class MainWindow : Window
         Model.CommitMessage = (await Model.Repositories.HistoryAsync(Model.Directory, count: 1)).FirstOrDefault()?.Message ?? "";
     });
     private void ChangesClicked(object sender, RoutedEventArgs args) => Model.ShowChanges();
-    private async void UntrackedClicked(object sender, ItemClickEventArgs args) => await Model.RunAsync(() => Model.MutateAsync((service, directory) => service.StagePathsAsync(directory, [((FileStatus)args.ClickedItem).Path], true)));
+    private async void UntrackedClicked(object sender, ItemClickEventArgs args) => await Model.RunAsync(() => Model.MutateCommitAsync((service, directory) => service.StagePathsAsync(directory, [((FileStatus)args.ClickedItem).Path], true)));
     private async void RepositorySelected(object sender, SelectionChangedEventArgs args)
     {
         if (RepositoryList.SelectedItems.Count != 1 || RepositoryList.SelectedItem is not RepositoryRow { Path: { } path } || path == Model.Directory) return;
@@ -335,13 +357,19 @@ public sealed partial class MainWindow : Window
     {
         if (updatingSelection) return;
         var rows = HistoryList.SelectedItems.OfType<HistoryCommitRow>().ToArray();
+        Model.SelectHistory(rows.Select(row => row.Commit.Hash));
         if (rows.Length == 1) await Model.RunAsync(() => Model.ShowCommitAsync(rows[0].Commit));
         else if (rows.Length == 2)
         {
             var ordered = rows.OrderBy(row => Model.History.IndexOf(row)).ToArray();
             await Model.RunAsync(() => Model.ShowComparisonAsync(ordered[1].Commit.Hash, ordered[0].Commit.Hash));
         }
+        UpdateRepositoryControls();
     }
+    // The squash dialog reports its errors itself and marks only its Git work busy, not the time spent typing.
+    private async void SquashClicked(object sender, RoutedEventArgs args) => await Model.ReportAsync(() => ShowSquashAsync(SelectedHistoryHashes()));
+    private HashSet<string> SelectedHistoryHashes() => HistoryList.SelectedItems.OfType<HistoryCommitRow>().Select(row => row.Commit.Hash).ToHashSet(StringComparer.Ordinal);
+
     private void HistoryLoaded(object sender, RoutedEventArgs args)
     {
         if (VisualChild<ScrollViewer>(HistoryList) is { } scroll) scroll.ViewChanged += HistoryScrolled;
@@ -448,7 +476,7 @@ public sealed partial class MainWindow : Window
         var copy = new MenuFlyoutItem { Text = Model.Text.Get("Copy %@", row.Commit.ShortHash) };
         copy.Click += (_, _) => { var data = new DataPackage(); data.SetText(row.Commit.Hash); Clipboard.SetContent(data); }; menu.Items.Add(copy);
         menu.Items.Add(Menu("Checkout", () => Model.MutateAsync((service, directory) => service.SwitchAsync(directory, row.Commit.Hash, true))));
-        menu.Items.Add(Menu("Revert", async () =>
+        if (!Model.Settings.DisableCommitOperations) menu.Items.Add(Menu("Revert", async () =>
         {
             int? mainline = null;
             if (row.Commit.Parents.Length > 1)
@@ -456,8 +484,23 @@ public sealed partial class MainWindow : Window
                 var choice = await PromptAsync("Revert", "Base", "1"); if (choice is null) return;
                 mainline = int.Parse(choice);
             }
-            if (await ConfirmAsync("Revert", row.Commit.Subject, "Revert")) await Model.MutateAsync((service, directory) => service.RevertAsync(directory, row.Commit.Hash, mainline));
+            if (await ConfirmAsync("Revert", row.Commit.Subject, "Revert")) await Model.MutateCommitAsync((service, directory) => service.RevertAsync(directory, row.Commit.Hash, mainline));
         }));
+        var selected = SelectedHistoryHashes();
+        if (!selected.Contains(row.Commit.Hash))
+        {
+            HistoryList.SelectedItems.Clear();
+            HistoryList.SelectedItem = row;
+            selected = [row.Commit.Hash];
+        }
+        Model.SelectHistory(selected);
+        if (!Model.Settings.DisableCommitOperations && selected.Count >= 2)
+        {
+            var squash = new MenuFlyoutItem { Text = L("Squash Commits"), IsEnabled = Model.CanSquash };
+            squash.Click += async (_, _) => await Model.ReportAsync(() => ShowSquashAsync(selected));
+            if (Model.SquashBlock is { } reason) ToolTipService.SetToolTip(squash, L(RepositoryService.SquashBlockMessage(reason)));
+            menu.Items.Add(squash);
+        }
         ShowMenu(menu, args, HistoryList);
     }
     private void BranchRightTapped(object sender, RightTappedRoutedEventArgs args)
@@ -467,12 +510,12 @@ public sealed partial class MainWindow : Window
         menu.Items.Add(Menu("New Branch", () => CreateBranchAsync(branch.Hash)));
         if (!branch.Remote) menu.Items.Add(Menu("Rename Branch", async () => { BranchesFlyout.Hide(); var name = await PromptAsync("Rename Branch", "New Branch Name", branch.Name); if (name is not null) await Model.MutateAsync((service, directory) => service.RenameBranchAsync(directory, branch.Name, name)); }));
         menu.Items.Add(Menu("Delete", async () => { BranchesFlyout.Hide(); if (await ConfirmAsync("Delete", branch.Name, "Delete")) await Model.MutateAsync((service, directory) => service.DeleteBranchAsync(directory, branch.Name, branch.Remote)); }));
-        menu.Items.Add(Menu("Merge", async () =>
+        if (!Model.Settings.DisableCommitOperations) menu.Items.Add(Menu("Merge", async () =>
         {
             BranchesFlyout.Hide();
             if (await ConfirmAsync("Merge", branch.Name, "Merge"))
             {
-                try { await Model.MutateAsync((service, directory) => service.ActionAsync(directory, ["merge", "--no-edit", "--", branch.Hash])); }
+                try { await Model.MutateCommitAsync((service, directory) => service.ActionAsync(directory, ["merge", "--no-edit", "--", branch.Hash])); }
                 finally { await Model.RefreshAsync(); }
             }
         }));
@@ -484,7 +527,7 @@ public sealed partial class MainWindow : Window
         var paths = list.SelectedItems.OfType<FileStatus>().SelectMany(value => new[] { value.OriginalPath, value.Path }).Where(value => value is not null).Select(value => value!).Distinct().ToArray();
         if (!paths.Contains(file.Path)) paths = new[] { file.OriginalPath, file.Path }.Where(value => value is not null).Select(value => value!).ToArray();
         var menu = new MenuFlyout();
-        menu.Items.Add(Menu(staged ? "Unstage This File" : "Stage This File", () => Model.MutateAsync((service, directory) => service.StagePathsAsync(directory, paths, !staged))));
+        menu.Items.Add(Menu(staged ? "Unstage This File" : "Stage This File", () => Model.MutateCommitAsync((service, directory) => service.StagePathsAsync(directory, paths, !staged))));
         menu.Items.Add(Menu("Open File", () => { ExternalApplications.OpenDefault(Path.Combine(Model.Directory!, file.Path)); return Task.CompletedTask; }));
         ShowMenu(menu, args, list);
     }

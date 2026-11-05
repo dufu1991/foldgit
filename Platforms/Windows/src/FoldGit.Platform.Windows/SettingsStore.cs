@@ -14,6 +14,7 @@ public sealed record AppSettings
     public string Language { get; init; } = "automatic";
     public string Appearance { get; init; } = "automatic";
     public CommitTimeDisplayMode CommitTimeDisplayMode { get; init; } = CommitTimeDisplayMode.Hybrid;
+    public bool DisableCommitOperations { get; init; }
     public bool RestoreSession { get; init; } = true;
     public bool WorktreesEnabled { get; init; } = true;
     public bool SideBySide { get; init; }
@@ -40,10 +41,19 @@ public sealed class SettingsStore(string? root = null)
     {
         var path = Path.Combine(Directory, "settings.json");
         if (!File.Exists(path)) return new();
-        await using var stream = File.OpenRead(path);
-        var settings = await JsonSerializer.DeserializeAsync<AppSettings>(stream, Options)
+        using var document = JsonDocument.Parse(await File.ReadAllTextAsync(path));
+        var settings = document.Deserialize<AppSettings>(Options)
             ?? throw new InvalidDataException("Settings are invalid.");
         if (settings.Version != 1) throw new InvalidDataException("This settings version is not supported.");
+        var rootElement = document.RootElement;
+        if (!rootElement.TryGetProperty("DisableCommitOperations", out _)
+            && (rootElement.TryGetProperty("ShowCommitMessageArea", out var old) || rootElement.TryGetProperty("showCommitMessageArea", out old))
+            // Ignore a malformed legacy value instead of making the whole settings file unreadable.
+            && old.ValueKind is JsonValueKind.True or JsonValueKind.False)
+        {
+            settings = settings with { DisableCommitOperations = old.ValueKind == JsonValueKind.False };
+            await SaveAsync(settings);
+        }
         return settings;
     }
     public async Task SaveAsync(AppSettings settings)

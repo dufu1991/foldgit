@@ -24,6 +24,7 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
     private int historyGeneration;
     private int operations;
     private string branchQuery = "";
+    private HashSet<string> historySelection = new(StringComparer.Ordinal);
     private readonly Stack<Commit> parentTrail = new();
     public bool CanGoBack => parentTrail.Count > 0;
     public AppSettings Settings { get; private set; } = new();
@@ -58,6 +59,8 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
     [ObservableProperty] public partial bool HasMoreHistory { get; private set; } = true;
     [ObservableProperty] public partial WorkbenchMode Mode { get; private set; }
     [ObservableProperty] public partial Commit? SelectedCommit { get; private set; }
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(CanSquash))] public partial SquashBlockReason? SquashBlock { get; private set; } = SquashBlockReason.TooFewCommits;
+    public bool CanSquash => SquashBlock is null;
     public bool ViewingChanges => Mode == WorkbenchMode.Changes;
     public string DetailOldVersion { get; internal set; } = "HEAD";
     public string DetailNewVersion { get; internal set; } = "working";
@@ -129,6 +132,10 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
     public async Task SelectRepositoryAsync(string path)
     {
         path = Path.GetFullPath(path);
+        // A squash that needs attention must not stop the repository from opening; show it after loading instead.
+        string? recoveryError = null;
+        try { await Repositories!.RecoverSquashAsync(path, lifetime.Token); }
+        catch (Exception exception) when (exception is not OperationCanceledException) { recoveryError = Text.GetErrorMessage(exception.Message); }
         var generation = ++repositoryGeneration;
         historyRequest?.Cancel(); detailRequest?.Cancel();
         if (monitor is not null) { await monitor.DisposeAsync(); monitor = null; }
@@ -143,6 +150,7 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
         await SaveAsync();
         await RefreshAsync(); await LoadHistoryAsync();
         if (generation != repositoryGeneration || Repositories is null) return;
+        if (recoveryError is not null) Error = recoveryError;
         monitor = await RepositoryMonitor.CreateAsync(Repositories.Process, path,
             () => dispatch(() => _ = RunAsync(RefreshAsync)), exception => _ = dispatch(() => Error = exception.Message));
     }
@@ -208,6 +216,7 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
         Replace(History, CommitGraph.Layout(all).Select(graph => new HistoryCommitRow(graph)));
         RefreshCommitTime();
         HistoryChanged?.Invoke();
+        UpdateSquashBlock();
     }
     public async Task SearchAsync(string text)
     {
@@ -289,10 +298,20 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
     }
     public async Task CommitAsync()
     {
+        RequireCommitOperations();
         if (!ViewingChanges || Directory is null || Repositories is null) return;
         await Repositories.CommitAsync(Directory, CommitMessage, Amend, lifetime.Token);
         CommitMessage = ""; Amend = false;
         await RefreshAsync(); await LoadHistoryAsync(); ClearSelection();
+    }
+    public void RequireCommitOperations()
+    {
+        if (Settings.DisableCommitOperations) throw new GitException(Text.Get("Commit operations are disabled in FoldGit settings."));
+    }
+    public Task MutateCommitAsync(Func<RepositoryService, string, Task> action)
+    {
+        RequireCommitOperations();
+        return MutateAsync(action);
     }
     public async Task MutateAsync(Func<RepositoryService, string, Task> action)
     {
@@ -304,9 +323,35 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
         Busy = ++operations > 0; Error = "";
         try { await action(); }
         catch (OperationCanceledException) { }
-        catch (Exception exception) { Error = exception.Message; }
+        catch (Exception exception) { Error = Text.GetErrorMessage(exception.Message); }
         finally { Busy = --operations > 0; }
     }
+    /// <summary>Reports failures like <see cref="RunAsync"/> without marking the whole action busy, e.g. while a dialog waits for input.</summary>
+    public async Task ReportAsync(Func<Task> action)
+    {
+        Error = "";
+        try { await action(); }
+        catch (OperationCanceledException) { }
+        catch (Exception exception) { Error = Text.GetErrorMessage(exception.Message); }
+    }
+    /// <summary>Marks only the given work busy and lets its failure propagate to the caller.</summary>
+    public async Task<T> BusyAsync<T>(Func<Task<T>> action)
+    {
+        Busy = ++operations > 0;
+        try { return await action(); }
+        finally { Busy = --operations > 0; }
+    }
+    public Task BusyAsync(Func<Task> action) => BusyAsync(async () => { await action(); return true; });
+    public void SelectHistory(IEnumerable<string> hashes)
+    {
+        var selection = hashes.ToHashSet(StringComparer.Ordinal);
+        if (selection.SetEquals(historySelection)) return;
+        historySelection = selection;
+        UpdateSquashBlock();
+    }
+    // Recomputed only when the selection, history, HEAD or search changes, never on unrelated property changes.
+    private void UpdateSquashBlock() => SquashBlock = Search.Length > 0 && historySelection.Count >= 2 ? SquashBlockReason.CommitSearchActive
+        : RepositoryService.SquashSelectionError(historySelection, History.Select(row => row.Commit), Snapshot?.Head ?? "");
     public void RebuildRepositories()
     {
         var result = new List<RepositoryRow>();
@@ -348,6 +393,11 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
     }
 
     partial void OnModeChanged(WorkbenchMode value) => RefreshCommitTime();
+    partial void OnSnapshotChanged(RepositorySnapshot? oldValue, RepositorySnapshot? newValue)
+    {
+        if (oldValue?.Head != newValue?.Head) UpdateSquashBlock();
+    }
+    partial void OnSearchChanged(string value) => UpdateSquashBlock();
 
     private async Task AutoFetchAsync()
     {

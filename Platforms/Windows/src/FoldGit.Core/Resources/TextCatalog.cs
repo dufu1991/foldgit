@@ -28,6 +28,12 @@ public sealed partial class TextCatalog
             ? specific.GetString()! : catalog.GetProperty("strings").GetProperty(key).GetString()!;
         return Format(text, values);
     }
+    public string GetErrorMessage(string message)
+    {
+        var translated = catalog.GetProperty("strings").TryGetProperty(message, out _)
+            || catalog.TryGetProperty("windows", out var windows) && windows.TryGetProperty(message, out _);
+        return translated ? Get(message) : message;
+    }
     public string Count(string key, long count)
     {
         var rules = catalog.GetProperty("plurals").GetProperty(key).GetProperty("count");

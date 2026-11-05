@@ -36,6 +36,43 @@ async Task<string> CreateRepository(string name)
 }
 try
 {
+    await Test("Commit operation settings migration and new preference precedence", async () =>
+    {
+        var migrationRoot = Path.Combine(root, "commit-setting-migration");
+        Directory.CreateDirectory(migrationRoot);
+        var settingsStore = new SettingsStore(migrationRoot);
+        foreach (var oldKey in new[] { "ShowCommitMessageArea", "showCommitMessageArea" })
+        foreach (var old in new[] { true, false })
+        {
+            await File.WriteAllTextAsync(Path.Combine(migrationRoot, "settings.json"), "{\"Version\":1,\"" + oldKey + "\":" + (old ? "true" : "false") + "}");
+            var migrated = await settingsStore.LoadAsync();
+            Assert(migrated.DisableCommitOperations == !old, "The previous visibility preference must be preserved.");
+            Assert(!(await File.ReadAllTextAsync(Path.Combine(migrationRoot, "settings.json"))).Contains(oldKey), "The old key must be removed.");
+            await settingsStore.SaveAsync(migrated with { DisableCommitOperations = old });
+            Assert((await settingsStore.LoadAsync()).DisableCommitOperations == old, "New settings must take precedence.");
+        }
+        await File.WriteAllTextAsync(Path.Combine(migrationRoot, "settings.json"), "{\"Version\":1,\"ShowCommitMessageArea\":false,\"DisableCommitOperations\":false}");
+        Assert(!(await settingsStore.LoadAsync()).DisableCommitOperations, "An explicit new setting must override the old setting.");
+        await File.WriteAllTextAsync(Path.Combine(migrationRoot, "settings.json"), "{\"Version\":1,\"ShowCommitMessageArea\":\"no\"}");
+        Assert(!(await settingsStore.LoadAsync()).DisableCommitOperations, "A malformed legacy value must not make the settings unreadable.");
+        var unsupported = "{\"Version\":2,\"ShowCommitMessageArea\":false}";
+        await File.WriteAllTextAsync(Path.Combine(migrationRoot, "settings.json"), unsupported);
+        var versionRejected = false;
+        try { await settingsStore.LoadAsync(); } catch (InvalidDataException) { versionRejected = true; }
+        Assert(versionRejected, "Unsupported settings must be rejected before migration.");
+        Assert(await File.ReadAllTextAsync(Path.Combine(migrationRoot, "settings.json")) == unsupported, "An unsupported settings file must remain unchanged.");
+        await settingsStore.ResetAsync();
+        Assert(!(await settingsStore.LoadAsync()).DisableCommitOperations, "Reset must enable commit operations.");
+        await model.UpdateSettingsAsync(model.Settings with { DisableCommitOperations = true });
+        var rejected = false;
+        try { await model.CommitAsync(); } catch (GitException) { rejected = true; }
+        Assert(rejected, "A hidden commit command must also be rejected at execution.");
+        await model.UpdateSettingsAsync(model.Settings with { DisableCommitOperations = false });
+        await model.RunAsync(() => Task.FromException(new GitException("fatal: remote repository is unavailable\nDetails from Git.")));
+        Assert(model.Error == "fatal: remote repository is unavailable\nDetails from Git.", "Raw Git diagnostics must remain visible without a missing translation error.");
+        await model.RunAsync(() => Task.CompletedTask);
+    });
+    if (args.Contains("--settings-only")) { Console.WriteLine("Passed settings migration and execution gate."); return; }
     await Test("Commit time settings upgrade, persistence and reset", async () =>
     {
         Assert(JsonSerializer.Deserialize<AppSettings>("{\"Version\":1}")!.CommitTimeDisplayMode == CommitTimeDisplayMode.Hybrid,
@@ -78,6 +115,20 @@ try
         Assert(model.DetailCommitTime.Length == 0 && model.DetailCommitTimeTooltip.Length == 0, "Other views must not retain commit timestamps.");
         model.RefreshCommitTime(commit.Date.AddHours(3));
         Assert(row.Time.Text == "3 hours ago", "History timestamps should keep updating while another workspace view is active.");
+    });
+    await Test("Squash eligibility follows the history selection and search", async () =>
+    {
+        await model.SelectRepositoryAsync(repository);
+        model.SelectHistory([model.History[0].Commit.Hash]);
+        Assert(model.SquashBlock == SquashBlockReason.TooFewCommits, "One commit cannot be squashed.");
+        model.SelectHistory(model.History.Select(row => row.Commit.Hash));
+        Assert(model.CanSquash, "Two consecutive commits on the current branch can be squashed.");
+        model.Search = "first";
+        Assert(model.SquashBlock == SquashBlockReason.CommitSearchActive, "A filtered history must block squashing.");
+        model.Search = "";
+        Assert(model.CanSquash, "Clearing the search must restore eligibility.");
+        model.SelectHistory([]);
+        Assert(!model.CanSquash, "An empty selection cannot be squashed.");
     });
     await Test("Repository opens without implicitly entering the commit editor", async () =>
     {

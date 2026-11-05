@@ -751,6 +751,7 @@ html[data-scheme="dark"] .wt-row:has(.is-integrated) .wt-note { color: #4cd964; 
 .m-num { font: 700 13px/1 var(--mono); color: var(--accent); letter-spacing: 0.06em; }
 .m-section h2 { font-size: 26px; margin: 10px 0 14px; }
 .m-section h3 { font-size: 19px; margin: 24px 0 12px; }
+.m-section h3[id] { scroll-margin-top: 92px; }
 .m-section h4 { font-size: 16px; margin: 20px 0 10px; }
 .m-section p, .m-section li { color: var(--text-2); font-size: 16px; }
 .m-section b { color: var(--text); font-weight: 600; }

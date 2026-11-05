@@ -259,7 +259,7 @@
             <li data-i18n="rv.files.l1">语法高亮覆盖 50 多种常用语言，支持文件内查找</li>
             <li data-i18n="rv.files.l2">「提交记录」逐条列出改过这个文件的提交，点开即看当次差异</li>
             <li data-i18n="rv.files.l3">按名称或路径搜索文件，数千个文件也能快速定位</li>
-            <li data-i18n="rv.files.l4">大文件按需加载为纯文本，二进制文件一键交给外部应用</li>
+            <li data-i18n="rv.files.l4">图片直接预览与缩放，大文本按需加载，其他二进制文件交给外部应用</li>
           </ul>
           <a class="tile-link" href="manual.html#browse" data-i18n="rv.files.guide">查看目录视角说明 ↗</a>
         </article>
@@ -294,7 +294,7 @@
         <article class="tile glass tile-wide" data-reveal="fold" style="--d:0">
           <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H9l2 2h7.5A2.5 2.5 0 0 1 21 9.5v8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5Z"/><path d="M7 12h10M7 15.5h6"/></svg></div>
           <h3 data-i18n="d.multi.title">为多项目而生</h3>
-          <p data-i18n="d.multi.body">所有仓库常驻侧边栏，按目录或分组折叠，支持多种排序与过滤。可直接导入本地目录或克隆远程仓库，右键仓库或工作树即可复制本地路径。</p>
+          <p data-i18n="d.multi.body">按目录或分组折叠仓库，支持排序、过滤和分支显示。失效仓库可重新定位，移除侧栏条目也能撤销。</p>
         </article>
         <article class="tile glass" data-reveal="fold" style="--d:1">
           <div class="tile-icon"><svg viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="9" r="2"/><path d="M6 7v10M18 11c0 4-6 3-12 6"/></svg></div>
@@ -314,8 +314,20 @@
         <article class="tile glass" data-reveal="fold" style="--d:1">
           <div class="tile-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M12 4v16M6.5 9h3M14.5 9h3M6.5 13h3M14.5 13h3"/></svg></div>
           <h3 data-i18n="d.flow.title">按改动组织提交</h3>
-          <p data-i18n="d.flow.body">用目录树浏览改动，目录与差异各自展开。按目录、文件或代码块暂存，把确认过的改动组成一次提交。</p>
+          <p data-i18n="d.flow.body">按目录、文件或代码块暂存，也能多选、双击或拖拽文件。提交草稿留在当前会话，按需修改上次提交，把确认过的改动整理好。</p>
           <a class="tile-link" href="manual.html#review" data-i18n="d.flow.guide">查看审查与暂存说明 ↗</a>
+        </article>
+        <article class="tile glass tile-wide" data-reveal="fold" style="--d:0">
+          <div class="tile-icon"><svg viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><path d="M6 7v3c0 3 6 2 6 7M18 7v3c0 3-6 2-6 7"/></svg></div>
+          <h3 data-i18n="d.history.title">整理提交历史</h3>
+          <p data-i18n="d.history.body">将连续提交压缩为一个，也能拣选提交或按需重置分支。压缩前检查远程发布状态并备份历史，整理零散提交更安心。</p>
+          <a class="tile-link" href="manual.html#squash" data-i18n="d.history.guide">查看提交压缩说明 ↗</a>
+        </article>
+        <article class="tile glass" data-reveal="fold" style="--d:1">
+          <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <h3 data-i18n="d.reviewOnly.title">只看代码，也可以</h3>
+          <p data-i18n="d.reviewOnly.body">提交交给 Agent 或终端时，可关闭提交相关控件，继续浏览差异、完整文件和历史。拉取仅允许快进。</p>
+          <a class="tile-link" href="manual.html#commit-operations" data-i18n="d.reviewOnly.guide">查看提交操作设置 ↗</a>
         </article>
         <article class="tile glass tile-full" data-reveal="fold" style="--d:2">
           <div class="tile-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" class="fillish"/></svg></div>
@@ -344,7 +356,7 @@
         <div class="win-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
         <div>
           <h2 data-i18n="win.title">Windows 版，现已可下载。</h2>
-          <p data-i18n="win.body">基于 C#、WinUI 3 和 .NET 10，目前只是最简实现。作者没有 Windows 设备，欢迎感兴趣的你一起参与建设。</p>
+          <p data-i18n="win.body">基于 C#、WinUI 3 和 .NET 10，支持连续提交压缩与关闭提交相关操作，目前仍是最简实现。作者没有 Windows 设备，欢迎一起参与建设。</p>
           <div class="cta-row">
             <div class="download-option">
               <a class="btn btn-primary" href="https://github.com/dufu1991/foldgit/releases/latest/download/FoldGit-Windows-x64.exe" data-i18n="win.x64">下载 Windows x64 版</a>
@@ -410,7 +422,7 @@
     <p class="footer-note" data-i18n="footer.note">截图来自真实 macOS 界面，展示演示仓库。</p>
   </footer>
 
-  <script src="i18n.js?v=21"></script>
+  <script src="i18n.js?v=22"></script>
   <script src="main.js?v=13"></script>
 </body>
 </html>

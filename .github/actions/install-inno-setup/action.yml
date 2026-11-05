@@ -1,0 +1,13 @@
+name: Install Inno Setup
+description: Download, verify and silently install the pinned Inno Setup compiler to $RUNNER_TEMP/InnoSetup.
+runs:
+  using: composite
+  steps:
+    - name: Install Inno Setup compiler
+      shell: pwsh
+      run: |
+        $setup = Join-Path $env:RUNNER_TEMP 'innosetup-6.7.3.exe'
+        Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $setup
+        if ((Get-AuthenticodeSignature $setup).Status -ne 'Valid') { throw 'Inno Setup signature validation failed.' }
+        $process = Start-Process $setup -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', "/DIR=$env:RUNNER_TEMP/InnoSetup") -Wait -PassThru
+        if ($process.ExitCode -ne 0) { throw 'Inno Setup installation failed.' }

@@ -57,10 +57,17 @@ targets:
     postBuildScripts:
       - name: Generate localizations
         script: python3 "$SRCROOT/../../Scripts/generate-resources.py" macos "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
-        basedOnDependencyAnalysis: false
+        # Each catalog is listed because a directory input only tracks the directory's own timestamp.
         inputFiles:
           - $(SRCROOT)/../../Scripts/generate-resources.py
-          - $(SRCROOT)/../../Shared/Resources/Localization
+          - $(SRCROOT)/../../Shared/Resources/Localization/en.json
+          - $(SRCROOT)/../../Shared/Resources/Localization/zh-Hans.json
+          - $(SRCROOT)/../../Shared/Resources/Localization/zh-Hant.json
+          - $(SRCROOT)/../../Shared/Resources/Localization/ja.json
+          - $(SRCROOT)/../../Shared/Resources/Localization/ko.json
+          - $(SRCROOT)/../../Shared/Resources/Localization/ru.json
+          - $(SRCROOT)/../../Shared/Resources/Localization/fr.json
+          - $(SRCROOT)/../../Shared/Resources/Localization/es.json
         outputFiles:
           - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/en.lproj/Localizable.strings
           - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/en.lproj/Localizable.stringsdict

@@ -10,7 +10,7 @@
 - `tests/FoldGit.Core.Tests`：不依赖界面的行为测试程序，创建独立临时仓库。
 - `Packaging/package.ps1`：MSIX 构建、签名、校验文件和 App Installer 清单。
 
-开发环境需要 Visual Studio 的 WinUI 应用开发工具、Windows SDK、Python 3，以及 `global.json` 指定的 .NET SDK。NuGet 依赖固定版本并保存锁文件。
+开发环境需要 Visual Studio 的 WinUI 应用开发工具、Windows SDK、`global.json` 指定的 .NET SDK，以及 `PATH` 中可用的 Python 3.10 及以上版本（CI 使用 3.12）和 `Scripts/build-requirements.txt` 固定版本的 Pillow。应用构建会调用 Python 生成图标和包说明本地化资源，缺少 Python 或 Pillow 时构建直接报错并提示安装命令。两个生成步骤按源文件和脚本做增量判断，输入未变化时不会重复执行。NuGet 依赖固定版本并保存锁文件。
 
 ```powershell
 python -m pip install -r Scripts/build-requirements.txt

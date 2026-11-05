@@ -64,14 +64,16 @@ class LocalizationGenerationTests(unittest.TestCase):
             ET.SubElement(properties, "IntermediateOutputPath").text = (
                 "$(MSBuildThisFileDirectory)obj/$(WindowsPackageType)/"
             )
+            inputs = ET.SubElement(project, "ItemGroup")
+            ET.SubElement(inputs, "ManifestLocalizationsInput", Include=str(ROOT / "Scripts/generate-resources.py"))
             target = deepcopy(generation)
-            command = target.find("Exec")
-            command.attrib["Command"] = command.attrib["Command"].replace(
-                "python ", f'"{sys.executable}" ', 1
-            ).replace(
-                "$(MSBuildThisFileDirectory)..\\..\\..\\..\\Scripts\\generate-resources.py",
-                str(ROOT / "Scripts/generate-resources.py"),
-            )
+            for command in target.iter("Exec"):
+                command.attrib["Command"] = command.attrib["Command"].replace(
+                    "python ", f'"{sys.executable}" ', 1
+                ).replace(
+                    "$(MSBuildThisFileDirectory)..\\..\\..\\..\\Scripts\\generate-resources.py",
+                    str(ROOT / "Scripts/generate-resources.py"),
+                )
             project.append(target)
             ET.SubElement(project, "Target", Name="BeforeGenerateProjectPriFile")
             verify = ET.SubElement(project, "Target", Name="Verify", DependsOnTargets="BeforeGenerateProjectPriFile")

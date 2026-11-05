@@ -65,14 +65,16 @@ class WindowsIconTests(unittest.TestCase):
             for name, value in {"TargetFramework": f"net{sdk_version}.0", "OutputType": "Exe",
                                 "UseAppHost": "false", "NuGetAudit": "false"}.items():
                 ET.SubElement(properties, name).text = value
+            inputs = ET.SubElement(project, "ItemGroup")
+            ET.SubElement(inputs, "WindowsIconsInput", Include=str(GENERATOR))
             target = deepcopy(generation)
-            command = target.find("Exec")
-            command.attrib["Command"] = command.attrib["Command"].replace(
-                "python ", f'"{sys.executable}" ', 1
-            ).replace(
-                "$(MSBuildThisFileDirectory)..\\..\\..\\..\\Scripts\\generate-windows-icons.py",
-                str(GENERATOR),
-            )
+            for command in target.iter("Exec"):
+                command.attrib["Command"] = command.attrib["Command"].replace(
+                    "python ", f'"{sys.executable}" ', 1
+                ).replace(
+                    "$(MSBuildThisFileDirectory)..\\..\\..\\..\\Scripts\\generate-windows-icons.py",
+                    str(GENERATOR),
+                )
             project.append(target)
             report = ET.SubElement(project, "Target", Name="ReportIconBuild", AfterTargets="Build")
             ET.SubElement(report, "WriteLinesToFile", File="$(MSBuildThisFileDirectory)build-report.txt",

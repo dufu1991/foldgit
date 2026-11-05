@@ -16,11 +16,18 @@ on:
         default: false
 permissions:
   contents: read
+env:
+  # Sparkle command line tools for signing updates. The version must equal the Sparkle pin in
+  # Package.resolved; Scripts/tests/test_release_workflow.py checks it on every CI run.
+  SPARKLE_TOOLS_VERSION: '2.10.1'
+  SPARKLE_TOOLS_SHA256: '1a856d2a9edb8e628de88121d7be04cf0e2167f8641650b78fca00b14244cf27'
 concurrency:
   group: release
   cancel-in-progress: false
 jobs:
   version:
+    # Only main is released, so a manual run from another branch cannot become the latest release.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.read.outputs.version }}
@@ -51,6 +58,16 @@ jobs:
             echo "windows=false" >> "$GITHUB_OUTPUT"
           fi
 
+  tests:
+    needs: version
+    if: needs.version.outputs.release == 'true'
+    uses: ./.github/workflows/test.yml
+
+  windows-tests:
+    needs: version
+    if: needs.version.outputs.release == 'true' && needs.version.outputs.windows == 'true'
+    uses: ./.github/workflows/windows.yml
+
   macos:
     needs: version
     if: needs.version.outputs.release == 'true'
@@ -68,14 +85,13 @@ jobs:
           SPARKLE_EDDSA_PRIVATE_KEY: ${{ secrets.SPARKLE_EDDSA_PRIVATE_KEY }}
         run: test -n "$SPARKLE_EDDSA_PRIVATE_KEY"
       - name: Package ad hoc macOS application
-        run: Scripts/package-macos.sh "$RUNNER_TEMP/out"
+        run: Scripts/package-macos.sh --dmg-only "$RUNNER_TEMP/out"
       - name: Prepare signed Sparkle update
         env:
           SPARKLE_EDDSA_PRIVATE_KEY: ${{ secrets.SPARKLE_EDDSA_PRIVATE_KEY }}
         run: |
-          sparkle_version="$(python3 -c 'import json; from pathlib import Path; p=Path("Platforms/macOS/FoldGit.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved"); print(next(x["state"]["version"] for x in json.loads(p.read_text())["pins"] if x["identity"] == "sparkle"))')"
-          curl --fail --location --silent --show-error "https://github.com/sparkle-project/Sparkle/releases/download/$sparkle_version/Sparkle-$sparkle_version.tar.xz" -o "$RUNNER_TEMP/Sparkle.tar.xz"
-          echo '1a856d2a9edb8e628de88121d7be04cf0e2167f8641650b78fca00b14244cf27  '"$RUNNER_TEMP/Sparkle.tar.xz" | shasum -a 256 -c -
+          curl --fail --location --silent --show-error "https://github.com/sparkle-project/Sparkle/releases/download/$SPARKLE_TOOLS_VERSION/Sparkle-$SPARKLE_TOOLS_VERSION.tar.xz" -o "$RUNNER_TEMP/Sparkle.tar.xz"
+          echo "$SPARKLE_TOOLS_SHA256  $RUNNER_TEMP/Sparkle.tar.xz" | shasum -a 256 -c -
           mkdir -p "$RUNNER_TEMP/Sparkle"
           tar -xf "$RUNNER_TEMP/Sparkle.tar.xz" -C "$RUNNER_TEMP/Sparkle"
           python3 Scripts/sparkle.py --app "$RUNNER_TEMP/out/FoldGit.app" \
@@ -117,9 +133,14 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: Platforms/Windows/global.json
+          # Every Windows project restores from a committed packages.lock.json.
+          cache: true
+          cache-dependency-path: Platforms/Windows/**/packages.lock.json
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: pip
+          cache-dependency-path: Scripts/build-requirements.txt
       - name: Install Windows build dependencies
         run: python -m pip install -r Scripts/build-requirements.txt
 
@@ -139,14 +160,7 @@ jobs:
           Remove-Item $pfx
           "thumbprint=$($certificate.Thumbprint)" >> $env:GITHUB_OUTPUT
 
-      - name: Install Inno Setup compiler
-        shell: pwsh
-        run: |
-          $setup = Join-Path $env:RUNNER_TEMP 'innosetup-6.7.3.exe'
-          Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $setup
-          if ((Get-AuthenticodeSignature $setup).Status -ne 'Valid') { throw 'Inno Setup signature validation failed.' }
-          $process = Start-Process $setup -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', "/DIR=$env:RUNNER_TEMP/InnoSetup") -Wait -PassThru
-          if ($process.ExitCode -ne 0) { throw 'Inno Setup installation failed.' }
+      - uses: ./.github/actions/install-inno-setup
 
       - name: Build Windows installer
         shell: pwsh
@@ -157,18 +171,9 @@ jobs:
           Copy-Item $installer "release/FoldGit-Windows-$env:ARCHITECTURE.exe"
 
       - name: Verify installation and application startup
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $install = Join-Path $env:RUNNER_TEMP 'FoldGit-installed'
-          $setup = Start-Process "release/FoldGit-Windows-$env:ARCHITECTURE.exe" -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/DIR=$install") -Wait -PassThru
-          if ($setup.ExitCode -ne 0) { throw "Installer failed with exit code $($setup.ExitCode)." }
-          $app = Start-Process "$install/FoldGit.App.exe" -PassThru
-          Start-Sleep -Seconds 5
-          if ($app.HasExited) { throw "Installed application exited with code $($app.ExitCode)." }
-          Stop-Process -Id $app.Id
-          $uninstall = Start-Process "$install/unins000.exe" -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART') -Wait -PassThru
-          if ($uninstall.ExitCode -ne 0) { throw "Uninstaller failed with exit code $($uninstall.ExitCode)." }
+        uses: ./.github/actions/verify-windows-installer
+        with:
+          installer: release/FoldGit-Windows-${{ matrix.architecture }}.exe
 
       - name: Remove signing certificate
         if: always() && steps.certificate.outputs.thumbprint != ''
@@ -182,9 +187,11 @@ jobs:
           if-no-files-found: error
 
   publish:
-    needs: [version, macos, windows]
+    needs: [version, tests, windows-tests, macos, windows]
     if: >-
-      always() && needs.version.outputs.release == 'true' && needs.macos.result == 'success' &&
+      always() && needs.version.outputs.release == 'true' &&
+      needs.tests.result == 'success' && needs.macos.result == 'success' &&
+      (needs.windows-tests.result == 'success' || needs.windows-tests.result == 'skipped') &&
       (needs.windows.result == 'success' || needs.windows.result == 'skipped')
     runs-on: ubuntu-latest
     permissions:
@@ -193,8 +200,10 @@ jobs:
       VERSION: ${{ needs.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
+      # Only the release packages; the called test workflows upload their own build artifacts.
       - uses: actions/download-artifact@v4
         with:
+          pattern: '{macos,windows-*}'
           path: release
           merge-multiple: true
 
@@ -210,14 +219,6 @@ jobs:
           fi
           test "$(find release -type f | wc -l | tr -d ' ')" = "$expected"
           python3 Scripts/changelog.py --release "$VERSION" > notes.md
-          {
-            echo
-            echo '## SHA-256'
-            echo
-            echo '```text'
-            (cd release && shasum -a 256 *)
-            echo '```'
-          } >> notes.md
           cat notes.md
 
       - uses: softprops/action-gh-release@v2
@@ -227,12 +228,18 @@ jobs:
           name: FoldGit ${{ needs.version.outputs.version }}
           body_path: notes.md
           generate_release_notes: false
-          draft: false
+          # Upload everything to a draft first, so "latest" never points at a release without its appcast or DMG.
+          draft: true
           prerelease: false
           make_latest: "true"
           files: release/*
           fail_on_unmatched_files: true
           overwrite_files: true
+
+      - name: Publish the release after all assets are uploaded
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release edit "v$VERSION" --repo "$GITHUB_REPOSITORY" --draft=false --latest
 
       - name: Summarize Homebrew synchronization
         run: |

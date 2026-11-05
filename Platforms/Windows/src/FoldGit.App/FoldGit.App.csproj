@@ -46,16 +46,27 @@
     <AppxManifest Include="Package.appxmanifest" Condition="'$(WindowsPackageType)' == 'MSIX'" />
   </ItemGroup>
   <ItemGroup>
-    <UpToDateCheckInput Include="../../../../Shared/Resources/Localization/*.json;../../../../Scripts/generate-resources.py" />
-    <UpToDateCheckInput Include="../../../../Shared/Resources/Branding/Images/FoldGit.webp;../../../../Scripts/generate-windows-icons.py;../../../../Scripts/build-requirements.txt" />
+    <WindowsIconsInput Include="../../../../Shared/Resources/Branding/Images/FoldGit.webp;../../../../Scripts/generate-windows-icons.py;../../../../Scripts/build-requirements.txt" />
+    <ManifestLocalizationsInput Include="../../../../Shared/Resources/Localization/*.json;../../../../Scripts/generate-resources.py" />
+    <UpToDateCheckInput Include="@(WindowsIconsInput);@(ManifestLocalizationsInput)" />
   </ItemGroup>
+  <!-- The generators only rewrite changed files, so a stamp file records the last successful run.
+       When a target is skipped as up to date, MSBuild still evaluates its PropertyGroup and ItemGroup. -->
   <Target Name="GenerateWindowsIcons" BeforeTargets="AssignTargetPaths"
-          Condition="'$(DesignTimeBuild)' != 'true'">
+          Condition="'$(DesignTimeBuild)' != 'true'"
+          Inputs="@(WindowsIconsInput)" Outputs="$(IntermediateOutputPath)WindowsIcons.stamp">
     <PropertyGroup>
       <WindowsIconsDirectory>$(IntermediateOutputPath)WindowsIcons</WindowsIconsDirectory>
       <ApplicationIcon>$(WindowsIconsDirectory)\FoldGit.ico</ApplicationIcon>
     </PropertyGroup>
+    <Exec Command="python -c &quot;import PIL&quot;" IgnoreExitCode="true" IgnoreStandardErrorWarningFormat="true"
+          StandardOutputImportance="low" StandardErrorImportance="low">
+      <Output TaskParameter="ExitCode" PropertyName="WindowsIconsPythonExitCode" />
+    </Exec>
+    <Error Condition="'$(WindowsIconsPythonExitCode)' != '0'"
+           Text="Generating Windows icons requires Python 3 on PATH with Pillow. Run: python -m pip install -r Scripts/build-requirements.txt" />
     <Exec Command="python &quot;$(MSBuildThisFileDirectory)..\..\..\..\Scripts\generate-windows-icons.py&quot; &quot;$(WindowsIconsDirectory)&quot;" />
+    <Touch Files="$(IntermediateOutputPath)WindowsIcons.stamp" AlwaysCreate="true" />
     <ItemGroup>
       <GeneratedWindowsIcon Include="$(WindowsIconsDirectory)\*.png;$(WindowsIconsDirectory)\*.ico" />
       <Content Include="@(GeneratedWindowsIcon)"
@@ -65,8 +76,16 @@
     </ItemGroup>
   </Target>
   <Target Name="GenerateManifestLocalizations" BeforeTargets="BeforeGenerateProjectPriFile"
-          Condition="'$(DesignTimeBuild)' != 'true'">
+          Condition="'$(DesignTimeBuild)' != 'true'"
+          Inputs="@(ManifestLocalizationsInput)" Outputs="$(IntermediateOutputPath)ManifestLocalizations.stamp">
+    <Exec Command="python --version" IgnoreExitCode="true" IgnoreStandardErrorWarningFormat="true"
+          StandardOutputImportance="low" StandardErrorImportance="low">
+      <Output TaskParameter="ExitCode" PropertyName="ManifestLocalizationsPythonExitCode" />
+    </Exec>
+    <Error Condition="'$(ManifestLocalizationsPythonExitCode)' != '0'"
+           Text="Generating manifest localizations requires Python 3 on PATH. Install Python 3, then run: python -m pip install -r Scripts/build-requirements.txt" />
     <Exec Command="python &quot;$(MSBuildThisFileDirectory)..\..\..\..\Scripts\generate-resources.py&quot; windows &quot;$(IntermediateOutputPath)ManifestLocalizations&quot;" />
+    <Touch Files="$(IntermediateOutputPath)ManifestLocalizations.stamp" AlwaysCreate="true" />
     <ItemGroup>
       <ManifestLocalization Include="$(IntermediateOutputPath)ManifestLocalizations\**\Resources.resw" />
       <PRIResource Include="@(ManifestLocalization)"

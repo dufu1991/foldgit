@@ -1,0 +1,33 @@
+name: Verify Windows installer
+description: Silently install the EXE installer, start the installed application, then uninstall it.
+inputs:
+  installer:
+    description: Path to the EXE installer
+    required: true
+  check-icons:
+    description: Also verify the installed application icons with Scripts/generate-windows-icons.py
+    required: false
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - name: Install, start and uninstall
+      shell: pwsh
+      env:
+        INSTALLER: ${{ inputs.installer }}
+        CHECK_ICONS: ${{ inputs.check-icons }}
+      run: |
+        $ErrorActionPreference = 'Stop'
+        $install = Join-Path $env:RUNNER_TEMP 'FoldGit-installed'
+        $setup = Start-Process $env:INSTALLER -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/DIR=$install") -Wait -PassThru
+        if ($setup.ExitCode -ne 0) { throw "Installer failed with exit code $($setup.ExitCode)." }
+        if ($env:CHECK_ICONS -eq 'true') {
+          python Scripts/generate-windows-icons.py "$install/Assets" --check
+          if ($LASTEXITCODE -ne 0) { throw 'Installed icons are missing or incorrect.' }
+        }
+        $app = Start-Process "$install/FoldGit.App.exe" -PassThru
+        Start-Sleep -Seconds 5
+        if ($app.HasExited) { throw "Installed application exited with code $($app.ExitCode)." }
+        Stop-Process -Id $app.Id
+        $uninstall = Start-Process "$install/unins000.exe" -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART') -Wait -PassThru
+        if ($uninstall.ExitCode -ne 0) { throw "Uninstaller failed with exit code $($uninstall.ExitCode)." }

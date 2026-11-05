@@ -938,7 +938,6 @@
 /* Begin PBXShellScriptBuildPhase section */
 		E09F225F7DE7FC6DB6229B2C /* Generate localizations */ = {
 			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -946,7 +945,14 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/../../Scripts/generate-resources.py",
-				"$(SRCROOT)/../../Shared/Resources/Localization",
+				"$(SRCROOT)/../../Shared/Resources/Localization/en.json",
+				"$(SRCROOT)/../../Shared/Resources/Localization/zh-Hans.json",
+				"$(SRCROOT)/../../Shared/Resources/Localization/zh-Hant.json",
+				"$(SRCROOT)/../../Shared/Resources/Localization/ja.json",
+				"$(SRCROOT)/../../Shared/Resources/Localization/ko.json",
+				"$(SRCROOT)/../../Shared/Resources/Localization/ru.json",
+				"$(SRCROOT)/../../Shared/Resources/Localization/fr.json",
+				"$(SRCROOT)/../../Shared/Resources/Localization/es.json",
 			);
 			name = "Generate localizations";
 			outputFileListPaths = (

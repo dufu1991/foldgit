@@ -16,6 +16,8 @@ on:
       - website/**
       - Shared/Resources/Updates/**
       - .github/ISSUE_TEMPLATE/**
+  # The release workflow calls this so a version is only published after its tests pass.
+  workflow_call:
   workflow_dispatch:
     inputs:
       validate_signing:
@@ -35,17 +37,27 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: Platforms/Windows/global.json
+          # Every Windows project restores from a committed packages.lock.json.
+          cache: true
+          cache-dependency-path: Platforms/Windows/**/packages.lock.json
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: pip
+          cache-dependency-path: Scripts/build-requirements.txt
       - name: Install Windows build dependencies
         run: python -m pip install -r Scripts/build-requirements.txt
       - name: Validate shared resources and platform boundaries
         run: |
           python Scripts/validate-localizations.py
-          python -m unittest discover -s Scripts/tests -p 'test_*.py'
           python Scripts/check-platform-boundaries.py
           python Scripts/validate-windows.py
+      # test.yml runs the full script suite. Only the MSBuild integration tests need the .NET SDK set up here.
+      - name: Test MSBuild resource generation
+        if: matrix.runner == 'windows-2025'
+        run: |
+          python -m unittest discover -s Scripts/tests -p 'test_localizations.py'
+          python -m unittest discover -s Scripts/tests -p 'test_windows_icons.py'
       - name: Run real repository behavior suites
         run: dotnet run --project Platforms/Windows/tests/FoldGit.Core.Tests -c Release
       - name: Verify workbench navigation and staging workflows
@@ -65,9 +77,14 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: Platforms/Windows/global.json
+          # Every Windows project restores from a committed packages.lock.json.
+          cache: true
+          cache-dependency-path: Platforms/Windows/**/packages.lock.json
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: pip
+          cache-dependency-path: Scripts/build-requirements.txt
       - name: Install Windows build dependencies
         run: python -m pip install -r Scripts/build-requirements.txt
       - name: Prepare temporary signing certificate
@@ -106,30 +123,19 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Could not read the Debug output directory.' }
           python Scripts/generate-windows-icons.py "$target/Assets" --check
           if ($LASTEXITCODE -ne 0) { throw 'Debug icons are missing or incorrect.' }
-      - name: Install Inno Setup compiler
-        shell: pwsh
-        run: |
-          $setup = Join-Path $env:RUNNER_TEMP 'innosetup-6.7.3.exe'
-          Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $setup
-          if ((Get-AuthenticodeSignature $setup).Status -ne 'Valid') { throw 'Inno Setup signature validation failed.' }
-          $process = Start-Process $setup -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', "/DIR=$env:RUNNER_TEMP/InnoSetup") -Wait -PassThru
-          if ($process.ExitCode -ne 0) { throw 'Inno Setup installation failed.' }
-      - name: Build and verify EXE installer
+      - uses: ./.github/actions/install-inno-setup
+      - name: Build EXE installer
+        id: installer
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           $installer = Platforms/Windows/Packaging/installer.ps1 -Architecture ${{ matrix.architecture }} -CompilerPath "$env:RUNNER_TEMP/InnoSetup/ISCC.exe"
-          $install = Join-Path $env:RUNNER_TEMP 'FoldGit-installed'
-          $setup = Start-Process $installer -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/DIR=$install") -Wait -PassThru
-          if ($setup.ExitCode -ne 0) { throw 'Installer failed.' }
-          python Scripts/generate-windows-icons.py "$install/Assets" --check
-          if ($LASTEXITCODE -ne 0) { throw 'Installed icons are missing or incorrect.' }
-          $app = Start-Process "$install/FoldGit.App.exe" -PassThru
-          Start-Sleep -Seconds 5
-          if ($app.HasExited) { throw "Installed application exited with code $($app.ExitCode)." }
-          Stop-Process -Id $app.Id
-          $uninstall = Start-Process "$install/unins000.exe" -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART') -Wait -PassThru
-          if ($uninstall.ExitCode -ne 0) { throw 'Uninstaller failed.' }
+          "path=$installer" >> $env:GITHUB_OUTPUT
+      - name: Verify EXE installer
+        uses: ./.github/actions/verify-windows-installer
+        with:
+          installer: ${{ steps.installer.outputs.path }}
+          check-icons: 'true'
       - name: Remove temporary signing certificate
         if: always() && steps.certificate.outputs.thumbprint != ''
         shell: pwsh

@@ -17,7 +17,7 @@ struct RepositoryScreen: View {
     @State private var session = RepositorySession()
     private var logStore: HistoryStore { session.history }
     private var syncState: RemoteSyncState { session.remote }
-    @State private var isLoading = false
+    private var isLoading: Bool { runningOperation != nil }
     @State private var isFetching = false
     @State private var error: Error?
     @State private var showing = RepositoryPresentation()
@@ -27,8 +27,10 @@ struct RepositoryScreen: View {
     @State private var searchFocusRequest = UUID()
     @AppStorage(PreferenceKey.showCommitGraph.rawValue) private var showGraph = true
     @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
-    /// The short label of the operation that holds `isLoading`, shown beside the branch button.
-    @State private var runningOperation: String?
+    private enum Operation {
+        case branch, stash, commit, pull, push
+    }
+    @State private var runningOperation: Operation?
     /// Shared by the toolbar's Open in menu and the menu bar so applications are discovered once per repository.
     @State private var menuApplications = OpenInStore()
     private static let terminalURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.apple.Terminal")
@@ -140,7 +142,7 @@ struct RepositoryScreen: View {
             Button("Create Local Tracking Branch") { checkoutTracking(remote) }
                 .keyboardShortcut(.defaultAction)
             Button("Check Out Detached") {
-                runMenuOperation("Checkout", progress: "Switching Branch…") {
+                runMenuOperation("Checkout", button: .branch) {
                     try await GitRuntime.run(GitSwitch(directory: folder.url, branchName: remote.name, detach: true))
                 }
             }
@@ -193,23 +195,6 @@ struct RepositoryScreen: View {
             ToolbarItem(placement: .navigation) {
                 branchesButton()
                     .disabled(isLoading)
-            }
-            if let runningOperation {
-                // A leading item after the branch button, so showing it never moves the trailing actions.
-                ToolbarItem(placement: .navigation) {
-                    HStack(spacing: 6) {
-                        ProgressView().controlSize(.small)
-                        Text(verbatim: runningOperation)
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                            .fixedSize()
-                    }
-                    .help(runningOperation)
-                    .accessibilityElement(children: .combine)
-                    .accessibilityIdentifier("repositoryOperationProgress")
-                }
-                .sharedBackgroundVisibility(.hidden)
             }
             if syncState.syncError != nil {
                 ToolbarItem(placement: .primaryAction) {
@@ -509,7 +494,7 @@ struct RepositoryScreen: View {
                 if syncState.tracking?.upstream != nil { actions[.pull] = pullChanges }
             }
             if logStore.notCommitted?.isEmpty == false {
-                actions[.stash] = { runMenuOperation("Stash All Changes", progress: "Stashing…") { try await GitRuntime.run(GitStash(directory: folder.url)) } }
+                actions[.stash] = { runMenuOperation("Stash All Changes", button: .stash) { try await GitRuntime.run(GitStash(directory: folder.url)) } }
             }
             if let terminal = Self.terminalURL {
                 actions[.openTerminal] = {
@@ -578,21 +563,19 @@ struct RepositoryScreen: View {
         return commit
     }
 
-    private func beginOperation(_ progress: LocalizedStringResource) {
+    private func beginOperation(_ operation: Operation) {
         fileHistory.suspendQueries()
-        isLoading = true
-        runningOperation = String(localized: progress)
+        runningOperation = operation
     }
 
     private func endOperation() {
-        isLoading = false
         runningOperation = nil
     }
 
-    private func runMenuOperation(_ name: LocalizedStringResource, progress: LocalizedStringResource,
+    private func runMenuOperation(_ name: LocalizedStringResource, button: Operation = .commit,
                                   _ operation: @escaping @MainActor () async throws -> Void) {
         guard !isLoading, !isFetching else { return }
-        beginOperation(progress)
+        beginOperation(button)
         Task {
             defer { endOperation() }
             do { try await operation() } catch { self.error = OperationFailure(name, error) }
@@ -615,27 +598,27 @@ struct RepositoryScreen: View {
         switch request {
         case .checkout(let commit):
             Button("Checkout") {
-                runMenuOperation("Checkout", progress: "Checking Out…") {
+                runMenuOperation("Checkout", button: .branch) {
                     try await GitRuntime.run(GitCheckout(directory: folder.url, commitHash: commit.hash))
                 }
             }
         case .revert(let commit):
             Button("Revert") {
-                runMenuOperation("Revert", progress: "Reverting…") {
+                runMenuOperation("Revert") {
                     try CommitOperations.requireEnabled()
                     try await GitRuntime.run(GitRevert(directory: folder.url, parentNumber: commit.revertMainline, commit: commit.hash))
                 }
             }
         case .cherryPick(let commit):
             Button("Cherry-Pick") {
-                runMenuOperation("Cherry-Pick", progress: "Cherry-Picking…") {
+                runMenuOperation("Cherry-Pick") {
                     try CommitOperations.requireEnabled()
                     try await GitRuntime.run(GitCherryPick(directory: folder.url, parentNumber: commit.revertMainline, commit: commit.hash))
                 }
             }
         case .reset(let commit, let mode):
             Button(mode == .hard ? "Discard Changes and Reset" : "Reset", role: mode == .hard ? .destructive : nil) {
-                runMenuOperation("Reset", progress: "Resetting…") {
+                runMenuOperation("Reset") {
                     try CommitOperations.requireEnabled()
                     try await GitRuntime.run(GitReset(directory: folder.url, mode: mode, commit: commit.hash))
                 }
@@ -657,7 +640,7 @@ struct RepositoryScreen: View {
     }
 
     private func switchBranch(_ name: String) {
-        runMenuOperation("Checkout", progress: "Switching Branch…") {
+        runMenuOperation("Checkout", button: .branch) {
             try await GitRuntime.run(GitSwitch(directory: folder.url, branchName: name))
         }
     }
@@ -669,7 +652,7 @@ struct RepositoryScreen: View {
             openWorktree(tree.url)
             return
         }
-        runMenuOperation("Checkout", progress: "Switching Branch…") {
+        runMenuOperation("Checkout", button: .branch) {
             let existing = try await GitRuntime.run(GitBranch(directory: folder.url))
             if existing.contains(where: { $0.name == local }) {
                 try await GitRuntime.run(GitSwitch(directory: folder.url, branchName: local))
@@ -681,7 +664,7 @@ struct RepositoryScreen: View {
 
     private func mergeBranch(_ branch: Branch) {
         guard !isLoading, !isFetching else { return }
-        beginOperation("Merging…")
+        beginOperation(.branch)
         Task {
             defer { endOperation() }
             do {
@@ -715,7 +698,7 @@ struct RepositoryScreen: View {
                 Text("Branch")
             } icon: {
                 HStack(spacing: 8) {
-                    Image.gitBranch
+                    ToolbarOperationIcon(image: .gitBranch, isLoading: runningOperation == .branch)
                         .foregroundStyle(Color.accentColor)
                     Text(branch?.name ?? String(localized: "Branches"))
                         .font(.body.weight(.semibold))
@@ -791,7 +774,11 @@ struct RepositoryScreen: View {
         Button {
             showing.stashChanged.toggle()
         } label: {
-            Label("Stashes", systemImage: "tray")
+            Label {
+                Text("Stashes")
+            } icon: {
+                ToolbarOperationIcon(image: Image(systemName: "tray"), isLoading: runningOperation == .stash)
+            }
         }
         .help("Show Stashes")
     }
@@ -810,13 +797,7 @@ struct RepositoryScreen: View {
             Label {
                 Text("Fetch")
             } icon: {
-                if isFetching {
-                    ProgressView()
-                        .controlSize(.small)
-                        .frame(width: 20, height: 20)
-                } else {
-                    Image(systemName: "arrow.clockwise")
-                }
+                ToolbarOperationIcon(image: Image(systemName: "arrow.clockwise"), isLoading: isFetching)
             }
         }
         .disabled(isFetching)
@@ -842,12 +823,12 @@ struct RepositoryScreen: View {
     }
 
     fileprivate func pullButton() -> some View {
-        PullToolbarButton(count: pullBehindCount, toolTip: pullDescription, onPull: pullChanges)
+        PullToolbarButton(count: pullBehindCount, toolTip: pullDescription, isLoading: runningOperation == .pull, onPull: pullChanges)
     }
 
     private func pullChanges() {
         guard !isLoading, !isFetching else { return }
-        beginOperation("Pulling…")
+        beginOperation(.pull)
         Task {
             defer { endOperation() }
             do {
@@ -862,10 +843,8 @@ struct RepositoryScreen: View {
                 }
                 try await RemoteUpdateService.shared.execute(GitPull(directory: folder.url, refspec: tracking.remoteBranch, remote: tracking.remote, fastForwardOnly: disableCommitOperations))
                 syncState.shouldPull = false
-                endOperation()
                 await refreshModels()
             } catch {
-                endOperation()
                 self.error = OperationFailure("Pull", error)
             }
         }
@@ -887,7 +866,7 @@ struct RepositoryScreen: View {
     }
 
     fileprivate func pushButton() -> some View {
-        PushToolbarButton(count: pushAheadCount, onPush: pushChanges)
+        PushToolbarButton(count: pushAheadCount, isLoading: runningOperation == .push, onPush: pushChanges)
     }
 
     private var pushAheadCount: Int {
@@ -899,7 +878,7 @@ struct RepositoryScreen: View {
 
     private func pushChanges() {
         guard !isLoading, !isFetching else { return }
-        beginOperation("Pushing…")
+        beginOperation(.push)
         Task {
             defer { endOperation() }
             do {
@@ -911,10 +890,8 @@ struct RepositoryScreen: View {
                 }
                 try await GitRuntime.run(GitPush(directory: folder.url, refspec: "HEAD:refs/heads/\(tracking.remoteBranch)", remote: tracking.remote, setUpstream: tracking.upstream == nil))
                 syncState.shouldPush = false
-                endOperation()
                 await refreshModels()
             } catch {
-                endOperation()
                 self.error = OperationFailure("Push", error)
             }
         }
@@ -932,12 +909,18 @@ struct RepositoryScreen: View {
 struct PullToolbarButton: View {
     let count: Int
     let toolTip: String
+    var isLoading = false
     let onPull: () -> Void
 
     var body: some View {
         Button(action: onPull) {
-            Label("Pull", systemImage: "arrow.down")
+            Label {
+                Text("Pull")
+            } icon: {
+                ToolbarOperationIcon(image: Image(systemName: "arrow.down"), isLoading: isLoading)
+            }
         }
+        .disabled(isLoading)
         .badge(count)
         .help(toolTip)
         .accessibilityLabel(Text(toolTip))
@@ -947,15 +930,39 @@ struct PullToolbarButton: View {
 
 struct PushToolbarButton: View {
     let count: Int
+    var isLoading = false
     let onPush: () -> Void
 
     var body: some View {
         Button(action: onPush) {
-            Label("Push", systemImage: "arrow.up")
+            Label {
+                Text("Push")
+            } icon: {
+                ToolbarOperationIcon(image: Image(systemName: "arrow.up"), isLoading: isLoading)
+            }
         }
+        .disabled(isLoading)
         .badge(count)
         .help("Push")
         .accessibilityIdentifier("pushChangesButton")
+    }
+}
+
+private struct ToolbarOperationIcon: View {
+    let image: Image
+    let isLoading: Bool
+
+    var body: some View {
+        image
+            .opacity(isLoading ? 0 : 1)
+            .frame(width: 20, height: 20)
+            .overlay {
+                if isLoading {
+                    ProgressView()
+                        .controlSize(.small)
+                        .allowsHitTesting(false)
+                }
+            }
     }
 }
 

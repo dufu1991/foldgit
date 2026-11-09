@@ -29,6 +29,7 @@ public sealed partial class MainWindow : Window
     private bool closeWhenIdle;
     private bool updatingSelection;
     private bool loadingMore;
+    private ToolbarOperationIcon? runningToolbarOperation;
     private double stagedPaneHeight = 180;
     private string[] historySelection = [];
     private readonly ListView TagList = new();
@@ -158,6 +159,7 @@ public sealed partial class MainWindow : Window
     private void UpdateRepositoryControls()
     {
         var enabled = Model.Directory is not null && Model.GitAvailable;
+        Progress.Visibility = Model.Busy && runningToolbarOperation is null ? Visibility.Visible : Visibility.Collapsed;
         foreach (var control in new Control[] { BranchSelector, FetchButton, PullButton, PushButton, RepositoryMenuButton }) control.IsEnabled = enabled && !Model.Busy;
         AddMenuButton.IsEnabled = Model.GitAvailable && !Model.Busy;
         OpenButton.IsEnabled = enabled;
@@ -196,7 +198,6 @@ public sealed partial class MainWindow : Window
             Model.SelectHistory([]);
         }
         if (args.PropertyName == nameof(Model.Error)) { ErrorBar.Title = L("Error"); ErrorBar.Message = Model.Error; ErrorBar.IsOpen = Model.Error.Length > 0; }
-        if (args.PropertyName == nameof(Model.Busy)) Progress.Visibility = Model.Busy ? Visibility.Visible : Visibility.Collapsed;
         if (args.PropertyName == nameof(Model.Busy) && !Model.Busy && closeWhenIdle && !closingApproved)
         { closeWhenIdle = false; DispatcherQueue.TryEnqueue(Close); }
         UpdateRepositoryControls();
@@ -321,10 +322,23 @@ public sealed partial class MainWindow : Window
         finally { progress.Hide(); }
         await Model.ImportAsync(destination);
     });
-    private async void RefreshClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(async () => { await Model.RefreshAsync(); await Model.LoadHistoryAsync(); });
-    private async void FetchClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(() => Model.MutateAsync((service, directory) => service.FetchAsync(directory, false)));
-    private async void PullClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(() => Model.MutateAsync((service, directory) => service.PullAsync(directory, fastForwardOnly: Model.Settings.DisableCommitOperations)));
-    private async void PushClicked(object sender, RoutedEventArgs args) => await Model.RunAsync(async () =>
+    private async Task RunToolbarOperationAsync(ToolbarOperationIcon icon, Func<Task> action)
+    {
+        if (Model.Busy || runningToolbarOperation is not null) return;
+        runningToolbarOperation = icon;
+        icon.IsLoading = true;
+        try { await Model.RunAsync(action); }
+        finally
+        {
+            icon.IsLoading = false;
+            runningToolbarOperation = null;
+            UpdateRepositoryControls();
+        }
+    }
+    private async void RefreshClicked(object sender, RoutedEventArgs args) => await RunToolbarOperationAsync(RepositoryMenuIcon, async () => { await Model.RefreshAsync(); await Model.LoadHistoryAsync(); });
+    private async void FetchClicked(object sender, RoutedEventArgs args) => await RunToolbarOperationAsync(FetchIcon, () => Model.MutateAsync((service, directory) => service.FetchAsync(directory, false)));
+    private async void PullClicked(object sender, RoutedEventArgs args) => await RunToolbarOperationAsync(PullIcon, () => Model.MutateAsync((service, directory) => service.PullAsync(directory, fastForwardOnly: Model.Settings.DisableCommitOperations)));
+    private async void PushClicked(object sender, RoutedEventArgs args) => await RunToolbarOperationAsync(PushIcon, async () =>
     {
         var branch = Model.Snapshot?.Branches.FirstOrDefault(value => value.Current);
         if (branch is null) throw new GitException(L("No Branches"));
@@ -443,7 +457,7 @@ public sealed partial class MainWindow : Window
         var from = left.Text; var to = working.IsChecked == true ? null : right.Text;
         await Model.ShowComparisonAsync(from, to);
     });
-    private async void BranchSelected(object sender, ItemClickEventArgs args) => await Model.RunAsync(async () =>
+    private async void BranchSelected(object sender, ItemClickEventArgs args) => await RunToolbarOperationAsync(BranchIcon, async () =>
     {
         BranchesFlyout.Hide();
         var branch = (Branch)args.ClickedItem;

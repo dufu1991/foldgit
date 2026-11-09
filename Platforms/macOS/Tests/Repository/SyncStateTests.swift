@@ -24,6 +24,20 @@ struct RemoteSyncStateTests {
         let identifier = isPush ? "repositoryPush" : "repositoryPull"
         let item = try #require(window.toolbar?.items.first { $0.itemIdentifier.rawValue == identifier })
         #expect(item.badge?.text == "8")
+        let itemView = try #require(item.view)
+        let originalFrame = itemView.convert(itemView.bounds, to: nil)
+        let originalIdentifiers = window.toolbar?.items.map(\.itemIdentifier)
+        for isLoading in [true, false, true, false] {
+            state.isLoading = isLoading
+            try await Task.sleep(for: .milliseconds(50))
+            window.layoutIfNeeded()
+            let current = try #require(window.toolbar?.items.first { $0.itemIdentifier.rawValue == identifier })
+            let currentView = try #require(current.view)
+            #expect(current === item)
+            #expect(currentView.convert(currentView.bounds, to: nil) == originalFrame)
+            #expect(window.toolbar?.items.map(\.itemIdentifier) == originalIdentifiers)
+            #expect(current.badge?.text == "8")
+        }
         for selection in 1...10 {
             state.selectedCommit = selection
             try await Task.sleep(for: .milliseconds(20))
@@ -133,6 +147,7 @@ struct RemoteSyncStateTests {
 @Observable private final class PullToolbarTestState {
     var selectedCommit = 0
     var count = 8
+    var isLoading = false
 }
 
 private struct PullToolbarTestView: View {
@@ -144,11 +159,11 @@ private struct PullToolbarTestView: View {
             .toolbar {
                 if isPush {
                     ToolbarItem(id: "repositoryPush") {
-                        PushToolbarButton(count: state.count, onPush: {})
+                        PushToolbarButton(count: state.count, isLoading: state.isLoading, onPush: {})
                     }
                 } else {
                     ToolbarItem(id: "repositoryPull") {
-                        PullToolbarButton(count: state.count, toolTip: "Pull", onPull: {})
+                        PullToolbarButton(count: state.count, toolTip: "Pull", isLoading: state.isLoading, onPull: {})
                     }
                 }
             }

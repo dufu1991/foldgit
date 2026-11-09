@@ -218,8 +218,10 @@ public struct Chunk: Identifiable, Hashable, Sendable {
     }
     /// Hunk ranges are unique within a file; content changes keep the same view identity.
     public var id: String { String(raw.prefix { $0 != "\n" }) }
-    public var lines: [Line]
-    public var raw: String
+    public let lines: [Line]
+    public let raw: String
+    /// Prepare row pairing alongside parsing, before a scrolling view needs its final height.
+    public let presentation: SideBySideDiff
     public var stage: Bool?
 
     public init(raw: String) {
@@ -228,7 +230,7 @@ public struct Chunk: Identifiable, Hashable, Sendable {
             .split(separator: " ", maxSplits: 1).first?.split(separator: ",", maxSplits: 1).first.flatMap { Int($0) }
         var nextLine = start
         self.raw = raw
-        lines = raw.split(separator: "\n").enumerated().map { offset, text in
+        let lines = raw.split(separator: "\n").enumerated().map { offset, text in
             var line = Line(id: offset, raw: String(text))
             if let number = nextLine, line.kind == .added || line.kind == .unchanged {
                 line.toFileLineNumber = number
@@ -236,5 +238,7 @@ public struct Chunk: Identifiable, Hashable, Sendable {
             }
             return line
         }
+        self.lines = lines
+        presentation = SideBySideDiff(raw: raw, lines: lines)
     }
 }

@@ -1,7 +1,7 @@
 import Foundation
 
-public struct SideBySideDiff: Sendable {
-    public struct Cell: Equatable, Sendable {
+public struct SideBySideDiff: Hashable, Sendable {
+    public struct Cell: Hashable, Sendable {
         public init(text: String, lineNumber: Int? = nil, kind: Chunk.Line.Kind, changedRanges: [Range<Int>] = []) {
             self.text = text
             self.lineNumber = lineNumber
@@ -16,7 +16,7 @@ public struct SideBySideDiff: Sendable {
         public var changedRanges: [Range<Int>]
     }
 
-    public struct Row: Equatable, Sendable {
+    public struct Row: Hashable, Sendable {
         public init(old: Cell? = nil, new: Cell? = nil) {
             self.old = old
             self.new = new
@@ -32,7 +32,11 @@ public struct SideBySideDiff: Sendable {
     public let isSupported: Bool
 
     public init(chunk: Chunk) {
-        let lines = chunk.raw.components(separatedBy: "\n")
+        self = chunk.presentation
+    }
+
+    init(raw: String, lines sourceLines: [Chunk.Line]) {
+        let lines = raw.components(separatedBy: "\n")
         header = lines.first ?? ""
         let ranges = header.split(separator: " ")
         isSupported = ranges.count >= 4 && ranges[0] == "@@" && ranges[3] == "@@"
@@ -42,7 +46,7 @@ public struct SideBySideDiff: Sendable {
               let oldStart = Int(oldRange),
               let newStart = Int(newRange) else {
             rows = []
-            unifiedCells = chunk.lines.map { Cell(text: $0.raw, lineNumber: $0.toFileLineNumber, kind: $0.kind) }
+            unifiedCells = sourceLines.map { Cell(text: $0.raw, lineNumber: $0.toFileLineNumber, kind: $0.kind) }
             return
         }
 
@@ -118,7 +122,7 @@ public struct SideBySideDiff: Sendable {
         })
         var oldNumber = oldStart
         var newNumber = newStart
-        unifiedCells = chunk.lines.map { line in
+        unifiedCells = sourceLines.map { line in
             var ranges: [Range<Int>] = []
             var number: Int?
             switch line.kind {

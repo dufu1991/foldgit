@@ -2,6 +2,7 @@ import FoldGitCore
 import SwiftUI
 
 struct FileDiffsView: View {
+    @State private var viewportWidth: CGFloat = 0
     @Binding var expandableFileDiffs: [ExpandableModel<FileDiff>]
     @Environment(\.expandAllFiles) private var expandAllFilesID: UUID?
     @Environment(\.collapseAllFiles) private var collapseAllFilesID: UUID?
@@ -11,7 +12,7 @@ struct FileDiffsView: View {
 
     var body: some View {
         let index = ExpandableFileDiffIndex(expandableFileDiffs)
-        LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
+        VStack(alignment: .leading, spacing: 0) {
             if layout == .tree {
                 ChangeFileTreeRows(tree: tree, collapsedDirectories: collapsedDirectories,
                                    showsDirectoryActions: false) { row in
@@ -25,6 +26,8 @@ struct FileDiffsView: View {
                 }
             }
         }
+        .environment(\.diffViewportWidth, viewportWidth)
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { viewportWidth = $0 }
         .onChange(of: expandAllFilesID) { _, _ in
             expandableFileDiffs = expandableFileDiffs.settingExpansion(true)
         }

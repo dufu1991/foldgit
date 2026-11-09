@@ -2,6 +2,7 @@ import FoldGitCore
 import SwiftUI
 
 struct StageFileDiffView: View {
+    @Environment(\.diffViewportWidth) private var viewportWidth
     @Environment(\.imageDiffContext) private var imageDiffContext
     @Environment(\.changeRowContext) private var changeRowContext
     @Binding var expandableFileDiff: ExpandableModel<FileDiff>
@@ -16,18 +17,18 @@ struct StageFileDiffView: View {
     var treeDepth: Int?
 
     var body: some View {
-        Section {
+        DiffFileSection {
             if expandableFileDiff.isExpanded {
                 if let imageDiffContext,
                    DiffImage.supports(path: fileDiff.fromFilePath) || DiffImage.supports(path: fileDiff.toFilePath) {
                     ImageDiffView(fileDiff: fileDiff, context: imageDiffContext)
                 } else {
-                    LazyVStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 8) {
                         ForEach(fileDiff.chunks) { chunk in
                             HStack(spacing: 0) {
                                 ChunkView(chunk: chunk, filePath: fileDiff.toFilePath)
+                                    .environment(\.diffViewportWidth, max(0, viewportWidth - (onSelectChunk == nil ? 0 : 22)))
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                Spacer(minLength: 0)
                                 if let onSelectChunk {
                                     StageActionButton(systemImage: selectButtonImageSystemName, help: selectButtonHelp) {
                                         onSelectChunk(fileDiff, chunk)

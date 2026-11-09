@@ -5,12 +5,13 @@ import SwiftUI
 struct SideBySideChunkView: View {
     let diff: SideBySideDiff
     let filePath: String
+    var availableWidth: CGFloat = 0
     @AppStorage(PreferenceKey.codeFontSize.rawValue) private var fontSize = AppPreferences.defaultCodeFontSize
     @AppStorage(PreferenceKey.wrapLongLines.rawValue) private var wrapLongLines = false
     @State private var viewportWidth: CGFloat = 0
 
     private var layout: DiffCodeLayout {
-        DiffCodeLayout(rows: diff.rows, columnWidth: max(120, (viewportWidth - 1) / 2),
+        DiffCodeLayout(rows: diff.rows, columnWidth: max(120, ((availableWidth > 0 ? availableWidth : viewportWidth) - 1) / 2),
                        fontSize: fontSize, wraps: wrapLongLines)
     }
 
@@ -30,7 +31,9 @@ struct SideBySideChunkView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { viewportWidth = $0 }
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: {
+            if availableWidth == 0 { viewportWidth = $0 }
+        }
     }
 
     private func column(title: LocalizedStringKey, cells: [SideBySideDiff.Cell?], layout: DiffCodeLayout, lineCounts: [Int]) -> some View {
@@ -48,6 +51,7 @@ struct SideBySideChunkView: View {
     }
 }
 
+/// Prepare every expanded hunk before scrolling; visibility must never trigger text creation or layout.
 struct DiffCodeColumn: NSViewRepresentable {
     let cells: [SideBySideDiff.Cell?]
     let filePath: String

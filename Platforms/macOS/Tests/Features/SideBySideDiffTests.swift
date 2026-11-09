@@ -5,6 +5,135 @@ import XCTest
 @testable import FoldGit
 
 final class SideBySideDiffTests: XCTestCase {
+    @MainActor
+    func testChunkUsesFinalHeightOnItsFirstLayout() async throws {
+        let chunk = Chunk(raw: "@@ -1,20 +1,20 @@\n" + (1...20).map {
+            " " + String(repeating: "line \($0) ", count: 12)
+        }.joined(separator: "\n"))
+        for diffLayout in [DiffLayout.unified, .sideBySide, .automatic] {
+            for wraps in [false, true] {
+                let name = "ImmediateDiffLayout.\(UUID().uuidString)"
+                let preferences = try XCTUnwrap(UserDefaults(suiteName: name))
+                defer { preferences.removePersistentDomain(forName: name) }
+                preferences.set(diffLayout.rawValue, forKey: PreferenceKey.diffLayout.rawValue)
+                preferences.set(wraps, forKey: PreferenceKey.wrapLongLines.rawValue)
+                let root = ChunkView(chunk: chunk, filePath: "Example.swift")
+                    .environment(\.diffViewportWidth, 1_000)
+                    .defaultAppStorage(preferences)
+                    .frame(width: 1_000)
+                let host = NSHostingView(rootView: root)
+                let initialHeight = host.fittingSize.height
+                // No task or run-loop turn has had a chance to replace a loading placeholder.
+                XCTAssertGreaterThan(initialHeight, 20 * DiffColumnTextView.rowHeight)
+                try await Task.sleep(for: .milliseconds(100))
+                XCTAssertEqual(host.fittingSize.height, initialHeight, accuracy: 0.5,
+                               "Layout: \(diffLayout), wraps: \(wraps)")
+            }
+        }
+    }
+
+    @MainActor
+    func testExpandedHunksPrepareBeforeScrollingAndKeepDocumentStable() async throws {
+        let hunks = (0..<12).map { index in
+            "@@ -\(index * 40 + 1),\(index + 2) +\(index * 40 + 1),\(index + 2) @@\n"
+                + (0..<(index + 2)).map { " " + String(repeating: "row \($0) ", count: 10) }.joined(separator: "\n")
+        }
+        let files = try (0..<3).map { index in
+            let path = "file\(index).swift"
+            let file = try FileDiff(raw: "diff --git a/\(path) b/\(path)\n--- a/\(path)\n+++ b/\(path)\n" + hunks.joined(separator: "\n"))
+            return ExpandableModel(isExpanded: true, model: file)
+        }
+        let configurations = [(width: 1_000.0, wraps: false), (width: 650.0, wraps: true), (width: 1_000.0, wraps: true)]
+        for configuration in configurations {
+            for staging in [false, true] {
+                let name = "ExpandedDiffScrolling.\(UUID().uuidString)"
+                let preferences = try XCTUnwrap(UserDefaults(suiteName: name))
+                defer { preferences.removePersistentDomain(forName: name) }
+                preferences.set(DiffLayout.automatic.rawValue, forKey: PreferenceKey.diffLayout.rawValue)
+                preferences.set(configuration.wraps, forKey: PreferenceKey.wrapLongLines.rawValue)
+                let root = ScrollView {
+                    if staging {
+                        StageFileDiffsView(expandableFileDiffs: .constant(files), selectButtonImageSystemName: "plus",
+                                           selectFileButtonHelp: "Stage This File", selectButtonHelp: "Stage This Hunk",
+                                           onSelectChunk: { _, _ in }, collapsedDirectories: .constant([]))
+                    } else {
+                        FileDiffsView(expandableFileDiffs: .constant(files))
+                    }
+                }
+                .defaultAppStorage(preferences)
+                .frame(width: configuration.width, height: 400)
+                let host = NSHostingView(rootView: root)
+                let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: configuration.width, height: 400),
+                                      styleMask: [.borderless], backing: .buffered, defer: false)
+                window.isReleasedWhenClosed = false
+                window.contentView = host
+                window.orderBack(nil)
+                defer { window.close() }
+                try await Task.sleep(for: .milliseconds(150))
+                host.layoutSubtreeIfNeeded()
+                var pending: [NSView] = [host]
+                var scroll: NSScrollView?
+                while let next = pending.popLast() {
+                    if let candidate = next as? NSScrollView, candidate.hasVerticalScroller {
+                        scroll = candidate
+                        break
+                    }
+                    pending.append(contentsOf: next.subviews)
+                }
+                let outer = try XCTUnwrap(scroll)
+                let document = try XCTUnwrap(outer.documentView)
+                let codeColumns = {
+                    var pending: [NSView] = [host]
+                    var columns: [DiffColumnTextView] = []
+                    while let next = pending.popLast() {
+                        if let column = next as? DiffColumnTextView { columns.append(column) }
+                        pending.append(contentsOf: next.subviews)
+                    }
+                    return columns
+                }
+                let initialColumns = codeColumns()
+                let expectedColumnCount = files.count * hunks.count * (configuration.width > 800 ? 2 : 1)
+                XCTAssertEqual(initialColumns.count, expectedColumnCount,
+                               "Every expanded hunk must prepare its text storage before scrolling.")
+                let initialIdentities = Set(initialColumns.map(ObjectIdentifier.init))
+                let edits = DiffTextStorageEditObserver()
+                for column in initialColumns {
+                    NotificationCenter.default.addObserver(edits, selector: #selector(DiffTextStorageEditObserver.didEdit(_:)),
+                                                           name: NSTextStorage.didProcessEditingNotification, object: column.textStorage)
+                    XCTAssertEqual(column.layoutManager?.firstUnlaidCharacterIndex(), column.string.utf16.count)
+                }
+                defer { NotificationCenter.default.removeObserver(edits) }
+                let height = document.frame.height
+                XCTAssertGreaterThan(height, 2_000)
+                let bottom = max(0, height - outer.contentSize.height)
+                for fraction in [0.25, 0.75, 1.0, 0.5, 0.0] {
+                    outer.contentView.scroll(to: NSPoint(x: 0, y: bottom * fraction))
+                    outer.reflectScrolledClipView(outer.contentView)
+                    host.layoutSubtreeIfNeeded()
+                    let position = outer.contentView.bounds.minY
+                    try await Task.sleep(for: .milliseconds(80))
+                    host.layoutSubtreeIfNeeded()
+                    XCTAssertEqual(document.frame.height, height, accuracy: 0.5, "Staging: \(staging)")
+                    XCTAssertEqual(outer.contentView.bounds.minY, position, accuracy: 0.5, "Staging: \(staging)")
+                    XCTAssertTrue(codeColumns().contains { !$0.visibleRect.isEmpty },
+                                  "Visible hunks must contain rendered, selectable code.")
+                    XCTAssertEqual(Set(codeColumns().map(ObjectIdentifier.init)), initialIdentities,
+                                   "Scrolling must reuse prepared text views, including previously offscreen hunks.")
+                    XCTAssertEqual(edits.count, 0, "Scrolling must not rebuild or highlight text storage.")
+                    if fraction == 0.5, !staging, !configuration.wraps {
+                        let bitmap = try XCTUnwrap(host.bitmapImageRepForCachingDisplay(in: host.bounds))
+                        host.cacheDisplay(in: host.bounds, to: bitmap)
+                        let png = try XCTUnwrap(bitmap.representation(using: .png, properties: [:]))
+                        let attachment = XCTAttachment(data: png, uniformTypeIdentifier: "public.png")
+                        attachment.name = "expanded-diff-scroll-middle"
+                        attachment.lifetime = .keepAlways
+                        add(attachment)
+                    }
+                }
+            }
+        }
+    }
+
     func testReplacementPadsShorterSideAndKeepsContextAligned() {
         let chunk = Chunk(raw: "@@ -10,4 +20,3 @@\n context\n-old first\n-old second\n+new\n tail\n")
         let diff = SideBySideDiff(chunk: chunk)
@@ -409,5 +538,14 @@ final class SideBySideDiffTests: XCTestCase {
                 }
             }
         }
+    }
+}
+
+@MainActor
+private final class DiffTextStorageEditObserver: NSObject {
+    private(set) var count = 0
+
+    @objc func didEdit(_ notification: Notification) {
+        count += 1
     }
 }

@@ -2,6 +2,7 @@ import FoldGitCore
 import SwiftUI
 
 struct StageFileDiffsView: View {
+    @State private var viewportWidth: CGFloat = 0
     @Binding var expandableFileDiffs: [ExpandableModel<FileDiff>]
     var selectButtonImageSystemName: String
     var selectFileButtonHelp: String
@@ -16,7 +17,7 @@ struct StageFileDiffsView: View {
 
     var body: some View {
         let index = ExpandableFileDiffIndex(expandableFileDiffs)
-        LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
+        VStack(alignment: .leading, spacing: 0) {
             if layout == .tree {
                 ChangeFileTreeRows(tree: tree, collapsedDirectories: $collapsedDirectories,
                                    actionImageSystemName: selectButtonImageSystemName,
@@ -32,6 +33,8 @@ struct StageFileDiffsView: View {
                 }
             }
         }
+        .environment(\.diffViewportWidth, viewportWidth)
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { viewportWidth = $0 }
         .font(Font.system(.body, design: .monospaced))
         .frame(maxWidth: .infinity, alignment: .leading)
     }

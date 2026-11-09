@@ -59,13 +59,26 @@ brew install --cask dufu1991/tap/foldgit
 1. 在 [Releases](https://github.com/dufu1991/foldgit/releases/latest) 下载最新的 `FoldGit-macOS-arm64.dmg`。
 2. 打开 DMG，把 FoldGit 拖进「应用程序」。
 
-### 安装或升级后打开
+### 首次打开 FoldGit
 
-首次安装未公证的版本时，macOS 可能提示 FoldGit「已损坏」或「无法验证开发者」。确认下载来源可信且应用未被篡改后，在终端执行下面的命令，再重新打开。安装支持内置更新的版本后，后续可通过「检查更新」在应用内下载安装并重启；手动下载 DMG 或通过 Homebrew 替换应用时，仍可能需要重新处理隔离标记。
+安装后，在「应用程序」里双击 FoldGit。如果 macOS 提示无法验证该应用，请按以下步骤操作。
+
+1. 在弹窗中点「完成」。
+2. 打开「系统设置 → 隐私与安全」，向下找到「安全性」，在 FoldGit 的提示旁点「**仍要打开**」。
+3. 确认打开 FoldGit。如果系统要求验证身份，按提示完成验证。
+
+后续可在 FoldGit 中通过「检查更新」安装新版本。通过 DMG 或 Homebrew 替换应用后，macOS 可能再次要求放行。
+
+<details>
+<summary>找不到「仍要打开」时</summary>
+
+如果找不到「仍要打开」，或 macOS 提示 FoldGit「已损坏」，先从 FoldGit 官方发布页重新下载并重试。确认应用来源可信且未被篡改后，如果仍无法打开，可在终端执行以下命令，移除这份应用的下载隔离标记，再重新打开 FoldGit。
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/FoldGit.app
 ```
+
+</details>
 
 ### 使用手册
 

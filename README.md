@@ -59,13 +59,26 @@ To update, run `brew update` followed by `brew upgrade --cask dufu1991/tap/foldg
 1. Download the latest `FoldGit-macOS-arm64.dmg` from [Releases](https://github.com/dufu1991/foldgit/releases/latest).
 2. Open the DMG and drag FoldGit into Applications.
 
-### Open after installing or updating
+### Open FoldGit for the first time
 
-The first installation of an unnotarized build may be blocked by macOS. If macOS says FoldGit is damaged or cannot be verified, confirm that the download is trusted and the app has not been tampered with, then run the command below and open FoldGit again. After installing a version with built-in updates, use Check for Updates to download, install and restart within the app. Replacing the app manually from a DMG or through Homebrew may require handling quarantine again.
+After installing, double-click FoldGit in Applications. If macOS says it can’t verify the app, follow these steps.
+
+1. Click **Done** in the warning.
+2. Open **System Settings → Privacy & Security**, scroll to **Security**, and click **Open Anyway** next to the FoldGit message.
+3. Confirm that you want to open FoldGit and authenticate if prompted.
+
+For future updates, use **Check for Updates** in FoldGit. macOS may ask you to approve FoldGit again after replacing it from a DMG or through Homebrew.
+
+<details>
+<summary>If Open Anyway is unavailable</summary>
+
+If **Open Anyway** is unavailable or macOS reports that FoldGit is damaged, download it again from the official FoldGit release and retry. If you’ve verified the app’s source and integrity and it still won’t open, use this Terminal command to remove the download quarantine from this copy, then reopen FoldGit.
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/FoldGit.app
 ```
+
+</details>
 
 ### User guide
 

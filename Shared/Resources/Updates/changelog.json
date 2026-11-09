@@ -1,5 +1,17 @@
 [
   {
+    "version": "0.5.1",
+    "date": "2026-11-09",
+    "zh": [
+      "修复 macOS 提交详情和暂存区滚动时，已展开的差异内容跳动的问题。",
+      "macOS 和 Windows 在对应的工具栏按钮上显示切换分支、抓取、拉取和推送的进度。"
+    ],
+    "en": [
+      "Fix jumps when scrolling through expanded diffs in commit details and the staging area on macOS.",
+      "Show progress on the corresponding toolbar buttons when switching branches, fetching, pulling, or pushing on macOS and Windows."
+    ]
+  },
+  {
     "version": "0.5.0",
     "date": "2026-11-05",
     "zh": [

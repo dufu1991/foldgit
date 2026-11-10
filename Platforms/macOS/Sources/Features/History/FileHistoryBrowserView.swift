@@ -345,7 +345,7 @@ private struct FileHistoryPatchView: View {
                     if patch.fileDiffs.isEmpty { Text("No Changes").foregroundStyle(.secondary).padding() }
                     FileDiffsView(expandableFileDiffs: $files)
                         .padding(.horizontal, 12)
-                        .environment(\.imageDiffContext, ImageDiffContext(
+                        .environment(\.diffFileContext, DiffFileContext(
                             old: entry.commit.parentHashes.first.map { .revision($0) } ?? .absent,
                             new: .revision(entry.commit.hash)))
                 }

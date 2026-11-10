@@ -39,7 +39,6 @@
 		2681CFB6C70ED134671429C5 /* OpenFileButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 891837FD51FCB39B8C0618CF /* OpenFileButton.swift */; };
 		2879BF5C62AFAA11A0E617FD /* OpenInApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5A714E8B678CCD9DFD4B10 /* OpenInApplication.swift */; };
 		293CDD15BF6B666D7C361E46 /* PreferenceDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B27BF38EC6D2FB796BCD1E /* PreferenceDefaults.swift */; };
-		29AAA373FF7DA228B20BBB12 /* SyntaxHighlighterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F55F63BD0DDDC6E02A4D4 /* SyntaxHighlighterTests.swift */; };
 		2B499313A6093ED7E1F03830 /* RepositoryCloneSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A9A75EFD0C23CF306DC71E /* RepositoryCloneSheet.swift */; };
 		304644732212A905B1A66653 /* ErrorPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB620BD70B082A9AF584740 /* ErrorPresentationTests.swift */; };
 		32B80C9BFE55A85BD129AB2D /* DiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2F74351DBE6AE4E43AA763 /* DiffView.swift */; };
@@ -65,7 +64,7 @@
 		4C1B90022A7A9EB9F63A0394 /* MaterialFileIcons in Resources */ = {isa = PBXBuildFile; fileRef = 9BCE580459DA2E87F961999C /* MaterialFileIcons */; };
 		4E82DE3D90C71CAB6632243A /* RepositorySession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947256010734D25DEDE502C9 /* RepositorySession.swift */; };
 		54536215DCCACFAC91CA7C92 /* BranchesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A326434D816F9691E8604A8E /* BranchesView.swift */; };
-		557E059B5EEE59519269D724 /* HighlightSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F8F6A6DC3FC46EEBF9C1F4F2 /* HighlightSwift */; };
+		557E059B5EEE59519269D724 /* Shiki in Frameworks */ = {isa = PBXBuildFile; productRef = 539B889A3A8AC11EBF3A1642 /* Shiki */; };
 		571C55A57CFF98C61B2973B4 /* OpenWorkspaceFileAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69CFC8ACA319775A8759ED9 /* OpenWorkspaceFileAction.swift */; };
 		5C715E5F024A186E72C5F4BB /* GitStatusTestsMacPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01A2D1C991B76E708EF0643 /* GitStatusTestsMacPathTests.swift */; };
 		5D414871E249D106EBDB1234 /* FileDiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370C0EB6D409316B264E5FF6 /* FileDiffView.swift */; };
@@ -87,6 +86,7 @@
 		7F03EEB18096FF6088A752E3 /* FileDiffTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D0A3FBDCE4795B31CB86881 /* FileDiffTheme.swift */; };
 		80D67AD604325D52F2DB581D /* GitRepositoryDiscoveryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EC03A0BC7143F44ABA1C502 /* GitRepositoryDiscoveryTests.swift */; };
 		8186259B9DD8121B707AFE83 /* WorktreeCleanupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF46A0880B84652F6C9312F /* WorktreeCleanupSheet.swift */; };
+		81E1B46D42A7DC39FD1899BE /* DiffSyntaxColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DB712C64ACDD09A1702C95 /* DiffSyntaxColors.swift */; };
 		821C1F1D7A19F0B715D51F5E /* ChunkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4D464F74FB472245F03E9E /* ChunkView.swift */; };
 		82EE7773DD010FB4E9012E16 /* CommitDetailStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59196DEA4A1734DFD962B24 /* CommitDetailStackView.swift */; };
 		8485D4ACC22F86B417BA2AB2 /* RepositoryNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = C876C4B6703478422ECE9CF1 /* RepositoryNotifications.swift */; };
@@ -152,12 +152,10 @@
 		D6169080E501AC788D4EAC6E /* WindowID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B0D0A4E0BFD35F8A4FEFC9 /* WindowID.swift */; };
 		D816B8486C47BAA35DD15DB5 /* SettingsReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = E159CA1AC088F794C6C6730A /* SettingsReset.swift */; };
 		DCC538901647A20DCF0BBD94 /* WorktreeStatusViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C135A00D74997E2DC917328 /* WorktreeStatusViews.swift */; };
-		E21D59C7A4598F9C7DE7963F /* SyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ADDD561D590184A7BD570A1 /* SyntaxHighlighter.swift */; };
 		E5FDAF06B2029A4FC6D6C63E /* WorktreeStatusStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF35828861C154C874B5684 /* WorktreeStatusStore.swift */; };
 		E8843A5E83D3FECF78474F69 /* ProjectSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF9142AE5430CC2B59F08A1 /* ProjectSidebarView.swift */; };
 		E9EC2D382DA7D57C14272B31 /* WorktreeCleanupModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23A6F0CF941A249530AF489B /* WorktreeCleanupModel.swift */; };
 		EAE639E872256C1EB32C9D2D /* FoldGitTestSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 493F3778E87F846B9DE72E6B /* FoldGitTestSupport */; };
-		ED1B663060CE5E9F9607EA35 /* Language.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1ABC41F5CFDF19EEF06B787 /* Language.swift */; };
 		F09C3EF15D632F27B702A42A /* FileContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1482CC1D38D0E490C162721 /* FileContentView.swift */; };
 		F0AEFA35312D2410A4EBE526 /* GitRef+Presentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BDF491EEC0103ED336A3E59 /* GitRef+Presentation.swift */; };
 		F17FC28108366E35660A3B62 /* CreateNewTagSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68578483928EAFF5897B23D4 /* CreateNewTagSheet.swift */; };
@@ -211,7 +209,6 @@
 		2226C7248E2ED10A6DEB4629 /* CreateNewBranchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewBranchSheet.swift; sourceTree = "<group>"; };
 		2240D6CF87FC1184FAF49C56 /* CommitDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitDetailView.swift; sourceTree = "<group>"; };
 		23A6F0CF941A249530AF489B /* WorktreeCleanupModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorktreeCleanupModel.swift; sourceTree = "<group>"; };
-		260F55F63BD0DDDC6E02A4D4 /* SyntaxHighlighterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxHighlighterTests.swift; sourceTree = "<group>"; };
 		26485A72355BD2E51194EDBA /* StashChangedContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashChangedContentView.swift; sourceTree = "<group>"; };
 		29269FA751AD56645E59733D /* WorktreeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorktreeStore.swift; sourceTree = "<group>"; };
 		2A03C5ECBC9F884B6A14DF84 /* CommitLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitLogView.swift; sourceTree = "<group>"; };
@@ -245,6 +242,7 @@
 		50E27C58BCEE29E196586C87 /* CommitMessageEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitMessageEditor.swift; sourceTree = "<group>"; };
 		5150A6F3A1CB54F6642AC2C7 /* Icon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icon.swift; sourceTree = "<group>"; };
 		51B0D0A4E0BFD35F8A4FEFC9 /* WindowID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowID.swift; sourceTree = "<group>"; };
+		55DB712C64ACDD09A1702C95 /* DiffSyntaxColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffSyntaxColors.swift; sourceTree = "<group>"; };
 		58700D8D35F1C24177B4E02E /* FoldGitApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoldGitApp.swift; sourceTree = "<group>"; };
 		5F7EBE5F883F2A5224DA1EDC /* WorktreeCompletionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorktreeCompletionSheet.swift; sourceTree = "<group>"; };
 		63A6259CDA3DBFD0E330165F /* HistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStore.swift; sourceTree = "<group>"; };
@@ -281,7 +279,6 @@
 		947256010734D25DEDE502C9 /* RepositorySession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositorySession.swift; sourceTree = "<group>"; };
 		98CE23B638595E3B8C5FDC69 /* SidebarOrganizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarOrganizationTests.swift; sourceTree = "<group>"; };
 		9AAB6861EEC8FBEA2F9EF651 /* StashChangedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashChangedView.swift; sourceTree = "<group>"; };
-		9ADDD561D590184A7BD570A1 /* SyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxHighlighter.swift; sourceTree = "<group>"; };
 		9BCE580459DA2E87F961999C /* MaterialFileIcons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MaterialFileIcons; path = ../../Shared/Resources/FileIcons/MaterialFileIcons; sourceTree = SOURCE_ROOT; };
 		9BDF491EEC0103ED336A3E59 /* GitRef+Presentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GitRef+Presentation.swift"; sourceTree = "<group>"; };
 		9C2F74351DBE6AE4E43AA763 /* DiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffView.swift; sourceTree = "<group>"; };
@@ -295,10 +292,8 @@
 		AE268564532C99A0D9ECC3BE /* FileSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSyntaxHighlighter.swift; sourceTree = "<group>"; };
 		AE9DEC622E61FBBAE8604A0B /* FileContentReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileContentReader.swift; sourceTree = "<group>"; };
 		AFC7E441C6CAE62FCAD6FC85 /* FoldGitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FoldGitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B1ABC41F5CFDF19EEF06B787 /* Language.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Language.swift; sourceTree = "<group>"; };
 		B4C7D64F241F66F5F99B48FB /* FileIconThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileIconThemeTests.swift; sourceTree = "<group>"; };
 		B69CFC8ACA319775A8759ED9 /* OpenWorkspaceFileAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenWorkspaceFileAction.swift; sourceTree = "<group>"; };
-		B77CB6330C7536EFAB8094FC /* HighlightSwift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HighlightSwift; path = ../../Vendor/HighlightSwift; sourceTree = SOURCE_ROOT; };
 		B8997EEA9B0F3E3C66041BF3 /* DebugSigning.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DebugSigning.xcconfig; sourceTree = "<group>"; };
 		BA139C5C898FC5606DD55FD6 /* GitSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitSummary.swift; sourceTree = "<group>"; };
 		BB0E0E40313F30FAE5A8A446 /* RemoteSyncState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSyncState.swift; sourceTree = "<group>"; };
@@ -359,7 +354,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4093142DF19DDCF51F1AC5C1 /* FoldGitCore in Frameworks */,
-				557E059B5EEE59519269D724 /* HighlightSwift in Frameworks */,
+				557E059B5EEE59519269D724 /* Shiki in Frameworks */,
 				1978C9F31C4FB9424D76E16E /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -466,7 +461,6 @@
 				C325DC2F598581122A3282E8 /* SettingsResetTests.swift */,
 				98CE23B638595E3B8C5FDC69 /* SidebarOrganizationTests.swift */,
 				082516DF4D9CE11C55722147 /* SideBySideDiffTests.swift */,
-				260F55F63BD0DDDC6E02A4D4 /* SyntaxHighlighterTests.swift */,
 				0DDFD9E8F8058716C9193F8A /* TextEditorLayoutTests.swift */,
 				D32CBED77D3A4DFFCD720F38 /* UpdateCheckerTests.swift */,
 				C8774D1D5C8941DC89E13000 /* WorktreeCompletionTests.swift */,
@@ -602,7 +596,6 @@
 			isa = PBXGroup;
 			children = (
 				ECBF381C08F651B8D4170B59 /* foldgit */,
-				B77CB6330C7536EFAB8094FC /* HighlightSwift */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -795,9 +788,8 @@
 		F0C0A995F81DAF74514D5ED6 /* Rendering */ = {
 			isa = PBXGroup;
 			children = (
+				55DB712C64ACDD09A1702C95 /* DiffSyntaxColors.swift */,
 				2FA4B84FBAEF61DBE5E950DB /* FileIconTheme.swift */,
-				B1ABC41F5CFDF19EEF06B787 /* Language.swift */,
-				9ADDD561D590184A7BD570A1 /* SyntaxHighlighter.swift */,
 			);
 			path = Rendering;
 			sourceTree = "<group>";
@@ -874,7 +866,7 @@
 			name = FoldGit;
 			packageProductDependencies = (
 				43A2799961844500D246F8D1 /* FoldGitCore */,
-				F8F6A6DC3FC46EEBF9C1F4F2 /* HighlightSwift */,
+				539B889A3A8AC11EBF3A1642 /* Shiki */,
 				76683F01130EE906467F2C55 /* Sparkle */,
 			);
 			productName = FoldGit;
@@ -905,9 +897,9 @@
 			mainGroup = 5578A60BB9D1C3BD8567F200;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				5571296E988508C247BE529E /* XCRemoteSwiftPackageReference "shiki-swift" */,
 				634A2D76CF972A71E8027D30 /* XCRemoteSwiftPackageReference "Sparkle" */,
 				932943EB4B2AB1EA409D473E /* XCLocalSwiftPackageReference "../.." */,
-				3C3758087C4C1366A905D273 /* XCLocalSwiftPackageReference "../../Vendor/HighlightSwift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CBB947ABC8755C0B302DB7E5 /* Products */;
@@ -1019,6 +1011,7 @@
 				A0D53A33479235A993A234A5 /* DiffCommitListContentView.swift in Sources */,
 				02894B1FF102891719AC17FE /* DiffCommitListView.swift in Sources */,
 				39EB2F24AE71A4CD6D33F593 /* DiffLayoutPicker.swift in Sources */,
+				81E1B46D42A7DC39FD1899BE /* DiffSyntaxColors.swift in Sources */,
 				45B782D4413F328E0B58522E /* DiffTabView.swift in Sources */,
 				32B80C9BFE55A85BD129AB2D /* DiffView.swift in Sources */,
 				04ADEA9ECE1A8D779BD1C41A /* EnvironmentValues.swift in Sources */,
@@ -1044,7 +1037,6 @@
 				C927938D62294B188BF7C9C8 /* ImageDiffContent.swift in Sources */,
 				F35B42E811BFB2CE22368F37 /* ImageDiffView.swift in Sources */,
 				0F89FA898A94ADD45AD60933 /* ImmediateHelp.swift in Sources */,
-				ED1B663060CE5E9F9607EA35 /* Language.swift in Sources */,
 				AA4E2EAC8D327618A11AB37D /* LegacyPreferencesMigration.swift in Sources */,
 				382D5C9747BADF7A50EA9194 /* MacRepositoryDiscovery.swift in Sources */,
 				93731B2664F13F61F289715A /* MergeBranchMenuSheet.swift in Sources */,
@@ -1087,7 +1079,6 @@
 				8F11A0A6B34315EF14DAA1FF /* StashChangedView.swift in Sources */,
 				A2D740A0602F565000F97E1F /* Status+Presentation.swift in Sources */,
 				B80E9E608CD42662854DA718 /* String+Initials.swift in Sources */,
-				E21D59C7A4598F9C7DE7963F /* SyntaxHighlighter.swift in Sources */,
 				A4EFD86D5E73A0E0E5B04D0F /* TagsContentView.swift in Sources */,
 				34C14F1A1F2590FCD0A6C6AC /* TagsView.swift in Sources */,
 				0C5F368211AB87D107E46E87 /* UnstagedView.swift in Sources */,
@@ -1139,7 +1130,6 @@
 				A976A695C1C5AEC5185B98B4 /* SideBySideDiffTests.swift in Sources */,
 				89DE3E687AB8371D6B6DD9D4 /* SidebarOrganizationTests.swift in Sources */,
 				056B3D1E9D6D2B82E3096C43 /* SyncStateTests.swift in Sources */,
-				29AAA373FF7DA228B20BBB12 /* SyntaxHighlighterTests.swift in Sources */,
 				430273D422B47633A047BCB9 /* TextEditorLayoutTests.swift in Sources */,
 				CD8207C3A34D9CE013B25CBD /* UpdateCheckerTests.swift in Sources */,
 				9F9033AD790895DF8D18B2A1 /* WorktreeCompletionTests.swift in Sources */,
@@ -1385,10 +1375,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		3C3758087C4C1366A905D273 /* XCLocalSwiftPackageReference "../../Vendor/HighlightSwift" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../Vendor/HighlightSwift;
-		};
 		932943EB4B2AB1EA409D473E /* XCLocalSwiftPackageReference "../.." */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../..;
@@ -1396,6 +1382,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		5571296E988508C247BE529E /* XCRemoteSwiftPackageReference "shiki-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/fayazara/shiki-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 0.1.2;
+			};
+		};
 		634A2D76CF972A71E8027D30 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sparkle-project/Sparkle";
@@ -1415,14 +1409,15 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = FoldGitTestSupport;
 		};
+		539B889A3A8AC11EBF3A1642 /* Shiki */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5571296E988508C247BE529E /* XCRemoteSwiftPackageReference "shiki-swift" */;
+			productName = Shiki;
+		};
 		76683F01130EE906467F2C55 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 634A2D76CF972A71E8027D30 /* XCRemoteSwiftPackageReference "Sparkle" */;
 			productName = Sparkle;
-		};
-		F8F6A6DC3FC46EEBF9C1F4F2 /* HighlightSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = HighlightSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

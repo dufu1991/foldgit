@@ -48,7 +48,7 @@ struct UnstagedView: View {
                 collapsedDirectories: $collapsedDirectories,
                 onSelectDirectory: onSelectDirectory
             )
-            .environment(\.imageDiffContext, .unstaged)
+            .environment(\.diffFileContext, .unstaged)
             .padding(.leading, 4)
             .padding(.top)
 

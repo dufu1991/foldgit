@@ -33,13 +33,10 @@ Component overview
 macOS:
 - Sparkle 2.10.1 (MIT and bundled third-party notices)
   Authenticated in-app updates.
-- HighlightSwift, upstream revision 99c431b38a1444a5fd6a4978307fbbefe3a7af53
-  MIT; syntax highlighting integration with local FoldGit modifications.
-- highlight.js 11.9.0, bundled by HighlightSwift
-  BSD-3-Clause; language grammars and highlighting engine.
-- HighlightSwift theme resources
-  Individual author and license notices are reproduced below, including the
-  separately licensed NNFX themes (CC BY-SA 4.0).
+- ShikiSwift 0.1.2 (MIT), including native Oniguruma 6.9.8, Shiki 4.4.3,
+  and vscode-textmate 10.0.2.
+  TextMate syntax highlighting. Bundled grammar and theme notices ship in
+  the Shiki resource bundle.
 - Swift Subprocess 1.0.0
   Apache-2.0; process execution.
 - Swift System 1.8.1, a dependency of Swift Subprocess
@@ -718,21 +715,12 @@ SOFTWARE.
 ----- END WIN2D 1.4.0 -----
 
 
-HighlightSwift
-==============
-
-https://github.com/appstefan/HighlightSwift
-Upstream revision: 99c431b38a1444a5fd6a4978307fbbefe3a7af53
-
-FoldGit modifies this local package to expose syntax spans and language
-aliases, read highlight.js emitter scopes as UTF-16 ranges, validate the
-reconstructed source, and check cancellation. The upstream test target is
-omitted. Original copyright and license notices are retained.
-See Vendor/HighlightSwift/FOLDGIT-PATCHES.md in the source distribution.
+ShikiSwift 0.1.2
+================
 
 MIT License
 
-Copyright (c) 2023 Stefan Britton
+Copyright (c) 2026 Fayaz Ahmed
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -752,355 +740,86 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+Shiki 4.4.3
+===========
 
+MIT License
 
-highlight.js 11.9.0
-===================
+Copyright (c) 2021 Pine Wu
+Copyright (c) 2023 Anthony Fu <https://github.com/antfu>
 
-https://github.com/highlightjs/highlight.js/tree/11.9.0
-Bundled in HighlightSwift as HighlightJS/highlight.min.js, with its original
-license header and LICENSE.md retained.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-BSD 3-Clause License
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-Copyright (c) 2006, Ivan Sagalaev.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+vscode-textmate 10.0.2
+======================
+
+The MIT License (MIT)
+
+Copyright (c) Microsoft Corporation
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Oniguruma 6.9.8
+===============
+
+Oniguruma LICENSE
+-----------------
+
+Copyright (c) 2002-2021  K.Kosako  <kkosako0@gmail.com>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
 
-* Redistributions of source code must retain the above copyright notice, this
-  list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-
-* Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
 FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
-Bundled syntax highlighting theme notices
-========================================
-
-Source: HighlightSwift, upstream revision
-99c431b38a1444a5fd6a4978307fbbefe3a7af53,
-Sources/HighlightSwift/Highlight/HighlightCSS.swift.
-
-FoldGit currently uses the Xcode light and dark palettes. The local package
-also retains other upstream theme definitions. The original author and
-license notices for those definitions are reproduced below. They apply to
-the respective themes and are not replaced by FoldGit's MIT license.
-
-The NNFX light and dark themes are by Jim Mason, copyright 2020-2021, and
-remain licensed under Creative Commons Attribution-ShareAlike 4.0
-International (CC BY-SA 4.0):
-https://creativecommons.org/licenses/by-sa/4.0/
-https://creativecommons.org/licenses/by-sa/4.0/legalcode
-Original theme sources:
-https://github.com/highlightjs/highlight.js/blob/11.9.0/src/styles/nnfx-light.css
-https://github.com/highlightjs/highlight.js/blob/11.9.0/src/styles/nnfx-dark.css
-FoldGit retains the upstream CSS strings without changing the theme designs.
-
-The following notices are copied from the bundled upstream theme definitions:
-
-Theme: a11y-light
-Author: @ericwbailey
-Maintainer: @ericwbailey
-Based on the Tomorrow Night Eighties theme: https://github.com/isagalaev/highlight.js/blob/master/src/styles/tomorrow-night-eighties.css
-
-Theme: Classic Light
-Author: Jason Heeris (http://heeris.id.au)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Edge Light
-Author: cjayross (https://github.com/cjayross)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Github
-Author: Defman21
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Google Light
-Author: Seth Wright (http://sethawright.com)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Grayscale Light
-Author: Alexandre Gavioli (https://github.com/Alexx2/)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Harmonic16 Light
-Author: Jannik Siebert (https://github.com/janniks)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Heetch Light
-Author: Geoffrey Teale (tealeg@gmail.com)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Horizon Light
-Author: Michaël Ball (http://github.com/michael-ball/)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Humanoid light
-Author: Thomas (tasmo) Friese
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: iA Light
-Author: iA Inc. (modified by aramisgithub)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: nnfx light
-Description: a theme inspired by Netscape Navigator/Firefox
-Author: (c) 2020-2021 Jim Mason <jmason@ibinx.com>
-Maintainer: @RocketMan
-License: https://creativecommons.org/licenses/by-sa/4.0  CC BY-SA 4.0
-Updated: 2021-05-17
-
-@version 1.1.0
-
-Theme: PaperColor Light
-Author: Jon Leopard (http://github.com/jonleopard) based on PaperColor Theme (https://github.com/NLKNguyen/papercolor-theme)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Silk Light
-Author: Gabriel Fontes (https://github.com/Misterio77)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Solar Flare Light
-Author: Chuck Harmston (https://chuck.harmston.ch)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Solarized Light
-Author: Ethan Schoonover (modified by aramisgithub)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: StackOverflow Light
-Description: Light theme as used on stackoverflow.com
-Author: stackoverflow.com
-Maintainer: @Hirse
-Website: https://github.com/StackExchange/Stacks
-License: MIT
-Updated: 2021-05-15
-
-Updated for @stackoverflow/stacks v0.64.0
-Code Blocks: /blob/v0.64.0/lib/css/components/_stacks-code-blocks.less
-Colors: /blob/v0.64.0/lib/css/exports/_stacks-constants-colors.less
-
-Theme: Default Light
-Author: Chris Kempson (http://chriskempson.com)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Summerfruit Light
-Author: Christopher Corley (http://christop.club/)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Synth Midnight Terminal Light
-Author: Michaël Ball (http://github.com/michael-ball/)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Tokyo-night-light
-origin: https://github.com/enkia/tokyo-night-vscode-theme
-Description: Original highlight.js style
-Author: (c) Henri Vandersleyen <hvandersleyen@gmail.com>
-License: see project LICENSE
-Touched: 2022
-
-Theme: Unikitty Light
-Author: Josh W Lewis (@joshwlewis)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: a11y-dark
-Author: @ericwbailey
-Maintainer: @ericwbailey
-
-Based on the Tomorrow Night Eighties theme: https://github.com/isagalaev/highlight.js/blob/master/src/styles/tomorrow-night-eighties.css
-
-Theme: Classic Dark
-Author: Jason Heeris (http://heeris.id.au)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Edge Dark
-Author: cjayross (https://github.com/cjayross)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: GitHub Dark
-Description: Dark theme as seen on github.com
-Author: github.com
-Maintainer: @Hirse
-Updated: 2021-05-15
-
-Outdated base version: https://github.com/primer/github-syntax-dark
-Current colors taken from GitHub's CSS
-
-Theme: Google Dark
-Author: Seth Wright (http://sethawright.com)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Grayscale Dark
-Author: Alexandre Gavioli (https://github.com/Alexx2/)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Harmonic16 Dark
-Author: Jannik Siebert (https://github.com/janniks)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Heetch Dark
-Author: Geoffrey Teale (tealeg@gmail.com)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Horizon Dark
-Author: Michaël Ball (http://github.com/michael-ball/)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Humanoid dark
-Author: Thomas (tasmo) Friese
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: iA Dark
-Author: iA Inc. (modified by aramisgithub)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: nnfx dark
-Description: a theme inspired by Netscape Navigator/Firefox
-Author: (c) 2020-2021 Jim Mason <jmason@ibinx.com>
-Maintainer: @RocketMan
-License: https://creativecommons.org/licenses/by-sa/4.0  CC BY-SA 4.0
-Updated: 2021-05-17
-
-@version 1.1.0
-
-Theme: PaperColor Dark
-Author: Jon Leopard (http://github.com/jonleopard) based on PaperColor Theme (https://github.com/NLKNguyen/papercolor-theme)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Silk Dark
-Author: Gabriel Fontes (https://github.com/Misterio77)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Solar Flare
-Author: Chuck Harmston (https://chuck.harmston.ch)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Solarized Dark
-Author: Ethan Schoonover (modified by aramisgithub)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: StackOverflow Dark
-Description: Dark theme as used on stackoverflow.com
-Author: stackoverflow.com
-Maintainer: @Hirse
-Website: https://github.com/StackExchange/Stacks
-License: MIT
-Updated: 2021-05-15
-
-Updated for @stackoverflow/stacks v0.64.0
-Code Blocks: /blob/v0.64.0/lib/css/components/_stacks-code-blocks.less
-Colors: /blob/v0.64.0/lib/css/exports/_stacks-constants-colors.less
-
-Theme: Default Dark
-Author: Chris Kempson (http://chriskempson.com)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Summerfruit Dark
-Author: Christopher Corley (http://christop.club/)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Synth Midnight Terminal Dark
-Author: Michaël Ball (http://github.com/michael-ball/)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
-
-Theme: Tokyo-night-Dark
-origin: https://github.com/enkia/tokyo-night-vscode-theme
-Description: Original highlight.js style
-Author: (c) Henri Vandersleyen <hvandersleyen@gmail.com>
-License: see project LICENSE
-Touched: 2022
-
-Theme: Unikitty Dark
-Author: Josh W Lewis (@joshwlewis)
-License: ~ MIT (or more permissive) [via base16-schemes-source]
-Maintainer: @highlightjs/core-team
-Version: 2021.09.0
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
 
 
 Sparkle 2.10.1

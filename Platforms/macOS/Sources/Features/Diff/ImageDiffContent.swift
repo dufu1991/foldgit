@@ -4,7 +4,7 @@ import ImageIO
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct ImageDiffContext: Hashable, Sendable {
+struct DiffFileContext: Hashable, Sendable {
     var old: GitFileVersion
     var new: GitFileVersion
 
@@ -33,8 +33,8 @@ struct ImageDiffContext: Hashable, Sendable {
 }
 
 extension EnvironmentValues {
-    @Entry var imageDiffContext: ImageDiffContext?
-    @Entry var imageDiffRefreshID = 0
+    @Entry var diffFileContext: DiffFileContext?
+    @Entry var diffFileRefreshID = 0
 }
 
 /// CGImage is immutable and can safely cross the decoding task boundary.

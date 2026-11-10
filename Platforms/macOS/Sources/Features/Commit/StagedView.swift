@@ -43,7 +43,7 @@ struct StagedView: View {
                                 onSelectDirectory: onSelectDirectory,
                                 selectDirectoryButtonHelp: String(localized: "Unstage This Directory")
                             )
-                            .environment(\.imageDiffContext, .staged)
+                            .environment(\.diffFileContext, .staged)
                             .padding(.leading, 4)
                             .padding(.top)
                         }

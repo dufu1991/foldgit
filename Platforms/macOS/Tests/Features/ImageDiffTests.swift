@@ -126,13 +126,13 @@ struct ImageDiffTests {
 
     @Test func addedDeletedAndRenamedFilesResolveCorrectVersions() throws {
         let added = try FileDiff(raw: "diff --git a/new.png b/new.png\nnew file mode 100644\nindex 0000000..abcdef0\nBinary files /dev/null and b/new.png differ")
-        #expect(ImageDiffContext.staged.version(for: added, oldSide: true) == .absent)
-        #expect(ImageDiffContext.staged.version(for: added, oldSide: false) == .index)
+        #expect(DiffFileContext.staged.version(for: added, oldSide: true) == .absent)
+        #expect(DiffFileContext.staged.version(for: added, oldSide: false) == .index)
         let deleted = try FileDiff(raw: "diff --git a/old.png b/old.png\ndeleted file mode 100644\nindex abcdef0..0000000\nBinary files a/old.png and /dev/null differ")
-        #expect(ImageDiffContext.unstaged.version(for: deleted, oldSide: true) == .index)
-        #expect(ImageDiffContext.unstaged.version(for: deleted, oldSide: false) == .absent)
+        #expect(DiffFileContext.unstaged.version(for: deleted, oldSide: true) == .index)
+        #expect(DiffFileContext.unstaged.version(for: deleted, oldSide: false) == .absent)
         let renamed = try FileDiff(raw: "diff --git a/old.png b/new.png\nsimilarity index 100%\nrename from old.png\nrename to new.png")
-        let context = ImageDiffContext(old: .revision("HEAD^"), new: .revision("HEAD"))
+        let context = DiffFileContext(old: .revision("HEAD^"), new: .revision("HEAD"))
         #expect(context.version(for: renamed, oldSide: true) == .revision("HEAD^"))
         #expect(context.version(for: renamed, oldSide: false) == .revision("HEAD"))
         #expect(renamed.fromFilePath == "old.png")

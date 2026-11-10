@@ -23,7 +23,7 @@ struct MergeCommitContentView: View {
             collapsedDirectories: collapsedDirectories
         )
             .environment(\.folder, directoryURL)
-            .environment(\.imageDiffContext, ImageDiffContext(
+            .environment(\.diffFileContext, DiffFileContext(
                 old: .revision(mergeCommit.parentHashes[0]), new: .revision(mergeCommit.hash)))
             .task(id: mergeCommit) {
                 do {

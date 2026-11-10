@@ -9,8 +9,10 @@ public enum GitFileVersion: Hashable, Sendable {
 }
 
 public enum GitFileContent {
-    public static func read(at directory: URL, path: String, version: GitFileVersion) async throws -> Data? {
+    public static func read(at directory: URL, path: String, version: GitFileVersion,
+                            maximumBytes: Int = GitRuntime.outputLimit) async throws -> Data? {
         try Task.checkCancellation()
+        let object: String
         switch version {
         case .absent:
             return nil
@@ -18,18 +20,20 @@ public enum GitFileContent {
             return try await Task.detached {
                 let url = directory.appendingPathComponent(path)
                 let values = try url.resourceValues(forKeys: [.fileSizeKey])
-                guard let size = values.fileSize, size <= GitRuntime.outputLimit else {
+                guard let size = values.fileSize, size <= maximumBytes else {
                     throw GitExecutionError(description: NSLocalizedString("The image is too large to preview.", comment: ""))
                 }
                 try Task.checkCancellation()
                 return try Data(contentsOf: url)
             }.value
         case .revision(let revision):
-            return try await GitRuntime.runData(arguments: ["git", "cat-file", "blob", "\(revision):\(path)"], currentDirectoryURL: directory)
-        case .blob(let object):
-            return try await GitRuntime.runData(arguments: ["git", "cat-file", "blob", object], currentDirectoryURL: directory)
+            object = "\(revision):\(path)"
+        case .blob(let id):
+            object = id
         case .index:
-            return try await GitRuntime.runData(arguments: ["git", "cat-file", "blob", ":\(path)"], currentDirectoryURL: directory)
+            object = ":\(path)"
         }
+        return try await GitRuntime.runData(arguments: ["git", "cat-file", "blob", object],
+                                            currentDirectoryURL: directory, maximumBytes: maximumBytes)
     }
 }

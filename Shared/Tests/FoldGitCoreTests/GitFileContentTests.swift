@@ -18,6 +18,10 @@ struct GitFileContentTests {
         try await repository.git(["add", "--", path])
         try working.write(to: url)
         #expect(try await GitFileContent.read(at: repository.url, path: path, version: .revision("HEAD")) == committed)
+        await #expect(throws: (any Error).self) {
+            try await GitFileContent.read(at: repository.url, path: path, version: .revision("HEAD"),
+                                          maximumBytes: committed.count - 1)
+        }
         #expect(try await GitFileContent.read(at: repository.url, path: path, version: .index) == staged)
         #expect(try await GitFileContent.read(at: repository.url, path: path, version: .workingTree) == working)
         #expect(try await GitFileContent.read(at: repository.url, path: path, version: .absent) == nil)

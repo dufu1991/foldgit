@@ -295,6 +295,8 @@ struct ComparisonSettingsPane: View {
     @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = AppPreferences.defaultDiffFileExpansion
     @AppStorage(PreferenceKey.codeFontSize.rawValue) private var fontSize = AppPreferences.defaultCodeFontSize
     @AppStorage(PreferenceKey.wrapLongLines.rawValue) private var wrapLongLines = false
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var previewColors: DiffSyntaxColors?
 
     var body: some View {
         Form {
@@ -338,8 +340,12 @@ struct ComparisonSettingsPane: View {
                 Toggle("Wrap Long Lines", isOn: $wrapLongLines)
                     .accessibilityIdentifier("wrapLongLinesToggle")
                 // Kept next to the code options so font and wrapping changes are visible immediately.
-                ChunkView(chunk: Self.preview, filePath: "Example.swift")
+                ChunkView(chunk: Self.preview, syntaxColors: previewColors)
                     .accessibilityLabel(Text("Preview"))
+                    .task(id: colorScheme) {
+                        previewColors = await DiffSyntaxColors.snippet(Self.preview, path: "Example.swift",
+                                                                       isDark: colorScheme == .dark)
+                    }
             }
         }
         .settingsForm()

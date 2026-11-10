@@ -1,5 +1,4 @@
 import AppKit
-import HighlightSwift
 import SwiftUI
 
 struct FileContentView: View {
@@ -234,20 +233,19 @@ struct FileContentTextViewer: NSViewRepresentable {
         func highlight(document: FileContentDocument, path: String, isDark: Bool,
                        textView: NSTextView, onFailure: (() -> Void)?) {
             highlightTask = Task { [weak textView] in
-                let spans: [HighlightSwift.SyntaxSpan]
+                let spans: [SyntaxColorSpan]
                 do {
-                    spans = try await FileSyntaxHighlighter.shared.spans(in: document.text, path: path)
+                    spans = try await FileSyntaxHighlighter.shared.spans(in: document.text, path: path, isDark: isDark)
                 } catch {
                     if !Task.isCancelled, documentID == document.id { onFailure?() }
                     return
                 }
-                var palette = FileSyntaxPalette(isDark: isDark)
                 // Yield between bounded batches so selection and scrolling can respond immediately.
                 for start in stride(from: 0, to: spans.count, by: 256) {
                     guard !Task.isCancelled, documentID == document.id, let storage = textView?.textStorage else { return }
                     storage.beginEditing()
                     for span in spans[start..<min(start + 256, spans.count)] {
-                        storage.addAttribute(.foregroundColor, value: palette.color(for: span.scopes), range: span.range)
+                        storage.addAttribute(.foregroundColor, value: span.color, range: span.range)
                     }
                     storage.endEditing()
                     await Task.yield()

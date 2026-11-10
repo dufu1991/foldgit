@@ -55,7 +55,7 @@ struct CommitDetailContentView: View {
                     } else {
                         FileDiffsView(expandableFileDiffs: $fileDiffs, layout: changeFileLayout,
                                       tree: fileTree, collapsedDirectories: $collapsedDirectories)
-                            .environment(\.imageDiffContext, ImageDiffContext(
+                            .environment(\.diffFileContext, DiffFileContext(
                                 old: commit.parentHashes.first.map { .revision($0) } ?? .absent,
                                 new: .revision(commit.hash)))
                             .environment(\.folder, folder.url)

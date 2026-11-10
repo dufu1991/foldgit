@@ -8,7 +8,7 @@ struct ChunkView: View {
     @AppStorage(PreferenceKey.wrapLongLines.rawValue) private var wraps = false
     @State private var viewportWidth: CGFloat = 0
     let chunk: Chunk
-    let filePath: String
+    var syntaxColors: DiffSyntaxColors?
 
     private var availableWidth: CGFloat { listViewportWidth > 0 ? listViewportWidth : viewportWidth }
     private var resolvedLayout: DiffLayout { layout.resolved(for: availableWidth) }
@@ -16,7 +16,7 @@ struct ChunkView: View {
     var body: some View {
         Group {
             if resolvedLayout == .sideBySide, chunk.presentation.isSupported {
-                SideBySideChunkView(diff: chunk.presentation, filePath: filePath, availableWidth: availableWidth)
+                SideBySideChunkView(diff: chunk.presentation, availableWidth: availableWidth, syntaxColors: syntaxColors)
             } else {
                 VStack(alignment: .leading, spacing: 4) {
                     if resolvedLayout == .sideBySide {
@@ -35,7 +35,11 @@ struct ChunkView: View {
     private func unified(cells: [SideBySideDiff.Cell]) -> some View {
         let rows = cells.map { SideBySideDiff.Row(old: nil, new: $0) }
         let layout = DiffCodeLayout(rows: rows, columnWidth: max(120, availableWidth), fontSize: fontSize, wraps: wraps)
-        return DiffCodeColumn(cells: cells.map(Optional.some), filePath: filePath, layout: layout, lineCounts: layout.newLineCounts)
+        let syntax = chunk.presentation.isSupported
+            ? syntaxColors.map { colors in cells.map { colors.spans(for: $0, oldSide: false, prefixLength: 1) } } ?? []
+            : []
+        return DiffCodeColumn(cells: cells.map(Optional.some), layout: layout,
+                              lineCounts: layout.newLineCounts, syntax: syntax, syntaxPrefixLength: 1)
             .frame(height: layout.height + 8 + (wraps ? 0 : 16))
     }
 }
@@ -46,5 +50,5 @@ extension EnvironmentValues {
 }
 
 #Preview {
-    ChunkView(chunk: Chunk(raw: "@@ -1 +1 @@\n-let value = 1\n+let value = 2"), filePath: "Example.swift")
+    ChunkView(chunk: Chunk(raw: "@@ -1 +1 @@\n-let value = 1\n+let value = 2"))
 }

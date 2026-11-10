@@ -28,8 +28,8 @@ struct CommitDiffView: View {
         var reloadID: UUID?
     }
 
-    private var imageDiffContext: ImageDiffContext {
-        ImageDiffContext(old: version(of: base), new: version(of: target))
+    private var diffFileContext: DiffFileContext {
+        DiffFileContext(old: version(of: base), new: version(of: target))
     }
 
     private func version(of revision: String) -> GitFileVersion {
@@ -48,7 +48,7 @@ struct CommitDiffView: View {
                 }
             }
             FileDiffsView(expandableFileDiffs: $filesChanges)
-                .environment(\.imageDiffContext, imageDiffContext)
+                .environment(\.diffFileContext, diffFileContext)
                 .padding(.horizontal)
                 .opacity(isLoading && !filesChanges.isEmpty ? 0.45 : 1)
         }

@@ -4,8 +4,8 @@ import SwiftUI
 
 struct SideBySideChunkView: View {
     let diff: SideBySideDiff
-    let filePath: String
     var availableWidth: CGFloat = 0
+    var syntaxColors: DiffSyntaxColors?
     @AppStorage(PreferenceKey.codeFontSize.rawValue) private var fontSize = AppPreferences.defaultCodeFontSize
     @AppStorage(PreferenceKey.wrapLongLines.rawValue) private var wrapLongLines = false
     @State private var viewportWidth: CGFloat = 0
@@ -25,9 +25,9 @@ struct SideBySideChunkView: View {
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
             HStack(spacing: 0) {
-                column(title: "Before", cells: diff.rows.map(\.old), layout: layout, lineCounts: layout.oldLineCounts)
+                column(title: "Before", cells: diff.rows.map(\.old), layout: layout, lineCounts: layout.oldLineCounts, oldSide: true)
                 Divider()
-                column(title: "After", cells: diff.rows.map(\.new), layout: layout, lineCounts: layout.newLineCounts)
+                column(title: "After", cells: diff.rows.map(\.new), layout: layout, lineCounts: layout.newLineCounts, oldSide: false)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -36,14 +36,16 @@ struct SideBySideChunkView: View {
         }
     }
 
-    private func column(title: LocalizedStringKey, cells: [SideBySideDiff.Cell?], layout: DiffCodeLayout, lineCounts: [Int]) -> some View {
+    private func column(title: LocalizedStringKey, cells: [SideBySideDiff.Cell?], layout: DiffCodeLayout,
+                        lineCounts: [Int], oldSide: Bool) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(title)
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
-            DiffCodeColumn(cells: cells, filePath: filePath, layout: layout, lineCounts: lineCounts)
+            DiffCodeColumn(cells: cells, layout: layout, lineCounts: lineCounts,
+                           syntax: syntaxColors.map { colors in cells.map { colors.spans(for: $0, oldSide: oldSide) } } ?? [])
                 .frame(height: layout.height + 8 + (wrapLongLines ? 0 : 16))
         }
         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
@@ -54,9 +56,10 @@ struct SideBySideChunkView: View {
 /// Prepare every expanded hunk before scrolling; visibility must never trigger text creation or layout.
 struct DiffCodeColumn: NSViewRepresentable {
     let cells: [SideBySideDiff.Cell?]
-    let filePath: String
     var layout: DiffCodeLayout? = nil
     var lineCounts: [Int] = []
+    var syntax: [[SyntaxColorSpan]?] = []
+    var syntaxPrefixLength = 0
 
     func makeNSView(context: Context) -> NSScrollView {
         let scrollView = DiffColumnScrollView()
@@ -73,7 +76,8 @@ struct DiffCodeColumn: NSViewRepresentable {
     func updateNSView(_ scrollView: NSScrollView, context: Context) {
         guard let textView = scrollView.documentView as? DiffColumnTextView else { return }
         scrollView.hasHorizontalScroller = layout?.wraps != true
-        textView.update(cells: cells, filePath: filePath, layout: layout, lineCounts: lineCounts)
+        textView.update(cells: cells, layout: layout, lineCounts: lineCounts,
+                        syntax: syntax, syntaxPrefixLength: syntaxPrefixLength)
         textView.resizeToFit(viewportWidth: scrollView.contentSize.width)
     }
 }
@@ -136,7 +140,8 @@ final class DiffColumnTextView: NSTextView {
     }
 
     private var cells: [SideBySideDiff.Cell?] = []
-    private var filePath: String?
+    private var syntax: [[SyntaxColorSpan]?] = []
+    private var syntaxPrefixLength = 0
     private var gutterWidth: CGFloat = 42
     private var contentWidth: CGFloat = 0
     private var layout: DiffCodeLayout?
@@ -179,9 +184,21 @@ final class DiffColumnTextView: NSTextView {
 
     override var textContainerOrigin: NSPoint { NSPoint(x: gutterWidth + 8, y: 4) }
 
-    func update(cells: [SideBySideDiff.Cell?], filePath: String, layout: DiffCodeLayout? = nil, lineCounts: [Int] = []) {
-        guard self.cells != cells || self.filePath != filePath || self.layout != layout
-                || renderedFontSize != (layout.map { CGFloat($0.fontSize) } ?? FileDiffTheme.font.pointSize) else { return }
+    func update(cells: [SideBySideDiff.Cell?], layout: DiffCodeLayout? = nil,
+                lineCounts: [Int] = [], syntax: [[SyntaxColorSpan]?] = [], syntaxPrefixLength: Int = 0) {
+        let syntaxChanged = self.syntax != syntax || self.syntaxPrefixLength != syntaxPrefixLength
+        self.syntax = syntax
+        self.syntaxPrefixLength = syntaxPrefixLength
+        guard self.cells != cells || self.layout != layout
+                || renderedFontSize != (layout.map { CGFloat($0.fontSize) } ?? FileDiffTheme.font.pointSize) else {
+            if syntaxChanged, let storage = textStorage {
+                storage.beginEditing()
+                storage.addAttribute(.foregroundColor, value: NSColor.textColor, range: NSRange(location: 0, length: storage.length))
+                applySyntax(to: storage)
+                storage.endEditing()
+            }
+            return
+        }
         self.layout = layout
         renderedFontSize = layout.map { CGFloat($0.fontSize) } ?? FileDiffTheme.font.pointSize
         currentTheme = FileDiffTheme(fontSize: renderedFontSize)
@@ -193,7 +210,6 @@ final class DiffColumnTextView: NSTextView {
         textContainer?.containerSize = NSSize(width: layout?.wraps == true ? layout!.textWidth : .greatestFiniteMagnitude,
                                              height: .greatestFiniteMagnitude)
         self.cells = cells
-        self.filePath = filePath
         lineNumberLabels.removeAll(keepingCapacity: true)
         let theme = currentTheme
         let source = cells.map { $0?.text ?? "" }.joined(separator: "\n")
@@ -218,7 +234,7 @@ final class DiffColumnTextView: NSTextView {
                 location += length
             }
         }
-        SyntaxHighlighter.apply(to: attributed, filePath: filePath)
+        applySyntax(to: attributed)
         var location = 0
         for cell in cells {
             if let cell, let color = theme.inlineBackgroundColor(for: cell.kind) {
@@ -237,6 +253,22 @@ final class DiffColumnTextView: NSTextView {
             contentWidth = ceil(layoutManager.usedRect(for: textContainer).maxX) + gutterWidth + 16
         }
         needsDisplay = true
+    }
+
+    /// Rows without spans keep the plain text color until their colors arrive.
+    private func applySyntax(to text: NSMutableAttributedString) {
+        var offset = 0
+        for (cell, spans) in zip(cells, syntax) {
+            let length = cell?.text.utf16.count ?? 0
+            if let spans, length >= syntaxPrefixLength {
+                let start = offset + syntaxPrefixLength
+                for span in spans where NSMaxRange(span.range) <= length - syntaxPrefixLength {
+                    text.addAttribute(.foregroundColor, value: span.color,
+                                      range: NSRange(location: start + span.range.location, length: span.range.length))
+                }
+            }
+            offset += length + 1
+        }
     }
 
     func resizeToFit(viewportWidth: CGFloat) {

@@ -54,8 +54,8 @@ struct StashChangedContentView: View {
                         VStack(spacing: 0) {
                             StashChangedDetailContentView(fileDiffs: $fileDiffs)
                                 .environment(\.folder, folder.url)
-                                .environment(\.imageDiffContext, selectionStashID.map {
-                                    ImageDiffContext(old: .revision("stash@{\($0)}^1"), new: .revision("stash@{\($0)}"))
+                                .environment(\.diffFileContext, selectionStashID.map {
+                                    DiffFileContext(old: .revision("stash@{\($0)}^1"), new: .revision("stash@{\($0)}"))
                                 })
                             Spacer(minLength: 0)
                         }

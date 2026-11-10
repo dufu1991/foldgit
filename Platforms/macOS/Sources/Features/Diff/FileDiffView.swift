@@ -2,22 +2,23 @@ import FoldGitCore
 import SwiftUI
 
 struct FileDiffView: View {
-    @Environment(\.imageDiffContext) private var imageDiffContext
+    @Environment(\.diffFileContext) private var diffFileContext
     @Binding var expandableFileDiff: ExpandableModel<FileDiff>
     var treeDepth: Int? = nil
 
     var body: some View {
         DiffFileSection {
             if expandableFileDiff.isExpanded {
-                if let imageDiffContext,
+                if let diffFileContext,
                    DiffImage.supports(path: expandableFileDiff.model.fromFilePath) || DiffImage.supports(path: expandableFileDiff.model.toFilePath) {
-                    ImageDiffView(fileDiff: expandableFileDiff.model, context: imageDiffContext)
+                    ImageDiffView(fileDiff: expandableFileDiff.model, context: diffFileContext)
                 } else {
-                    VStack(alignment: .leading, spacing: 0) {
-                        chunksView(
-                            expandableFileDiff.model.chunks,
-                            filePath: expandableFileDiff.model.toFilePath
-                        )
+                    DiffSyntaxContent(file: expandableFileDiff.model) { colors in
+                        VStack(alignment: .leading, spacing: 0) {
+                            ForEach(expandableFileDiff.model.chunks) { chunk in
+                                ChunkView(chunk: chunk, syntaxColors: colors)
+                            }
+                        }
                         .padding(.top, 8)
                         .padding(.bottom, 12)
                     }
@@ -31,12 +32,6 @@ struct FileDiffView: View {
             )
         } footer: {
             if expandableFileDiff.isExpanded { FileDiffDivider() }
-        }
-    }
-
-    private func chunksView(_ chunks: [Chunk], filePath: String) -> some View {
-        ForEach(chunks) { chunk in
-            ChunkView(chunk: chunk, filePath: filePath)
         }
     }
 }

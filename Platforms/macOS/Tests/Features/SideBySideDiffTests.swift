@@ -1,10 +1,91 @@
 import AppKit
 import FoldGitCore
+import FoldGitTestSupport
 import SwiftUI
 import XCTest
 @testable import FoldGit
 
 final class SideBySideDiffTests: XCTestCase {
+    @MainActor
+    func testCommitDiffColorsRowsInsideMultilineSyntaxInBothLayouts() async throws {
+        let repository = try await TestRepository.create(commits: 0)
+        defer { repository.remove() }
+        let path = "Multiline.swift"
+        let source = { (value: String) in
+            ["/*", "line 2", "line 3", "line 4", "line 5", "return comment \(value) 😀",
+             "*/", "let code = 1", "let message = \"\"\"", "line 10", "line 11", "line 12", "line 13",
+             "return string \(value) 😀", "\"\"\"", ""].joined(separator: "\n")
+        }
+        try repository.write(path, source("before"))
+        try await repository.commit("Add multiline syntax")
+        try repository.write(path, source("after"))
+        try await repository.commit("Edit the middle of each construct")
+        let patch = try await repository.git(["diff", "--no-ext-diff", "--full-index", "HEAD^", "HEAD"])
+        let file = try XCTUnwrap(try Diff(raw: patch).fileDiffs.first)
+        let commentHunk = try XCTUnwrap(file.chunks.first { $0.raw.contains("return comment") })
+        let stringHunk = try XCTUnwrap(file.chunks.first { $0.raw.contains("return string") })
+        XCTAssertFalse(commentHunk.raw.components(separatedBy: "\n").dropFirst().contains { $0.contains("/*") })
+        XCTAssertFalse(stringHunk.raw.components(separatedBy: "\n").dropFirst().contains { $0.contains("let message") })
+
+        let highlighter = FileSyntaxHighlighter.shared
+        let reference = try await highlighter.spans(in: source("after"), path: path)
+        let sourceText = source("after") as NSString
+        let color = { (text: String) throws -> NSColor in
+            let position = sourceText.range(of: text).location
+            return try XCTUnwrap(reference.first { NSLocationInRange(position, $0.range) }).color
+        }
+        let comment = try color("return comment")
+        let string = try color("return string")
+        XCTAssertNotEqual(comment, string)
+
+        for mode in [DiffLayout.unified, .sideBySide] {
+            let name = "MultilineDiff.\(UUID())"
+            let preferences = try XCTUnwrap(UserDefaults(suiteName: name))
+            defer { preferences.removePersistentDomain(forName: name) }
+            preferences.set(mode.rawValue, forKey: PreferenceKey.diffLayout.rawValue)
+            let root = FileDiffView(expandableFileDiff: .constant(ExpandableModel(isExpanded: true, model: file)))
+                .environment(\.folder, repository.url)
+                .environment(\.diffFileContext, DiffFileContext(old: .revision("HEAD^"), new: .revision("HEAD")))
+                .environment(\.diffViewportWidth, 1_000)
+                .environment(\.colorScheme, .light)
+                .defaultAppStorage(preferences)
+                .frame(width: 1_000, height: 500)
+            let host = NSHostingView(rootView: root)
+            let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1_000, height: 500),
+                                  styleMask: [.borderless], backing: .buffered, defer: false)
+            window.isReleasedWhenClosed = false
+            window.contentView = host
+            window.orderBack(nil)
+            defer { window.close() }
+
+            let matches = {
+                var views: [NSView] = [host]
+                var found = Set<String>()
+                while let view = views.popLast() {
+                    views.append(contentsOf: view.subviews)
+                    guard let textView = view as? DiffColumnTextView, let storage = textView.textStorage else { continue }
+                    for (kind, expected) in [("comment", comment), ("string", string)] {
+                        for version in ["before", "after"] {
+                            let marker = "return \(kind) \(version) 😀"
+                            let range = (storage.string as NSString).range(of: marker)
+                            guard range.location != NSNotFound,
+                                  storage.attribute(.foregroundColor, at: range.location, effectiveRange: nil) as? NSColor == expected
+                            else { continue }
+                            found.insert(marker)
+                        }
+                    }
+                }
+                return found.count == 4
+            }
+            let clock = ContinuousClock()
+            let deadline = clock.now + .seconds(4)
+            while !matches(), clock.now < deadline {
+                try await Task.sleep(for: .milliseconds(20))
+            }
+            XCTAssertTrue(matches(), "Expected comment and string colors on both sides of the \(mode) diff")
+        }
+    }
+
     @MainActor
     func testChunkUsesFinalHeightOnItsFirstLayout() async throws {
         let chunk = Chunk(raw: "@@ -1,20 +1,20 @@\n" + (1...20).map {
@@ -17,7 +98,7 @@ final class SideBySideDiffTests: XCTestCase {
                 defer { preferences.removePersistentDomain(forName: name) }
                 preferences.set(diffLayout.rawValue, forKey: PreferenceKey.diffLayout.rawValue)
                 preferences.set(wraps, forKey: PreferenceKey.wrapLongLines.rawValue)
-                let root = ChunkView(chunk: chunk, filePath: "Example.swift")
+                let root = ChunkView(chunk: chunk)
                     .environment(\.diffViewportWidth, 1_000)
                     .defaultAppStorage(preferences)
                     .frame(width: 1_000)
@@ -197,7 +278,7 @@ final class SideBySideDiffTests: XCTestCase {
                 let rows = cells.map { SideBySideDiff.Row(new: $0) }
                 let layout = DiffCodeLayout(rows: rows, columnWidth: 180, fontSize: 16, wraps: wraps)
                 let view = DiffColumnTextView(frame: .zero)
-                view.update(cells: cells, filePath: "Example.swift", layout: layout, lineCounts: layout.newLineCounts)
+                view.update(cells: cells, layout: layout, lineCounts: layout.newLineCounts)
                 view.resizeToFit(viewportWidth: 180)
                 let storage = try XCTUnwrap(view.textStorage)
                 XCTAssertEqual(view.string, cells.map { $0?.text ?? "" }.joined(separator: "\n"))
@@ -229,7 +310,7 @@ final class SideBySideDiffTests: XCTestCase {
                 let preferences = try XCTUnwrap(UserDefaults(suiteName: name))
                 defer { preferences.removePersistentDomain(forName: name) }
                 preferences.set(layout.rawValue, forKey: PreferenceKey.diffLayout.rawValue)
-                let root = ChunkView(chunk: chunk, filePath: "Example.vue")
+                let root = ChunkView(chunk: chunk)
                     .defaultAppStorage(preferences)
                     .frame(width: 1_200, height: 300, alignment: .topLeading)
                     .background(Color(nsColor: .textBackgroundColor))
@@ -286,7 +367,7 @@ final class SideBySideDiffTests: XCTestCase {
     func testNativeColumnsKeepLongLinesUnwrappedAndSelectable() throws {
         let diff = SideBySideDiff(chunk: Chunk(raw: "@@ -1,2 +1,2 @@\n-\tlet text = \"旧值 👋\"\n+let text = \"" + String(repeating: "long code ", count: 100) + "\"\n next"))
         let view = DiffColumnTextView(frame: .zero)
-        view.update(cells: diff.rows.map(\.new), filePath: "Example.swift")
+        view.update(cells: diff.rows.map(\.new))
         view.resizeToFit(viewportWidth: 240)
         XCTAssertGreaterThan(view.frame.width, 240)
         XCTAssertTrue(view.isSelectable)
@@ -309,8 +390,8 @@ final class SideBySideDiffTests: XCTestCase {
         XCTAssertGreaterThan(layout.newLineCounts[0], layout.oldLineCounts[0])
         let old = DiffColumnTextView(frame: .zero)
         let new = DiffColumnTextView(frame: .zero)
-        old.update(cells: diff.rows.map(\.old), filePath: "file.swift", layout: layout, lineCounts: layout.oldLineCounts)
-        new.update(cells: diff.rows.map(\.new), filePath: "file.swift", layout: layout, lineCounts: layout.newLineCounts)
+        old.update(cells: diff.rows.map(\.old), layout: layout, lineCounts: layout.oldLineCounts)
+        new.update(cells: diff.rows.map(\.new), layout: layout, lineCounts: layout.newLineCounts)
         for view in [old, new] {
             view.resizeToFit(viewportWidth: 240)
             XCTAssertEqual(view.frame.width, 240)
@@ -343,7 +424,7 @@ final class SideBySideDiffTests: XCTestCase {
         let preferences = try XCTUnwrap(UserDefaults(suiteName: suite))
         defer { preferences.removePersistentDomain(forName: suite) }
         let chunk = Chunk(raw: "@@ -1 +1 @@\n-" + String(repeating: "old code ", count: 30) + "\n+new")
-        let root = ChunkView(chunk: chunk, filePath: "file.swift")
+        let root = ChunkView(chunk: chunk)
             .defaultAppStorage(preferences)
             .frame(width: 400, height: 800, alignment: .topLeading)
         let view = NSHostingView(rootView: root)
@@ -416,7 +497,7 @@ final class SideBySideDiffTests: XCTestCase {
             SideBySideDiff.Cell(text: "line \(number)", lineNumber: number, kind: .added)
         }
         let view = DiffColumnTextView(frame: .zero)
-        view.update(cells: cells, filePath: "large.txt")
+        view.update(cells: cells)
         view.resizeToFit(viewportWidth: 600)
         let bitmap = try XCTUnwrap(NSBitmapImageRep(
             bitmapDataPlanes: nil, pixelsWide: 600, pixelsHigh: 500,
@@ -512,7 +593,7 @@ final class SideBySideDiffTests: XCTestCase {
         let chunk = Chunk(raw: "@@ -120,4 +120,5 @@ func example() {\n let title = \"Hello\"\n-\tlet count = 1\n+\tlet count = 2\n+let description = \"" + String(repeating: "long line ", count: 20) + "\"\n \n return title")
         for width in [520.0, 1000.0] {
             for dark in [false, true] {
-                let root = SideBySideChunkView(diff: SideBySideDiff(chunk: chunk), filePath: "Example.swift")
+                let root = SideBySideChunkView(diff: SideBySideDiff(chunk: chunk))
                     .frame(width: width)
                     .background(Color(nsColor: .textBackgroundColor))
                 let view = NSHostingView(rootView: root)

@@ -48,7 +48,7 @@ struct CommitCreateView: View {
     @State private var cachedDiffStat: DiffStat?
     @State private var updateChangesError: Error?
     @State private var updateGeneration = 0
-    @State private var imageDiffRefreshID = 0
+    @State private var diffFileRefreshID = 0
     private var drafts = CommitDraftStore.shared
     private var commitMessage: Binding<String> { drafts.binding(for: folder.url) }
     @State private var error: Error?
@@ -100,7 +100,7 @@ struct CommitCreateView: View {
                             selectButtonImageSystemName: "minus", selectFileButtonHelp: String(localized: "Unstage This File"),
                             selectButtonHelp: String(localized: "Unstage This Hunk"), onSelectFileDiff: nil, onSelectChunk: nil,
                             layout: changeFileLayout, tree: stagedTree, collapsedDirectories: $collapsedStagedDirectories)
-                            .environment(\.imageDiffContext, .staged)
+                            .environment(\.diffFileContext, .staged)
                             .environment(\.changeRowContext, rowContext(staged: true))
                     }
                 }
@@ -208,7 +208,7 @@ struct CommitCreateView: View {
         .sheet(isPresented: $isStashSheetPresented) {
             StashChangesSheet(message: $stashMessage, onStash: confirmStash)
         }
-        .environment(\.imageDiffRefreshID, imageDiffRefreshID)
+        .environment(\.diffFileRefreshID, diffFileRefreshID)
         .focusedSceneValue(\.stagingMenu, menuActions)
         .onChange(of: expandAllFilesID) { _, _ in setAllDiffExpansion(true) }
         .onChange(of: collapseAllFilesID) { _, _ in setAllDiffExpansion(false) }
@@ -609,7 +609,7 @@ struct CommitCreateView: View {
             WorktreeSnapshotCache.store(snapshot, in: folder.url)
             guard try await show(snapshot, request: request) else { return }
             updateChangesError = nil
-            imageDiffRefreshID = request
+            diffFileRefreshID = request
             Task {
                 if commitMessage.wrappedValue.isEmpty,
                    let message = try? await DefaultMergeCommitMessage(directory: folder.url).get() {

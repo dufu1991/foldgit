@@ -1,6 +1,15 @@
 {
-  "originHash" : "41a491a160b90c30ea45b0a8d95294149595400a849e13f4419f3327fb74d204",
+  "originHash" : "7df20f7195cb1b8bd68acb89a7def72b7b46afdabf41676cc294b551c4e7b252",
   "pins" : [
+    {
+      "identity" : "shiki-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/fayazara/shiki-swift.git",
+      "state" : {
+        "revision" : "05563c884a83611bfb838a1c90550a1e8e576600",
+        "version" : "0.1.2"
+      }
+    },
     {
       "identity" : "sparkle",
       "kind" : "remoteSourceControl",

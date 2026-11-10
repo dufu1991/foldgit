@@ -9,8 +9,9 @@ options:
 packages:
   FoldGitShared:
     path: ../..
-  HighlightSwift:
-    path: ../../Vendor/HighlightSwift
+  ShikiSwift:
+    url: https://github.com/fayazara/shiki-swift.git
+    exactVersion: 0.1.2
   Sparkle:
     url: https://github.com/sparkle-project/Sparkle
     exactVersion: 2.10.1
@@ -50,8 +51,8 @@ targets:
     dependencies:
       - package: FoldGitShared
         product: FoldGitCore
-      - package: HighlightSwift
-        product: HighlightSwift
+      - package: ShikiSwift
+        product: Shiki
       - package: Sparkle
         product: Sparkle
     postBuildScripts:

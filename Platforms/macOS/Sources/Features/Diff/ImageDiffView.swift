@@ -8,7 +8,7 @@ struct ImageDiffView: View {
     private let newVersion: GitFileVersion
     private let contentID: String
 
-    init(fileDiff: FileDiff, context: ImageDiffContext) {
+    init(fileDiff: FileDiff, context: DiffFileContext) {
         oldPath = fileDiff.fromFilePath
         newPath = fileDiff.toFilePath
         oldVersion = context.version(for: fileDiff, oldSide: true)
@@ -24,7 +24,7 @@ struct ImageDiffView: View {
         contentID = untrackedPath
     }
     @Environment(\.folder) private var folder
-    @Environment(\.imageDiffRefreshID) private var refreshID
+    @Environment(\.diffFileRefreshID) private var refreshID
     @AppStorage(PreferenceKey.diffLayout.rawValue) private var layout = DiffLayout.automatic
     @State private var viewportWidth: CGFloat = 0
     @State private var oldImage = DiffImageState.loading

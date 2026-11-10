@@ -2,15 +2,19 @@ import Foundation
 
 public struct SideBySideDiff: Hashable, Sendable {
     public struct Cell: Hashable, Sendable {
-        public init(text: String, lineNumber: Int? = nil, kind: Chunk.Line.Kind, changedRanges: [Range<Int>] = []) {
+        public init(text: String, lineNumber: Int? = nil, kind: Chunk.Line.Kind, changedRanges: [Range<Int>] = [],
+                    oldLineNumber: Int? = nil) {
             self.text = text
             self.lineNumber = lineNumber
             self.kind = kind
             self.changedRanges = changedRanges
+            self.oldLineNumber = oldLineNumber
         }
 
         public var text: String
         public var lineNumber: Int?
+        /// The old-file line of a removed unified cell, which shows no line number of its own.
+        public var oldLineNumber: Int?
         public var kind: Chunk.Line.Kind
         /// UTF-16 ranges relative to `text`, with boundaries on complete graphemes.
         public var changedRanges: [Range<Int>]
@@ -125,9 +129,11 @@ public struct SideBySideDiff: Hashable, Sendable {
         unifiedCells = sourceLines.map { line in
             var ranges: [Range<Int>] = []
             var number: Int?
+            var oldLine: Int?
             switch line.kind {
             case .removed:
                 ranges = oldRanges[oldNumber] ?? []
+                oldLine = oldNumber
                 oldNumber += 1
             case .added:
                 ranges = newRanges[newNumber] ?? []
@@ -143,7 +149,7 @@ public struct SideBySideDiff: Hashable, Sendable {
                 break
             }
             return Cell(text: line.raw, lineNumber: number, kind: line.kind,
-                        changedRanges: ranges.map { ($0.lowerBound + 1)..<($0.upperBound + 1) })
+                        changedRanges: ranges.map { ($0.lowerBound + 1)..<($0.upperBound + 1) }, oldLineNumber: oldLine)
         }
     }
 }

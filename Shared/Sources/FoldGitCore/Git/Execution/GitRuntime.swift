@@ -156,14 +156,16 @@ public enum GitRuntime: Sendable {
     }
 
     /// Collect bytes without a UTF-8 conversion, preserving image and other blob contents.
-    public static func runData(arguments: [String], currentDirectoryURL: URL?, timeout: Duration = .seconds(180)) async throws -> Data {
+    public static func runData(arguments: [String], currentDirectoryURL: URL?, timeout: Duration = .seconds(180),
+                               maximumBytes: Int = outputLimit) async throws -> Data {
         try await RepositoryCommandQueue.shared.execute(at: currentDirectoryURL, readOnly: true) {
-            try await collect(arguments: arguments, directory: currentDirectoryURL, inputs: [], environment: [:], readOnly: true, timeout: timeout, binaryOutput: true).standardOutput
+            try await collect(arguments: arguments, directory: currentDirectoryURL, inputs: [], environment: [:], readOnly: true, timeout: timeout, binaryOutput: true,
+                              maximumBytes: min(maximumBytes, outputLimit)).standardOutput
         }
     }
 
     private static func collect(arguments: [String], directory: URL?, inputs: [String], environment: [String: String], readOnly: Bool,
-                                timeout: Duration, binaryOutput: Bool = false) async throws -> BinaryCommandOutput {
+                                timeout: Duration, binaryOutput: Bool = false, maximumBytes: Int = outputLimit) async throws -> BinaryCommandOutput {
         let logID = await GitCommandLog.shared.begin(arguments: preparedArguments(arguments), directory: directory, readOnly: readOnly)
         let clock = ContinuousClock()
         let start = clock.now
@@ -175,7 +177,7 @@ public enum GitRuntime: Sendable {
             let output = try await withThrowingTaskGroup(of: BinaryCommandOutput.self) { group in
                 group.addTask {
                     try await launch(arguments: arguments, directory: directory, inputs: inputs, environment: environment,
-                                     logID: logID, binaryOutput: binaryOutput)
+                                     logID: logID, binaryOutput: binaryOutput, maximumBytes: maximumBytes)
                 }
                 group.addTask {
                     try await Task.sleep(for: timeout)
@@ -213,7 +215,7 @@ public enum GitRuntime: Sendable {
     }
 
     private static func launch(arguments: [String], directory: URL?, inputs: [String], environment overrides: [String: String],
-                               logID: UUID?, binaryOutput: Bool) async throws -> BinaryCommandOutput {
+                               logID: UUID?, binaryOutput: Bool, maximumBytes: Int) async throws -> BinaryCommandOutput {
         try Task.checkCancellation()
         guard let executable = arguments.first else {
             throw GitExecutionError(description: NSLocalizedString("The Git command is empty.", comment: ""))
@@ -230,7 +232,7 @@ public enum GitRuntime: Sendable {
             arguments: .init(Array(preparedArguments(arguments).dropFirst())), environment: environment,
             workingDirectory: directory.map { .init($0.path) },
             input: .string(inputs.isEmpty ? "" : inputs.joined(separator: "\n") + "\n"),
-            output: .bytes(limit: outputLimit), error: .bytes(limit: 4 * 1024 * 1024)
+            output: .bytes(limit: maximumBytes), error: .bytes(limit: 4 * 1024 * 1024)
         )
         let exitCode: Int?
         switch result.terminationStatus {

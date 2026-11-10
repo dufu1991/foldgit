@@ -3,7 +3,7 @@ import SwiftUI
 
 struct StageFileDiffView: View {
     @Environment(\.diffViewportWidth) private var viewportWidth
-    @Environment(\.imageDiffContext) private var imageDiffContext
+    @Environment(\.diffFileContext) private var diffFileContext
     @Environment(\.changeRowContext) private var changeRowContext
     @Binding var expandableFileDiff: ExpandableModel<FileDiff>
     var fileDiff: FileDiff {
@@ -19,35 +19,37 @@ struct StageFileDiffView: View {
     var body: some View {
         DiffFileSection {
             if expandableFileDiff.isExpanded {
-                if let imageDiffContext,
+                if let diffFileContext,
                    DiffImage.supports(path: fileDiff.fromFilePath) || DiffImage.supports(path: fileDiff.toFilePath) {
-                    ImageDiffView(fileDiff: fileDiff, context: imageDiffContext)
+                    ImageDiffView(fileDiff: fileDiff, context: diffFileContext)
                 } else {
-                    VStack(alignment: .leading, spacing: 8) {
-                        ForEach(fileDiff.chunks) { chunk in
-                            HStack(spacing: 0) {
-                                ChunkView(chunk: chunk, filePath: fileDiff.toFilePath)
-                                    .environment(\.diffViewportWidth, max(0, viewportWidth - (onSelectChunk == nil ? 0 : 22)))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                if let onSelectChunk {
-                                    StageActionButton(systemImage: selectButtonImageSystemName, help: selectButtonHelp) {
-                                        onSelectChunk(fileDiff, chunk)
+                    DiffSyntaxContent(file: fileDiff) { colors in
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(fileDiff.chunks) { chunk in
+                                HStack(spacing: 0) {
+                                    ChunkView(chunk: chunk, syntaxColors: colors)
+                                        .environment(\.diffViewportWidth, max(0, viewportWidth - (onSelectChunk == nil ? 0 : 22)))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    if let onSelectChunk {
+                                        StageActionButton(systemImage: selectButtonImageSystemName, help: selectButtonHelp) {
+                                            onSelectChunk(fileDiff, chunk)
+                                        }
+                                        .padding(.vertical)
                                     }
-                                    .padding(.vertical)
                                 }
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .contextMenu {
-                                if let discardChunk = changeRowContext?.discardChunk {
-                                    Button("Discard This Hunk", systemImage: "arrow.uturn.backward") {
-                                        discardChunk(fileDiff, chunk)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contextMenu {
+                                    if let discardChunk = changeRowContext?.discardChunk {
+                                        Button("Discard This Hunk", systemImage: "arrow.uturn.backward") {
+                                            discardChunk(fileDiff, chunk)
+                                        }
                                     }
                                 }
                             }
                         }
+                        .padding(.top, 8)
+                        .padding(.bottom, 12)
                     }
-                    .padding(.top, 8)
-                    .padding(.bottom, 12)
                     if fileDiff.chunks.isEmpty {
                         HStack {
                             if let onSelectFileDiff {

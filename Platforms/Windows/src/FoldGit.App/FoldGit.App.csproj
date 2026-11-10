@@ -21,6 +21,9 @@
     <AppxBundle>Never</AppxBundle>
     <GenerateAppInstallerFile>false</GenerateAppInstallerFile>
     <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+    <!-- Ship framework resources only for the app's own languages, and keep symbols out of the package. -->
+    <SatelliteResourceLanguages>en;zh-Hans;zh-Hant;ja;ko;ru;fr;es</SatelliteResourceLanguages>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(FoldGitCloudDebug)' == 'true' and '$(Configuration)' == 'Debug'">
     <WindowsPackageType>None</WindowsPackageType>

@@ -93,6 +93,9 @@ if [ -d "$foldgit_sparkle" ]; then
   done < <(find "$foldgit_sparkle/Versions" -type d -name '*.lproj' -prune -print0)
 fi
 
+# Ship only the Shiki themes the app requests. Grammars stay complete so every language keeps its colors.
+python3 "$foldgit_root/Scripts/trim-shiki-themes.py" "$foldgit_app/Contents/Resources/ShikiSwift_Shiki.bundle"
+
 python3 "$foldgit_root/Scripts/sign-macos-adhoc.py" "$foldgit_app"
 lipo "$foldgit_app/Contents/MacOS/FoldGit" -verify_arch arm64
 test "$(lipo -archs "$foldgit_app/Contents/MacOS/FoldGit")" = arm64
@@ -111,7 +114,8 @@ foldgit_dmg_source="$foldgit_work/dmg"
 mkdir -p "$foldgit_dmg_source"
 ditto "$foldgit_app" "$foldgit_dmg_source/FoldGit.app"
 ln -s /Applications "$foldgit_dmg_source/Applications"
-hdiutil create -volname FoldGit -srcfolder "$foldgit_dmg_source" -fs HFS+ -format UDZO -ov "$foldgit_output/$foldgit_name.dmg"
+# LZMA (ULMO) is about a quarter smaller than zlib (UDZO); it needs macOS 10.15 or later.
+hdiutil create -volname FoldGit -srcfolder "$foldgit_dmg_source" -fs HFS+ -format ULMO -ov "$foldgit_output/$foldgit_name.dmg"
 hdiutil verify "$foldgit_output/$foldgit_name.dmg"
 
 if [ "$foldgit_dmg_only" = true ]; then

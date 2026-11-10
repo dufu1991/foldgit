@@ -198,4 +198,4 @@ macOS 使用 Sparkle 进行应用内更新。CI 必须配置固定的 `SPARKLE_E
 
 FoldGit 是由 dufu 独立维护的开源项目，采用 [MIT 许可证](LICENSE)，自有代码版权归 dufu 所有。
 
-第三方代码与资源保留各自的版权与许可声明，包括 Sparkle、HighlightSwift（MIT）、highlight.js（BSD-3-Clause）、随库保留的主题（其中 NNFX 采用 CC BY-SA 4.0）、Swift Subprocess（Apache-2.0）、Swift System（Apache-2.0，含 Swift Runtime Library Exception）和 Material Icon Theme（MIT）。Windows 还包含 .NET Community Toolkit MVVM、Windows App SDK 和 Win2D。组件清单、来源版本、本地修改说明与许可条款位于 [Shared/Resources/Licenses/LICENSE.txt](Shared/Resources/Licenses/LICENSE.txt)，随两个平台的应用分发，可在设置的「开源许可」中查看。
+第三方代码与资源保留各自的版权与许可声明，包括 Sparkle、ShikiSwift（MIT）、Swift Subprocess（Apache-2.0）、Swift System（Apache-2.0，含 Swift Runtime Library Exception）和 Material Icon Theme（MIT）。macOS 发布包随附 ShikiSwift 的全部语法文件、GitHub Light 和 GitHub Dark 两套主题，以及随包资源的许可声明。Windows 还包含 .NET Community Toolkit MVVM、Windows App SDK 和 Win2D。组件清单、来源版本、本地修改说明与许可条款位于 [Shared/Resources/Licenses/LICENSE.txt](Shared/Resources/Licenses/LICENSE.txt)，随两个平台的应用分发，可在设置的「开源许可」中查看。

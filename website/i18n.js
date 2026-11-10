@@ -53,7 +53,7 @@ window.FOLDGIT_I18N = {
     "rv.files.mockHistory": "Commit History",
     "rv.files.title": "Directory View: full files and their history",
     "rv.files.body": "Switch the toolbar to Directory View to browse the whole working tree by folder, untracked files included. Select a file to read it end to end, or see every commit that changed it.",
-    "rv.files.l1": "Syntax highlighting for more than 50 common languages, with Find in File",
+    "rv.files.l1": "Syntax highlighting in full files and diffs handles multiline comments and strings. Use Find in File when reading a full file.",
     "rv.files.l2": "Commit History lists each commit that touched the file; open one to see that change",
     "rv.files.l3": "Search files by name or path to find one among thousands",
     "rv.files.l4": "Preview and zoom images, load large text on request, and open other binaries externally",

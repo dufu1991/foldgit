@@ -107,8 +107,8 @@
     var first = currentShot === "";
     currentShot = base;
     var next = new Image();
-    next.srcset = base + ".webp?v=20261029-2 1x, " + base + "@2x.webp?v=20261029-2 2x";
-    next.src = base + ".webp?v=20261029-2";
+    next.srcset = base + ".webp?v=20261110-2 1x, " + base + "@2x.webp?v=20261110-2 2x";
+    next.src = base + ".webp?v=20261110-2";
     var swap = () => {
       if (base !== currentShot) return;
       shot.srcset = next.srcset;

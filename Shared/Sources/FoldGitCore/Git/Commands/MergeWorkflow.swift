@@ -216,6 +216,8 @@ private struct MergeGit: RepositoryCommand {
     var directory: URL
     let args: [String]
     var arguments: [String] { ["git"] + args }
+    /// Queries must not announce a repository change; `GitMergeState.read` runs on every refresh.
+    var isReadOnly: Bool { ["ls-files", "diff", "rev-list", "rev-parse", "status"].contains(args.first ?? "") }
     func parse(for standardOutput: String) -> String { standardOutput }
 }
 

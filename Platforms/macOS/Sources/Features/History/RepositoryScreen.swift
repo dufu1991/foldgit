@@ -698,7 +698,7 @@ struct RepositoryScreen: View {
                 Text("Branch")
             } icon: {
                 HStack(spacing: 8) {
-                    ToolbarOperationIcon(image: .gitBranch, isLoading: runningOperation == .branch)
+                    ToolbarOperationIcon(image: .toolbarGitBranch, isLoading: runningOperation == .branch)
                         .foregroundStyle(Color.accentColor)
                     Text(branch?.name ?? String(localized: "Branches"))
                         .font(.body.weight(.semibold))

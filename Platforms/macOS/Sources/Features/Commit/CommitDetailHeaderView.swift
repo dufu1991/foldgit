@@ -22,16 +22,13 @@ struct CommitDetailHeaderView: View {
                     }
                 Image(systemName: "arrow.right")
                 HStack(spacing: 0) {
-                    ForEach(commit.parentHashes, id: \.self) { hash in
-                        if hash == commit.parentHashes.first {
-                            NavigationLink(commit.parentHashes[0].prefix(7), value: commit.parentHashes[0])
-                                .foregroundColor(.accentColor)
-                        } else {
+                    ForEach(Array(commit.parentHashes.enumerated()), id: \.element) { index, hash in
+                        if index > 0 {
                             Text(",")
                                 .padding(.trailing, 2)
-                            NavigationLink(commit.parentHashes[1].prefix(7), value: commit.parentHashes[1])
-                                .foregroundColor(.accentColor)
                         }
+                        NavigationLink(hash.prefix(7), value: hash)
+                            .foregroundColor(.accentColor)
                     }
                 }
                 .textSelection(.disabled)

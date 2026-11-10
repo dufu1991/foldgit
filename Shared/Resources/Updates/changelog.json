@@ -1,5 +1,23 @@
 [
   {
+    "version": "0.5.2",
+    "date": "2026-11-10",
+    "zh": [
+      "macOS 改进完整文件和代码差异的语法高亮，单栏和并排差异都能识别从差异块之外开始的多行注释与字符串。",
+      "macOS 修复自定义 Git 差异设置干扰差异解析的问题，Windows 修复普通文本被误判为二进制文件的问题。",
+      "macOS 和 Windows 遇到无效 UTF-8 字节时仍可刷新差异，并阻止应用解码时丢失内容的更改块。",
+      "macOS 恢复工具栏的分支图标，避免读取合并状态时重复刷新，并修正多父提交的链接。同步改进多语言界面文案。",
+      "精简 macOS 和 Windows 安装包内的资源，优化 macOS 磁盘映像压缩。"
+    ],
+    "en": [
+      "Improve syntax highlighting for full files and diffs on macOS. Unified and side-by-side diffs preserve highlighting for multiline comments and strings that start outside the visible hunk.",
+      "Keep custom Git diff settings from interfering with diff parsing on macOS and fix text files being mistaken for binary files on Windows.",
+      "Keep diffs loading on macOS and Windows when they contain invalid UTF-8 bytes, and prevent applying hunks that lose information during decoding.",
+      "Restore the branch icon in the macOS toolbar, avoid repeated refreshes when reading merge status, and fix links to parent commits in multi-parent commits. Refine interface wording across languages.",
+      "Trim bundled resources in the macOS and Windows installers and improve macOS disk image compression."
+    ]
+  },
+  {
     "version": "0.5.1",
     "date": "2026-11-09",
     "zh": [

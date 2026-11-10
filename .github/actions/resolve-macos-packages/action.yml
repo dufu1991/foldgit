@@ -1,0 +1,28 @@
+name: Resolve macOS packages
+description: Download the app's locked Swift packages before building or testing.
+outputs:
+  path:
+    description: Directory containing the resolved Swift packages.
+    value: ${{ steps.resolve.outputs.path }}
+runs:
+  using: composite
+  steps:
+    - name: Resolve locked Swift packages
+      id: resolve
+      shell: bash
+      run: |
+        packages="$RUNNER_TEMP/FoldGitSourcePackages"
+        for attempt in 1 2 3; do
+          if xcodebuild -resolvePackageDependencies \
+            -project Platforms/macOS/FoldGit.xcodeproj \
+            -clonedSourcePackagesDirPath "$packages" \
+            -onlyUsePackageVersionsFromResolvedFile; then
+            printf 'path=%s\n' "$packages" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$attempt" -lt 3 ]; then
+            echo "Package resolution failed on attempt $attempt of 3. Retrying."
+            sleep "$((attempt * 5))"
+          fi
+        done
+        exit 1

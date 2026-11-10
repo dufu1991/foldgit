@@ -63,10 +63,15 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest
+      - uses: ./.github/actions/resolve-macos-packages
+        id: packages
       - name: Test macOS application
+        env:
+          SOURCE_PACKAGES: ${{ steps.packages.outputs.path }}
         run: >-
           xcodebuild test -project Platforms/macOS/FoldGit.xcodeproj -scheme FoldGit
           -destination 'platform=macOS' -derivedDataPath build/macos
+          -clonedSourcePackagesDirPath "$SOURCE_PACKAGES"
           -onlyUsePackageVersionsFromResolvedFile CODE_SIGNING_ALLOWED=NO
       - name: Validate compiler-extracted localization keys
         run: python3 Scripts/validate-localizations.py --extracted-directory build/macos/Build/Intermediates.noindex/FoldGit.build

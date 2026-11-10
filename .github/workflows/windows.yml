@@ -18,6 +18,11 @@ on:
       - .github/ISSUE_TEMPLATE/**
   # The release workflow calls this so a version is only published after its tests pass.
   workflow_call:
+    inputs:
+      installer_checked_by_caller:
+        description: Skip building and checking an EXE when the caller verifies the release installer.
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       validate_signing:
@@ -48,6 +53,7 @@ jobs:
       - name: Install Windows build dependencies
         run: python -m pip install -r Scripts/build-requirements.txt
       - name: Validate shared resources and platform boundaries
+        if: matrix.runner == 'windows-2025'
         run: |
           python Scripts/validate-localizations.py
           python Scripts/check-platform-boundaries.py
@@ -124,7 +130,9 @@ jobs:
           python Scripts/generate-windows-icons.py "$target/Assets" --check
           if ($LASTEXITCODE -ne 0) { throw 'Debug icons are missing or incorrect.' }
       - uses: ./.github/actions/install-inno-setup
+        if: '!inputs.installer_checked_by_caller'
       - name: Build EXE installer
+        if: '!inputs.installer_checked_by_caller'
         id: installer
         shell: pwsh
         run: |
@@ -132,6 +140,7 @@ jobs:
           $installer = Platforms/Windows/Packaging/installer.ps1 -Architecture ${{ matrix.architecture }} -CompilerPath "$env:RUNNER_TEMP/InnoSetup/ISCC.exe"
           "path=$installer" >> $env:GITHUB_OUTPUT
       - name: Verify EXE installer
+        if: '!inputs.installer_checked_by_caller'
         uses: ./.github/actions/verify-windows-installer
         with:
           installer: ${{ steps.installer.outputs.path }}
@@ -141,6 +150,7 @@ jobs:
         shell: pwsh
         run: Remove-Item 'Cert:\CurrentUser\My\${{ steps.certificate.outputs.thumbprint }}' -DeleteKey -ErrorAction SilentlyContinue
       - uses: actions/upload-artifact@v4
+        if: '!inputs.installer_checked_by_caller'
         with:
           name: FoldGit-Windows-${{ matrix.architecture }}-${{ inputs.validate_signing && 'test-signed' || 'unsigned' }}
           path: dist/windows/${{ matrix.architecture }}/

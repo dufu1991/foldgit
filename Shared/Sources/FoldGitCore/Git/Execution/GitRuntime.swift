@@ -31,11 +31,10 @@ private struct BinaryCommandOutput: Sendable {
     let standardOutput: Data
     let standardError: String
 
-    func textOutput() throws -> CommandOutput {
-        guard let text = String(data: standardOutput, encoding: .utf8) else {
-            throw GitExecutionError(description: NSLocalizedString("Git returned invalid UTF-8 output.", comment: ""))
-        }
-        return CommandOutput(standardOutput: text, standardError: standardError)
+    /// Files in other encodings must not fail a whole refresh. Invalid bytes become U+FFFD, and
+    /// `requireLosslessPatch` keeps such lossy text from ever being applied as a patch.
+    func textOutput() -> CommandOutput {
+        CommandOutput(standardOutput: String(decoding: standardOutput, as: UTF8.self), standardError: standardError)
     }
 }
 

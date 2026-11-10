@@ -56,7 +56,7 @@ public struct GitShow: RepositoryCommand {
     public init(directory: URL, object: String) { self.directory = directory; self.object = object }
 
     public var isReadOnly: Bool { true }
-    public var arguments: [String] { ["git", "show", "--full-index", "--pretty=format:\(CommitRecord.format)", object] }
+    public var arguments: [String] { ["git", "show"] + GitPatchOptions.stable + ["--pretty=format:\(CommitRecord.format)", object] }
 
     public func parse(for output: String) throws -> CommitDetail {
         let fields = output.split(separator: "\0", maxSplits: CommitRecord.fieldCount, omittingEmptySubsequences: false).map(String.init)

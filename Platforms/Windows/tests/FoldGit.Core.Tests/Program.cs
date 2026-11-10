@@ -202,6 +202,10 @@ try
             Assert(file.Path == item.GetProperty("path").GetString());
             Assert(file.Additions == item.GetProperty("added").GetInt32() && file.Deletions == item.GetProperty("removed").GetInt32());
         }
+        var prose = Diff.Parse("diff --git a/notes.txt b/notes.txt\nindex 1111111..2222222 100644\n--- a/notes.txt\n+++ b/notes.txt\n@@ -1 +1 @@\n-old\n+Binary files are mentioned here\n").Files.Single();
+        Assert(!prose.Binary && prose.Additions == 1, "Hunk text that mentions binary files must stay text.");
+        var image = Diff.Parse("diff --git a/image.png b/image.png\nindex 1111111..2222222 100644\nBinary files a/image.png and b/image.png differ\n").Files.Single();
+        Assert(image.Binary && image.Path == "image.png", "The binary header must still mark binary changes.");
         foreach (var item in fixture.RootElement.GetProperty("inline").EnumerateArray())
         {
             var changes = InlineDiff.Compare(item.GetProperty("old").GetString()!, item.GetProperty("new").GetString()!);

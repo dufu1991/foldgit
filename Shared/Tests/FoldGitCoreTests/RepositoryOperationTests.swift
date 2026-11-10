@@ -47,6 +47,50 @@ struct RepositoryOperationTests {
         #expect(try await WorktreeSnapshot.read(in: repository.url).staged.isEmpty)
     }
 
+    @Test func nonUTF8FilesStillDiffButTheirHunksAreNeverApplied() async throws {
+        let repository = try await TestRepository.create()
+        defer { repository.remove() }
+        let url = repository.url.appendingPathComponent("latin1.txt")
+        let lines = (1...30).map { "caf\u{E9} \($0)" }
+        try #require(lines.joined(separator: "\n").appending("\n").data(using: .isoLatin1)).write(to: url)
+        try await repository.commit("feat: add Latin-1 text")
+        var changed = lines
+        changed[1] = "first r\u{E9}sum\u{E9}"
+        changed[27] = "second r\u{E9}sum\u{E9}"
+        try #require(changed.joined(separator: "\n").appending("\n").data(using: .isoLatin1)).write(to: url)
+
+        let diff = try Diff(raw: await GitRuntime.run(GitDiff(directory: repository.url)))
+        let file = try #require(diff.fileDiffs.first)
+        #expect(file.chunks.count == 2)
+        #expect(file.chunks[1].raw.contains("\u{FFFD}"))
+        let selection = diff.updateChunkStage(file.chunks[1], in: file, stage: true).indexSelection(staging: true)
+        await #expect(throws: GitExecutionError.self) {
+            try await IndexStaging.apply(selection, staging: true, in: repository.url)
+        }
+        await #expect(throws: GitExecutionError.self) {
+            try await WorktreeDiscarding.discard(selection, in: repository.url)
+        }
+        #expect(try await WorktreeSnapshot.read(in: repository.url).staged.isEmpty)
+        #expect(try Data(contentsOf: url) == changed.joined(separator: "\n").appending("\n").data(using: .isoLatin1))
+    }
+
+    @Test func userDiffConfigurationDoesNotChangeParsedPatches() async throws {
+        let repository = try await TestRepository.create()
+        defer { repository.remove() }
+        try repository.write("list.txt", (1...30).map { "line \($0)" }.joined(separator: "\n") + "\n")
+        try await repository.commit("feat: add list")
+        _ = try await repository.git(["config", "diff.noprefix", "true"])
+        _ = try await repository.git(["config", "diff.external", "false"])
+        try repository.write("list.txt", (1...30).map { $0 == 28 ? "changed" : "line \($0)" }.joined(separator: "\n") + "\n")
+
+        let diff = try Diff(raw: await GitRuntime.run(GitDiff(directory: repository.url)))
+        let file = try #require(diff.fileDiffs.first)
+        #expect(file.toFilePath == "list.txt")
+        try await IndexStaging.apply(diff.updateChunkStage(file.chunks[0], in: file, stage: true).indexSelection(staging: true),
+                                     staging: true, in: repository.url)
+        #expect(try await WorktreeSnapshot.read(in: repository.url).staged.contains("+changed"))
+    }
+
     @Test func staleHunkIsRejectedInsteadOfStagingOtherChanges() async throws {
         let repository = try await TestRepository.create()
         defer { repository.remove() }

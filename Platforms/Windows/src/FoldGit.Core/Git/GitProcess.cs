@@ -11,7 +11,9 @@ public sealed class GitException(string message, int? exitCode = null) : Excepti
 
 public sealed record GitOutput(byte[] Bytes, string Error, int ExitCode)
 {
-    public string Text => new UTF8Encoding(false, true).GetString(Bytes);
+    // Files in other encodings must not fail a refresh. Invalid bytes become U+FFFD, and
+    // RepositoryService.StageHunkAsync refuses to apply such lossy hunks.
+    public string Text => new UTF8Encoding(false, false).GetString(Bytes);
 }
 
 public sealed class GitProcess(string executable, Func<string, string>? identity = null)
@@ -76,7 +78,7 @@ public sealed class GitProcess(string executable, Func<string, string>? identity
             var error = ReadAsync(process.StandardError.BaseStream, 4 * 1024 * 1024, deadline.Token, LimitReached);
             var write = WriteAsync(process.StandardInput.BaseStream, input, deadline.Token);
             await Task.WhenAll(output, error, write, process.WaitForExitAsync(deadline.Token));
-            var result = new GitOutput(await output, new UTF8Encoding(false, true).GetString(await error), process.ExitCode);
+            var result = new GitOutput(await output, new UTF8Encoding(false, false).GetString(await error), process.ExitCode);
             if (!(acceptedExitCodes ?? [0]).Contains(result.ExitCode))
                 throw new GitException(result.Error, result.ExitCode);
             return result;

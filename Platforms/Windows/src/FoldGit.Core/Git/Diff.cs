@@ -32,6 +32,7 @@ public sealed partial record Diff(FileDiff[] Files)
             var hunkRaw = new StringBuilder();
             var hunkLines = new List<DiffLine>();
             string? hunkHeader = null, path = null, oldPath = null, oldBlob = null, newBlob = null;
+            var binary = false;
             var oldNumber = 0;
             var newNumber = 0;
             void CompleteHunk()
@@ -54,6 +55,8 @@ public sealed partial record Diff(FileDiff[] Files)
                 else if (hunkHeader is null)
                 {
                     header.Append(lineRaw);
+                    // Only header lines mark a binary change; hunk content may contain the same words.
+                    if (line == "GIT binary patch" || line.StartsWith("Binary files ", StringComparison.Ordinal)) binary = true;
                     if (line.StartsWith("+++ ", StringComparison.Ordinal)) path = HeaderPath(line[4..]);
                     if (line.StartsWith("--- ", StringComparison.Ordinal)) oldPath = HeaderPath(line[4..]);
                     if (line.StartsWith("rename to ", StringComparison.Ordinal)) path = DecodePath(line[10..]);
@@ -91,8 +94,7 @@ public sealed partial record Diff(FileDiff[] Files)
                     else throw new GitException("Invalid diff path from Git.");
                 }
             }
-            files.Add(new(path ?? oldPath!, oldPath, header.ToString(), file, hunks.ToArray(),
-                file.Contains("GIT binary patch", StringComparison.Ordinal) || file.Contains("Binary files ", StringComparison.Ordinal), oldBlob, newBlob));
+            files.Add(new(path ?? oldPath!, oldPath, header.ToString(), file, hunks.ToArray(), binary, oldBlob, newBlob));
         }
         return new(files.ToArray());
     }

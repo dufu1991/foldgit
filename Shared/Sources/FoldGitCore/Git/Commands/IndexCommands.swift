@@ -23,11 +23,20 @@ public struct GitRestore: GitAction {
 public enum IndexStaging {
     public static func apply(_ selection: IndexSelection, staging: Bool, in directory: URL) async throws {
         if !selection.patch.isEmpty {
+            try requireLosslessPatch(selection.patch)
             try await GitRuntime.run(GitApplyCached(directory: directory, patch: selection.patch, reverse: !staging))
         }
         if !selection.paths.isEmpty {
             try await GitRuntime.run(GitIndexPaths(directory: directory, paths: selection.paths, staging: staging))
         }
+    }
+}
+
+/// Diff text from a file that is not UTF-8 was decoded lossily; applying it would write U+FFFD into the file.
+func requireLosslessPatch(_ patch: String) throws {
+    guard !patch.contains("\u{FFFD}") else {
+        throw GitExecutionError(description: NSLocalizedString(
+            "This file is not UTF-8 text. Stage or discard it as a complete file.", comment: ""))
     }
 }
 
@@ -112,6 +121,7 @@ public enum WorktreeDiscarding {
     /// A stale patch fails instead of discarding a different hunk.
     public static func discard(_ selection: IndexSelection, in directory: URL) async throws {
         if !selection.patch.isEmpty {
+            try requireLosslessPatch(selection.patch)
             try await GitRuntime.run(GitApplyWorktreeReverse(directory: directory, patch: selection.patch))
         }
         if !selection.paths.isEmpty {

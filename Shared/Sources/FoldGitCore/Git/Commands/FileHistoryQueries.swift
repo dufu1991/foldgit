@@ -91,7 +91,7 @@ public struct GitFileHistoryDiff: RepositoryCommand {
     public var isReadOnly: Bool { true }
     public var arguments: [String] {
         let paths = Array(Set([entry.oldPath, entry.newPath].compactMap { $0 })).sorted()
-        let options = ["--full-index", "--no-ext-diff", "--no-textconv", "--find-renames", "--src-prefix=a/", "--dst-prefix=b/"]
+        let options = GitPatchOptions.stable + ["--find-renames"]
         if let parent = entry.commit.parentHashes.first {
             return ["git", "--literal-pathspecs", "diff"] + options + [parent, entry.commit.hash, "--"] + paths
         }

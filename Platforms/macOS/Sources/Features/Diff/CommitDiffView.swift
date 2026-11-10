@@ -185,7 +185,7 @@ struct CommitDiffView: View {
 
     /// Base is the old side and target the new side, whichever of them is the working tree.
     static func diffArguments(base: String, target: String) -> [String] {
-        var arguments = ["diff", "--full-index"]
+        var arguments = ["diff"] + GitPatchOptions.stable
         if target == Log.notCommitted.id {
             arguments.append(base)
         } else if base == Log.notCommitted.id {

@@ -108,7 +108,7 @@ public sealed partial class RepositoryService(GitProcess process)
 
     public Task StageHunkAsync(string directory, FileDiff file, DiffHunk hunk, bool stage, CancellationToken cancellationToken = default)
     {
-        if (!file.Hunks.Contains(hunk) || file.Binary)
+        if (!file.Hunks.Contains(hunk) || file.Binary || hunk.Raw.Contains('\uFFFD'))
             throw new GitException("Stage this change as a complete file.");
         if (file.Hunks.Length == 1 && (file.Header.Contains("rename from ", StringComparison.Ordinal)
             || file.Header.Contains("new file mode ", StringComparison.Ordinal) || file.Header.Contains("deleted file mode ", StringComparison.Ordinal)))

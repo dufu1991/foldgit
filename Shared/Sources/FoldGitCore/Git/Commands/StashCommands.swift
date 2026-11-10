@@ -37,7 +37,7 @@ public struct GitStashShowDiff: GitTextQuery {
     public var directory: URL
     public var index: Int
     public init(directory: URL, index: Int) { self.directory = directory; self.index = index }
-    public var arguments: [String] { ["git", "stash", "show", "--include-untracked", "--full-index", "-p", "\(index)"] }
+    public var arguments: [String] { ["git", "stash", "show", "--include-untracked", "-p"] + GitPatchOptions.stable + ["\(index)"] }
 }
 
 /// Applies a stash and removes it when it applied cleanly; Git keeps the entry if the apply conflicts.

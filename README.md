@@ -8,8 +8,8 @@
 <h1 align="center">FoldGit</h1>
 
 <p align="center">
-  Every repository, folded into one window.<br>
-  A native, lightweight Git client for macOS.
+  Review Git changes, read the code, and preview Markdown in one window.<br>
+  Built for macOS, with native Mermaid diagrams inside your docs.
 </p>
 
 <p align="center">
@@ -33,12 +33,18 @@ FoldGit is a small, quiet window for exactly that. It keeps all your repositorie
 - **Worktrees, first-class.** Linked worktrees are discovered automatically and appear under their repository with the branch name. Create, move, lock, remove and prune them, and use *Finish Worktree* to merge into a target branch and clean up. The sidebar shows each worktree's status, and merged ones can be cleaned up in one pass. Conflicts are resolved in native sheets.
 - **Review and commit.** Commit graph for the current branch or all commits, unified and side-by-side diffs (switching automatically with the window width), hunk staging, amend, revert, commit message templates and snippets.
 - **Commit View and Directory View.** Review changes by commit, or browse complete files with syntax highlighting and jump to them from any diff (macOS).
+- **Markdown and Mermaid on macOS.** Read rendered documentation or switch to source in Directory View. Choose *Preview This Version* in a commit diff to see the document and its diagrams as they were at that revision.
 - **Branches, tags and comparison.** Switch, merge, rename and delete branches, manage tags, and compare any two branches or tags.
 - **Native menus and shortcuts.** Open recent repositories, run repository and commit actions, navigate to HEAD, and control diff views from the menu bar. Find the shortcut reference under Help.
 - **Fast search.** Filter history by author, email or message as you type. Search runs in the background, reuses its index, pages results and cancels stale queries. It works with CJK input methods.
 - **Sidebar that scales.** Filter by folder, repository or custom display name. Sort by name, recently opened, modified or added, or keep a manual order.
 - **Everyday extras.** Push and pull, stash, Auto Fetch (download only, never merge), *Open in* your editor or terminal, light and dark appearances, and eight interface languages.
 - **Native and small.** Written in SwiftUI and AppKit, no Electron. The installer is just a few MB.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="website/assets/screenshots/markdown-en-dark.webp">
+  <img src="website/assets/screenshots/markdown-en-light.webp" width="760" alt="Release workflow document with a Mermaid diagram, task list and command table">
+</picture>
 
 ## Install
 

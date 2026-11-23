@@ -452,7 +452,7 @@
           <span class="m-num">08</span>
           <h2><span class="show-zh">目录视角与完整文件</span><span class="show-en">Directory View and full files</span></h2>
           <div class="show-zh">
-            <p>仓库有两种浏览方式：「提交视角」按提交查看改动，「目录视角」按文件夹浏览整个工作目录。启动和新建窗口时默认使用提交视角；需要通读 Agent 写的代码、了解某个文件的来龙去脉时，点击工具栏右侧的「提交视角」按钮，切换为「目录视角」。</p>
+            <p>仓库有两种浏览方式：「提交视角」按提交查看改动，「目录视角」按文件夹浏览整个工作目录。启动和新建窗口时默认使用提交视角；需要通读 Agent 写的代码、了解某个文件的来龙去脉时，点击工具栏右侧的「目录视角」即可切换。</p>
             <p>也可从「显示」菜单切换：<kbd>⌃</kbd><kbd>⌘</kbd><kbd>1</kbd> 打开提交视角，<kbd>⌃</kbd><kbd>⌘</kbd><kbd>2</kbd> 打开目录视角。</p>
             <h3>浏览与查找文件</h3>
             <ul>
@@ -473,10 +473,16 @@
               <li>点击某次提交，即可看到这次提交对该文件的修改；合并提交与第一个父提交对比。</li>
               <li>右键提交记录，可复制提交哈希或完整提交信息。</li>
             </ul>
+            <p>选中 Markdown 文件并打开「文件内容」，即可阅读排版后的文档。「预览」与「源码」可随时切换。仓库内的相对图片随文档显示，相对文档链接可在应用内打开。提交差异中的「预览此版本」会读取该版本的文档。</p>
+            <p>文档内的 Mermaid 代码块及独立的 <code>.mmd</code>、<code>.mermaid</code> 文件使用 NornaKit 本地绘图。右键点击图表可复制源码或导出 PNG、SVG。遇到不支持的语法时会显示源码。</p>
+            <figure class="manual-shot">
+              <a class="manual-shot-light screenshot-wallpaper" href="assets/screenshots/markdown-zh-light.webp"><img src="assets/screenshots/markdown-zh-light.webp" width="760" height="444" loading="lazy" alt="发布流程文档中的 Mermaid 图表、任务列表与命令表格"></a>
+              <a class="manual-shot-dark screenshot-wallpaper" href="assets/screenshots/markdown-zh-dark.webp"><img src="assets/screenshots/markdown-zh-dark.webp" width="760" height="444" loading="lazy" alt="发布流程文档中的 Mermaid 图表、任务列表与命令表格"></a>
+            </figure>
             <p class="tip">文件内容读取的是磁盘上的当前版本。Agent 或编辑器修改文件后，目录视角会自动刷新文件树与内容。</p>
           </div>
           <div class="show-en">
-            <p>A repository has two ways to browse: Commit View shows changes commit by commit, while Directory View browses the whole working tree by folder. New windows and launches start in Commit View. To read code an agent wrote, or to trace how a file evolved, click the Commit View button on the right of the toolbar and choose Directory View.</p>
+            <p>A repository has two ways to browse: Commit View shows changes commit by commit, while Directory View browses the whole working tree by folder. New windows and launches start in Commit View. To read code an agent wrote, or to trace how a file evolved, select Directory View on the right of the toolbar.</p>
             <p>The View menu also switches modes: <kbd>⌃</kbd><kbd>⌘</kbd><kbd>1</kbd> opens Commit View and <kbd>⌃</kbd><kbd>⌘</kbd><kbd>2</kbd> opens Directory View.</p>
             <h3>Browse and find files</h3>
             <ul>
@@ -497,6 +503,12 @@
               <li>Click a commit to see what it changed in that file. Merge commits are compared with their first parent.</li>
               <li>Right-click a history record to copy its commit hash or full message.</li>
             </ul>
+            <p>Select a Markdown file and open File Content to read the formatted document. Switch between Preview and Source Code at any time. Relative images and document links resolve inside the repository. From a commit diff, choose Preview This Version to read the historical document.</p>
+            <p>NornaKit renders Mermaid fences and standalone <code>.mmd</code> or <code>.mermaid</code> files locally. Right-click a diagram to copy its source or export PNG or SVG. Unsupported syntax is shown as source.</p>
+            <figure class="manual-shot">
+              <a class="manual-shot-light screenshot-wallpaper" href="assets/screenshots/markdown-en-light.webp"><img src="assets/screenshots/markdown-en-light.webp" width="760" height="444" loading="lazy" alt="Release workflow document with a Mermaid diagram, task list and command table"></a>
+              <a class="manual-shot-dark screenshot-wallpaper" href="assets/screenshots/markdown-en-dark.webp"><img src="assets/screenshots/markdown-en-dark.webp" width="760" height="444" loading="lazy" alt="Release workflow document with a Mermaid diagram, task list and command table"></a>
+            </figure>
             <p class="tip">File content shows the current version on disk. When an agent or editor changes files, Directory View refreshes the tree and content automatically.</p>
           </div>
         </section>

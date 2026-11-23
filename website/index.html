@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>FoldGit — 把仓库折进一个窗口</title>
-  <meta name="description" content="FoldGit 是原生、轻量的 macOS Git 客户端：按目录或分组折叠仓库，工作树收在所属仓库之下，安装包仅几 MB。">
+  <title>FoldGit｜Git 审查、代码阅读与 Markdown 预览</title>
+  <meta name="description" content="用 FoldGit 在 macOS 上审查 Git 改动、阅读完整代码，预览 Markdown 文档和 Mermaid 图表。">
   <link rel="canonical" href="https://foldgit.com/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="FoldGit">
   <meta property="og:url" content="https://foldgit.com/">
-  <meta property="og:title" content="FoldGit — Every repository, folded into one window">
-  <meta property="og:description" content="A native, lightweight Git client for macOS. Fold repositories by folder or group, with worktrees tucked under their repository.">
+  <meta property="og:title" content="FoldGit — Git review, code reading and Markdown preview">
+  <meta property="og:description" content="Review Git changes, read full source files, and preview Markdown with Mermaid diagrams on macOS.">
   <meta property="og:image" content="https://foldgit.com/assets/og.png?v=20261110-2">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="FoldGit: every repository, folded into one window.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="FoldGit — Every repository, folded into one window">
-  <meta name="twitter:description" content="A native, lightweight Git client for macOS. Fold repositories by folder or group, with worktrees tucked under their repository.">
+  <meta name="twitter:title" content="FoldGit — Git review, code reading and Markdown preview">
+  <meta name="twitter:description" content="Review Git changes, read full source files, and preview Markdown with Mermaid diagrams on macOS.">
   <meta name="twitter:image" content="https://foldgit.com/assets/og.png?v=20261110-2">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#eef1fb" media="(prefers-color-scheme: light)">
@@ -105,8 +105,8 @@
           <img class="hero-icon" src="assets/icon.webp" data-app-icon alt="FoldGit" width="112" height="112">
         </div>
         <p class="eyebrow" data-reveal data-i18n="hero.eyebrow">开源 · 原生 macOS Git 客户端</p>
-        <h1 data-reveal data-i18n="hero.title">把所有仓库，<br><span class="grad">折进一个窗口。</span></h1>
-        <p class="lede" data-reveal data-i18n="hero.lede">按目录或分组收纳仓库，工作树收在所属仓库之下。AI 写的生产代码，看一眼再放心提交。</p>
+        <h1 data-reveal data-i18n="hero.title">审查 Git 改动，<br><span class="grad">通读代码与文档。</span></h1>
+        <p class="lede" data-reveal data-i18n="hero.lede">在 macOS 上，从一次 Git 提交切到完整代码，再打开 Markdown 文档里的 Mermaid 图表。AI 写完代码，你可以在同一个窗口里审查和提交。</p>
         <div class="cta-row" data-reveal>
           <a class="btn btn-primary" href="https://github.com/dufu1991/foldgit/releases/latest/download/FoldGit-macOS-arm64.dmg">
             <svg viewBox="0 0 24 24" aria-hidden="true" class="filled"><path d="M16.4 12.7c0-2.4 2-3.5 2.1-3.6a4.5 4.5 0 0 0-3.5-1.9c-1.5-.2-2.9.9-3.7.9s-1.9-.9-3.2-.8a4.7 4.7 0 0 0-4 2.4c-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4a10 10 0 0 0 1.4-2.8c-.1 0-2.6-1-2.6-4ZM14 5.6c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.6 2.8-1.4Z"/></svg>
@@ -243,18 +243,16 @@
       </div>
       <div class="feature-grid">
         <article class="feature glass" data-reveal="fold" style="--d:0">
-          <div class="feature-mock code-mock" aria-hidden="true">
-            <div class="cm-bar"><span class="cm-seg is-on" data-i18n="rv.files.mockContent">文件内容</span><span class="cm-seg" data-i18n="rv.files.mockHistory">提交记录</span><span class="cm-path" title="Platforms/macOS/Sources/App/WindowID.swift">App/WindowID.swift</span></div>
-              <ol class="cm-lines">
-                <li><i class="k">import</i> Foundation</li>
-                <li></li>
-                <li><i class="k">enum</i> <i class="t">WindowID</i>: <i class="t">String</i> {</li>
-                <li>    <i class="k">case</i> commitMessageSnippets</li>
-                <li>}</li>
-              </ol>
-          </div>
+          <figure class="manual-shot document-shot show-zh">
+            <img class="manual-shot-light" src="assets/screenshots/markdown-zh-light.webp" width="760" height="444" loading="lazy" alt="包含 Mermaid 图表和任务列表的 Markdown 文档预览">
+            <img class="manual-shot-dark" src="assets/screenshots/markdown-zh-dark.webp" width="760" height="444" loading="lazy" alt="包含 Mermaid 图表和任务列表的 Markdown 文档预览">
+          </figure>
+          <figure class="manual-shot document-shot show-en">
+            <img class="manual-shot-light" src="assets/screenshots/markdown-en-light.webp" width="760" height="444" loading="lazy" alt="Markdown preview with a Mermaid diagram and task list">
+            <img class="manual-shot-dark" src="assets/screenshots/markdown-en-dark.webp" width="760" height="444" loading="lazy" alt="Markdown preview with a Mermaid diagram and task list">
+          </figure>
           <h3 data-i18n="rv.files.title">目录视角：完整文件与它的历史</h3>
-          <p data-i18n="rv.files.body">在工具栏切换到「目录视角」，整个工作目录按文件夹展开，包括未跟踪的新文件。选中文件即可阅读全文，或查看它被修改过的每一次提交。</p>
+          <p data-i18n="rv.files.body">在工具栏选择「目录视角」，即可浏览完整工作目录。阅读带语法高亮的代码，切换 Markdown 源码与预览，或打开 Mermaid 图表。</p>
           <ul class="feature-list">
             <li data-i18n="rv.files.l1">完整文件和代码差异都支持语法高亮，可识别跨行注释和字符串。阅读完整文件时可在文件内查找。</li>
             <li data-i18n="rv.files.l2">「提交记录」逐条列出改过这个文件的提交，点开即看当次差异</li>

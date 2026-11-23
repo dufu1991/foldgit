@@ -796,6 +796,8 @@ kbd {
 .keys > div:last-child { border-bottom: 0; }
 .keys dd { margin: 0; color: var(--text-2); }
 .manual-shot { margin: 24px 0 0; }
+.document-shot { margin: 0 0 20px; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; }
+.document-shot img { display: block; width: 100%; height: auto; }
 .manual-shot a { border-radius: 14px; }
 .manual-shot figcaption { margin-top: 10px; color: var(--text-3); font-size: 13px; line-height: 1.6; }
 .manual-shot .manual-shot-dark { display: none; }

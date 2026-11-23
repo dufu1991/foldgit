@@ -1,16 +1,16 @@
 // English copy. Chinese lives in index.html and is captured at startup by main.js.
 window.FOLDGIT_I18N = {
   en: {
-    "meta.title": "FoldGit — Every repository, folded into one window",
-    "meta.description": "FoldGit is a native, lightweight Git client for macOS. Fold repositories by folder or group, keep worktrees under their repository, in an app of just a few MB.",
+    "meta.title": "FoldGit — Git review, code reading and Markdown preview",
+    "meta.description": "Review Git changes, read full source files, and preview Markdown with Mermaid diagrams on macOS.",
 
     "nav.manual": "Guide",
     "nav.changelog": "Updates",
     "nav.support": "Support",
 
     "hero.eyebrow": "Open source · Native Git client for macOS",
-    "hero.title": "Every repository,<br><span class=\"grad\">folded into one window.</span>",
-    "hero.lede": "Fold repositories by folder or group, with worktrees tucked under their repository. When AI writes production code, glance at it, then commit with confidence.",
+    "hero.title": "Review Git changes.<br><span class=\"grad\">Read the code and docs.</span>",
+    "hero.lede": "Move from a Git diff to the full source file, then open a Mermaid diagram inside the Markdown docs. Review what your AI agent changed and commit from the same native macOS window.",
     "hero.meta": "macOS 26 or later · Apple Silicon · Just a few MB · MIT licensed",
     "brew.title": "Also available via Homebrew",
     "brew.guide": "Installation and first launch guide ↗",
@@ -52,7 +52,7 @@ window.FOLDGIT_I18N = {
     "rv.files.mockContent": "File Content",
     "rv.files.mockHistory": "Commit History",
     "rv.files.title": "Directory View: full files and their history",
-    "rv.files.body": "Switch the toolbar to Directory View to browse the whole working tree by folder, untracked files included. Select a file to read it end to end, or see every commit that changed it.",
+    "rv.files.body": "Select Directory View in the toolbar to browse the whole working tree. Read highlighted source files, switch Markdown between preview and source, or open a Mermaid diagram.",
     "rv.files.l1": "Syntax highlighting in full files and diffs handles multiline comments and strings. Use Find in File when reading a full file.",
     "rv.files.l2": "Commit History lists each commit that touched the file; open one to see that change",
     "rv.files.l3": "Search files by name or path to find one among thousands",
@@ -130,8 +130,8 @@ window.FOLDGIT_I18N = {
     "footer.note": "Captured from the real macOS app, showing demo repositories."
   },
   zh: {
-    "meta.title": "FoldGit — 把仓库折进一个窗口",
-    "meta.description": "FoldGit 是原生、轻量的 macOS Git 客户端：按目录或分组折叠仓库，工作树收在所属仓库之下，安装包仅几 MB。",
+    "meta.title": "FoldGit｜Git 审查、代码阅读与 Markdown 预览",
+    "meta.description": "用 FoldGit 在 macOS 上审查 Git 改动、阅读完整代码，预览 Markdown 文档和 Mermaid 图表。",
     "shot.main.alt": "FoldGit 的 macOS 真实界面：分组演示仓库、提交关系图、文件目录树、暂存区与展开的 Swift 并排差异"
   }
 };

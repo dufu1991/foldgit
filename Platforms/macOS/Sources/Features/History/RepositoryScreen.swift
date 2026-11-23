@@ -257,20 +257,9 @@ struct RepositoryScreen: View {
             }
             ToolbarSpacer(.flexible, placement: .primaryAction)
             ToolbarItem(id: "repositoryBrowseMode", placement: .primaryAction) {
-                Menu {
-                    Picker("Repository View", selection: $browseMode) {
-                        Label("Commit View", systemImage: "clock.arrow.circlepath")
-                            .tag(RepositoryBrowseMode.commits)
-                        Label("Directory View", systemImage: "folder")
-                            .tag(RepositoryBrowseMode.files)
-                    }
-                    .pickerStyle(.inline)
-                } label: {
-                    Label {
-                        Text(browseMode == .commits ? String(localized: "Commit View") : String(localized: "Directory View"))
-                    } icon: {
-                        Image(systemName: browseMode == .commits ? "clock.arrow.circlepath" : "folder")
-                    }
+                ViewThatFits(in: .horizontal) {
+                    perspectivePicker.labelStyle(.titleAndIcon)
+                    perspectivePicker.labelStyle(.iconOnly)
                 }
                 .help("Repository View")
                 .accessibilityLabel(Text("Repository View"))
@@ -434,6 +423,16 @@ struct RepositoryScreen: View {
                 .accessibilityIdentifier("noCommitsYet")
             }
         }
+    }
+
+    private var perspectivePicker: some View {
+        Picker("Repository View", selection: $browseMode) {
+            Label("Commit View", systemImage: "clock.arrow.circlepath").tag(RepositoryBrowseMode.commits)
+            Label("Directory View", systemImage: "folder").tag(RepositoryBrowseMode.files)
+        }
+        .pickerStyle(.segmented)
+        .labelsHidden()
+        .fixedSize()
     }
 
     private func syncHistorySelection() {

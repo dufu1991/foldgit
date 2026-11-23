@@ -1,5 +1,19 @@
 [
   {
+    "version": "0.6.0",
+    "date": "2026-11-23",
+    "zh": [
+      "在 macOS 上阅读 Markdown 文档，可在预览与源码之间切换，也可从提交差异预览历史版本。",
+      "macOS 可在文档内预览 Mermaid 图表，也可直接打开图表文件，复制源码或导出 PNG、SVG。",
+      "macOS 工具栏现在并列显示提交视角与目录视角，单击即可切换。"
+    ],
+    "en": [
+      "Read Markdown on macOS, switch between preview and source, and open historical versions from commit diffs.",
+      "Preview Mermaid diagrams inside documents or open standalone diagram files on macOS. Copy their source or export PNG and SVG.",
+      "Switch directly between Commit View and Directory View in the macOS toolbar."
+    ]
+  },
+  {
     "version": "0.5.2",
     "date": "2026-11-10",
     "zh": [

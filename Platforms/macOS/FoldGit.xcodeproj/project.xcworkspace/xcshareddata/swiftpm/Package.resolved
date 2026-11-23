@@ -1,6 +1,15 @@
 {
-  "originHash" : "7df20f7195cb1b8bd68acb89a7def72b7b46afdabf41676cc294b551c4e7b252",
+  "originHash" : "c16b651937ba9d5804e1c3dfa57a18c82760a79335395836b5e883711379a48b",
   "pins" : [
+    {
+      "identity" : "nornakit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/dufu1991/nornakit.git",
+      "state" : {
+        "revision" : "6caea2b3c40ff16ac7d77bf84e41a7840ed5d19a",
+        "version" : "0.2.0"
+      }
+    },
     {
       "identity" : "shiki-swift",
       "kind" : "remoteSourceControl",
@@ -17,6 +26,24 @@
       "state" : {
         "revision" : "ab7d71291238df6e0492143b120c9b696a35f603",
         "version" : "2.10.1"
+      }
+    },
+    {
+      "identity" : "swift-cmark",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-cmark.git",
+      "state" : {
+        "revision" : "08ddb528923cc1a6527e02b7a1aee9e516ca749a",
+        "version" : "0.9.0"
+      }
+    },
+    {
+      "identity" : "swift-markdown",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-markdown.git",
+      "state" : {
+        "revision" : "3c6f9523da3a1ec2fd829673e472d95b8097a3b8",
+        "version" : "0.8.0"
       }
     },
     {

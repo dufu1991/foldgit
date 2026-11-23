@@ -9,6 +9,12 @@ options:
 packages:
   FoldGitShared:
     path: ../..
+  Markdown:
+    url: https://github.com/swiftlang/swift-markdown.git
+    exactVersion: 0.8.0
+  NornaKit:
+    url: https://github.com/dufu1991/nornakit.git
+    exactVersion: 0.2.0
   ShikiSwift:
     url: https://github.com/fayazara/shiki-swift.git
     exactVersion: 0.1.2
@@ -51,6 +57,10 @@ targets:
     dependencies:
       - package: FoldGitShared
         product: FoldGitCore
+      - package: Markdown
+        product: Markdown
+      - package: NornaKit
+        product: NornaKit
       - package: ShikiSwift
         product: Shiki
       - package: Sparkle

@@ -7,6 +7,10 @@ struct FileContentView: View {
     @AppStorage(PreferenceKey.codeFontSize.rawValue) private var fontSize = AppPreferences.defaultCodeFontSize
     @AppStorage(PreferenceKey.wrapLongLines.rawValue) private var wraps = false
     let findRequest: UUID?
+    @Environment(\.folder) private var directory
+    @Environment(\.openWorkspaceFile) private var openWorkspaceFile
+    @AppStorage("markdownShowsSource") private var markdownShowsSource = false
+    @AppStorage("mermaidShowsSource") private var mermaidShowsSource = false
     @State private var highlightingFailed = false
 
     var body: some View {
@@ -20,7 +24,19 @@ struct FileContentView: View {
                         .accessibilityIdentifier("loadFilePlainText")
                 }
             case .text(let document):
-                if highlightingFailed {
+                let kind = PreviewDocumentKind(path: path)
+                let source = kind == .mermaid ? $mermaidShowsSource : $markdownShowsSource
+                let previewable = kind != nil && directory != nil && !document.plain && !document.text.isEmpty
+                if previewable {
+                    Picker("File View", selection: source) {
+                        Text("Preview").tag(false)
+                        Text("Source Code").tag(true)
+                    }
+                    .pickerStyle(.segmented).labelsHidden().fixedSize()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 12).padding(.vertical, 6)
+                }
+                if highlightingFailed && (!previewable || source.wrappedValue) {
                     Text("Syntax highlighting is unavailable. The original text is shown.")
                         .font(.callout).foregroundStyle(.secondary).padding(8)
                 }
@@ -31,6 +47,10 @@ struct FileContentView: View {
                 }
                 if document.text.isEmpty {
                     message("Empty File", description: "This file contains no text.") { EmptyView() }
+                } else if previewable, !source.wrappedValue, let kind, let directory {
+                    MarkdownPreview(document: document, kind: kind, location: .init(directory: directory, path: path),
+                                    findRequest: findRequest) { _ = openWorkspaceFile?($0) }
+                        .id(document.id)
                 } else {
                     FileContentTextViewer(document: document, path: path, fontSize: fontSize,
                                           wraps: wraps && !document.plain, findRequest: findRequest,

@@ -2,6 +2,9 @@ import FoldGitCore
 import SwiftUI
 
 struct FileDiffHeaderView: View {
+    @Environment(\.folder) private var directory
+    @Environment(\.diffFileContext) private var context
+    @State private var showingPreview = false
     @Binding var isExpanded: Bool
     var fileDiff: FileDiff
     var leadingActionImageSystemName: String?
@@ -71,6 +74,20 @@ struct FileDiffHeaderView: View {
             .accessibilityHint(Text(verbatim: expansionTitle))
             .accessibilityIdentifier("fileDiffExpansion-" + fileDiff.changeTreePath)
 
+            if let directory, let context, case .revision = context.new {
+                let deleted = context.version(for: fileDiff, oldSide: false) == .absent
+                let path = deleted ? fileDiff.fromFilePath : fileDiff.toFilePath
+                let version = deleted ? context.old : context.new
+                if version != .absent, PreviewDocumentKind(path: path) != nil {
+                    Button("Preview This Version", systemImage: "doc.richtext") { showingPreview = true }
+                        .labelStyle(.iconOnly)
+                        .buttonStyle(.plain)
+                        .help("Preview This Version")
+                        .sheet(isPresented: $showingPreview) {
+                            RevisionDocumentView(directory: directory, version: version, path: path)
+                        }
+                }
+            }
             ViewWorkingTreeFileButton(filePath: fileDiff.changeTreePath)
             OpenFileButton(filePath: fileDiff.toFilePath)
         }

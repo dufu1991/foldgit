@@ -1,12 +1,6 @@
 import SwiftUI
-import UniformTypeIdentifiers
 
 struct OpenInMenu: View {
-    private enum SelectionError: LocalizedError {
-        case invalidApplication
-        var errorDescription: String? { String(localized: "Choose another application to open the project folder.") }
-    }
-
     let directory: URL
     let store: OpenInStore
     let onError: (Error) -> Void
@@ -32,21 +26,9 @@ struct OpenInMenu: View {
                 Text("Loading Applications")
             }
             Divider()
-            Menu("Pin Applications") {
-                ForEach(store.applications.filter { !$0.isFinder }) { application in
-                    Toggle(isOn: Binding(get: { store.pinnedIDs.contains(application.id) }, set: {
-                        store.setPinned($0, application: application)
-                    })) {
-                        applicationLabel(application)
-                    }
-                }
+            Button("Manage External Applications", systemImage: "gearshape") {
+                SettingsWindowController.show(tab: .applications)
             }
-            .disabled(store.applications.isEmpty)
-            Button("Choose Application", systemImage: "app.badge") { chooseApplication() }
-            Button("Refresh Applications", systemImage: "arrow.clockwise") {
-                Task { await store.reload(for: directory, force: true) }
-            }
-            .disabled(store.isLoading)
         } label: {
             Label("Open in", systemImage: "arrow.up.forward.app")
         }
@@ -54,46 +36,24 @@ struct OpenInMenu: View {
         .disabled(store.isOpening)
     }
 
-    private func applicationLabel(_ application: OpenInApplication) -> some View {
-        Label {
-            Text(verbatim: application.name)
-        } icon: {
-            Image(nsImage: store.icon(for: application))
-                .renderingMode(.original)
-                .resizable()
-                .frame(width: 16, height: 16)
-        }
-    }
-
     private func applicationButton(_ application: OpenInApplication) -> some View {
-        Button { open(application) } label: { applicationLabel(application) }
-    }
-
-    private func open(_ application: OpenInApplication, rememberApplication: Bool = false) {
-        Task {
-            do {
-                try await store.open(application, directory: directory, rememberApplication: rememberApplication)
-            } catch {
-                onError(OperationFailure("Open in", error))
+        Button {
+            Task {
+                do {
+                    try await store.open(application, directory: directory)
+                } catch {
+                    onError(OperationFailure("Open in", error))
+                }
             }
-        }
-    }
-
-    private func chooseApplication() {
-        let panel = NSOpenPanel()
-        panel.title = String(localized: "Choose Application")
-        panel.allowedContentTypes = [.applicationBundle]
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = false
-        panel.allowsMultipleSelection = false
-        panel.directoryURL = FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first
-        panel.begin { response in
-            guard response == .OK, let url = panel.url else { return }
-            guard let application = OpenInApplication.read(at: url), application.id != Bundle.main.bundleIdentifier else {
-                onError(OperationFailure("Choose Application", SelectionError.invalidApplication))
-                return
+        } label: {
+            Label {
+                Text(verbatim: application.name)
+            } icon: {
+                Image(nsImage: store.icon(for: application))
+                    .renderingMode(.original)
+                    .resizable()
+                    .frame(width: 16, height: 16)
             }
-            open(application, rememberApplication: true)
         }
     }
 }
@@ -107,6 +67,13 @@ extension View {
         }
         .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in
             store.reloadPreferences()
+        }
+        .onChange(of: store.customApplicationPaths) {
+            Task { await store.reload(for: directory) }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .openInApplicationsDidRefresh)) { _ in
+            // Settings has just rescanned. The shared discovery cache serves this directory or rescans a different one.
+            Task { await store.reload(for: directory) }
         }
         .onReceive(NotificationCenter.default.publisher(for: .settingsDidRestoreDefaults)) { _ in
             Task { await store.reload(for: directory, force: true) }

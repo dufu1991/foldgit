@@ -475,15 +475,16 @@ struct ApplicationSettingsPane: View {
                 HStack {
                     Button("Add Application", systemImage: "plus") { chooseApplication() }
                     Button("Refresh Applications", systemImage: "arrow.clockwise") {
-                        Task { await store.reload(for: directory, force: true) }
+                        Task {
+                            await store.reload(for: directory, force: true)
+                            NotificationCenter.default.post(name: .openInApplicationsDidRefresh, object: nil)
+                        }
                     }
                     .disabled(store.isLoading)
                     if store.isLoading { ProgressView().controlSize(.small) }
                 }
             } header: {
-                Text("Open in")
-            } footer: {
-                Text("Checked applications are pinned to the top of the Open in menu.")
+                Text("Pin to the Open in Menu")
             }
         }
         .settingsForm()

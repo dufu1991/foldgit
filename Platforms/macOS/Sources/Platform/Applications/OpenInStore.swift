@@ -1,11 +1,16 @@
 import AppKit
 import Observation
 
+extension Notification.Name {
+    static let openInApplicationsDidRefresh = Notification.Name("FoldGit.openInApplicationsDidRefresh")
+}
+
 @MainActor
 @Observable final class OpenInStore {
     private(set) var applications: [OpenInApplication] = []
     private(set) var pinnedIDs: [String] = []
     private(set) var recentIDs: [String] = []
+    private(set) var customApplicationPaths: [String] = []
     private(set) var isLoading = false
     private(set) var isOpening = false
     @ObservationIgnored private let defaults: UserDefaults
@@ -50,8 +55,10 @@ import Observation
     func reloadPreferences() {
         let pinned = defaults.stringArray(forKey: PreferenceKey.openInPinnedApplications.rawValue) ?? []
         let recent = defaults.stringArray(forKey: PreferenceKey.openInRecentApplications.rawValue) ?? []
+        let customPaths = defaults.stringArray(forKey: PreferenceKey.openInCustomApplications.rawValue) ?? []
         if pinned != pinnedIDs { pinnedIDs = pinned }
         if recent != recentIDs { recentIDs = recent }
+        if customPaths != customApplicationPaths { customApplicationPaths = customPaths }
     }
 
     func reload(for directory: URL, force: Bool = false) async {
@@ -59,7 +66,7 @@ import Observation
         let current = generation
         isLoading = true
         reloadPreferences()
-        let customURLs = (defaults.stringArray(forKey: PreferenceKey.openInCustomApplications.rawValue) ?? [])
+        let customURLs = customApplicationPaths
             .map { URL(fileURLWithPath: $0, isDirectory: true) }
         let discovered = await discover(directory, customURLs, force)
         guard current == generation else { return }
@@ -103,7 +110,7 @@ import Observation
         defaults.set(paths, forKey: PreferenceKey.openInCustomApplications.rawValue)
     }
 
-    func open(_ application: OpenInApplication, directory: URL, rememberApplication: Bool = false) async throws {
+    func open(_ application: OpenInApplication, directory: URL) async throws {
         guard !isOpening else { return }
         isOpening = true
         defer { isOpening = false }
@@ -115,8 +122,5 @@ import Observation
         recentIDs.insert(application.id, at: 0)
         recentIDs = Array(recentIDs.prefix(6))
         defaults.set(recentIDs, forKey: PreferenceKey.openInRecentApplications.rawValue)
-        if rememberApplication {
-            addCustomApplication(application)
-        }
     }
 }

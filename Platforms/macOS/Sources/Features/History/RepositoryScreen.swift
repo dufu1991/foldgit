@@ -463,7 +463,6 @@ struct RepositoryScreen: View {
             actions[.showTags] = { showing.tags = true }
             actions[.showStashes] = { showing.stashChanged = true }
             actions[.compare] = { showing.compareRevisions = true }
-            if !menuApplications.isOpening { actions[.chooseApplication] = chooseMenuApplication }
             actions[.showChanges] = {
                 browseMode = .commits
                 searchText = ""
@@ -532,27 +531,10 @@ struct RepositoryScreen: View {
             isOpeningApplication: menuApplications.isOpening, browseMode: browseMode)
     }
 
-    private func chooseMenuApplication() {
-        let panel = NSOpenPanel()
-        panel.title = String(localized: "Choose Application")
-        panel.allowedContentTypes = [.applicationBundle]
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = false
-        panel.begin { response in
-            guard response == .OK, let url = panel.url else { return }
-            guard let application = OpenInApplication.read(at: url), application.id != Bundle.main.bundleIdentifier else {
-                error = OperationFailure("Choose Application", GenericError(errorDescription:
-                    String(localized: "Choose another application to open the project folder.")))
-                return
-            }
-            openMenuApplication(application, remember: true)
-        }
-    }
-
-    private func openMenuApplication(_ application: OpenInApplication, remember: Bool = false) {
+    private func openMenuApplication(_ application: OpenInApplication) {
         Task {
             do {
-                try await menuApplications.open(application, directory: folder.url, rememberApplication: remember)
+                try await menuApplications.open(application, directory: folder.url)
             } catch { self.error = OperationFailure("Open in", error) }
         }
     }

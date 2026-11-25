@@ -50,20 +50,27 @@ final class OpenInTests: XCTestCase {
         let defaults = try preferences()
         let editor = application("Custom Editor")
         var didOpen = false
-        let store = OpenInStore(defaults: defaults, discover: { _, urls, _ in
+        let settings = OpenInStore(defaults: defaults, openDirectory: { _, _ in didOpen = true })
+        let menu = OpenInStore(defaults: defaults, discover: { _, urls, _ in
             urls.isEmpty ? [] : [editor]
-        }, openDirectory: { _, _ in didOpen = true })
-        store.addCustomApplication(editor)
-        store.addCustomApplication(editor)
-        XCTAssertTrue(store.isCustomApplication(editor))
+        })
+        let directory = URL(fileURLWithPath: "/tmp")
+        await menu.reload(for: directory)
+        settings.addCustomApplication(editor)
+        settings.addCustomApplication(editor)
+        XCTAssertTrue(settings.isCustomApplication(editor))
         XCTAssertEqual(defaults.stringArray(forKey: PreferenceKey.openInCustomApplications.rawValue), [editor.url.path])
-        store.setPinned(true, application: editor)
-        await store.reload(for: URL(fileURLWithPath: "/tmp"))
-        XCTAssertEqual(store.pinned, [editor])
-        store.removeCustomApplication(editor)
-        await store.reload(for: URL(fileURLWithPath: "/tmp"), force: true)
-        XCTAssertFalse(store.isCustomApplication(editor))
-        XCTAssertTrue(store.applications.isEmpty)
+        settings.setPinned(true, application: editor)
+        menu.reloadPreferences()
+        XCTAssertEqual(menu.customApplicationPaths, [editor.url.path])
+        await menu.reload(for: directory)
+        XCTAssertEqual(menu.pinned, [editor])
+        settings.removeCustomApplication(editor)
+        menu.reloadPreferences()
+        XCTAssertTrue(menu.customApplicationPaths.isEmpty)
+        await menu.reload(for: directory)
+        XCTAssertFalse(settings.isCustomApplication(editor))
+        XCTAssertTrue(menu.applications.isEmpty)
         XCTAssertFalse(didOpen)
     }
 
@@ -128,24 +135,23 @@ final class OpenInTests: XCTestCase {
         XCTAssertEqual(store.others, [utility])
     }
 
-    func testOpenForwardsDirectoryAsURLAndRemembersOnlySuccessfulChoices() async throws {
+    func testOpenForwardsDirectoryAsURLAndRecordsOnlySuccessfulOpens() async throws {
         let directory = try temporaryDirectory().appendingPathComponent("项目 ' spaces $() &", isDirectory: true)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let app = application("Editor")
         let defaults = try preferences()
         var requests: [(URL, URL)] = []
         let store = OpenInStore(defaults: defaults, openDirectory: { requests.append(($0, $1)) })
-        try await store.open(app, directory: directory, rememberApplication: true)
+        try await store.open(app, directory: directory)
         XCTAssertEqual(requests.count, 1)
         XCTAssertEqual(requests.first?.0, directory)
         XCTAssertEqual(requests.first?.1, app.url)
         XCTAssertEqual(store.recentIDs, [app.id])
-        XCTAssertEqual(defaults.stringArray(forKey: PreferenceKey.openInCustomApplications.rawValue), [app.url.path])
-        XCTAssertTrue(store.applications.contains(app))
+        XCTAssertNil(defaults.stringArray(forKey: PreferenceKey.openInCustomApplications.rawValue))
         let failingDefaults = try preferences()
         let failing = OpenInStore(defaults: failingDefaults, openDirectory: { _, _ in throw CocoaError(.fileNoSuchFile) })
         do {
-            try await failing.open(app, directory: directory, rememberApplication: true)
+            try await failing.open(app, directory: directory)
             XCTFail("Failed launches must be reported")
         } catch {
             XCTAssertTrue(failing.recentIDs.isEmpty)

@@ -11,7 +11,7 @@ enum MenuCommand: String {
     case compare, showTags, newTag, checkoutCommit, revertCommit, copyCommitHash, amendCommit
     case squashCommits
     case stageAll, unstageAll, commit
-    case chooseApplication, showInFinder
+    case showInFinder
 
     /// The single source for key equivalents, shared by the menu bar and the Keyboard Shortcuts window.
     var shortcut: MenuShortcut? {
@@ -241,7 +241,7 @@ struct AppMenuCommands: Commands {
                     .disabled(repository?.isOpeningApplication == true)
             }
             Divider()
-            command("Choose Application", .chooseApplication)
+            Button("Manage External Applications") { SettingsWindowController.show(tab: .applications) }
         }
         .disabled(repository == nil)
     }

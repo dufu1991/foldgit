@@ -73,12 +73,13 @@ class WebsiteBuildTests(unittest.TestCase):
                 self.assertTrue((output / url).is_file(), url)
             for language in ("zh", "en"):
                 for scheme in ("light", "dark"):
-                    name = f"main-{language}-{scheme}"
-                    master = output / f"assets/screenshots/{name}@2x.webp"
-                    original = builder.SOURCE / f"assets/screenshots/{name}@2x.webp"
-                    self.assertEqual(master.read_bytes(), original.read_bytes())
-                    with Image.open(output / f"assets/screenshots/{name}.webp") as image:
-                        self.assertEqual(image.size, (1920, 988))
+                    for view in ("main", "commit", "directory"):
+                        name = f"{view}-{language}-{scheme}"
+                        master = output / f"assets/screenshots/{name}@2x.webp"
+                        original = builder.SOURCE / f"assets/screenshots/{name}@2x.webp"
+                        self.assertEqual(master.read_bytes(), original.read_bytes())
+                        with Image.open(output / f"assets/screenshots/{name}.webp") as image:
+                            self.assertEqual(image.size, (1920, 988))
             for suffix in ("", "-dark"):
                 for name, dimensions in ((f"favicon{suffix}.png", (180, 180)),
                                          (f"icon{suffix}.webp", (512, 512))):

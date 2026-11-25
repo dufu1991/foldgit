@@ -8,22 +8,32 @@
 <h1 align="center">FoldGit</h1>
 
 <p align="center">
-  Review Git changes, read the code, and preview Markdown in one window.<br>
-  Built for macOS, with native Mermaid diagrams inside your docs.
+  <strong>Let AI write. You keep it right.</strong><br>
+  Every diff in view, the full source and docs too.<br>
+  Open source · Native Git client · Code and docs reader
 </p>
 
 <p align="center">
   <a href="https://foldgit.com">Website</a> · <a href="https://foldgit.com/manual">User guide</a> · <a href="README.zh-CN.md">简体中文</a>
 </p>
 
+**Commit View**
+
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="website/assets/showcases/main-en-dark@2x.webp">
-  <img src="website/assets/showcases/main-en-light@2x.webp" alt="FoldGit on macOS: grouped repositories, commit graph, directory trees, staging and expanded side-by-side diffs">
+  <source media="(prefers-color-scheme: dark)" srcset="website/assets/screenshots/commit-en-dark@2x.webp">
+  <img src="website/assets/screenshots/commit-en-light@2x.webp" alt="Repository groups and tabs alongside a commit graph and a side-by-side Swift diff">
+</picture>
+
+**Directory View · Markdown preview**
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="website/assets/screenshots/directory-en-dark@2x.webp">
+  <img src="website/assets/screenshots/directory-en-light@2x.webp" alt="File tree alongside a Markdown release guide with a Mermaid flowchart and code sample">
 </picture>
 
 ## Why FoldGit
 
-More and more code is written by AI agents, and reviewing changes rarely needs an IDE anymore. Production code still deserves a human look: which files changed, which lines moved, whether anything went out of bounds.
+More and more code is written by AI agents. You no longer write every line, and reviewing changes rarely needs an IDE anymore. Production code still deserves a human look: which files changed, which lines moved, whether anything went out of bounds. To understand the context, you still read the full source and the project docs.
 
 FoldGit is a small, quiet window for exactly that. It keeps all your repositories at hand, shows changes clearly, and follows the look and feel of macOS. Existing Git clients rarely manage to be beautiful, simple and lightweight at once, and similar projects had drifted too far in interaction and internals to adjust from within, so FoldGit started fresh.
 
@@ -39,7 +49,7 @@ FoldGit is a small, quiet window for exactly that. It keeps all your repositorie
 - **Fast search.** Filter history by author, email or message as you type. Search runs in the background, reuses its index, pages results and cancels stale queries. It works with CJK input methods.
 - **Sidebar that scales.** Filter by folder, repository or custom display name. Sort by name, recently opened, modified or added, or keep a manual order.
 - **Everyday extras.** Push and pull, stash, Auto Fetch (download only, never merge), *Open in* your editor or terminal, light and dark appearances, and eight interface languages.
-- **Native and small.** Written in SwiftUI and AppKit, no Electron. The installer is just a few MB.
+- **Native and small.** Written in SwiftUI and AppKit, no Electron. The installer stays small.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="website/assets/screenshots/markdown-en-dark.webp">

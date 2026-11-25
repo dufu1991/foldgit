@@ -37,13 +37,14 @@ def build(output):
     screenshots = output / "assets/screenshots"
     for language in ("zh", "en"):
         for scheme in ("light", "dark"):
-            name = f"main-{language}-{scheme}"
-            with Image.open(screenshots / f"{name}@2x.webp") as image:
-                if image.size != (3840, 1976):
-                    raise ValueError(f"{name}@2x.webp must be 3840 × 1976 pixels")
-                image.resize((1920, 988), Image.Resampling.LANCZOS).save(
-                    screenshots / f"{name}.webp", quality=90, method=6
-                )
+            for view in ("main", "commit", "directory"):
+                name = f"{view}-{language}-{scheme}"
+                with Image.open(screenshots / f"{name}@2x.webp") as image:
+                    if image.size != (3840, 1976):
+                        raise ValueError(f"Unexpected dimensions for {name}@2x.webp: {image.size}")
+                    image.resize((1920, 988), Image.Resampling.LANCZOS).save(
+                        screenshots / f"{name}.webp", quality=90, method=6
+                    )
     print(f"Built website in {output}")
 
 

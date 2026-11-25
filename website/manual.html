@@ -11,14 +11,15 @@
   <meta property="og:url" content="https://foldgit.com/manual">
   <meta property="og:title" content="FoldGit User Guide">
   <meta property="og:description" content="Install FoldGit, review and commit changes, sync branches, manage worktrees, and troubleshoot failures with Git command logs.">
-  <meta property="og:image" content="https://foldgit.com/assets/og.png?v=20261110-2">
+  <meta property="og:image" content="https://foldgit.com/assets/og.png?v=20261125-1">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="FoldGit: every repository, folded into one window.">
+  <meta property="og:image:alt" content="FoldGit on macOS showing a Swift diff in Commit View and a Markdown guide with a Mermaid diagram in Directory View.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="FoldGit User Guide">
   <meta name="twitter:description" content="Install FoldGit, review and commit changes, sync branches, manage worktrees, and troubleshoot failures with Git command logs.">
-  <meta name="twitter:image" content="https://foldgit.com/assets/og.png?v=20261110-2">
+  <meta name="twitter:image" content="https://foldgit.com/assets/og.png?v=20261125-1">
+  <meta name="twitter:image:alt" content="FoldGit on macOS showing a Swift diff in Commit View and a Markdown guide with a Mermaid diagram in Directory View.">
   <meta name="color-scheme" content="light dark">
   <link rel="icon" href="assets/favicon.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="assets/favicon-dark.png" media="(prefers-color-scheme: dark)">
@@ -47,7 +48,7 @@
       }
     };
   </script>
-  <link rel="stylesheet" href="styles.css?v=20">
+  <link rel="stylesheet" href="styles.css?v=29">
 </head>
 <body class="manual-page">
   <div class="backdrop" aria-hidden="true">
@@ -121,6 +122,7 @@
         <a href="#history"><span class="show-zh">浏览历史</span><span class="show-en">Browse history</span></a>
         <a href="#squash"><span class="show-zh">压缩提交</span><span class="show-en">Squash commits</span></a>
         <a href="#browse"><span class="show-zh">目录视角与完整文件</span><span class="show-en">Directory View and full files</span></a>
+        <a href="#tabs"><span class="show-zh">标签页</span><span class="show-en">Tabs</span></a>
         <a href="#branches"><span class="show-zh">分支与同步</span><span class="show-en">Branches and sync</span></a>
         <a href="#worktrees"><span class="show-zh">工作树</span><span class="show-en">Worktrees</span></a>
         <a href="#stash"><span class="show-zh">贮藏</span><span class="show-en">Stash</span></a>
@@ -301,20 +303,20 @@
             <p class="tip">For a narrow window or long code lines, choose Unified or enable Wrap Long Lines under Settings → History and Diffs.</p>
           </div>
           <figure class="manual-shot show-zh">
-            <a class="manual-shot-light screenshot-wallpaper" href="assets/screenshots/main-zh-light@2x.webp?v=20261110-2" target="_blank" rel="noopener noreferrer">
-              <img src="assets/screenshots/main-zh-light.webp?v=20261110-2" srcset="assets/screenshots/main-zh-light.webp?v=20261110-2 1x, assets/screenshots/main-zh-light@2x.webp?v=20261110-2 2x" width="1920" height="988" alt="FoldGit 的 macOS 界面：目录树、展开的并排差异和暂存区" loading="lazy" decoding="async">
+            <a class="manual-shot-light screenshot-wallpaper" href="assets/screenshots/main-zh-light@2x.webp?v=20261125-1" target="_blank" rel="noopener noreferrer">
+              <img src="assets/screenshots/main-zh-light.webp?v=20261125-1" srcset="assets/screenshots/main-zh-light.webp?v=20261125-1 1x, assets/screenshots/main-zh-light@2x.webp?v=20261125-1 2x" width="1920" height="988" alt="FoldGit 的 macOS 界面：目录树、展开的并排差异和暂存区" loading="lazy" decoding="async">
             </a>
-            <a class="manual-shot-dark screenshot-wallpaper" href="assets/screenshots/main-zh-dark@2x.webp?v=20261110-2" target="_blank" rel="noopener noreferrer">
-              <img src="assets/screenshots/main-zh-dark.webp?v=20261110-2" srcset="assets/screenshots/main-zh-dark.webp?v=20261110-2 1x, assets/screenshots/main-zh-dark@2x.webp?v=20261110-2 2x" width="1920" height="988" alt="FoldGit 的 macOS 界面：目录树、展开的并排差异和暂存区" loading="lazy" decoding="async">
+            <a class="manual-shot-dark screenshot-wallpaper" href="assets/screenshots/main-zh-dark@2x.webp?v=20261125-1" target="_blank" rel="noopener noreferrer">
+              <img src="assets/screenshots/main-zh-dark.webp?v=20261125-1" srcset="assets/screenshots/main-zh-dark.webp?v=20261125-1 1x, assets/screenshots/main-zh-dark@2x.webp?v=20261125-1 2x" width="1920" height="988" alt="FoldGit 的 macOS 界面：目录树、展开的并排差异和暂存区" loading="lazy" decoding="async">
             </a>
             <figcaption>演示仓库中的目录树、并排差异与暂存区。点击图片查看大图。</figcaption>
           </figure>
           <figure class="manual-shot show-en">
-            <a class="manual-shot-light screenshot-wallpaper" href="assets/screenshots/main-en-light@2x.webp?v=20261110-2" target="_blank" rel="noopener noreferrer">
-              <img src="assets/screenshots/main-en-light.webp?v=20261110-2" srcset="assets/screenshots/main-en-light.webp?v=20261110-2 1x, assets/screenshots/main-en-light@2x.webp?v=20261110-2 2x" width="1920" height="988" alt="FoldGit on macOS with directory trees, an expanded side-by-side diff and staging panes" loading="lazy" decoding="async">
+            <a class="manual-shot-light screenshot-wallpaper" href="assets/screenshots/main-en-light@2x.webp?v=20261125-1" target="_blank" rel="noopener noreferrer">
+              <img src="assets/screenshots/main-en-light.webp?v=20261125-1" srcset="assets/screenshots/main-en-light.webp?v=20261125-1 1x, assets/screenshots/main-en-light@2x.webp?v=20261125-1 2x" width="1920" height="988" alt="FoldGit on macOS with directory trees, an expanded side-by-side diff and staging panes" loading="lazy" decoding="async">
             </a>
-            <a class="manual-shot-dark screenshot-wallpaper" href="assets/screenshots/main-en-dark@2x.webp?v=20261110-2" target="_blank" rel="noopener noreferrer">
-              <img src="assets/screenshots/main-en-dark.webp?v=20261110-2" srcset="assets/screenshots/main-en-dark.webp?v=20261110-2 1x, assets/screenshots/main-en-dark@2x.webp?v=20261110-2 2x" width="1920" height="988" alt="FoldGit on macOS with directory trees, an expanded side-by-side diff and staging panes" loading="lazy" decoding="async">
+            <a class="manual-shot-dark screenshot-wallpaper" href="assets/screenshots/main-en-dark@2x.webp?v=20261125-1" target="_blank" rel="noopener noreferrer">
+              <img src="assets/screenshots/main-en-dark.webp?v=20261125-1" srcset="assets/screenshots/main-en-dark.webp?v=20261125-1 1x, assets/screenshots/main-en-dark@2x.webp?v=20261125-1 2x" width="1920" height="988" alt="FoldGit on macOS with directory trees, an expanded side-by-side diff and staging panes" loading="lazy" decoding="async">
             </a>
             <figcaption>Directory trees, side-by-side diffs and staging in a demo repository. Click the image to view it at full size.</figcaption>
           </figure>
@@ -336,6 +338,7 @@
             <h3>放弃未暂存的更改</h3>
             <p>右键未暂存文件选择「放弃更改」，或在更改块右键选择「放弃此更改块」，确认后只处理所选内容。已跟踪文件的未暂存修改会丢失，已暂存内容保留；未跟踪文件移入废纸篓。</p>
             <p class="tip">如果按代码块操作时收到 UTF-8 编码提示，请改用整文件暂存、取消暂存或放弃更改。</p>
+            <p class="tip">新安装的 FoldGit 默认隐藏提交和暂存控件。需要在本软件中暂存或提交时，在「设置 → 通用 → 提交操作」关闭「不在本软件执行提交相关操作」。从旧版本升级时保留原来的选择。</p>
             <h3>确认后提交</h3>
             <ol>
               <li>检查「已暂存的更改」，展开文件确认本次要提交的内容。</li>
@@ -358,6 +361,7 @@
             <h3>Discard unstaged changes</h3>
             <p>Right-click unstaged files and choose Discard Changes, or right-click a hunk and choose Discard This Hunk. Confirm to discard only the selected content. Unstaged edits to tracked files are lost while staged content stays intact; untracked files move to the Trash.</p>
             <p class="tip">If a hunk operation shows a UTF-8 encoding warning, stage, unstage or discard changes for the whole file instead.</p>
+            <p class="tip">New installations hide the staging and commit controls by default. To stage or commit in FoldGit, turn off Disable Commit Operations in FoldGit under Settings → General → Commit Operations. Upgrades keep your previous choice.</p>
             <h3>Review, then commit</h3>
             <ol>
               <li>Check Staged Changes and expand the files to confirm what belongs in this commit.</li>
@@ -369,10 +373,10 @@
           </div>
           <h3 id="commit-operations"><span class="show-zh">把提交交给其他工具</span><span class="show-en">Leave commits to another tool</span></h3>
           <div class="show-zh">
-            <p>在「设置 → 通用 → 提交操作」打开「不在本软件执行提交相关操作」，可隐藏提交、修改提交、压缩、拣选、还原、重置、合并及暂存控件。仍可浏览已暂存和未暂存的更改、完整文件与历史；拉取仅允许快进，分支分叉时需在其他工具处理。该设置不限制终端、Agent 或其他应用的 Git 操作。</p>
+            <p>新安装时，「设置 → 通用 → 提交操作」中的「不在本软件执行提交相关操作」默认开启，隐藏提交、修改提交、压缩、拣选、还原、重置、合并及暂存控件。仍可浏览已暂存和未暂存的更改、完整文件与历史；拉取仅允许快进，分支分叉时需在其他工具处理。关闭该选项即可在本软件中暂存和提交；从旧版本升级时保留原来的选择。该设置不限制终端、Agent 或其他应用的 Git 操作。</p>
           </div>
           <div class="show-en">
-            <p>Enable Disable Commit Operations in FoldGit under Settings → General → Commit Operations to hide commit, amend, squash, cherry-pick, revert, reset, merge and staging controls. Continue browsing staged and unstaged changes, full files and history. Pulls allow fast-forward updates only; use another tool for diverged branches. This setting does not restrict Git operations in Terminal, agents or other applications.</p>
+            <p>On a new installation, Disable Commit Operations in FoldGit under Settings → General → Commit Operations is on by default. It hides commit, amend, squash, cherry-pick, revert, reset, merge and staging controls. Continue browsing staged and unstaged changes, full files and history. Pulls allow fast-forward updates only; use another tool for diverged branches. Turn it off to stage and commit in FoldGit. Upgrades keep your previous choice. This setting does not restrict Git operations in Terminal, agents or other applications.</p>
           </div>
         </section>
 
@@ -452,8 +456,19 @@
           <span class="m-num">08</span>
           <h2><span class="show-zh">目录视角与完整文件</span><span class="show-en">Directory View and full files</span></h2>
           <div class="show-zh">
-            <p>仓库有两种浏览方式：「提交视角」按提交查看改动，「目录视角」按文件夹浏览整个工作目录。启动和新建窗口时默认使用提交视角；需要通读 Agent 写的代码、了解某个文件的来龙去脉时，点击工具栏右侧的「目录视角」即可切换。</p>
+            <p>仓库有两种浏览方式。「提交视角」按提交查看改动，「目录视角」按文件夹浏览整个工作目录。需要通读 Agent 写的代码、了解某个文件的来龙去脉时，在工具栏右侧的视角下拉菜单中选择「目录视角」。</p>
             <p>也可从「显示」菜单切换：<kbd>⌃</kbd><kbd>⌘</kbd><kbd>1</kbd> 打开提交视角，<kbd>⌃</kbd><kbd>⌘</kbd><kbd>2</kbd> 打开目录视角。</p>
+          </div>
+          <div class="show-en">
+            <p>Commit View shows changes commit by commit. Directory View browses the whole working tree by folder. To read code an agent wrote or trace how a file evolved, choose Directory View from the view menu on the right of the toolbar.</p>
+            <p>The View menu also switches modes: <kbd>⌃</kbd><kbd>⌘</kbd><kbd>1</kbd> opens Commit View and <kbd>⌃</kbd><kbd>⌘</kbd><kbd>2</kbd> opens Directory View.</p>
+          </div>
+          <h3 id="tabs"><span class="show-zh">用两个标签页查看同一仓库</span><span class="show-en">View the same repository in two tabs</span></h3>
+          <p class="show-zh">在 macOS 上，工具栏下方只显示侧边栏当前仓库的标签页。首次打开仓库时，左侧的「提交视角」显示提交记录和改动，右侧的「目录视角」用来查看完整代码，并按「设置 → 通用 → 默认仓库视角」选中其中一个。标签标题显示分支和视角。切回仓库时，它的标签页和选中的视角会恢复。</p>
+          <p class="show-en">On macOS, the tab bar below the toolbar shows tabs for the repository selected in the sidebar. On first open, Commit View appears on the left for history and changes, and Directory View appears on the right for full source files. Default Repository View under Settings → General decides which one is selected. Tab titles show the branch and view. When you return to a repository, its tabs and selection are restored.</p>
+          <p class="show-zh">按 <kbd>⌘</kbd><kbd>T</kbd> 或点击标签页栏右侧的「＋」可以再打开一个标签页。新标签页同样使用「默认仓库视角」。</p>
+          <p class="show-en">Press <kbd>⌘</kbd><kbd>T</kbd> or click the plus button at the right end of the tab bar to open an additional tab. New tabs also use Default Repository View.</p>
+          <div class="show-zh">
             <h3>浏览与查找文件</h3>
             <ul>
               <li><b>文件树</b>：左侧按文件夹列出已跟踪文件和未被忽略的未跟踪文件。底部「共 N 个文件」显示文件总数，搜索时仍显示总数；「折叠所有文件夹」可一次收起展开的目录。</li>
@@ -476,14 +491,12 @@
             <p>选中 Markdown 文件并打开「文件内容」，即可阅读排版后的文档。「预览」与「源码」可随时切换。仓库内的相对图片随文档显示，相对文档链接可在应用内打开。提交差异中的「预览此版本」会读取该版本的文档。</p>
             <p>文档内的 Mermaid 代码块及独立的 <code>.mmd</code>、<code>.mermaid</code> 文件使用 NornaKit 本地绘图。右键点击图表可复制源码或导出 PNG、SVG。遇到不支持的语法时会显示源码。</p>
             <figure class="manual-shot">
-              <a class="manual-shot-light screenshot-wallpaper" href="assets/screenshots/markdown-zh-light.webp"><img src="assets/screenshots/markdown-zh-light.webp" width="760" height="444" loading="lazy" alt="发布流程文档中的 Mermaid 图表、任务列表与命令表格"></a>
-              <a class="manual-shot-dark screenshot-wallpaper" href="assets/screenshots/markdown-zh-dark.webp"><img src="assets/screenshots/markdown-zh-dark.webp" width="760" height="444" loading="lazy" alt="发布流程文档中的 Mermaid 图表、任务列表与命令表格"></a>
+              <a class="manual-shot-light screenshot-wallpaper" href="assets/screenshots/markdown-zh-light.webp?v=20261125-1"><img src="assets/screenshots/markdown-zh-light.webp?v=20261125-1" width="760" height="550" loading="lazy" alt="发布流程文档中的 Mermaid 图表、任务列表与命令表格"></a>
+              <a class="manual-shot-dark screenshot-wallpaper" href="assets/screenshots/markdown-zh-dark.webp?v=20261125-1"><img src="assets/screenshots/markdown-zh-dark.webp?v=20261125-1" width="760" height="550" loading="lazy" alt="发布流程文档中的 Mermaid 图表、任务列表与命令表格"></a>
             </figure>
             <p class="tip">文件内容读取的是磁盘上的当前版本。Agent 或编辑器修改文件后，目录视角会自动刷新文件树与内容。</p>
           </div>
           <div class="show-en">
-            <p>A repository has two ways to browse: Commit View shows changes commit by commit, while Directory View browses the whole working tree by folder. New windows and launches start in Commit View. To read code an agent wrote, or to trace how a file evolved, select Directory View on the right of the toolbar.</p>
-            <p>The View menu also switches modes: <kbd>⌃</kbd><kbd>⌘</kbd><kbd>1</kbd> opens Commit View and <kbd>⌃</kbd><kbd>⌘</kbd><kbd>2</kbd> opens Directory View.</p>
             <h3>Browse and find files</h3>
             <ul>
               <li><b>File tree</b> — the left pane lists tracked files and untracked files that are not ignored, organized by folder. The file count at the bottom shows the total, even while searching. Collapse All Folders closes every expanded folder at once.</li>
@@ -506,8 +519,8 @@
             <p>Select a Markdown file and open File Content to read the formatted document. Switch between Preview and Source Code at any time. Relative images and document links resolve inside the repository. From a commit diff, choose Preview This Version to read the historical document.</p>
             <p>NornaKit renders Mermaid fences and standalone <code>.mmd</code> or <code>.mermaid</code> files locally. Right-click a diagram to copy its source or export PNG or SVG. Unsupported syntax is shown as source.</p>
             <figure class="manual-shot">
-              <a class="manual-shot-light screenshot-wallpaper" href="assets/screenshots/markdown-en-light.webp"><img src="assets/screenshots/markdown-en-light.webp" width="760" height="444" loading="lazy" alt="Release workflow document with a Mermaid diagram, task list and command table"></a>
-              <a class="manual-shot-dark screenshot-wallpaper" href="assets/screenshots/markdown-en-dark.webp"><img src="assets/screenshots/markdown-en-dark.webp" width="760" height="444" loading="lazy" alt="Release workflow document with a Mermaid diagram, task list and command table"></a>
+              <a class="manual-shot-light screenshot-wallpaper" href="assets/screenshots/markdown-en-light.webp?v=20261125-1"><img src="assets/screenshots/markdown-en-light.webp?v=20261125-1" width="760" height="550" loading="lazy" alt="Release workflow document with a Mermaid diagram, task list and command table"></a>
+              <a class="manual-shot-dark screenshot-wallpaper" href="assets/screenshots/markdown-en-dark.webp?v=20261125-1"><img src="assets/screenshots/markdown-en-dark.webp?v=20261125-1" width="760" height="550" loading="lazy" alt="Release workflow document with a Mermaid diagram, task list and command table"></a>
             </figure>
             <p class="tip">File content shows the current version on disk. When an agent or editor changes files, Directory View refreshes the tree and content automatically.</p>
           </div>
@@ -526,7 +539,7 @@
               <li><b>新建分支</b>（<kbd>⇧</kbd><kbd>⌘</kbd><kbd>B</kbd>）、<b>标签</b>：创建分支，浏览和管理标签；<kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd> 新建标签。</li>
               <li><b>比较</b>：选两个版本，查看它们之间的全部差异。</li>
               <li><b>获取、拉取与推送</b>：<kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd> 获取，<kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> 拉取，<kbd>⇧</kbd><kbd>⌘</kbd><kbd>P</kbd> 推送。获取只下载更新，不会合并。<kbd>⌘</kbd><kbd>R</kbd> 刷新仓库状态。</li>
-              <li><b>打开方式</b>：在终端、编辑器或访达中打开当前仓库。<kbd>⌃</kbd><kbd>⌘</kbd><kbd>T</kbd> 在终端中打开，<kbd>⌃</kbd><kbd>⌘</kbd><kbd>O</kbd> 在访达中显示。</li>
+              <li><b>用其他应用打开</b>：选择终端、编辑器或访达来打开当前仓库。菜单底部的「管理外部应用」可直达相关设置。<kbd>⌃</kbd><kbd>⌘</kbd><kbd>T</kbd> 在终端中打开，<kbd>⌃</kbd><kbd>⌘</kbd><kbd>O</kbd> 在访达中显示。</li>
             </ul>
             <p class="tip">拉取和推送前，仓库需要已配置远程，且当前检出的是分支。处于分离头指针状态时，先切换到分支；当前分支尚未设置上游时，先推送以建立上游关联，再拉取。操作失败时，可按<a href="#troubleshooting">排查步骤</a>查看原因和日志。</p>
           </div>
@@ -540,7 +553,7 @@
               <li><b>New Branch</b> (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>B</kbd>) and <b>Tags</b> — create branches, browse and manage tags; <kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd> creates a tag.</li>
               <li><b>Compare</b> — pick two revisions and see everything between them.</li>
               <li><b>Fetch / Pull / Push</b> (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd> / <kbd>L</kbd> / <kbd>P</kbd>) — sync with the remote. Fetch only downloads; it never merges. <kbd>⌘</kbd><kbd>R</kbd> refreshes the repository.</li>
-              <li><b>Open in</b> — open the repository in Terminal, your editor or Finder. <kbd>⌃</kbd><kbd>⌘</kbd><kbd>T</kbd> opens Terminal, <kbd>⌃</kbd><kbd>⌘</kbd><kbd>O</kbd> shows it in Finder.</li>
+              <li><b>Open in</b> — choose Terminal, your editor or Finder to open the repository. Choose Manage External Applications at the bottom of the menu to open the relevant settings. <kbd>⌃</kbd><kbd>⌘</kbd><kbd>T</kbd> opens Terminal, <kbd>⌃</kbd><kbd>⌘</kbd><kbd>O</kbd> shows it in Finder.</li>
             </ul>
             <p class="tip">Pull and Push require a configured remote and a checked-out branch. Switch to a branch if HEAD is detached. If the branch has no upstream, push it first to set the upstream before pulling. If an operation fails, follow the <a href="#troubleshooting">troubleshooting steps</a> to inspect the reason and logs.</p>
           </div>
@@ -702,14 +715,14 @@
           <div class="show-zh">
             <p>按 <kbd>⌘</kbd><kbd>,</kbd> 打开，会回到上次查看的分类。常用的几项：</p>
             <ul>
-              <li><b>通用</b>：选择界面语言，设置登录时启动、恢复上次的仓库和窗口状态、自动检查更新，以及关闭最后一个窗口时是否退出。语言更改后，点击页面中的「立即重新启动」应用更改。</li>
-              <li><b>提交操作开关</b>：在「通用」中打开「不在本软件执行提交相关操作」，隐藏相关控件并将拉取限制为快进，详见<a href="#commit-operations">提交操作设置</a>。</li>
+              <li><b>通用</b>：选择界面语言，设置登录时启动、默认仓库视角、恢复上次的仓库和窗口状态、自动检查更新，以及关闭最后一个窗口时是否退出。语言更改后，点击页面中的「立即重新启动」应用更改。</li>
+              <li><b>提交操作开关</b>：「通用」中的「不在本软件执行提交相关操作」在新安装时默认开启，隐藏相关控件并将拉取限制为快进，详见<a href="#commit-operations">提交操作设置</a>。</li>
               <li><b>检查更新</b>：默认由内置更新器定期检查，仅发现新版本时提示。也可从「FoldGit → 检查更新」或「设置 → 关于」手动检查；选择「安装更新」，下载后点击「安装并重启应用」。应用会验证更新来源，并由内置更新器完成替换。更新说明跟随应用语言，中文界面显示中文，其余语言暂时显示英文。旧版若只提供发布页下载入口，需要先手动安装一次支持内置更新的版本。通过 Homebrew 安装的用户也可继续使用上方的升级命令。</li>
               <li><b>外观</b>：选择浅色、深色或自动跟随系统；工具栏可显示「仅图标」或「图标和文字」。</li>
               <li><b>历史与差异</b>：控制提交关系图、提交时间、差异布局、文件默认展开方式（默认折叠）、代码字号和长行自动换行。</li>
               <li><b>提交操作</b>：维护快捷输入条目，拖动调整顺序；勾选的条目显示在提交信息编辑框下方，删除或移动条目后可撤销。</li>
               <li><b>仓库</b>：启用工作树，选择「在边栏显示工作树状态」或「显示普通仓库分支」，设置全局及单仓库的自动获取间隔。自动获取只下载远程更新，不合并；这里也可查看上次成功获取的时间，点击错误提示查看详情，具体见<a href="#troubleshooting">操作失败与排查</a>。</li>
-              <li><b>外部应用</b>：勾选常用的编辑器或终端，它们会固定在「打开方式」菜单最前面；也可添加列表中没有的应用。</li>
+              <li><b>外部应用</b>：勾选常用的编辑器或终端，即可固定到「用其他应用打开」菜单的置顶区。也可添加、移除自定义应用或刷新列表。</li>
               <li><b>关于</b>：查看版本和构建号，检查更新，打开官方网站、GitHub 仓库、反馈入口和开源许可。</li>
               <li><b>恢复默认</b>：在「通用」中点击「恢复默认设置」，先查看将被重置的选项，再确认恢复。</li>
             </ul>
@@ -717,14 +730,14 @@
           <div class="show-en">
             <p>Press <kbd>⌘</kbd><kbd>,</kbd>; Settings reopens the category you viewed last. The ones you will likely touch:</p>
             <ul>
-              <li><b>General</b> — choose the interface language, launch at login, restore the previous repository and window, automatically check for updates, and choose whether closing the last window quits the app. After changing the language, use Restart Now on the page to apply it.</li>
-              <li><b>Disable commit operations</b> — enable Disable Commit Operations in FoldGit under General to hide the controls and allow fast-forward pulls only; see <a href="#commit-operations">commit operation settings</a>.</li>
+              <li><b>General</b> — choose the interface language, launch at login, Default Repository View, restore the previous repository and window, automatically check for updates, and choose whether closing the last window quits the app. After changing the language, use Restart Now on the page to apply it.</li>
+              <li><b>Disable commit operations</b> — Disable Commit Operations in FoldGit under General is on by default for new installations. It hides the controls and allows fast-forward pulls only; see <a href="#commit-operations">commit operation settings</a>.</li>
               <li><b>Check for Updates</b> — the built-in updater checks periodically by default and only notifies you when a newer version is available. Choose FoldGit → Check for Updates or use Settings → About to check manually. Select Install Update, then Install and Relaunch after downloading. The app authenticates the update and its built-in updater replaces it. Release notes follow the app language: Chinese for Chinese interfaces, and English for all other languages for now. Older builds that only open a release page need one manual installation of a version with built-in updates. Homebrew users can still use the upgrade command above.</li>
               <li><b>Appearance</b> — choose Light, Dark or Automatic and set Toolbar Display to Icons Only or Icons and Text.</li>
               <li><b>History and Diffs</b> — configure the commit graph, commit time, diff layout, Default File Expansion (Collapsed by default), code font size and line wrapping.</li>
               <li><b>Commit Operations</b> — manage snippets and drag to reorder them; checked entries appear below the commit message editor. Deletion and movement can be undone.</li>
               <li><b>Repositories</b> — enable worktrees, choose Show Worktree Status in Sidebar or Show Branch for Repositories Without Worktrees, and set default or per-repository auto-fetch intervals. Fetch downloads remote updates without merging them. You can also see Last Successful Fetch and click errors for details; see <a href="#troubleshooting">Troubleshoot failures</a>.</li>
-              <li><b>External Applications</b> — check an editor or terminal to pin it to the top of the Open in menu, or add an application that is not listed.</li>
+              <li><b>External Applications</b> — check an editor or terminal under Pin to the Open in Menu. You can also add or remove custom applications and refresh the list.</li>
               <li><b>About</b> — see the version and build, check for updates, and open the official website, GitHub repository, feedback page and open source licenses.</li>
               <li><b>Restore Defaults</b> — under General, review the settings that will be reset before confirming.</li>
             </ul>
@@ -736,6 +749,10 @@
           <h2><span class="show-zh">快捷键</span><span class="show-en">Shortcuts</span></h2>
           <p><span class="show-zh">macOS 版的常用操作都在菜单栏中，菜单项旁显示对应快捷键；完整列表可在「帮助 → 快捷键」中查看。</span><span class="show-en">On macOS every common action is in the menu bar, with its shortcut beside it. Help → Keyboard Shortcuts shows the full list.</span></p>
           <dl class="keys">
+            <div><dt><kbd>⌘</kbd><kbd>T</kbd></dt><dd><span class="show-zh">新建标签页</span><span class="show-en">New tab</span></dd></div>
+            <div><dt><kbd>⌘</kbd><kbd>W</kbd></dt><dd><span class="show-zh">关闭当前标签页</span><span class="show-en">Close the current tab</span></dd></div>
+            <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>[</kbd></dt><dd><span class="show-zh">切换到上一个标签页</span><span class="show-en">Switch to the previous tab</span></dd></div>
+            <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>]</kbd></dt><dd><span class="show-zh">切换到下一个标签页</span><span class="show-en">Switch to the next tab</span></dd></div>
             <div><dt><kbd>⌘</kbd><kbd>O</kbd></dt><dd><span class="show-zh">打开仓库</span><span class="show-en">Open repository</span></dd></div>
             <div><dt><kbd>⇧</kbd><kbd>⌘</kbd><kbd>N</kbd></dt><dd><span class="show-zh">克隆远程仓库</span><span class="show-en">Clone remote repository</span></dd></div>
             <div><dt><kbd>⌘</kbd><kbd>R</kbd></dt><dd><span class="show-zh">刷新</span><span class="show-en">Refresh</span></dd></div>
@@ -780,6 +797,6 @@
     <p><span class="show-zh">FoldGit 由 dufu 独立维护，采用 MIT 许可证开源。</span><span class="show-en">FoldGit is independently maintained by dufu and released under the MIT License.</span></p>
   </footer>
 
-  <script src="main.js?v=15"></script>
+  <script src="main.js?v=20"></script>
 </body>
 </html>

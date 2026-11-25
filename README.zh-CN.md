@@ -8,22 +8,32 @@
 <h1 align="center">FoldGit</h1>
 
 <p align="center">
-  在一个窗口里审查 Git 改动、通读代码、阅读 Markdown。<br>
-  为 macOS 原生构建，可在文档中直接查看 Mermaid 图表。
+  <strong>代码千行 AI 写，改动一一由你阅。</strong><br>
+  Diff 改动看得清，源码文档读得明。<br>
+  开源 · 原生 Git 客户端 · 代码与文档阅读器
 </p>
 
 <p align="center">
   <a href="https://foldgit.com">官网</a> · <a href="https://foldgit.com/manual">使用手册</a> · <a href="README.md">English</a>
 </p>
 
+**提交视角**
+
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="website/assets/showcases/main-zh-dark@2x.webp">
-  <img src="website/assets/showcases/main-zh-light@2x.webp" alt="FoldGit 的 macOS 界面：仓库分组、提交关系图、目录树、暂存区与展开的并排差异">
+  <source media="(prefers-color-scheme: dark)" srcset="website/assets/screenshots/commit-zh-dark@2x.webp">
+  <img src="website/assets/screenshots/commit-zh-light@2x.webp" alt="仓库分组、视角标签页、提交关系图和 Swift 并排差异">
+</picture>
+
+**目录视角 · Markdown 预览**
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="website/assets/screenshots/directory-zh-dark@2x.webp">
+  <img src="website/assets/screenshots/directory-zh-light@2x.webp" alt="文件树与打开的 Markdown 发布指南，包含 Mermaid 流程图和代码示例">
 </picture>
 
 ## 为什么做 FoldGit
 
-越来越多的代码由 AI Agent 生成，查看改动常常不必再打开 IDE。但生产代码仍需要有人过一遍：改了哪些文件、动了哪几行、有没有越界。
+越来越多的代码由 AI Agent 生成，人不必逐行写代码，查看改动也常常不必再打开 IDE。但生产代码仍需要有人过一遍：改了哪些文件、动了哪几行、有没有越界；想弄清上下文，还要读完整源码和项目文档。
 
 FoldGit 就是为此准备的一个轻巧、安静的窗口：所有仓库随手可及，改动看得清楚，界面遵循 macOS 的视觉习惯。现有 Git 客户端很难同时做到美观、简洁和轻量；方向相近的项目也有，但交互和底层都已偏离太远，不适合在原项目里调整，于是重新开始。
 
@@ -39,7 +49,7 @@ FoldGit 就是为此准备的一个轻巧、安静的窗口：所有仓库随手
 - **快速搜索。** 按作者、邮箱或提交信息实时筛选历史。搜索在后台进行，复用索引、分页返回，新输入会取消旧查询，支持中文输入法上屏后触发。
 - **仓库多了也不乱。** 可按目录名、仓库文件夹名或自定义显示名称过滤；可按名称、最近打开、最近修改、最近添加排序，或保留手动顺序。
 - **日常所需。** 推送与拉取，Stash，自动获取（只下载、不合并），在编辑器或终端中打开，亮暗色外观，八种界面语言。
-- **原生且小巧。** SwiftUI 与 AppKit 原生实现，不含 Electron，安装包仅几 MB。
+- **原生且小巧。** SwiftUI 与 AppKit 原生实现，不含 Electron，安装包小巧。
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="website/assets/screenshots/markdown-zh-dark.webp">

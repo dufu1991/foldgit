@@ -97,30 +97,17 @@
   if (darkQuery.addEventListener) darkQuery.addEventListener("change", applyScheme);
 
   // ---------------------------------------------------------------- screenshot
-  var shot = document.getElementById("main-shot");
-  var currentShot = "";
-
+  const shots = document.querySelectorAll(".shot[data-perspective]");
   const updateShot = () => {
-    if (!shot) return;
-    var base = "assets/screenshots/main-" + lang() + "-" + scheme();
-    if (base === currentShot) return;
-    var first = currentShot === "";
-    currentShot = base;
-    var next = new Image();
-    next.srcset = base + ".webp?v=20261110-2 1x, " + base + "@2x.webp?v=20261110-2 2x";
-    next.src = base + ".webp?v=20261110-2";
-    var swap = () => {
-      if (base !== currentShot) return;
-      shot.srcset = next.srcset;
-      shot.src = next.src;
-      shot.alt = dict[lang()]["shot.main.alt"];
-      shot.classList.remove("is-swapping");
-      shot.classList.add("is-loaded");
-    };
-    if (first) { swap(); return; }
-    shot.classList.add("is-swapping");
-    var ready = next.decode ? next.decode() : Promise.resolve();
-    ready.catch(() => {}).then(() => { setTimeout(swap, 180); });
+    shots.forEach(image => {
+      const view = image.dataset.perspective;
+      const base = "assets/screenshots/" + view + "-" + lang() + "-" + scheme();
+      if (image.dataset.source === base) return;
+      image.dataset.source = base;
+      image.alt = dict[lang()]["shot." + view + ".alt"];
+      image.srcset = base + ".webp?v=20261125-1 1x, " + base + "@2x.webp?v=20261125-1 2x";
+      image.src = base + ".webp?v=20261125-1";
+    });
   };
 
   // ---------------------------------------------------------------- reveal
@@ -293,14 +280,18 @@
     }
     if (shotWindow) {
       const progress = clamp((smoothY + geometry.stickyTop - geometry.stageTop) / geometry.stageDistance, 0, 1);
-      shotFrame.classList.toggle("is-animating", !!stageVisible && !reduceMotion && progress > 0.12 && progress < 0.8);
+      shotFrame.classList.toggle("is-animating", !!stageVisible && !reduceMotion && progress > 0 && progress < 0.28);
       if (reduceMotion) {
         setStyle(shotWindow, "opacity", "1");
         setStyle(shotWindow, "transform", "none");
       } else if (stageVisible) {
-        // Hold the wallpaper before the window rises and unfolds into place.
-        const unfold = easeInOut(clamp((progress - 0.12) / 0.68, 0, 1));
-        setStyle(shotWindow, "opacity", clamp((progress - 0.12) / 0.18, 0, 1).toFixed(4));
+        const unfold = easeInOut(clamp(progress / 0.28, 0, 1));
+        const swipe = easeInOut(clamp((progress - 0.48) / 0.24, 0, 1));
+        const view = swipe < 0.5 ? "commit" : "directory";
+        if (shotSticky.dataset.view !== view) shotSticky.dataset.view = view;
+        setStyle(shotSticky, "--shot-swipe", swipe.toFixed(4));
+        setStyle(shotSticky, "--shot-emphasis", Math.sin(Math.PI * swipe).toFixed(4));
+        setStyle(shotWindow, "opacity", clamp(progress / 0.09, 0, 1).toFixed(4));
         setStyle(shotWindow, "transform", "translate3d(0, " + ((1 - unfold) * geometry.shotHeight * 0.38).toFixed(2)
           + "px, " + (-180 * (1 - unfold)).toFixed(2) + "px) rotateX(" + (62 * (1 - unfold)).toFixed(2)
           + "deg) scale(" + (0.86 + 0.14 * unfold).toFixed(4) + ")");
@@ -350,7 +341,6 @@
     resizeObserver.observe(document.body);
     if (shotSticky) resizeObserver.observe(shotSticky);
   }
-  if (shot) shot.addEventListener("load", scheduleMeasure);
   if (document.fonts) document.fonts.ready.then(scheduleMeasure);
 
   // ---------------------------------------------------------------- manual contents

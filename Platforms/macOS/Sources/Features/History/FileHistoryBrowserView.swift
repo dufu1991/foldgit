@@ -199,11 +199,15 @@ struct RepositoryFileTreeView: View {
 
 struct FileHistoryDetailView: View {
     @Bindable var store: FileHistoryStore
+    @AppStorage("markdownShowsSource") private var markdownShowsSource = false
+    @AppStorage("mermaidShowsSource") private var mermaidShowsSource = false
     @State private var findRequest: UUID?
 
     var body: some View {
         Group {
             if let path = store.selectedPath {
+                let kind = store.content.previewKind(for: path)
+                let showsSource = kind == .mermaid ? $mermaidShowsSource : $markdownShowsSource
                 VStack(spacing: 0) {
                     HStack {
                         Picker("File View", selection: Binding(get: { store.detailMode }, set: store.selectDetailMode)) {
@@ -214,6 +218,15 @@ struct FileHistoryDetailView: View {
                         .labelsHidden()
                         .fixedSize()
                         .accessibilityIdentifier("fileDetailModePicker")
+                        if store.detailMode == .content, kind != nil {
+                            Picker("File View", selection: showsSource) {
+                                Text("Preview").tag(false)
+                                Text("Source Code").tag(true)
+                            }
+                            .pickerStyle(.segmented)
+                            .labelsHidden()
+                            .fixedSize()
+                        }
                         Spacer()
                         if store.detailMode == .content {
                             Button("Find in File", systemImage: "magnifyingglass") { findRequest = UUID() }
@@ -233,7 +246,7 @@ struct FileHistoryDetailView: View {
                     case .history:
                         FileHistoryRecordsView(store: store)
                     case .content:
-                        FileContentView(store: store.content, path: path, findRequest: findRequest)
+                        FileContentView(store: store.content, path: path, findRequest: findRequest, showsSource: showsSource.wrappedValue)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)

@@ -85,35 +85,47 @@ struct FileContentViewTests {
     @Test func detailSwitchesInlineWithoutOpeningASheetOrResettingTheMode() async throws {
         let repository = try await TestRepository.create(commits: 1)
         defer { repository.remove() }
+        try repository.write("guide.md", "# Guide\n\n```swift\nlet value = 1\n```\n")
+        let defaults = try #require(UserDefaults(suiteName: UUID().uuidString))
         let store = FileHistoryStore()
         defer { store.deactivate() }
         store.activate(in: repository.url)
         await store.refreshTask?.value
         await store.treeTask?.value
-        let host = NSHostingView(rootView: FileHistoryDetailView(store: store).environment(\.folder, repository.url))
+        let host = NSHostingView(rootView: FileHistoryDetailView(store: store).environment(\.folder, repository.url).defaultAppStorage(defaults))
         let window = makeWindow(host)
         defer { window.close() }
         #expect(try await waitForLayout(host) {
             descendants(host).compactMap { $0 as? NSSegmentedControl }.isEmpty
         })
-        store.selectFile("example.swift")
-        await store.historyTask?.value
-        await store.diffTask?.value
+        store.selectFile("guide.md")
+        await store.content.readTask?.value
         #expect(try await waitForLayout(host) {
-            descendants(host).contains { $0 is NSSegmentedControl }
+            descendants(host).contains { $0 is MarkdownTextView }
         })
-        #expect(store.detailMode == .history)
-        #expect(store.content.url == nil)
         let picker = try #require(descendants(host).compactMap { $0 as? NSSegmentedControl }.first {
             $0.segmentCount == 2 && $0.label(forSegment: 0) == String(localized: "Commit History")
         })
-        #expect(picker.segmentCount == 2)
-        #expect(picker.selectedSegment == 0)
-        #expect(window.attachedSheet == nil)
-
-        picker.selectedSegment = 1
-        _ = picker.sendAction(picker.action, to: picker.target)
-        await store.content.readTask?.value
+        let presentation = try #require(descendants(host).compactMap { $0 as? NSSegmentedControl }.first { $0 !== picker })
+        let tabsFrame = picker.convert(picker.bounds, to: host)
+        let presentationFrame = presentation.convert(presentation.bounds, to: host)
+        #expect(presentationFrame.minX >= tabsFrame.maxX)
+        #expect(abs(presentationFrame.midY - tabsFrame.midY) < 2)
+        let preview = try #require(descendants(host).compactMap { $0 as? MarkdownTextView }.first)
+        let storage = try #require(preview.textStorage)
+        let range = (storage.string as NSString).range(of: "let value = 1")
+        try #require(range.location != NSNotFound)
+        let style = try #require(storage.attribute(.paragraphStyle, at: range.location, effectiveRange: nil) as? NSParagraphStyle)
+        let block = try #require(style.textBlocks.first)
+        for edge in [NSRectEdge.minX, .maxX, .minY, .maxY] {
+            #expect(block.width(for: .padding, edge: edge) > 0)
+        }
+        presentation.selectedSegment = 1
+        _ = presentation.sendAction(presentation.action, to: presentation.target)
+        #expect(try await waitForLayout(host) {
+            descendants(host).compactMap { $0 as? NSTextView }.contains { $0.string.contains("```swift") }
+        })
+        #expect(picker.selectedSegment == 1)
         #expect(try await waitForLayout(host) {
             descendants(host).contains { $0 is NSTextView && ($0 as? NSTextView)?.isEditable == false }
         })

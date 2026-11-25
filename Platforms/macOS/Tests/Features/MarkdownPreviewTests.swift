@@ -51,6 +51,95 @@ final class MarkdownPreviewTests: XCTestCase {
         } catch { XCTAssertFalse(error.localizedDescription.isEmpty) }
     }
 
+    func testHTMLPicturesAndMixedInlineMarkup() async throws {
+        let source = """
+        <p align="center"><a href="guide.md"><picture>
+          <source media="(prefers-color-scheme: dark)" srcset="dark.png">
+          <source media="(prefers-color-scheme: light)" srcset="light.png">
+          <img alt="A &amp; B" src="fallback.png" width="64">
+        </picture></a><br>Caption</p>
+
+        <h1 align="center">Title</h1>
+
+        Before <a href="guide.md">**read** `code`</a> after.
+
+        <section>Readable<script>neverDisplay()</script><style>.hidden {}</style></section>
+
+        `<img src="literal.png">`
+
+        ```html
+        <br>
+        ```
+        """
+        let parts = try await MarkdownDocument.parse(source, kind: .markdown)
+        let images = parts.compactMap { part -> (MarkdownImage, MarkdownStyle)? in
+            if case let .image(image, style) = part { return (image, style) }
+            return nil
+        }
+        XCTAssertEqual(images.count, 1)
+        let (image, style) = try XCTUnwrap(images.first)
+        XCTAssertEqual(image.targets(dark: true), ["dark.png", "fallback.png"])
+        XCTAssertEqual(image.targets(dark: false), ["light.png", "fallback.png"])
+        XCTAssertEqual(image.alt, "A & B")
+        XCTAssertEqual(image.width, "64")
+        XCTAssertEqual(style.link, "guide.md")
+        XCTAssertTrue(style.centered)
+        let runs = parts.compactMap { part -> (String, MarkdownStyle)? in
+            if case let .text(value, style) = part { return (value, style) }
+            return nil
+        }
+        XCTAssertTrue(runs.contains { $0.0 == "read" && $0.1.bold && $0.1.link == "guide.md" })
+        XCTAssertTrue(runs.contains { $0.0 == "<img src=\"literal.png\">" && $0.1.code })
+        let text = runs.map(\.0).joined()
+        XCTAssertTrue(runs.contains { $0.0 == "Title" && $0.1.heading == 1 && $0.1.centered })
+        XCTAssertTrue(text.contains("\nCaption"))
+        XCTAssertTrue(text.contains("Readable"))
+        XCTAssertFalse(text.contains("neverDisplay"))
+        XCTAssertFalse(text.contains(".hidden"))
+        XCTAssertTrue(parts.contains { if case let .code(value, _, _) = $0 { return value == "<br>\n" }; return false })
+    }
+
+    func testHistoricalHTMLPictureRendersThemedAttachmentsAndFallback() async throws {
+        let repo = try await TestRepository.create()
+        defer { repo.remove() }
+        let source = """
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="dark.png">
+          <source media="(prefers-color-scheme: light)" srcset="missing.png">
+          <img src="fallback.png" alt="Example">
+        </picture>
+        """
+        try repo.write("docs/guide.md", source)
+        for (name, width) in [("dark.png", 12), ("fallback.png", 8)] {
+            let bitmap = try XCTUnwrap(NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: width, pixelsHigh: 4,
+                bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB,
+                bytesPerRow: 0, bitsPerPixel: 0))
+            try XCTUnwrap(bitmap.representation(using: .png, properties: [:])).write(to: repo.url.appendingPathComponent("docs/" + name))
+        }
+        try await repo.commit("Add themed pictures")
+        try FileManager.default.removeItem(at: repo.url.appendingPathComponent("docs"))
+        for dark in [false, true] {
+            let view = RevisionDocumentView(directory: repo.url, version: .revision("HEAD"), path: "docs/guide.md")
+                .environment(\.colorScheme, dark ? .dark : .light)
+            let host = NSHostingView(rootView: view)
+            let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 600, height: 400), styleMask: [.borderless], backing: .buffered, defer: false)
+            window.isReleasedWhenClosed = false
+            defer { window.close() }
+            window.contentView = host
+            var image: NSImage?
+            for _ in 0..<100 {
+                if let storage = reader(in: host)?.textStorage {
+                    storage.enumerateAttribute(.attachment, in: NSRange(location: 0, length: storage.length)) { value, _, _ in
+                        image = image ?? ((value as? NSTextAttachment)?.attachmentCell as? NSTextAttachmentCell)?.image
+                    }
+                }
+                if image != nil { break }
+                try await Task.sleep(for: .milliseconds(50))
+            }
+            XCTAssertEqual(image?.size.width, dark ? 12 : 8)
+        }
+    }
+
     func testFormattedDocumentInFileViewer() async throws {
         for language in ["en", "zh"] {
             for dark in [false, true] {

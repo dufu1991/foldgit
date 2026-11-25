@@ -12,6 +12,9 @@ packages:
   Markdown:
     url: https://github.com/swiftlang/swift-markdown.git
     exactVersion: 0.8.0
+  SwiftSoup:
+    url: https://github.com/scinfu/SwiftSoup.git
+    exactVersion: 2.14.4
   NornaKit:
     url: https://github.com/dufu1991/nornakit.git
     exactVersion: 0.2.0
@@ -59,6 +62,7 @@ targets:
         product: FoldGitCore
       - package: Markdown
         product: Markdown
+      - package: SwiftSoup
       - package: NornaKit
         product: NornaKit
       - package: ShikiSwift

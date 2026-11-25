@@ -147,8 +147,9 @@ struct FileContentStoreTests {
         let repository = try await TestRepository.create()
         defer { repository.remove() }
         let store = FileHistoryStore()
-        #expect(store.detailMode == .history)
+        #expect(store.detailMode == .content)
         store.activate(in: repository.url)
+        store.selectDetailMode(.history)
         await store.refreshTask?.value
         store.selectFile("example.swift")
         await store.historyTask?.value
@@ -185,7 +186,7 @@ struct FileContentStoreTests {
         let second = try await TestRepository.create()
         defer { second.remove() }
         store.activate(in: second.url)
-        #expect(store.detailMode == .history)
+        #expect(store.detailMode == .content)
         #expect(store.selectedPath == nil)
         #expect(store.content.url == nil)
         store.deactivate()

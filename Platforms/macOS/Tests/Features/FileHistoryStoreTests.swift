@@ -51,6 +51,7 @@ struct FileHistoryStoreTests {
         store.refresh()
         #expect(await GitCommandLog.shared.records(in: repository.url).isEmpty)
         store.activate(in: repository.url)
+        store.selectDetailMode(.history)
         await store.refreshTask?.value
         await store.treeTask?.value
         #expect(store.fileCount == 1)
@@ -108,6 +109,7 @@ struct FileHistoryStoreTests {
         try await repository.commit("add cache fixtures")
         let store = FileHistoryStore()
         store.activate(in: repository.url)
+        store.selectDetailMode(.history)
         await store.refreshTask?.value
         store.selectFile("example.swift")
         await settle(store)
@@ -175,6 +177,7 @@ struct FileHistoryStoreTests {
         try repository.write("Other/other.txt", "other file")
         let store = FileHistoryStore()
         store.activate(in: repository.url)
+        store.selectDetailMode(.history)
         await store.refreshTask?.value
         await store.treeTask?.value
         #expect(store.fileCount == 2)
@@ -212,6 +215,7 @@ struct FileHistoryStoreTests {
             return []
         })
         store.activate(in: repository.url)
+        store.selectDetailMode(.history)
         await store.refreshTask?.value
         store.selectFile("example.swift")
         try await Task.sleep(for: .milliseconds(50))
@@ -233,6 +237,7 @@ struct FileHistoryStoreTests {
             return []
         })
         store.activate(in: repository.url)
+        store.selectDetailMode(.history)
         await store.refreshTask?.value
         store.selectFile("example.swift")
         for _ in 0..<100 {
@@ -261,6 +266,7 @@ struct FileHistoryStoreTests {
         store.activate(in: first.url)
         let old = store.refreshTask
         store.activate(in: second.url)
+        store.selectDetailMode(.history)
         await old?.value
         await store.refreshTask?.value
         store.selectFile("example.swift")
@@ -282,6 +288,7 @@ struct FileHistoryStoreTests {
         defer { repository.remove() }
         let store = FileHistoryStore()
         store.activate(in: repository.url)
+        store.selectDetailMode(.history)
         await store.refreshTask?.value
         await store.treeTask?.value
         store.selectFile("example.swift")

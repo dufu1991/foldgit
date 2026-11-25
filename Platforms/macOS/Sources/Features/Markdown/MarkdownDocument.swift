@@ -19,6 +19,7 @@ struct MarkdownStyle: Sendable {
     var italic = false
     var strike = false
     var code = false
+    var centered = false
     var indent = 0
     var link: String?
 }
@@ -26,7 +27,7 @@ struct MarkdownStyle: Sendable {
 enum MarkdownPart: Sendable {
     case text(String, MarkdownStyle)
     case code(String, language: String?, line: Int)
-    case image(String, alt: String)
+    case image(MarkdownImage, MarkdownStyle)
     case table(columns: Int)
     case cell(row: Int, column: Int)
     case endTable
@@ -43,7 +44,7 @@ enum MarkdownDocument {
         return try await withTaskCancellationHandler { try await task.value } onCancel: { task.cancel() }
     }
 
-    private static func append(_ node: Markup, style: MarkdownStyle, to parts: inout [MarkdownPart]) throws {
+    static func append(_ node: Markup, style: MarkdownStyle, to parts: inout [MarkdownPart]) throws {
         try Task.checkCancellation()
         var style = style
         var suffix = ""
@@ -57,7 +58,7 @@ enum MarkdownDocument {
                                line: (code.range?.lowerBound.line ?? 0) + 1))
             return
         case let image as Markdown.Image:
-            parts.append(.image(image.source ?? "", alt: image.plainText)); return
+            parts.append(.image(.init(source: image.source ?? "", alt: image.plainText), style)); return
         case let link as Markdown.Link: style.link = link.destination
         case is Strong: style.bold = true
         case is Emphasis: style.italic = true
@@ -90,11 +91,9 @@ enum MarkdownDocument {
             parts.append(.endTable)
             parts.append(.text("\n", style))
             return
-        case let html as HTMLBlock: parts.append(.text(html.rawHTML + "\n", style)); return
-        case let html as InlineHTML: parts.append(.text(html.rawHTML, style)); return
         default: break
         }
-        for child in node.children { try append(child, style: style, to: &parts) }
+        try appendChildren(of: node, style: style, to: &parts)
         if !suffix.isEmpty { parts.append(.text(suffix, style)) }
     }
 }

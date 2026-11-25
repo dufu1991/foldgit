@@ -20,7 +20,7 @@ enum RepositoryFileDetailMode: String {
 /// Window-local, demand-loaded state. File content changes do not invalidate committed history.
 @MainActor
 @Observable final class FileHistoryStore {
-    private(set) var detailMode = RepositoryFileDetailMode.history
+    private(set) var detailMode = RepositoryFileDetailMode.content
     let content = FileContentStore()
     private(set) var directory: URL?
     private(set) var isActive = false
@@ -87,7 +87,7 @@ enum RepositoryFileDetailMode: String {
     func activate(in directory: URL) {
         if self.directory != directory {
             suspendQueries()
-            detailMode = .history
+            detailMode = .content
             self.directory = directory
             selectedPath = nil
             revealRequest = nil

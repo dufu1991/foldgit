@@ -37,6 +37,11 @@ struct FileContentDocument: Sendable {
         self.reader = reader
     }
 
+    func previewKind(for path: String) -> PreviewDocumentKind? {
+        guard case let .text(document) = state, !document.plain, !document.text.isEmpty else { return nil }
+        return PreviewDocumentKind(path: path)
+    }
+
     func show(directory: URL, path: String?) {
         let selected = path.map { directory.appendingPathComponent($0) }
         guard selected != url else { return }

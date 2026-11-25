@@ -2,7 +2,7 @@ import FoldGitCore
 import SwiftUI
 
 struct AmendCommitSheet: View {
-    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
+    @CommitOperationsSetting private var disableCommitOperations
     var folder: WorkspaceEntry
     @Binding var showingAmendCommitAt: Commit?
     var onCreate: (() -> Void)
@@ -67,7 +67,7 @@ struct AmendCommitSheet: View {
 
 struct SquashCommitSheet: View {
     @Environment(\.dismiss) private var dismiss
-    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disabled = false
+    @CommitOperationsSetting private var disabled
     let directory: URL
     let hashes: Set<String>
     var onComplete: (String) -> Void

@@ -57,7 +57,8 @@ enum SettingsReset {
                 Item(id: "snippets", title: String(localized: "Commit Message Snippets"), value: snippetText(snippets),
                      keys: [.commitMessageSnippet, .commitMessageSnippetEntries]),
                 Item(id: "favorites", title: String(localized: "Show in Quick Input"), value: snippetText(snippets.filter(\.isFavorite))),
-                Item(id: "commitMessageArea", title: String(localized: "Disable Commit Operations in FoldGit"), value: off, keys: [.disableCommitOperations, .showCommitMessageArea]),
+                Item(id: "commitMessageArea", title: String(localized: "Disable Commit Operations in FoldGit"),
+                     value: PreferenceDefaults.disableCommitOperations ? on : off, keys: [.disableCommitOperations, .showCommitMessageArea]),
             ]),
             Group(id: "repositories", title: String(localized: "Repositories"), items: [
                 Item(id: "repositoryBranch", title: String(localized: "Show Branch for Repositories Without Worktrees"), value: off, keys: [.showRepositoryBranch]),
@@ -90,6 +91,8 @@ enum SettingsReset {
         // Complete the only fallible operation before changing any saved preferences.
         try ensureLoginAtDefault()
         for key in preferenceKeys { defaults.removeObject(forKey: key.rawValue) }
+        // Keep the restored default explicit, or the next launch would migrate it as an old workspace.
+        defaults.set(PreferenceDefaults.disableCommitOperations, forKey: PreferenceKey.disableCommitOperations.rawValue)
         InterfaceLanguage.automatic.apply(to: defaults)
         LaunchAtLoginPreferences.rememberUserChoice(in: defaults)
     }

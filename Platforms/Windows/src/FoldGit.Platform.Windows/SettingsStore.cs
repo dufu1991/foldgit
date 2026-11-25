@@ -14,7 +14,7 @@ public sealed record AppSettings
     public string Language { get; init; } = "automatic";
     public string Appearance { get; init; } = "automatic";
     public CommitTimeDisplayMode CommitTimeDisplayMode { get; init; } = CommitTimeDisplayMode.Hybrid;
-    public bool DisableCommitOperations { get; init; }
+    public bool DisableCommitOperations { get; init; } = true;
     public bool RestoreSession { get; init; } = true;
     public bool WorktreesEnabled { get; init; } = true;
     public bool SideBySide { get; init; }
@@ -46,12 +46,11 @@ public sealed class SettingsStore(string? root = null)
             ?? throw new InvalidDataException("Settings are invalid.");
         if (settings.Version != 1) throw new InvalidDataException("This settings version is not supported.");
         var rootElement = document.RootElement;
-        if (!rootElement.TryGetProperty("DisableCommitOperations", out _)
-            && (rootElement.TryGetProperty("ShowCommitMessageArea", out var old) || rootElement.TryGetProperty("showCommitMessageArea", out old))
-            // Ignore a malformed legacy value instead of making the whole settings file unreadable.
-            && old.ValueKind is JsonValueKind.True or JsonValueKind.False)
+        if (!rootElement.TryGetProperty("DisableCommitOperations", out _))
         {
-            settings = settings with { DisableCommitOperations = old.ValueKind == JsonValueKind.False };
+            var hasLegacy = rootElement.TryGetProperty("ShowCommitMessageArea", out var old) || rootElement.TryGetProperty("showCommitMessageArea", out old);
+            // Settings written before the option existed keep commit operations enabled. Ignore a malformed legacy value.
+            settings = settings with { DisableCommitOperations = hasLegacy && old.ValueKind == JsonValueKind.False };
             await SaveAsync(settings);
         }
         return settings;

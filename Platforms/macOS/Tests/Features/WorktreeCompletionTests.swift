@@ -5,11 +5,14 @@ import SwiftUI
 import Testing
 @testable import FoldGit
 
-/// Keeps the developer's own preferences out of tests without writing to any defaults domain.
+/// Keeps the developer's own preferences out of tests that exercise commit operations.
 @MainActor
 enum TestPreferences {
-    /// Never written, so every preference reads as its default.
-    static let isolated = UserDefaults(suiteName: "FoldGit.Tests.Isolated." + UUID().uuidString)!
+    static let isolated: UserDefaults = {
+        let defaults = UserDefaults(suiteName: "FoldGit.Tests.Isolated")!
+        defaults.set(false, forKey: PreferenceKey.disableCommitOperations.rawValue)
+        return defaults
+    }()
 
     static func isolateCommitOperations() { CommitOperations.defaults = isolated }
 }

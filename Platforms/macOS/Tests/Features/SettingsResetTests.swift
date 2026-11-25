@@ -49,13 +49,17 @@ struct SettingsResetTests {
             try SettingsReset.restore(in: defaults) { loginRegistrations += 1 }
             #expect(loginRegistrations == 1)
             let domain = defaults.persistentDomain(forName: name)!
-            for key in SettingsReset.preferenceKeys { #expect(domain[key.rawValue] == nil) }
+            for key in SettingsReset.preferenceKeys where key != .disableCommitOperations { #expect(domain[key.rawValue] == nil) }
+            #expect(domain[PreferenceKey.disableCommitOperations.rawValue] as? Bool == true)
             #expect(domain["AppleLanguages"] == nil)
             #expect(defaults.bool(forKey: PreferenceKey.launchAtLoginConfigured.rawValue))
             for (key, value) in workspaceValues {
                 #expect(NSDictionary(dictionary: [key: domain[key]!]).isEqual(to: [key: value]))
             }
             #expect(AppPreferences.restoresSession(in: defaults))
+            #expect(PreferenceDefaults.commitOperationsDisabled(in: defaults))
+            #expect(AppStorage(wrappedValue: PreferenceDefaults.disableCommitOperations,
+                               PreferenceKey.disableCommitOperations.rawValue, store: defaults).wrappedValue)
             #expect(AppPreferences.codeFontSize(in: defaults) == 12)
             #expect(AppStorage(wrappedValue: AppPreferences.defaultToolbarLabelStyle, PreferenceKey.toolbarLabelStyle.rawValue, store: defaults).wrappedValue == .titleAndIcon)
             #expect(AppStorage(wrappedValue: true, PreferenceKey.showCommitGraph.rawValue, store: defaults).wrappedValue)
@@ -142,6 +146,7 @@ struct SettingsResetTests {
             #expect(snippets.items[0].value.contains(prefix.trimmingCharacters(in: .whitespaces)))
         }
         #expect(snippets.items[1].value == "fix:  feat:  docs:")
+        #expect(snippets.items.first { $0.keys.contains(.disableCommitOperations) }?.value == String(localized: "On"))
         #expect(groups.flatMap(\.items).filter { $0.keys.contains(.codeFontSize) }.first?.value == String(localized: "\(12) pt"))
         let comparison = groups.first { $0.id == "comparison" }!
         #expect(comparison.items.first { $0.id == "expansion" }?.value == DiffFileExpansion.collapsed.title)

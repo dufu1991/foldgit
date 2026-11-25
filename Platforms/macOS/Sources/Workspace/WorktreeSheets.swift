@@ -159,7 +159,7 @@ struct WorktreeCreateSheet: View {
 private enum WorktreeCreationMode: Hashable { case newBranch, existingBranch, detached }
 
 struct WorktreeManagementSheet: View {
-    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
+    @CommitOperationsSetting private var disableCommitOperations
     @Environment(\.folder) private var currentDirectory
     let repository: URL
     let onRelocated: (URL, URL?) -> Void

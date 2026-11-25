@@ -2,7 +2,7 @@ import FoldGitCore
 import SwiftUI
 
 struct ProjectSidebarView: View {
-    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
+    @CommitOperationsSetting private var disableCommitOperations
     @AppStorage(PreferenceKey.repositoryDisplayNames.rawValue)
     private var displayNamesData = PreferenceDefaults.repositoryDisplayNames
     @AppStorage(PreferenceKey.sidebarSort.rawValue) private var sort = SidebarSort.manual

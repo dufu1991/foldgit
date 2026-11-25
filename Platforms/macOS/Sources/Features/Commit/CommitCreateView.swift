@@ -5,8 +5,7 @@ import SwiftUI
 struct CommitCreateView: View {
     @AppStorage(PreferenceKey.diffFileExpansion.rawValue) private var fileExpansion = AppPreferences.defaultDiffFileExpansion
     @AppStorage(PreferenceKey.changeFileLayout.rawValue) private var changeFileLayout = AppPreferences.defaultChangeFileLayout
-    @AppStorage(PreferenceKey.disableCommitOperations.rawValue)
-    private var disableCommitOperations = PreferenceDefaults.disableCommitOperations
+    @CommitOperationsSetting private var disableCommitOperations
     @Environment(\.expandAllFiles) private var expandAllFilesID: UUID?
     @Environment(\.collapseAllFiles) private var collapseAllFilesID: UUID?
     @Environment(\.openSettings) var openSettings: OpenSettingsAction

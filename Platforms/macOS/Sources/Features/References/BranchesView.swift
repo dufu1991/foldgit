@@ -2,7 +2,7 @@ import FoldGitCore
 import SwiftUI
 
 struct BranchesView: View {
-    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
+    @CommitOperationsSetting private var disableCommitOperations
     @Environment(WorktreeStore.self) private var worktrees
     @AppStorage(PreferenceKey.showWorktreeInformation.rawValue)
     private var globalShowWorktreeInformation = PreferenceDefaults.showWorktreeInformation

@@ -3,7 +3,7 @@ import FoldGitCore
 import SwiftUI
 
 struct WorktreeCompletionSheet: View {
-    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
+    @CommitOperationsSetting private var disableCommitOperations
     let onRemoved: (URL, URL) -> Void
     @State private var model: WorktreeCompletionModel
     @State private var isResolving = false

@@ -26,7 +26,7 @@ struct RepositoryScreen: View {
     @State private var searchText = ""
     @State private var searchFocusRequest = UUID()
     @AppStorage(PreferenceKey.showCommitGraph.rawValue) private var showGraph = true
-    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
+    @CommitOperationsSetting private var disableCommitOperations
     private enum Operation {
         case branch, stash, commit, pull, push
     }

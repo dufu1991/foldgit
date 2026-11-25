@@ -66,7 +66,7 @@ extension View {
 
 /// A view rather than plain menu content, so the items follow the commit-operations setting as it changes.
 private struct CommitContextMenu: View {
-    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
+    @CommitOperationsSetting private var disableCommitOperations
     let folder: URL
     let commit: Commit
     let logStore: HistoryStore

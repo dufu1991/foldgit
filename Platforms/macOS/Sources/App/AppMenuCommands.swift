@@ -144,7 +144,7 @@ struct AppMenuCommands: Commands {
     @FocusedValue(\.diffMenu) private var diff
     @FocusedValue(\.editorMenu) private var editor
     @FocusedValue(\.fileMenu) private var file
-    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
+    @CommitOperationsSetting private var disableCommitOperations
     @AppStorage(PreferenceKey.showCommitGraph.rawValue) private var showGraph = true
     @AppStorage(PreferenceKey.diffLayout.rawValue) private var diffLayout = DiffLayout.automatic
     @Environment(\.openWindow) private var openWindow

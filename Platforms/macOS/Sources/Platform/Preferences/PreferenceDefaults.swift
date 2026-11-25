@@ -1,5 +1,6 @@
 import FoldGitCore
 import Foundation
+import SwiftUI
 
 struct PreferenceDefaults {
     static let showWorktreeInformation = true
@@ -9,13 +10,21 @@ struct PreferenceDefaults {
     static let repositoryDisplayNames = try! JSONEncoder().encode(RepositoryDisplayNames())
     static let sidebarDates = try! JSONEncoder().encode(SidebarDates())
     static let showCommitMessageArea = true
-    static let disableCommitOperations = false
+    static let disableCommitOperations = true
+
+    static func commitOperationsDisabled(in defaults: UserDefaults) -> Bool {
+        defaults.object(forKey: PreferenceKey.disableCommitOperations.rawValue) as? Bool ?? disableCommitOperations
+    }
 
     static func migrateCommitOperations(in defaults: UserDefaults = .standard) {
         let key = PreferenceKey.disableCommitOperations.rawValue
         guard defaults.object(forKey: key) == nil else { return }
         if let old = defaults.object(forKey: PreferenceKey.showCommitMessageArea.rawValue) as? Bool {
             defaults.set(!old, forKey: key)
+        } else {
+            // Existing workspaces used commit operations before they were disabled by default.
+            // Store the result so later launches never reinterpret a new workspace as an old one.
+            defaults.set(defaults.object(forKey: PreferenceKey.folder.rawValue) == nil, forKey: key)
         }
         defaults.removeObject(forKey: PreferenceKey.showCommitMessageArea.rawValue)
     }
@@ -169,8 +178,20 @@ final class DecodedPreference<Value> {
 enum CommitOperations {
     /// Tests use an isolated store, so the developer's own setting never changes their results.
     static var defaults = UserDefaults.standard
-    static var disabled: Bool { defaults.bool(forKey: PreferenceKey.disableCommitOperations.rawValue) }
+    static var disabled: Bool { PreferenceDefaults.commitOperationsDisabled(in: defaults) }
     static func requireEnabled() throws {
         if disabled { throw GenericError(errorDescription: String(localized: "Commit operations are disabled in FoldGit settings.")) }
     }
+}
+
+/// Reads and writes the "Disable Commit Operations in FoldGit" setting with its single default.
+@propertyWrapper struct CommitOperationsSetting: DynamicProperty {
+    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var value = PreferenceDefaults.disableCommitOperations
+
+    var wrappedValue: Bool {
+        get { value }
+        nonmutating set { value = newValue }
+    }
+
+    var projectedValue: Binding<Bool> { $value }
 }

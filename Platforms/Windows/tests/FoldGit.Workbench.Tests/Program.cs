@@ -41,6 +41,7 @@ try
         var migrationRoot = Path.Combine(root, "commit-setting-migration");
         Directory.CreateDirectory(migrationRoot);
         var settingsStore = new SettingsStore(migrationRoot);
+        Assert((await settingsStore.LoadAsync()).DisableCommitOperations, "Fresh settings must disable commit operations.");
         foreach (var oldKey in new[] { "ShowCommitMessageArea", "showCommitMessageArea" })
         foreach (var old in new[] { true, false })
         {
@@ -54,7 +55,9 @@ try
         await File.WriteAllTextAsync(Path.Combine(migrationRoot, "settings.json"), "{\"Version\":1,\"ShowCommitMessageArea\":false,\"DisableCommitOperations\":false}");
         Assert(!(await settingsStore.LoadAsync()).DisableCommitOperations, "An explicit new setting must override the old setting.");
         await File.WriteAllTextAsync(Path.Combine(migrationRoot, "settings.json"), "{\"Version\":1,\"ShowCommitMessageArea\":\"no\"}");
-        Assert(!(await settingsStore.LoadAsync()).DisableCommitOperations, "A malformed legacy value must not make the settings unreadable.");
+        Assert(!(await settingsStore.LoadAsync()).DisableCommitOperations, "A malformed legacy value must keep commit operations enabled for existing settings.");
+        await File.WriteAllTextAsync(Path.Combine(migrationRoot, "settings.json"), "{\"Version\":1}");
+        Assert(!(await settingsStore.LoadAsync()).DisableCommitOperations, "Settings from earlier versions must keep commit operations enabled.");
         var unsupported = "{\"Version\":2,\"ShowCommitMessageArea\":false}";
         await File.WriteAllTextAsync(Path.Combine(migrationRoot, "settings.json"), unsupported);
         var versionRejected = false;
@@ -62,8 +65,7 @@ try
         Assert(versionRejected, "Unsupported settings must be rejected before migration.");
         Assert(await File.ReadAllTextAsync(Path.Combine(migrationRoot, "settings.json")) == unsupported, "An unsupported settings file must remain unchanged.");
         await settingsStore.ResetAsync();
-        Assert(!(await settingsStore.LoadAsync()).DisableCommitOperations, "Reset must enable commit operations.");
-        await model.UpdateSettingsAsync(model.Settings with { DisableCommitOperations = true });
+        Assert((await settingsStore.LoadAsync()).DisableCommitOperations, "Reset must disable commit operations.");
         var rejected = false;
         try { await model.CommitAsync(); } catch (GitException) { rejected = true; }
         Assert(rejected, "A hidden commit command must also be rejected at execution.");
@@ -85,7 +87,9 @@ try
         await model.UpdateSettingsAsync(model.Settings with { CommitTimeDisplayMode = CommitTimeDisplayMode.Absolute });
         await model.ResetAsync();
         Assert(model.Settings.CommitTimeDisplayMode == CommitTimeDisplayMode.Hybrid, "Reset should restore hybrid mode.");
+        Assert(model.Settings.DisableCommitOperations, "Reset should disable commit operations.");
     });
+    await model.UpdateSettingsAsync(model.Settings with { DisableCommitOperations = false });
     var repository = await CreateRepository("first");
     await Test("Time mode changes refresh the selected commit without reloading its diff", async () =>
     {

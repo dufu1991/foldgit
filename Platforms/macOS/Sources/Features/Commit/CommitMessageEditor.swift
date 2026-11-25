@@ -31,7 +31,7 @@ struct CommitMessageEditor: View {
     /// The conventional subject width. Longer subjects get a hint, never a block.
     static let subjectLengthLimit = 72
 
-    @AppStorage(PreferenceKey.disableCommitOperations.rawValue) private var disableCommitOperations = false
+    @CommitOperationsSetting private var disableCommitOperations
 
     var folder: WorkspaceEntry
     @Binding var commitMessage: String

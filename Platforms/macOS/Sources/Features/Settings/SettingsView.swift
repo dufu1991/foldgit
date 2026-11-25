@@ -152,8 +152,7 @@ struct GeneralSettingsPane: View {
     @State private var error: Error?
     @State private var isRestarting = false
     @State private var showsRestoreDefaults = false
-    @AppStorage(PreferenceKey.disableCommitOperations.rawValue)
-    private var disableCommitOperations = PreferenceDefaults.disableCommitOperations
+    @CommitOperationsSetting private var disableCommitOperations
 
     var body: some View {
         Form {

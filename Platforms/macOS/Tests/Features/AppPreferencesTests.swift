@@ -12,16 +12,25 @@ struct AppPreferencesTests {
             withDefaults { defaults, _ in
                 defaults.set(old, forKey: PreferenceKey.showCommitMessageArea.rawValue)
                 PreferenceDefaults.migrateCommitOperations(in: defaults)
-                #expect(defaults.bool(forKey: PreferenceKey.disableCommitOperations.rawValue) == !old)
+                #expect(PreferenceDefaults.commitOperationsDisabled(in: defaults) == !old)
                 #expect(defaults.object(forKey: PreferenceKey.showCommitMessageArea.rawValue) == nil)
                 defaults.set(old, forKey: PreferenceKey.disableCommitOperations.rawValue)
                 PreferenceDefaults.migrateCommitOperations(in: defaults)
-                #expect(defaults.bool(forKey: PreferenceKey.disableCommitOperations.rawValue) == old)
+                #expect(PreferenceDefaults.commitOperationsDisabled(in: defaults) == old)
             }
         }
         withDefaults { defaults, _ in
             PreferenceDefaults.migrateCommitOperations(in: defaults)
-            #expect(!defaults.bool(forKey: PreferenceKey.disableCommitOperations.rawValue))
+            #expect(defaults.object(forKey: PreferenceKey.disableCommitOperations.rawValue) as? Bool == true)
+            // A workspace added after the first launch must not turn the new default into an old one.
+            defaults.set(Data("[]".utf8), forKey: PreferenceKey.folder.rawValue)
+            PreferenceDefaults.migrateCommitOperations(in: defaults)
+            #expect(PreferenceDefaults.commitOperationsDisabled(in: defaults))
+        }
+        withDefaults { defaults, _ in
+            defaults.set(Data("[]".utf8), forKey: PreferenceKey.folder.rawValue)
+            PreferenceDefaults.migrateCommitOperations(in: defaults)
+            #expect(!PreferenceDefaults.commitOperationsDisabled(in: defaults))
         }
     }
 

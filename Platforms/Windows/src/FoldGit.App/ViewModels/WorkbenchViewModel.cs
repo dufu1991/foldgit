@@ -123,7 +123,8 @@ public sealed partial class WorkbenchViewModel : ObservableObject, IAsyncDisposa
         if (group is not null) workspace = workspace with { Groups = [.. workspace.Groups, group] };
         foreach (var candidate in paths)
         {
-            var top = Path.GetFullPath((await Repositories.Process.ExecuteAsync(candidate, ["rev-parse", "--show-toplevel"])).Text.TrimEnd('\r', '\n'));
+            var result = await Repositories.Process.ExecuteAsync(candidate, new string[] { "rev-parse", "--show-toplevel" });
+            var top = Path.GetFullPath(result.Text.TrimEnd('\r', '\n'));
             workspace = workspace.Add(top, WindowsPathIdentity.Get(top), group?.Id);
         }
         await UpdateSettingsAsync(Settings with { Workspace = workspace });

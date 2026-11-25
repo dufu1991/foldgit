@@ -185,7 +185,10 @@ public sealed partial class MainWindow
             var pendingState = await Model.Trees.MergeStateAsync(plan.Target);
             if (!pendingState.Merging && Directory.Exists(source))
             {
-                var integrated = await Model.Repositories.Process.ExecuteAsync(plan.Target, ["merge-base", "--is-ancestor", plan.SourceCommit, "refs/heads/" + plan.TargetBranch], acceptedExitCodes: [0, 1]);
+                var integrated = await Model.Repositories.Process.ExecuteAsync(
+                    plan.Target,
+                    new string[] { "merge-base", "--is-ancestor", plan.SourceCommit, "refs/heads/" + plan.TargetBranch },
+                    acceptedExitCodes: [0, 1]);
                 if (integrated.ExitCode != 0)
                 {
                     var refreshed = await Model.Trees.PrepareAsync(source, plan.TargetBranch);
@@ -213,7 +216,10 @@ public sealed partial class MainWindow
         if (state.Merging) await ResolveMergeAsync(plan.Target);
         else
         {
-            var integrated = await Model.Repositories.Process.ExecuteAsync(plan.Target, ["merge-base", "--is-ancestor", plan.SourceCommit, "refs/heads/" + plan.TargetBranch], acceptedExitCodes: [0, 1]);
+            var integrated = await Model.Repositories.Process.ExecuteAsync(
+                plan.Target,
+                new string[] { "merge-base", "--is-ancestor", plan.SourceCommit, "refs/heads/" + plan.TargetBranch },
+                acceptedExitCodes: [0, 1]);
             if (integrated.ExitCode != 0)
             {
                 Model.RequireCommitOperations();

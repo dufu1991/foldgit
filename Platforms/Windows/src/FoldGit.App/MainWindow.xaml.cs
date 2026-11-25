@@ -361,7 +361,9 @@ public sealed partial class MainWindow : Window
         Model.CommitMessage = (await Model.Repositories.HistoryAsync(Model.Directory, count: 1)).FirstOrDefault()?.Message ?? "";
     });
     private void ChangesClicked(object sender, RoutedEventArgs args) => Model.ShowChanges();
-    private async void UntrackedClicked(object sender, ItemClickEventArgs args) => await Model.RunAsync(() => Model.MutateCommitAsync((service, directory) => service.StagePathsAsync(directory, [((FileStatus)args.ClickedItem).Path], true)));
+    private async void UntrackedClicked(object sender, ItemClickEventArgs args) =>
+        await Model.RunAsync(() => Model.MutateCommitAsync((service, directory) =>
+            service.StagePathsAsync(directory, new string[] { ((FileStatus)args.ClickedItem).Path }, true)));
     private async void RepositorySelected(object sender, SelectionChangedEventArgs args)
     {
         if (RepositoryList.SelectedItems.Count != 1 || RepositoryList.SelectedItem is not RepositoryRow { Path: { } path } || path == Model.Directory) return;

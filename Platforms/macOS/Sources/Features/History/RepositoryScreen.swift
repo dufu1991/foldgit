@@ -14,7 +14,9 @@ struct RepositoryScreen: View {
     @Binding var isRefresh: Bool
     @Binding var browseMode: RepositoryBrowseMode
     var fileHistory: FileHistoryStore
-    @State private var session = RepositorySession()
+    var onBranchChange: (Branch) -> Void = { _ in }
+    /// Owned by the repository tab, so its loaded history survives switching tabs.
+    let session: RepositorySession
     private var logStore: HistoryStore { session.history }
     private var syncState: RemoteSyncState { session.remote }
     private var isLoading: Bool { runningOperation != nil }
@@ -38,7 +40,12 @@ struct RepositoryScreen: View {
     private var observedContent: some View {
         repositoryContent
         .focusedSceneValue(\.repositoryMenu, menuContext)
+        .onAppear {
+            selectionLogID = selectionLog?.id
+            searchText = logStore.searchText
+        }
         .onDisappear { logStore.cancelSearch(); fileHistory.deactivate() }
+        .onChange(of: branch) { _, branch in if let branch { onBranchChange(branch) } }
         .onChange(of: browseMode) { _, mode in
             if mode == .files {
                 logStore.cancelSearch()
@@ -56,9 +63,12 @@ struct RepositoryScreen: View {
             else { fileHistory.refresh() }
         }
         .task {
-            do { try await GitSquash.recover(in: folder.url) }
-            catch { self.error = error }
-            await refreshModels(fetchRemote: true)
+            let firstLoad = branch == nil
+            if firstLoad {
+                do { try await GitSquash.recover(in: folder.url) }
+                catch { self.error = error }
+            }
+            await refreshModels(fetchRemote: firstLoad)
         }
         .task(id: browseMode) {
             guard browseMode == .files else { return }
@@ -256,15 +266,13 @@ struct RepositoryScreen: View {
                 OpenInMenu(directory: folder.url, store: menuApplications, onError: { error = $0 })
             }
             ToolbarSpacer(.flexible, placement: .primaryAction)
-            ToolbarItem(id: "repositoryBrowseMode", placement: .primaryAction) {
-                ViewThatFits(in: .horizontal) {
-                    perspectivePicker.labelStyle(.titleAndIcon)
-                    perspectivePicker.labelStyle(.iconOnly)
-                }
-                .help("Repository View")
-                .accessibilityLabel(Text("Repository View"))
-                .accessibilityValue(Text(browseMode == .commits ? String(localized: "Commit View") : String(localized: "Directory View")))
-                .accessibilityIdentifier("repositoryBrowseMode")
+            ToolbarItemGroup(placement: .primaryAction) {
+                repositoryViewMenu
+                    .accessibilityLabel(Text("Repository View"))
+                    .accessibilityValue(Text(verbatim: browseMode.title))
+                    .accessibilityIdentifier("repositoryBrowseMode")
+            } label: {
+                Text("Repository View")
             }
             ToolbarSpacer(.fixed, placement: .primaryAction)
             ToolbarItem(id: "commandLog", placement: .primaryAction) {
@@ -425,14 +433,20 @@ struct RepositoryScreen: View {
         }
     }
 
-    private var perspectivePicker: some View {
-        Picker("Repository View", selection: $browseMode) {
-            Label("Commit View", systemImage: "clock.arrow.circlepath").tag(RepositoryBrowseMode.commits)
-            Label("Directory View", systemImage: "folder").tag(RepositoryBrowseMode.files)
+    private var repositoryViewMenu: some View {
+        Menu {
+            Picker("Repository View", selection: $browseMode) {
+                Text("Commit View").tag(RepositoryBrowseMode.commits)
+                Text("Directory View").tag(RepositoryBrowseMode.files)
+            }
+            .pickerStyle(.inline)
+            .labelsHidden()
+        } label: {
+            Text(verbatim: browseMode.title)
         }
-        .pickerStyle(.segmented)
-        .labelsHidden()
+        .menuIndicator(.visible)
         .fixedSize()
+        .help("Repository View")
     }
 
     private func syncHistorySelection() {
@@ -957,7 +971,8 @@ private struct ToolbarOperationIcon: View {
         subSelectionLogID: $subSelection,
         isRefresh: $refresh,
         browseMode: .constant(.commits),
-        fileHistory: FileHistoryStore()
+        fileHistory: FileHistoryStore(),
+        session: RepositorySession()
     )
     .environment(WorktreeStore())
 }

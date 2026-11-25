@@ -3,6 +3,7 @@ import FoldGitCore
 import SwiftUI
 
 enum MenuCommand: String {
+    case newTab, closeTab, previousTab, nextTab
     case openRepository, cloneRepository, newGroup, newWorktree, manageWorktrees, finishWorktree
     case toggleSidebar, toggleCommandLog, expandAll, collapseAll, searchCommits, findInFile, revealHead, showChanges
     case expandDirectories, collapseDirectories
@@ -16,6 +17,10 @@ enum MenuCommand: String {
     /// The single source for key equivalents, shared by the menu bar and the Keyboard Shortcuts window.
     var shortcut: MenuShortcut? {
         switch self {
+        case .newTab: MenuShortcut("t")
+        case .closeTab: MenuShortcut("w")
+        case .previousTab: MenuShortcut("[", [.command, .shift])
+        case .nextTab: MenuShortcut("]", [.command, .shift])
         case .openRepository: MenuShortcut("o")
         case .cloneRepository: MenuShortcut("n", [.command, .shift])
         case .copyCommitHash: MenuShortcut("c", [.command, .shift])
@@ -52,6 +57,22 @@ struct MenuShortcut {
     init(_ key: KeyEquivalent, _ modifiers: EventModifiers = .command) {
         self.key = key
         self.modifiers = modifiers
+    }
+
+    func matches(_ event: NSEvent) -> Bool {
+        let modifierPairs: [(EventModifiers, NSEvent.ModifierFlags)] = [
+            (.command, .command), (.control, .control), (.option, .option), (.shift, .shift),
+        ]
+        for (swiftUI, appKit) in modifierPairs {
+            guard modifiers.contains(swiftUI) == event.modifierFlags.contains(appKit) else { return false }
+        }
+        let pressed = event.charactersIgnoringModifiers?.lowercased()
+        // Shift can turn brackets into braces, so the US bracket key codes also match.
+        switch key.character {
+        case "[": return pressed == "[" || event.keyCode == 33
+        case "]": return pressed == "]" || event.keyCode == 30
+        default: return pressed == String(key.character)
+        }
     }
 
     var symbols: String {
@@ -151,6 +172,8 @@ struct AppMenuCommands: Commands {
 
     var body: some Commands {
         CommandGroup(after: .newItem) {
+            command("New Tab", .newTab)
+            if let closeTab = handler(.closeTab) { Button("Close Tab", action: closeTab) }
             Divider()
             command("Open Repository", .openRepository)
             command("Clone Remote Repository", .cloneRepository)
@@ -209,6 +232,11 @@ struct AppMenuCommands: Commands {
         CommandMenu("Repository") { repositoryCommands }
         CommandMenu("Branch") { branchCommands }
         CommandMenu("Commit") { commitCommands }
+        CommandGroup(before: .windowList) {
+            command("Show Previous Tab", .previousTab)
+            command("Show Next Tab", .nextTab)
+            Divider()
+        }
         CommandGroup(replacing: .help) {
             Link("User Guide", destination: URL(string: "https://foldgit.com/manual")!)
             Button("Keyboard Shortcuts") { openWindow(id: "keyboard-shortcuts") }
@@ -327,6 +355,12 @@ struct AppMenuCommands: Commands {
 struct KeyboardShortcutsView: View {
     var body: some View {
         Form {
+            Section("Tabs") {
+                shortcut("New Tab", .newTab)
+                shortcut("Close Tab", .closeTab)
+                shortcut("Show Previous Tab", .previousTab)
+                shortcut("Show Next Tab", .nextTab)
+            }
             Section("Repository") {
                 shortcut("Open Repository", .openRepository)
                 shortcut("Clone Remote Repository", .cloneRepository)

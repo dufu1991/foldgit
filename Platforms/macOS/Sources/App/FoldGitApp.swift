@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 @main
@@ -8,6 +9,7 @@ struct FoldGitApp: App {
     @ObservedObject private var updateChecker = UpdateChecker.shared
 
     init() {
+        NSWindow.allowsAutomaticWindowTabbing = false
         guard ProcessInfo.processInfo.environment["FOLDGIT_TESTING"] != "1" else { return }
         LegacyPreferencesMigration.migrate()
         PreferenceDefaults.migrateCommitOperations()

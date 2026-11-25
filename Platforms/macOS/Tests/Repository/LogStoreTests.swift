@@ -62,7 +62,8 @@ struct HistoryStoreTests {
             subSelectionLogID: .constant(nil),
             isRefresh: .constant(false),
             browseMode: .constant(.commits),
-            fileHistory: FileHistoryStore()
+            fileHistory: FileHistoryStore(),
+            session: RepositorySession()
         )
         .environment(\.folder, repository.url)
         .environment(WorktreeStore())

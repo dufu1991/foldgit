@@ -60,6 +60,101 @@ struct AppPreferencesTests {
         try body(defaults, name)
     }
 
+    @Test func newWindowsUseTheConfiguredRepositoryView() {
+        withDefaults { defaults, _ in
+            let key = PreferenceKey.defaultRepositoryView.rawValue
+            #expect(AppPreferences.initialRepositoryView(in: defaults) == .commits)
+            for mode in [RepositoryBrowseMode.files, .commits] {
+                defaults.set(mode.rawValue, forKey: key)
+                #expect(AppPreferences.initialRepositoryView(in: defaults) == mode)
+            }
+            defaults.set("unknown", forKey: key)
+            #expect(AppPreferences.initialRepositoryView(in: defaults) == .commits)
+        }
+    }
+
+    @Test @MainActor func eachRepositoryKeepsItsOwnTabs() throws {
+        let workspace = WorkspaceRepositoryTabs()
+        workspace.open("/projects/first", mode: .commits)
+        let first = try #require(workspace.tabs(for: "/projects/first"))
+        #expect(first.items.map(\.mode) == [.commits, .files])
+        #expect(first.selected.mode == .commits)
+        first.branch = Branch(name: "feature/first", isCurrent: true)
+        #expect(first.title(for: first.selected) == "feature/first · \(RepositoryBrowseMode.commits.title)")
+        first.move(by: 1)
+        first.add(mode: .files)
+
+        workspace.open("/projects/second", mode: .commits)
+        let second = try #require(workspace.tabs(for: "/projects/second"))
+        #expect(second.items.map(\.mode) == [.commits, .files])
+        #expect(second.selected.mode == .commits)
+        #expect(second.title(for: second.selected) == RepositoryBrowseMode.commits.title)
+        second.move(by: -1)
+        #expect(second.selected.mode == .files)
+        second.close(first.selected)
+        #expect(second.items.count == 2)
+        second.close(second.selected)
+        #expect(second.items.count == 1)
+
+        workspace.open("/projects/first", mode: .commits)
+        #expect(workspace.tabs(for: "/projects/first") === first)
+        #expect(first.items.count == 3)
+        #expect(first.selectedIndex == 2)
+
+        let saved = try JSONEncoder().encode(workspace.layouts)
+        let restored = WorkspaceRepositoryTabs()
+        restored.restore(try JSONDecoder().decode([String: RepositoryTabs.Layout].self, from: saved))
+        #expect(restored.layouts == workspace.layouts)
+    }
+
+    @Test @MainActor func repositoriesOpenWithTheDefaultViewAndReleaseOldState() throws {
+        let workspace = WorkspaceRepositoryTabs()
+        workspace.open("/projects/files", mode: .files)
+        let files = try #require(workspace.tabs(for: "/projects/files"))
+        #expect(files.items.map(\.mode) == [.commits, .files])
+        #expect(files.selected.mode == .files)
+        _ = files.selected.session
+        #expect(files.isLoaded)
+
+        for index in 0..<WorkspaceRepositoryTabs.loadedRepositoryLimit {
+            workspace.open("/projects/\(index)", mode: .commits)
+        }
+        let released = try #require(workspace.tabs(for: "/projects/files"))
+        #expect(released !== files)
+        #expect(!released.isLoaded)
+        #expect(released.layout == files.layout)
+
+        workspace.remove(["/projects/files"])
+        #expect(workspace.tabs(for: "/projects/files") == nil)
+        #expect(workspace.layouts.count == WorkspaceRepositoryTabs.loadedRepositoryLimit)
+    }
+
+    @Test @MainActor func repositoryShortcutsKeepTheLastTabForWindowClosing() throws {
+        let tabs = RepositoryTabs(layout: .init(modes: [.commits, .files, .commits], selectedIndex: 0))
+        let key: (String, NSEvent.ModifierFlags) throws -> NSEvent = { character, modifiers in
+            // Shift turns the bracket keys into braces, so those events carry the bracket key codes.
+            let keyCode: UInt16 = ["[": 33, "{": 33, "]": 30, "}": 30][character] ?? 0
+            return try #require(NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: modifiers,
+                                                timestamp: 0, windowNumber: 0, context: nil, characters: character,
+                                                charactersIgnoringModifiers: character, isARepeat: false, keyCode: keyCode))
+        }
+        #expect(!tabs.handleShortcut(try key("\t", .control)))
+        #expect(!tabs.handleShortcut(try key("\u{19}", [.control, .shift])))
+        #expect(!tabs.handleShortcut(try key("]", .command)))
+        #expect(tabs.handleShortcut(try key("}", [.command, .shift])))
+        #expect(tabs.selectedIndex == 1)
+        #expect(tabs.handleShortcut(try key("{", [.command, .shift])))
+        #expect(tabs.selectedIndex == 0)
+        #expect(tabs.handleShortcut(try key("t", .command)))
+        let close = try key("w", .command)
+        #expect(tabs.items.count == 4)
+        #expect(tabs.handleShortcut(close))
+        #expect(tabs.handleShortcut(close))
+        #expect(tabs.handleShortcut(close))
+        #expect(tabs.items.count == 1)
+        #expect(!tabs.handleShortcut(close))
+    }
+
     @Test func defaultSessionRestorationAndFontSize() {
         withDefaults { defaults, _ in
             #expect(AppPreferences.restoresSession(in: defaults))

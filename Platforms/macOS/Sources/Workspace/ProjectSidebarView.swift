@@ -708,13 +708,9 @@ struct ProjectSidebarView: View {
             // Filtering or moving a row between groups must not clear the current repository.
             guard !values.isEmpty else { return }
             guard !values.contains(where: { worktrees.worktree(at: $0)?.isPrunable == true }) else { return }
-            let added = values.subtracting(selectedRepositories)
             selectedRepositories = values
-            if let lastAdded = added.sorted(by: { $0.path < $1.path }).last {
-                selection = lastAdded
-            } else if let selection, !values.contains(selection), !values.isEmpty {
-                self.selection = values.sorted(by: { $0.path < $1.path }).first
-            }
+            // Multi-selection is used for sidebar actions. Open a repository on single selection.
+            if values.count == 1 { selection = values.first }
         })
     }
 

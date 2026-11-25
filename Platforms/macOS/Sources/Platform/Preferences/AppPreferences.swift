@@ -92,6 +92,13 @@ enum AppPreferences {
     static let defaultDiffFileExpansion = DiffFileExpansion.collapsed
     static let defaultChangeFileLayout = ChangeFileLayout.tree
 
+    static let defaultRepositoryView = RepositoryBrowseMode.commits
+
+    static func initialRepositoryView(in defaults: UserDefaults = .standard) -> RepositoryBrowseMode {
+        defaults.string(forKey: PreferenceKey.defaultRepositoryView.rawValue)
+            .flatMap(RepositoryBrowseMode.init(rawValue:)) ?? defaultRepositoryView
+    }
+
     static func restoresSession(in defaults: UserDefaults = .standard) -> Bool {
         defaults.object(forKey: PreferenceKey.restoreSession.rawValue) as? Bool ?? true
     }

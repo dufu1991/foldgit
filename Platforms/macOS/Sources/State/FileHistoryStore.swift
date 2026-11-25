@@ -2,8 +2,15 @@ import FoldGitCore
 import Foundation
 import Observation
 
-enum RepositoryBrowseMode: String, CaseIterable {
+enum RepositoryBrowseMode: String, CaseIterable, Codable {
     case commits, files
+
+    var title: String {
+        switch self {
+        case .commits: String(localized: "Commit View")
+        case .files: String(localized: "Directory View")
+        }
+    }
 }
 
 enum RepositoryFileDetailMode: String {

@@ -144,6 +144,7 @@ struct SettingsView: View {
 struct GeneralSettingsPane: View {
     var languageSession = InterfaceLanguageSession.shared
     @AppStorage(PreferenceKey.interfaceLanguage.rawValue) private var language = InterfaceLanguage.automatic
+    @AppStorage(PreferenceKey.defaultRepositoryView.rawValue) private var defaultRepositoryView = AppPreferences.defaultRepositoryView
     @AppStorage(PreferenceKey.restoreSession.rawValue) private var restoreSession = true
     @AppStorage(PreferenceKey.checkForUpdatesAtLaunch.rawValue) private var checkForUpdatesAtLaunch = true
     @AppStorage(PreferenceKey.quitAfterLastWindow.rawValue) private var quitAfterLastWindow = false
@@ -188,6 +189,12 @@ struct GeneralSettingsPane: View {
                         .font(.caption).foregroundStyle(.secondary)
                     Button("Open Login Items") { SMAppService.openSystemSettingsLoginItems() }
                 }
+                Picker("Default Repository View", selection: $defaultRepositoryView) {
+                    Text("Commit View").tag(RepositoryBrowseMode.commits)
+                    Text("Directory View").tag(RepositoryBrowseMode.files)
+                }
+                .pickerStyle(.menu)
+                .accessibilityIdentifier("defaultRepositoryViewPicker")
                 Toggle("Restore Previous Repository and Window", isOn: $restoreSession)
                     .accessibilityIdentifier("restoreSessionToggle")
                 // Sparkle checks periodically, not only at launch; the stored key keeps its original name.

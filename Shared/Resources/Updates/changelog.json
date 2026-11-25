@@ -1,16 +1,20 @@
 [
   {
     "version": "0.6.0",
-    "date": "2026-11-23",
+    "date": "2026-11-25",
     "zh": [
-      "在 macOS 上阅读 Markdown 文档，可在预览与源码之间切换，也可从提交差异预览历史版本。",
-      "macOS 可在文档内预览 Mermaid 图表，也可直接打开图表文件，复制源码或导出 PNG、SVG。",
-      "macOS 工具栏现在并列显示提交视角与目录视角，单击即可切换。"
+      "macOS 新增仓库标签页，标题显示分支，支持快捷键切换并恢复上次布局。",
+      "macOS 新增「默认仓库视角」设置，目录视角选中文件时默认显示内容。",
+      "macOS 支持预览 Markdown，可切换源码、查看历史版本，并显示常见 HTML 和深浅色图片。",
+      "macOS 支持预览 Mermaid 图表，可复制源码或导出 PNG、SVG。",
+      "macOS 和 Windows 新安装默认关闭提交操作，升级用户保留原设置。macOS 精简「用其他应用打开」菜单。"
     ],
     "en": [
-      "Read Markdown on macOS, switch between preview and source, and open historical versions from commit diffs.",
-      "Preview Mermaid diagrams inside documents or open standalone diagram files on macOS. Copy their source or export PNG and SVG.",
-      "Switch directly between Commit View and Directory View in the macOS toolbar."
+      "Add repository tabs on macOS, with branch titles, keyboard shortcuts and restored layouts.",
+      "Add a Default Repository View setting on macOS. Directory View shows file content first.",
+      "Preview Markdown on macOS with source view, past versions, common HTML and light or dark images.",
+      "Preview Mermaid diagrams on macOS. Copy their source or export PNG and SVG.",
+      "New installations on macOS and Windows start with commit operations off; upgrades keep your setting. Simplify the Open in menu on macOS."
     ]
   },
   {
